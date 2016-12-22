@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="resiway" id="top">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="icon" href="assets/favicon.ico" />
+    <title>ResiWay</title>
+    <meta name="description" content="">
+
+
+    <script src="assets/angular.min.js"></script>
+    <script src="assets/angular-animate.min.js"></script>
+    <script src="assets/angular-touch.min.js"></script>
+    <script src="assets/angular-sanitize.js"></script>
+    <script src="assets/angular-cookies.js"></script>
+    <script src="assets/ui-bootstrap-tpls-2.2.0.min.js"></script>
+    <script src="assets/md5.js"></script>
+    <script src="assets/resiway.js"></script>
+
+    <link rel="stylesheet" href="assets/bootstrap.min.css" />
+    <link rel="stylesheet" href="assets/simplegrid.css"/>
+    <link rel="stylesheet" href="assets/font-awesome.css">
+    <link rel="stylesheet" href="assets/style.css"/>
+
+    <style>
+
+body {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    padding-top: 34px;
+}
+
+.topbar {
+    width: 100%;
+    background: rgba(12,13,14,0.86);
+    font-size: 13px;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+}    
+
+.topbar .grid {
+    overflow: visible;
+}
+
+.topbar .grid .col-1-1 {
+    padding: 0;
+    margin: 0;
+}
+
+[class*='col-'].nopad {
+    padding: 0;
+}
+
+.topbar .wrapper {
+    position: relative;
+    padding: 0;
+    height: 34px;
+}
+
+.topbar .platform-btn {
+    position: absolute;
+    left: 0;
+    vertical-align: top;
+    height: 34px;
+    width: 115px;
+    line-height: 34px;
+    color: lightgrey;
+    cursor: pointer;
+    user-select: none;
+}
+
+.topbar .login-btn {
+    position: absolute;
+    right: 0;
+    vertical-align: top;
+    height: 34px;
+    line-height: 34px;
+    color: white;
+    padding-left: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.topbar .login-btn a {
+    color: white;
+    padding: 10px 5px;
+    text-decoration: none;
+}
+
+.topbar .login-btn a:hover {
+    background-color: #3b4045;
+}
+
+.topbar .user-btn {
+    position: absolute;
+    right: 0;
+    vertical-align: top;
+    height: 34px;
+    width: 135px;
+    line-height: 34px;
+    color: lightgrey;
+    padding-left: 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.topbar .platform-btn.resilib {
+    width: 110px;
+}
+
+.topbar .platform-btn.resinet {
+    width: 115px;
+}
+
+.topbar .platform-btn.resipedia {
+    width: 125px;
+}
+
+.topbar .platform-btn.resiexchange {
+    width: 158px;
+}
+
+.topbar .platform-dialog {
+    position: absolute;
+    display: block;
+    z-index: 1000;
+    top: 34px;
+    left: 0;
+    width: 355px;
+    height: auto;
+    background-color: #eff0f1;
+    border-left: 1px solid #e4e6e8;
+    border-right: 1px solid #e4e6e8;
+    border-bottom: 1px solid #e4e6e8;
+    color: rgb(0, 119, 204);
+    font-weight: bold;
+    font-size: 11px;
+}
+
+.topbar .user-dialog {
+    position: absolute;
+    display: block;
+    z-index: 1000;
+    top: 34px;
+    right: 0;
+    width: 135px;
+    height: auto;
+    background-color: #eff0f1;
+    border-left: 1px solid #e4e6e8;
+    border-right: 1px solid #e4e6e8;
+    border-bottom: 1px solid #e4e6e8;
+    color: rgb(0, 119, 204);
+    font-family: Helvetica;
+    font-size: 14px;
+}
+
+.topbar .user-dialog .btn {
+    text-align: left;
+}
+
+
+.topbar .platform-btn .app-icon {
+    display: inline-block;
+    margin-left: 10px;
+    margin-right: 5px;
+    height: 34px;
+}
+
+
+.topbar .platform-btn.resiexchange .app-icon {
+    width: 115px;
+    background: url('assets/resiexchange.png') no-repeat;   
+    background-position: 0 9px;
+    background-size: 77px auto;
+    background-size: 115px auto;
+}
+
+.topbar .platform-btn.resiway .app-icon {
+    width: 77px;
+    background: url('assets/resiway.png') no-repeat;   
+    background-position: 0 9px;
+    background-size: 77px auto;
+}
+
+.topbar .platform-btn.resilib .app-icon {
+    width: 77px;
+    background: url('assets/resilib.png') no-repeat;   
+    background-position: 0 9px;
+    background-size: 77px auto;
+}
+
+.topbar .platform-btn.resinet .app-icon {
+    width: 77px;
+    background: url('assets/resinet.png') no-repeat;   
+    background-position: 0 9px;
+    background-size: 77px auto;
+}
+
+.topbar .platform-btn.resipedia .app-icon {
+    width: 88px;
+    background: url('assets/resipedia.png') no-repeat;   
+    background-position: 0 9px;
+    background-size: 88px auto;
+}
+
+.topbar .fa-caret-down {    
+    line-height: 34px;
+    vertical-align: top;
+}
+
+.topbar .platform-btn:hover, .topbar .user-btn:hover{
+    background-color: #3b4045;
+}
+
+.topbar .platform-btn.open, .topbar .user-btn.open {
+    background-color: #eff0f1;
+    color: grey;
+}
+
+.topbar .platform-btn.open .app-icon {
+    background-position: 0 -21px;
+}
+
+.topbar .platform-dialog .head {
+    padding: 7px 10px 4px 10px;
+    line-height: 16px;
+}
+
+.topbar .platform-dialog ul {
+    list-styl-type: none;
+    margin: 0;
+    padding: 0;
+    
+}
+
+.topbar .platform-dialog ul li {
+    display: block;
+    margin: 1px;
+    margin-top: 0;
+    padding: 2px 10px 5px 10px;
+    background-color: white;
+}
+
+.topbar .platform-dialog ul li:hover {
+    background-color: #f9f9f9;
+}
+
+.topbar .platform-dialog ul li .descr {
+    
+}
+
+.topbar .user-dialog ul {
+    list-styl-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.topbar .user-dialog ul li {
+    display: block;
+    margin: 1px;
+    margin-top: 0;
+    padding: 2px 10px 5px 10px;
+    background-color: white;
+}
+
+.topbar .user-dialog ul li:hover {
+    background-color: #f9f9f9;
+}
+
+.topbar .platform-dialog .platform-icon {
+    height: 34px;
+    width: 77px;
+}
+
+.topbar .platform-dialog .platform-icon.resiway {
+    width: 77px;
+    background: url('assets/resiway.png') no-repeat;   
+    background-position: 0 -21px;
+    background-size: 77px auto;
+}
+.topbar .platform-dialog .platform-icon.resilib {
+    width: 77px;
+    background: url('assets/resilib.png') no-repeat;   
+    background-position: 0 -21px;
+    background-size: 77px auto;
+}
+.topbar .platform-dialog .platform-icon.resinet {
+    width: 77px;
+    background: url('assets/resinet.png') no-repeat;   
+    background-position: 0 -21px;
+    background-size: 77px auto;
+}
+.topbar .platform-dialog .platform-icon.resiexchange {
+    width: 115px;
+    background: url('assets/resiexchange.png') no-repeat;   
+    background-position: 0 -21px;
+    background-size: 115px auto;
+}
+.topbar .platform-dialog .platform-icon.resipedia {
+    width: 88px;
+    background: url('assets/resipedia.png') no-repeat;   
+    background-position: 0 -21px;
+    background-size: 88px auto;
+}
+
+
+.container {
+    padding-top: 10px;
+}
+
+.login-modal {
+    position: fixed;
+    top: 10%;
+    left: 18.5%;
+    z-index: 1050;
+    width: 80%;
+    height: auto;
+    margin-left: -10%;
+}
+
+.login-modal .panel {
+    margin: 0;
+}
+
+.login-modal .alert {
+    font-size: 12px;
+}
+
+.page-header h1 {
+    margin-bottom: .5em;
+    font-size: 24px;
+    line-height: 1.3;
+    font-family: Arial, Helvetica;
+}    
+
+#footer {
+    position: relative;
+    bottom: 0;
+    height: auto;
+    min-height: 250px;
+    width: 100%;
+    color: white;
+    margin-top: 80px;
+    background: #242729;
+}
+
+
+/****************************************/
+
+
+.tagged-interesting {
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.question-summary {
+    padding: 12px 0 10px 0;
+    border-bottom: 1px solid #e4e6e8;
+}
+.tagged-interesting {
+    background-color: #fffbec;
+}
+.question-summary {
+    overflow: hidden;
+    padding: 15px 0;
+    float: left;
+    width: 728px;
+    border-bottom: 1px solid #eff0f1;
+}
+
+.narrow .cp {
+    vertical-align: top;
+    float: left;
+    margin-right: 10px;
+}
+
+.cp {
+    cursor: pointer;
+}
+
+.narrow .votes, .narrow .status, .narrow .views {
+    padding: 8px 5px;
+    line-height: 1;
+}
+.narrow .votes {
+    display: inline-block;
+    height: 38px;
+    min-width: 38px;
+    margin: 0 3px 0 0;
+    font-size: 11px;
+    color: #848d95;
+    padding: 5px 5px 6px 5px;
+    text-align: center;
+}
+
+
+.narrow .mini-counts {
+    margin-bottom: 2px;
+}
+
+.narrow .mini-counts {
+    font-size: 17px;
+    font-weight: 300;
+    color: #6a737c;
+    margin-bottom: 4px;
+}
+
+
+.narrow .status {
+    color: #848d95;
+    display: inline-block;
+    margin: 0 3px 0 0;
+    min-width: 44px;
+    height: auto;
+    font-size: 11px;
+    padding: 6px;
+    text-align: center;
+}
+
+
+.narrow .views {
+    display: inline-block;
+    height: 38px;
+    min-width: 40px;
+    margin: 0 7px 0 0;
+    font-size: 11px;
+    color: #848d95;
+    padding: 5px 5px 6px 5px;
+    text-align: center;
+}
+
+
+.narrow .summary {
+    /* width: 520px; */
+    padding: 0;
+    float: left;
+}
+
+.narrow .summary h3 {
+    padding: 0;
+    border: 0;
+    margin: 0;
+    font-weight: 400;
+    font-size: 15px;
+    margin-bottom: .35em;
+    line-height: 1.3;
+}
+
+.tags {
+    line-height: 18px;
+    float: left;
+}
+
+.narrow .started {
+    float: right;
+    width: auto;
+    line-height: inherit;
+    padding-top: 4px;
+    white-space: nowrap;
+}
+
+.post-tag, .geo-tag, .container .chosen-choices .search-choice, .container .chosen-container-multi .chosen-choices li.search-choice {
+    font-size: 12px;
+}
+.post-tag, .geo-tag, .container .chosen-choices .search-choice, .container .chosen-container-multi .chosen-choices li.search-choice {
+    color: #39739d;
+    background-color: #E1ECF4;
+    border-color: transparent;
+}
+.post-tag, .moderator-tag, .required-tag, .disliked-tag, .favorite-tag, .company-tag, .geo-tag, .geo-tag, .container .chosen-choices .search-choice, .container .chosen-container-multi .chosen-choices li.search-choice {
+    position: relative;
+    display: inline-block;
+    padding: .4em .5em;
+    margin: 2px 2px 2px 0;
+    font-size: 11px;
+    line-height: 1;
+    white-space: nowrap;
+    text-decoration: none;
+    text-align: center;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 0;
+    transition: all .15s ease-in-out;
+}
+
+.started-link:hover {
+    color: #07C;
+}
+a:hover, a:active {
+    color: #3af;
+    text-decoration: none;
+}
+.started-link {
+    font-size: 12px;
+    color: #9199a1;
+}
+
+.started .user-info, .started .reputation-score {
+    color: #848d95;
+}
+.reputation-score {
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 2px;
+}
+
+.status.answered, .status.answered .mini-counts, .status.answered strong {
+    color: #45A163;
+}
+.status.answered {
+    border-color: rgba(69,161,99,0.5);
+}
+
+/***************************************/ 
+.subheader {
+    clear: both;
+    margin-bottom: 10px;
+    height: 40px;
+    border-bottom: 1px solid #e4e6e8;
+}
+
+.subheader h1 {
+    color: #242729;
+    font-size: 18px;
+    line-height: 2.22;
+}
+
+.subheader h1, .subheader h2 {
+    float: left;
+    margin: 0;
+    font-weight: normal;
+}
+
+.subheader .btn-group.dropdown {
+    float: right;
+}
+
+#tabs, .tabs, .newnav .tabs-list-container .tabs-list .intellitab {
+    float: right;
+}
+
+.nav-tabs {
+    border: 0;
+    }
+    
+.nav-tabs>ul, .nav-tabs>li { 
+    height: 40px;
+}
+
+
+.nav-tabs>li>a {
+    padding: 9px 15px;
+}
+    
+    
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover  {
+    border-bottom: 2px solid white;
+}
+.nav-tabs>li>a:hover {
+    border-color: #eee;
+}
+
+
+    
+    </style>
+</head>
+<!-- <body class="ng-cloak" ng-controller="MainCtrl"> -->
+<body>
+
+
+<div class="topbar" ng-controller="topBarCtrl" >        
+    <div class="grid wrapper">
+        <div class="platform-dialog" ng-show="showPlatformDropdown" ng-cloak>
+            <div class="head">AUTRES APPLICATIONS</div>
+            <ul>
+                <li>
+                    <div class="platform-icon resiway"></div>
+                    <div class="descr">Plateforme principale de gestion et d'information sur les outils collaboratifs</div>
+                </li>
+                <li>
+                    <div class="platform-icon resiexchange"></div>
+                    <div class="descr">Plateforme principale de gestion et d'information sur les outils collaboratifs</div>
+                </li>
+                <li>
+                    <div class="platform-icon resilib"></div>
+                    <div class="descr">Plateforme principale de gestion et d'information sur les outils collaboratifs</div>
+                </li>
+                <li>
+                    <div class="platform-icon resinet"></div>
+                    <div class="descr">Plateforme principale de gestion et d'information sur les outils collaboratifs</div>
+                </li>
+                <li>
+                    <div class="platform-icon resipedia"></div>
+                    <div class="descr">Plateforme principale de gestion et d'information sur les outils collaboratifs</div>
+                </li>
+            </ul>
+        </div>
+        <script type="text/ng-template" id="loginModal.html">
+            <div class="panel panel-info" >
+                    <div class="panel-heading">
+                        <div class="panel-title"><i class="fa fa-sign-in" aria-hidden="true"></i> Sign In</div>
+                        <div style="float:right; font-size: 80%; position: relative; top:-10px"><a href="#">Forgot password?</a></div>
+                    </div>     
+
+                    <div style="padding-top:30px" class="panel-body" >
+                        
+                        <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="closeAlert($index)">{{alert.msg}}</div>
+                            
+                        <form id="loginform" class="form-horizontal" role="form">
+                                    
+                            <div style="margin-bottom: 25px" class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
+                                        <input ng-model="login" id="login-username" type="text" class="form-control" name="username" value="" placeholder="email">                                        
+                                    </div>
+                                
+                            <div style="margin-bottom: 25px" class="input-group">
+                                        <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                        <input ng-model="password" id="login-password" type="password" class="form-control" name="password" placeholder="password">
+                                    </div>
+                                    
+
+                                
+                            <div class="input-group">
+                                      <div class="checkbox">
+                                        <label>
+                                          <input ng-model="remember" id="login-remember" type="checkbox" name="remember" value="1"> Remember me
+                                        </label>
+                                      </div>
+                                    </div>
+
+
+                                <div style="margin-top:10px" class="form-group">
+                                    <div class="col-sm-12 controls">
+                                      <a id="btn-login" href="#" class="btn btn-primary col-sm-12" ng-click="$ctrl.ok()">Login</a>
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    <div class="col-md-12 control">
+                                        <div style="border-top: 1px solid#888; padding-top:15px; font-size:85%" >
+                                            Don't have an account! 
+                                        <a href="#" ng-click="">
+                                            Sign Up Here
+                                        </a>
+                                        </div>
+                                    </div>
+                                </div>    
+                            </form>     
+
+
+
+                        </div>                     
+            </div>  
+     
+        </script>
+        <div class="user-dialog panel" ng-show="showUserDropdown">
+            <ul>
+                <li class="btn">
+                    <a href="#"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
+                </li>
+                <li class="btn">
+                   <a href="#"><i class="fa fa-cogs" aria-hidden="true"></i> Paramètres</a>
+                </li>
+                <li class="btn">
+                   <a href="#" ng-click="signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion</a>
+                </li>
+            </ul>
+        </div>        
+        <div class="col-1-1">
+            <div class="platform-btn resinet" ng-class="{open: showPlatformDropdown}" ng-click="showPlatformDropdown=!showPlatformDropdown">
+                <div class="app-icon"></div>
+                <i class="fa fa-caret-down" aria-hidden="true"></i>          
+            </div>            
+            <div id="login-btn" class="login-btn ng-hide">
+                    <a class="" href="#" ng-click="openLoginModal()"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
+                    <a class="" href="#" ng-click=""><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
+            </div>
+            <div id="user-btn" class="user-btn" ng-class="{open: showUserDropdown}" ng-click="toggleUserDropdown()" ng-show="userLoggedIn">
+                {{ userName }}
+                <i class="fa fa-caret-down" aria-hidden="true"></i>          
+            </div>            
+        </div>
+
+    </div>
+</div>
+
+<div class="container">
+    <div class="grid wrapper">
+        <div class="col-1-1 nopad">
+            <div class="breadcrumb">
+                <div class="btn-group">
+                <a href="#" class="btn btn-success">Poser une question</a>
+                </div>
+                <div class="btn-group pull-right">
+                <a href="#" class="btn btn-info">Questions</a>
+                <a href="#" class="btn btn-info">Catégories</a>
+                <a href="#" class="btn btn-info">Badges</a>                
+                <a href="#" class="btn btn-warning">Aide</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="grid wrapper">
+        <div class="col-1-1">
+            <div class="page-header">
+                <h1>Lorem ipsum sit amet</h1>
+            </div>
+        </div>
+    </div>    
+    <div class="grid wrapper">
+        <div class="col-8-12">
+            <div class="subheader">
+                <h1 id="h-top-questions">
+                        Top Questions
+                </h1>
+                
+                <div id="sort-dropdown" ng-controller="DropdownCtrl">
+                    <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
+                      <button id="single-button" type="button" class="btn btn-primary dropdown-toggle" uib-dropdown-toggle="" ng-disabled="disabled" aria-haspopup="true" aria-expanded="false">
+                        Trier <span class="caret"></span>
+                      </button>
+                    <!-- Simple dropdown -->
+
+                      <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                        <li class="dropdown-header">Dropdown header</li>
+                        <li ng-repeat="choice in items">
+                          <a href="#">{{choice.txt}}</a>
+                        </li>
+                      </ul>
+                    </div>
+                </div>
+                <!--
+                <div id="tabs" ng-controller="QuestionsListTabsCtrl">
+                      <uib-tabset active="active">
+                        <uib-tab index="0" select="updateSelection()">
+                            <uib-tab-heading><i class="fa fa-plus-circle"></i> Les plus récentes</uib-tab-heading>
+                        </uib-tab>
+                        <uib-tab index="1" select="updateSelection()" heading="Les plus vues">
+                            <uib-tab-heading><i class="fa fa-eye"></i> Les plus vues</uib-tab-heading>
+                        </uib-tab>
+                        <uib-tab index="2" select="updateSelection()" heading="Les plus répondues">
+                            <uib-tab-heading><i class="fa fa-comment-o"></i> Les plus répondues</uib-tab-heading>
+                        </uib-tab>
+                      </uib-tabset>
+
+                </div>
+                -->
+            </div>
+
+              
+        
+            <div class="question-summary narrow" id="question-summary-40526834">
+                <div class="cp" onclick="window.location.href='/questions/40526834/return-value-of-shloadindirectstring-is-an-errorcode'" >
+                    <div class="votes" title="0 votes">
+                        <div class="mini-counts">0</div>
+                        <div><i class="fa fa-black fa-check-circle" aria-hidden="true"></i> votes</div>
+                    </div>
+                    <div class="status unanswered" title="0 answers">
+                        <div class="mini-counts">0</div>
+                        <div><i class="fa fa-black fa-comments" aria-hidden="true"></i> answers</div>
+                    </div>
+                    <div class="views">
+                        <div class="mini-counts" title="2 views">2</div>
+                        <div><i class="fa fa-black fa-eye" aria-hidden="true"></i> views</div>
+                    </div>
+                </div>
+                <div class="summary col-2-3">
+                    <h3><a href="/questions/40526834/return-value-of-shloadindirectstring-is-an-errorcode" class="question-hyperlink" title="Hi I've been trying to get name of the metro app with the acquired from AppManifest.xml of the respective app. Came to know that SHLoadIndirectString could be used for this purpose. On checking its ...">Return value of SHLoadIndirectString is an errorcode</a></h3>
+                    <div class="tags t-cñ t-cçç t-visual-studio t-windows-8 t-microsoft-metro">
+                        <a href="/questions/tagged/c%23" class="post-tag" title="show questions tagged 'c#'" rel="tag">c#</a> <a href="/questions/tagged/c%2b%2b" class="post-tag" title="" rel="tag">c++</a> <a href="/questions/tagged/visual-studio" class="post-tag" title="" rel="tag">visual-studio</a> <a href="/questions/tagged/windows-8" class="post-tag" title="show questions tagged 'windows-8'" rel="tag">windows-8</a> <a href="/questions/tagged/microsoft-metro" class="post-tag" title="show questions tagged 'microsoft-metro'" rel="tag">microsoft-metro</a> 
+                    </div>
+                    <div class="started">
+                        <a href="/questions/40526834/return-value-of-shloadindirectstring-is-an-errorcode" class="started-link">asked <span title="2016-11-10 11:45:27Z" class="relativetime">1 min ago</span></a>
+                        <a href="/users/5839886/abhishek-abz">abhishek_sskjhdkjsqhdksqj_abz</a> <span class="reputation-score" title="reputation score " dir="ltr">14</span>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="question-summary narrow" id="question-summary-40526834">
+                <div class="cp" onclick="window.location.href='/questions/40526834/return-value-of-shloadindirectstring-is-an-errorcode'" >
+                    <div class="votes" title="0 votes">
+                        <div class="mini-counts">0</div>
+                        <div><i class="fa fa-black fa-check-circle" aria-hidden="true"></i> votes</div>
+                    </div>
+                    <div class="status unanswered" title="0 answers">
+                        <div class="mini-counts">0</div>
+                        <div><i class="fa fa-black fa-comments" aria-hidden="true"></i> answers</div>
+                    </div>
+                    <div class="views">
+                        <div class="mini-counts" title="2 views">2</div>
+                        <div><i class="fa fa-black fa-eye" aria-hidden="true"></i> views</div>
+                    </div>
+                </div>
+                <div class="summary col-2-3">
+                    <h3><a href="/questions/40526834/return-value-of-shloadindirectstring-is-an-errorcode" class="question-hyperlink" title="Hi I've been trying to get name of the metro app with the acquired from AppManifest.xml of the respective app. Came to know that SHLoadIndirectString could be used for this purpose. On checking its ...">Return value of SHLoadIndirectString is an errorcode</a></h3>
+                    <div class="tags t-cñ t-cçç t-visual-studio t-windows-8 t-microsoft-metro">
+                        <a href="/questions/tagged/c%23" class="post-tag" title="show questions tagged 'c#'" rel="tag">c#</a> <a href="/questions/tagged/c%2b%2b" class="post-tag" title="" rel="tag">c++</a> <a href="/questions/tagged/visual-studio" class="post-tag" title="" rel="tag">visual-studio</a> <a href="/questions/tagged/windows-8" class="post-tag" title="show questions tagged 'windows-8'" rel="tag">windows-8</a> <a href="/questions/tagged/microsoft-metro" class="post-tag" title="show questions tagged 'microsoft-metro'" rel="tag">microsoft-metro</a> 
+                    </div>
+                    <div class="started">
+                        <a href="/questions/40526834/return-value-of-shloadindirectstring-is-an-errorcode" class="started-link">asked <span title="2016-11-10 11:45:27Z" class="relativetime">1 min ago</span></a>
+                        <a href="/users/5839886/abhishek-abz">abhishek_sskjhdkjsqhdksqj_abz</a> <span class="reputation-score" title="reputation score " dir="ltr">14</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+        
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen. lorem ipsum sit amet lic set ep nec mergitur amen.
+            </div>
+            
+        </div>
+        <div class="col-4-12 nopad">
+            <div class="panel panel-default">
+                <div class="container">
+                content
+                </div>
+            </div>
+        </div>
+    </div>    
+</div>  
+
+<div id="footer">
+    <div class="grid wrapper">
+        <div class="col-1-1 nopad">test
+        </div>
+    </div>
+</div>
+</body>
+</html>

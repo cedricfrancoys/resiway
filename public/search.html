@@ -1,0 +1,110 @@
+<div class="grid wrapper">
+    <div class="col-8-12">
+        <div class="subheader">
+            <h1 id="h-top-questions">Top Questions</h1>
+            
+            <div id="sort-dropdown" ng-controller="DropdownCtrl">
+                <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
+                  <button id="single-button" type="button" class="btn btn-primary dropdown-toggle" uib-dropdown-toggle="" ng-disabled="disabled" aria-haspopup="true" aria-expanded="false">
+                    Trier <span class="caret"></span>
+                  </button>
+                <!-- Simple dropdown -->
+
+                  <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                    <li class="dropdown-header">Dropdown header</li>
+                    <li ng-repeat="choice in items">
+                      <a href="#">{{choice.txt}}</a>
+                    </li>
+                  </ul>
+                </div>
+            </div>
+            <!--
+            <div id="tabs" ng-controller="QuestionsListTabsCtrl">
+                  <uib-tabset active="active">
+                    <uib-tab index="0" select="updateSelection()">
+                        <uib-tab-heading><i class="fa fa-plus-circle"></i> Les plus récentes</uib-tab-heading>
+                    </uib-tab>
+                    <uib-tab index="1" select="updateSelection()" heading="Les plus vues">
+                        <uib-tab-heading><i class="fa fa-eye"></i> Les plus vues</uib-tab-heading>
+                    </uib-tab>
+                    <uib-tab index="2" select="updateSelection()" heading="Les plus répondues">
+                        <uib-tab-heading><i class="fa fa-comment-o"></i> Les plus répondues</uib-tab-heading>
+                    </uib-tab>
+                  </uib-tabset>
+
+            </div>
+            -->
+        </div>
+
+
+        <div ng-repeat="question in questions" class="question narrow col-1-1">
+            <div class="counters" >
+                <div class="votes" title="{{question.count_votes}} votes">
+                    <div class="mini-counts">
+                        <i class="fa fa-check-circle" aria-hidden="true"></i> {{rootCtrl.humanReadable.number(question.count_votes)}}
+                    </div> 
+                </div>
+                <div class="status unanswered" title="{{question.count_answers}} answers">
+                    <div class="mini-counts">
+                        <i class="fa fa-comments" aria-hidden="true"></i> {{rootCtrl.humanReadable.number(question.count_answers)}}
+                    </div>
+                </div>
+                <div class="views" title="{{question.count_views}} views">
+                    <div class="mini-counts">
+                        <i class="fa fa-eye" aria-hidden="true"></i> {{rootCtrl.humanReadable.number(question.count_views)}}
+                    </div>
+                </div>
+            </div>
+            <div class="summary">
+                <h3>
+                    <a class="question-hyperlink" href="#question/{{question.id}}">{{question.title}}</a>
+                </h3>
+                <div class="excerpt">{{question.content}}</div>
+                
+                <div class="tags t-cñ t-cçç t-visual-studio t-windows-8 t-microsoft-metro">
+                    <a href="/questions/tagged/c%23" class="tag" title="show questions tagged 'c#'" rel="tag">c#</a> 
+                    <a href="/questions/tagged/c%2b%2b" class="tag" title="" rel="tag">c++</a> 
+                    <a href="/questions/tagged/visual-studio" class="tag" title="" rel="tag">visual-studio</a> 
+                </div>
+                <div class="started">
+                    <div class="signature owner">
+                        <div class="user-info">
+                            <div class="user-action-time">
+                                <span class="relativetime">{{rootCtrl.humanReadable.date(question.created)}}</span>
+                            </div>
+                            <div class="user-avatar">
+                                <a href="#/users/{{question.creator.id}}"><img src="" alt="" width="32" height="32"></a>
+                            </div>
+                            <div class="user-details">
+                                <a href="#/users/{{question.creator.id}}">{{question.creator.display_name}}</a>
+                                <div class="-flair">
+                                    <span class="reputation-score" title="reputation score " dir="ltr">{{question.creator.reputation}}</span>
+                                    <span class="badges">
+                                        <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{question.creator.count_badges_1}}</span>
+                                    </span>
+                                    <span class="badges">
+                                        <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{question.creator.count_badges_2}}</span>
+                                    </span>
+                                    <span class="badges">
+                                        <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{question.creator.count_badges_3}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                         
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="col-4-12">
+        <div class="panel panel-default">
+            <div class="container">
+            content
+            </div>
+        </div>
+    </div>
+</div>    

@@ -1,0 +1,467 @@
+{
+    "home": {
+        "en": "Home",
+        "fr": "Habitat",
+        "es": "Hogar"
+    },
+    "home/self-build":{
+        "en": "Self-build",
+        "fr": "Auto-construction",
+        "es": "Auto-construcción"
+    },
+    "home/self-build/foundations":{
+        "en": "Foundations",
+        "fr": "Fondations",
+        "es": "Cimientos"
+    },
+    "home/self-build/framing":{
+        "en": "Framing",
+        "fr": "Charpente",
+        "es": "Armazón"
+    },
+    "home/self-build/mortars":{
+        "en": "Mortars",
+        "fr": "Mortiers",
+        "es": "Morteros"
+    },
+    "home/self-build/plumbing":{
+        "en": "Plumbing",
+        "fr": "Plomberie",
+        "es": "Fontanería"
+    },
+    "home/self-build/electricity":{
+        "en": "Electricity",
+        "fr": "Electricité",
+        "es": "Electricidad"
+    },
+    "home/self-build/electricity/very-low-voltage":{
+        "en": "Very low voltage (12-24V DC)",
+        "fr": "Très basse tension (12-24V DC)",
+        "es": "Baja tensión (12-24V DC)"
+    },
+    "home/self-build/electricity/domestic-voltage":{
+        "en": "Domestic voltage (110-220V AC)",
+        "fr": "Tension domestique (110-220V AC)",
+        "es": "Tensión de casa (110-220V CA)"
+    },
+    "home/green-building":{
+        "en": "Green building",
+        "fr": "Eco-construction",
+        "es": "Construcción verde"
+    },
+    "home/green-building/earth":{
+        "en": "Earth",
+        "fr": "Terre",
+        "es": "tierra"
+    },
+    "home/green-building/earth/adobe":{
+        "en": "Adobe",
+        "fr": "Adobe",
+        "es": "Adobe"
+    },
+    "home/green-building/earth/earth-walls":{
+        "en": "Earth walls",
+        "fr": "Pisé",
+        "es": "Pisado"
+    },
+    "home/green-building/earth/compressed-earth-blocks":{
+        "en": "Compressed earth blocks",
+        "fr": "Briques de terre compressée",
+        "es": "Bloques de tierra comprimida"
+    },
+    "home/green-building/straw":{
+        "en": "Straw",
+        "fr": "Paille",
+        "es": "Paja"
+    },
+    "home/green-building/straw/greb-technique":{
+        "en": "GREB technique",
+        "fr": "Technique GREB",
+        "es": "Técnica GREB"
+    },
+    "home/green-building/straw/nebraska-technique":{
+        "en": "Nebraska technique",
+        "fr": "Technique Nebraska",
+        "es": "Técnica Nebraska"
+    },
+    "home/green-building/wood":{
+        "en": "Wood",
+        "fr": "Bois",
+        "es": "Madera"
+    },
+    "home/green-building/wood/cordwood":{
+        "en": "Cordwood",
+        "fr": "Bois cordé",
+        "es": "Haz de laña"
+    },
+    "home/green-building/stone":{
+        "en": "Stone",
+        "fr": "Pierre",
+        "es": "Piedra"
+    },
+    "home/green-building/green-roofs":{
+        "en": "Green roofs",
+        "fr": "Toiture végétale",
+        "es": "Techos verdes"
+    },
+    "water":{
+        "en": "Water",
+        "fr": "Eau",
+        "es": "Agua"
+    },
+    "water/water-pumps":{
+        "en": "Water pumps ",
+        "fr": "Pompes à eau",
+        "es": "Bombas de agua"
+    },
+    "water/drinkable-water":{
+        "en": "Drinkable water",
+        "fr": "Eau potable",
+        "es": "Agua potable"
+    },
+    "water/drinkable-water/rainwater":{
+        "en": "Rainwater  ",
+        "fr": "Eau de pluie",
+        "es": "Agua de lluvia"
+    },
+    "water/drinkable-water/treatment":{
+        "en": "Treatment  ",
+        "fr": "Epuration",
+        "es": "Tratamiento"
+    },
+    "water/drinkable-water/treatment/filters":{
+        "en": "Filters  ",
+        "fr": "Filtres",
+        "es": "Filtros"
+    },
+    "water/drinkable-water/treatment/phytopurification":{
+        "en": "Phytopurification",
+        "fr": "Phytoépuration",
+        "es": "Fitodepuración"
+    },
+    "energy":{
+        "en": "Energy",
+        "fr": "Énergie",
+        "es": "Enería"
+    },
+    "energy/biofuels":{
+        "en": "Biofuels",
+        "fr": "Biocarburants",
+        "es": "Biocombustibles"
+    },
+    "energy/thermal-energy":{
+        "en": "Thermal energy",
+        "fr": "Énergie thermique",
+        "es": "Energia termica"
+    },
+    "energy/thermal-energy/heat-exchangers":{
+        "en": "Heat exchangers",
+        "fr": "Échangeurs thermiques",
+        "es": "Intercambiadores de calor"
+    },
+    "energy/thermal-energy/heat-exchangers/canadian-well":{
+        "en": "Canadian well",
+        "fr": "Puit canadien",
+        "es": "Pozo canadiense"
+    },
+    "energy/thermal-energy/heating":{
+        "en": "Heating",
+        "fr": "Chauffage",
+        "es": "Calefacción"
+    },
+    "energy/thermal-energy/heating/solar":{
+        "en": "Solar",
+        "fr": "Solaire",
+        "es": "Solar"
+    },
+    "energy/thermal-energy/heating/biomass":{
+        "en": "Biomass",
+        "fr": "Biomasse",
+        "es": "Biomasa"
+    },
+    "energy/thermal-energy/heating/biogas":{
+        "en": "Biogas",
+        "fr": "Biogaz",
+        "es": "Biogás"
+    },
+    "energy/thermal-energy/heating/charcoal":{
+        "en": "Charcoal",
+        "fr": "Charbon de bois",
+        "es": "Carbón vegetal"
+    },
+    "energy/thermal-energy/ovens":{
+        "en": "Ovens",
+        "fr": "Fours",
+        "es": "Hornos"
+    },
+    "energy/thermal-energy/ovens/bread-ovens":{
+        "en": "Bread ovens",
+        "fr": "Fours à pain",
+        "es": "Hornos de pan"
+    },
+    "energy/thermal-energy/ovens/solar-cookers":{
+        "en": "Solar cookers",
+        "fr": "Cuiseurs solaires",
+        "es": "Cocinas solares"
+    },
+    "energy/electricity":{
+        "en": "Electricity",
+        "fr": "Électricité",
+        "es": "Electricidad"
+    },
+    "energy/electricity/generators":{
+        "en": "Generators",
+        "fr": "Générateurs",
+        "es": "Generadores"
+    },
+    "energy/electricity/generators/aerogenerator":{
+        "en": "WTG",
+        "fr": "Aérogénérateurs",
+        "es": "Aerogenerador"
+    },
+    "energy/electricity/generators/hydrogenerators":{
+        "en": "Hydrogenerators",
+        "fr": "Hydrogénérateurs",
+        "es": "Hidrogeneradores"
+    },
+    "energy/electricity/generators/photovoltaic-panels":{
+        "en": "Photovoltaic panels",
+        "fr": "Panneaux photovoltaïques",
+        "es": "Paneles fotovoltaicos"
+    },
+    "energy/electricity/power-conversion":{
+        "en": "Power conversion",
+        "fr": "Conversion électrique",
+        "es": "Conversión de energía"
+    },
+    "energy/electricity/power-conversion/inverters":{
+        "en": "Inverters",
+        "fr": "Inverseurs",
+        "es": "Inversores"
+    },
+    "energy/electricity/power-conversion/regulators":{
+        "en": "Regulators",
+        "fr": "Régulateurs",
+        "es": "Reguladores"
+    },
+    "energy/electricity/electricity-storage":{
+        "en": "Electricity storage",
+        "fr": "Stockage d'électricité",
+        "es": "Almacenamiento de electricidad"
+    },
+    "energy/electricity/electricity-storage/batteries":{
+        "en": "Batteries",
+        "fr": "Batteries",
+        "es": "baterías"
+    },
+    "energy/lighting":{
+        "en": "Lighting",
+        "fr": "Éclairage",
+        "es": "Iluminación"
+    },
+    "energy/lighting/electric-lamps":{
+        "en": "Electric lamps",
+        "fr": "Lampes électriques",
+        "es": "Lámparas eléctricas"
+    },
+    "energy/lighting/gas-lamps":{
+        "en": "Gas lamps",
+        "fr": "Lampes à gaz",
+        "es": "Lámparas de gas"
+    },
+    "energy/lighting/oil-lamps":{
+        "en": "Oil lamps",
+        "fr": "Lampes à huile",
+        "es": "Lámparas de aceite"
+    },
+    "energy/lighting/candles":{
+        "en": "Candles",
+        "fr": "Bougies",
+        "es": "Velas"
+    },
+    "food":{
+        "en": "Food",
+        "fr": "Alimentation",
+        "es": "Comida"
+    },
+    "food/cultivating-and-gardening":{
+        "en": "Cultivating and Gardening",
+        "fr": "Culture et Potager",
+        "es": "Cultivos y Huertos"
+    },
+    "food/cultivating-and-gardening/raised-bed-gardening":{
+        "en": "Raised bed gardening",
+        "fr": "Culture sur butte",
+        "es": "Bancal elevado"
+    },
+    "food/cultivating-and-gardening/seeds":{
+        "en": "Seeds",
+        "fr": "Semences",
+        "es": "Semillas"
+    },
+    "food/cultivating-and-gardening/companionship-cropping":{
+        "en": "Companionship cropping",
+        "fr": "Compagnonnage et Cultures associées",
+        "es": "Asociones de plantas"
+    },
+    "food/cultivating-and-gardening/irrigation":{
+        "en": "Irrigation",
+        "fr": "Irrigation",
+        "es": "Riego"
+    },
+    "food/cultivating-and-gardening/fertilizers":{
+        "en": "Fertilizers",
+        "fr": "Engrais",
+        "es": "Fertilizantes"
+    },
+    "food/cultivating-and-gardening/liquid-manures":{
+        "en": "Liquid manures",
+        "fr": "Purins",
+        "es": "Purins"
+    },
+    "food/cultivating-and-gardening/mulch":{
+        "en": "Mulch",
+        "fr": "Mulch",
+        "es": "Mulch"
+    },
+    "food/arboriculture-and-orcharding":{
+        "en": "Arboriculture and Orcharding",
+        "fr": "Arboriculture",
+        "es": "Arboricultura"
+    },
+    "food/beekeeping":{
+        "en": "Beekeeping",
+        "fr": "Apiculture",
+        "es": "Apicultura"
+    },
+    "food/breeding":{
+        "en": "Breeding",
+        "fr": "Élevage",
+        "es": "Crianza"
+    },
+    "food/processing-of-agricultural-produces":{
+        "en": "Processing of agricultural produces",
+        "fr": "Transformation de produits agricoles",
+        "es": "Transformación de productos agrícolas"
+    },
+    "food/processing-of-agricultural-produces/flour":{
+        "en": "Flour",
+        "fr": "Farines",
+        "es": "Harina"
+    },
+    "food/processing-of-agricultural-produces/oil":{
+        "en": "Oil",
+        "fr": "Huiles",
+        "es": "Aceite"
+    },
+    "food/processing-of-agricultural-produces/dairy-products":{
+        "en": "Dairy products",
+        "fr": "Produits laitiers",
+        "es": "Productos lácteos"
+    },
+    "food/processing-of-agricultural-produces/dairy-products/butter":{
+        "en": "Butter",
+        "fr": "Beurre",
+        "es": "Mantequilla"
+    },
+    "food/processing-of-agricultural-produces/dairy-products/fermented-milks":{
+        "en": "Fermented milks",
+        "fr": "Laits fermentés",
+        "es": "Leches fermentadas"
+    },
+    "food/processing-of-agricultural-produces/dairy-products/cheese":{
+        "en": "Cheese",
+        "fr": "Fromages",
+        "es": "Queso"
+    },
+    "food/food-preservation":{
+        "en": "Food preservation",
+        "fr": "Conservation des aliments",
+        "es": "Conservación de los alimentos"
+    },
+    "food/food-preservation/lactic-fermentation":{
+        "en": "Lactic fermentation",
+        "fr": "Fermentation lactique",
+        "es": "Fermentación láctica"
+    },
+    "food/food-preservation/jams":{
+        "en": "Jams",
+        "fr": "Confitures",
+        "es": "Mermeladas"
+    },
+    "food/cooking":{
+        "en": "Cooking",
+        "fr": "Cuisine",
+        "es": "Cocina"
+    },
+    "food/cooking/recipes":{
+        "en": "Recipes",
+        "fr": "Recettes",
+        "es": "Recetas"
+    },
+    "food/composting":{
+        "en": "Composting",
+        "fr": "Compostage",
+        "es": "Compostaje"
+    },
+    "food/composting/vermicompost":{
+        "en": "Vermicompost",
+        "fr": "Vermicompost",
+        "es": "Vermicompost"
+    },
+    "hygiene-and-housekeeping":{
+        "en": "Hygiene and Housekeeping",
+        "fr": "Hygiène et Ménage",
+        "es": "Higiene y Limpieza"
+    },
+    "hygiene-and-housekeeping/soaps-and-detergents":{
+        "en": "Soaps and Detergents",
+        "fr": "Savons et Lessives",
+        "es": "Jabones y Detergentes"
+    },
+    "hygiene-and-housekeeping/dry-toilets":{
+        "en": "dry-toilets",
+        "fr": "Toilettes sèches",
+        "es": "Baños secos"
+    },
+    "hygiene-and-housekeeping/washing-machines":{
+        "en": "Washing machines",
+        "fr": "Lave-linges",
+        "es": "Lavadoras"
+    },
+    "health-and-care":{
+        "en": "Health and Care",
+        "fr": "Santé et Soins",
+        "es": "Salud y Cuidado"
+    },
+    "health-and-care/medicinal-plants":{
+        "en": "Medicinal plants",
+        "fr": "Plantes médicinales",
+        "es": "plantas medicinales"
+    },
+    "education-and-parenting": {
+        "en": "Education and Parenting",
+        "fr": "Éducation et Parentage",
+        "es": "Educación y Parentaje"
+    },
+    "education-and-parenting/learning-and-pedagogy": {
+        "en": "Learning and Pedagogy",
+        "fr": "Instruction et Pédagogie",
+        "es": "Aprentisaje y Pedagogia"
+    },
+    "education-and-parenting/family-life": {
+        "en": "Family life",
+        "fr": "Vie de famille",
+        "es": "Vida de familia"
+    },
+    "education-and-parenting/reading-and-speaking": {
+        "en": "Reading and Speaking",
+        "fr": "Lecture et Langage",
+        "es": "Lectura y Languaje"
+    },
+    "education-and-parenting/learn-and-play": {
+        "en": "Learn and Play",
+        "fr": "Apprendre et Jouer",
+        "es": "Aprender y Jugar"
+    }
+}
