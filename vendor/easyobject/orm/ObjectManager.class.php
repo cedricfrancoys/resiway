@@ -21,20 +21,33 @@
 namespace easyobject\orm;
 
 use easyobject\orm\db\DBConnection as DBConnection;
+use easyobject\orm\DataAdapter as DataAdapter;
 use \Exception as Exception;
 
 
 
 class ObjectManager {
-    // buffer for storing objects values as they are loaded
+    /* Buffer for storing objects values as they are loaded
+    *  structure is defined this way:
+    *  $cache[$class][$oid][$field][$lang] = $value;
+    */
     private $cache;
-	// array holding static instances (i.e. one object of each class having fields set to default values)
+    
+    /* Array for keeeping track of identifiers matching actual objects
+    *  structure is defined this way:
+    *  $identifiers[$object_class][$object_id] = true;
+    */
+    private $identifiers;
+    
+	/* Array holding static instances (i.e. one object of each class having fields set to default values)
+    */
 	private $instances;
 
-	// instance to a DBConnection Object
+	/* Instance to a DBConnection Object
+    */
 	private $db;
 
-	public static $simple_types	= array('boolean', 'integer', 'float', 'string', 'short_text', 'text', 'date', 'time', 'datetime', 'timestamp', 'selection', 'binary', 'many2one');
+	public static $simple_types	= array('boolean', 'integer', 'float', 'string', 'short_text', 'text', 'html', 'date', 'time', 'datetime', 'timestamp', 'selection', 'binary', 'many2one');
 	public static $complex_types = array('one2many', 'many2many', /* 'related', */ 'function');
 
 	public static $valid_attributes = array(
@@ -44,6 +57,7 @@ class ObjectManager {
 			'string'		=> array('type', 'onchange', 'multilang', 'selection', 'unique'),
 			'short_text'	=> array('type', 'onchange', 'multilang'),
 			'text'			=> array('type', 'onchange', 'multilang'),
+			'html'			=> array('type', 'onchange', 'multilang'),            
 			'date'			=> array('type', 'onchange'),
 			'time'			=> array('type', 'onchange'),
 			'datetime'		=> array('type', 'onchange'),
@@ -64,6 +78,7 @@ class ObjectManager {
 			'string'		=> array('type'),
 			'short_text'	=> array('type'),
 			'text'			=> array('type'),
+			'html'			=> array('type'),            
 			'date'			=> array('type'),
 			'time'			=> array('type'),
 			'datetime'		=> array('type'),
@@ -241,143 +256,39 @@ class ObjectManager {
 	}
 
 
-	private function adapt($from, $to, $type, $value) {
-// todo : continue
-		$adapter = array();
-	
-		$adapter['date']['db']['orm'] =	function($value) {
-				if($value == '0000-00-00') $value = '';
-				else {
-					load_class('utils/DateFormatter');
-					$dateFormatter = new DateFormatter($value, DATE_SQL);
-					// DATE_FORMAT constant is defined in config.inc.php
-					$value = $dateFormatter->getDate(DATE_FORMAT);
-				}
-				return $value;
-		};
-		$adapter['date']['orm']['db'] =	function($value) {
-				if(empty($value)) $value = '0000-00-00';
-				else {
-					load_class('utils/DateFormatter');
-					// DATE_FORMAT constant is defined in config.inc.php
-					$dateFormatter = new DateFormatter($value, DATE_FORMAT);
-					$value = $dateFormatter->getDate(DATE_SQL);
-				}
-				return $value;												
-		};
-        // exchange format between PHP and Javascript for date, time, datetime	
-		$adapter['date-format']['orm']['ui'] =	function($value) {
-				if(empty($value)) $value = '0000-00-00';
-				else {
-                    $value = str_replace(array('d', 'm', 'Y', 'H', 'i', 's'), array('dd', 'mm', 'yy', 'hh', 'mm', 'ss'), $value);
-				}
-				return $value;												
-		};
-		$adapter['date-format']['ui']['orm'] =	function($value) {
-				if(empty($value)) $value = '0000-00-00';
-				else {
-                    $value = str_replace(array('dd', 'mm', 'yy', 'hh', 'mm', 'ss'), array('d', 'm', 'Y', 'H', 'i', 's'), $value);
-				}
-				return $value;												
-		};        
-		$adapter['text']['ui']['orm'] =	function($value) {
-                // replace \r\n with \n ?
-				return $value;
-		};
-// todo : to add        
-/*
-        // add following line at the top of the file
-        // use html\HtmlPurifier as HtmlPurifier;
-		$adapter['html']['ui']['orm'] =	function($value) {
-				// standard cleaning: remove non-standard tags and attributes (class)
-				$cleaner = new HTMLPurifier(HTMLPurifier_Config::createDefault());
-				return $cleaner->purify($value);
-		};                
-*/        
-		$adapter['binary']['ui']['orm'] = function($value) {
-				// note : value is expected to be an array holding data from the $_FILES array and having the following keys set:
-				// ['name'], ['type], ['size'], ['tmp_name'], ['error']
-				$res = '';
-				try {
-					if(isset($value) && isset($value['tmp_name'])) {
-						if(isset($value['error']) && $value['error'] == 2 || isset($value['size']) && $value['size'] > UPLOAD_MAX_FILE_SIZE)
-							throw new Exception("file exceed maximum allowed size (".floor(UPLOAD_MAX_FILE_SIZE/1024)." ko)", NOT_ALLOWED);
-						if(BINARY_STORAGE_MODE == 'DB') {
-							// store file content in database
-							$res = file_get_contents($value['tmp_name'], FILE_BINARY, null, -1, UPLOAD_MAX_FILE_SIZE);
-						}
-						else if(BINARY_STORAGE_MODE == 'FS') {
-							// 1) move temporary file
-							load_class('utils/FSManipulator');
-							$storage_location = BINARY_STORAGE_DIR.'/'.FSManipulator::getSanitizedName($value['name']);
-							// note : if a file by that name already exists it will be overwritten
-							move_uploaded_file($value['tmp_name'], $storage_location);
-							// 2) store file location in database
-							$res = $storage_location;
-						}
-					}
-					else throw new Exception("binary data has not been received or cannot be retrieved", UNKNOWN_ERROR);
-				}
-				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
-				}
-				return $res;
-		};
-		$adapter['binary']['db']['orm'] = function($value) {
-                $res = '';
-                try {
-                    if(BINARY_STORAGE_MODE == 'DB') {
-                        $res = $value;
-                    }
-                    else if(BINARY_STORAGE_MODE == 'FS') {
-                        if(file_exists($value)) $res = file_get_contents($value);
-                    }
-					else throw new Exception("binary data has not been received or cannot be retrieved", UNKNOWN_ERROR);
-				}
-				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
-				}
-				return $res;
-		};        
-		$adapter['one2many']['ui']['orm'] =	function($value) {
-				if(strlen($value)) $value = explode(',', $value);
-				return $value;
-		};										
-		$adapter['many2many']['ui']['orm'] = function($value) {
-				if(strlen($value)) $value = explode(',', $value);
-				return $value;
-		};										
-
-		return (isset($adapter[$type][$from][$to]))?$adapter[$type][$from][$to]($value):$value;
-	}
-
     /**
     * Filters given object ids and returns on valid identifiers (from existing objects)
     * Ids that do not match an object in the database are removed from the list.
     *
     */
-    private function filterValidObjectIds($class, $ids) {
-        $valid_ids = [];
-        
+    private function filterValidIdentifiers($class, $ids) {
+        // working copy
+        $valid_ids = $ids;        
         // remove alreay loaded objects from list, if any
         foreach($ids as $index => $id) {
-            if(isset($om->cache[$class][$id])) {
+            if(isset($this->identifiers[$class][$id]) || isset($this->cache[$class][$id])) {
                 unset($ids[$index]);
             }
-        }        
-        
+        }
+        // process remaining identifiers    
         if(!empty($ids)) {
             // get DB handler (init DB connection if necessary)
             $db = $this->getDBHandler();        
             $table_name = $this->getObjectTableName($class);
             // get all records at once
-            $result = $db->getRecords($table_name, 'id', $ids);        
-            while($row = $db->fetchArray($result)) $valid_ids[] = $row['id'];
-            foreach(array_diff($ids, $valid_ids) as $missing_id) {
+            $result = $db->getRecords($table_name, 'id', $ids);
+            // store all found ids in an array
+            $found_ids = [];
+            while($row = $db->fetchArray($result)) $found_ids[] = $row['id'];
+            // remove invalid ids from result array
+            foreach(array_diff($valid_ids, $found_ids) as $missing_id) {
+                $index = array_search($missing_id, $valid_ids);
+                unset($valid_ids[$index]);
                 EventListener::ExceptionHandler(new Exception("unknown object #'$missing_id' of class '$class"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
             }
+            // remember valid identifiers
+            foreach($valid_ids as $id) $this->identifiers[$class][$id] = true;
         }
-        
         return $valid_ids;
     }
     
@@ -411,7 +322,7 @@ class ObjectManager {
 						$oid = $row['object_id'];
 						$field = $row['object_field'];
 						// do some pre-treatment if necessary (this step is symetrical to the one in store method)
-						$value = $om->adapt('db', 'orm', $schema[$field]['type'], $row['value']);												
+						$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $row['value']);												
 						// update the internal buffer with fetched value
 						$om->cache[$class][$oid][$field][$lang] = $value;
 					}
@@ -440,7 +351,7 @@ class ObjectManager {
 						$oid = $row['id'];
 						foreach($row as $field => $value) {
 							// do some pre-treatment if necessary (this step is symetrical to the one in store method)
-							$value = $om->adapt('db', 'orm', $schema[$field]['type'], $value);
+							$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $value);
 							// update the internal buffer with fetched value
 							$om->cache[$class][$oid][$field][$lang] = $value;
 						}
@@ -546,7 +457,12 @@ class ObjectManager {
 													$lang);
 							foreach($values as $object_id => $item) {
                                 // resulting value is stored in the cache using given $field value (ex. 'user_id.firstname')
-								$om->cache[$class][$object_id][$field][$lang] = $sub_values[$item[$parts[0]]][$parts[1]];
+                                if(isset($sub_values[$item[$parts[0]]][$parts[1]])) {
+                                    $om->cache[$class][$object_id][$field][$lang] = $sub_values[$item[$parts[0]]][$parts[1]];
+                                }
+                                else {
+                                    $om->cache[$class][$object_id][$field][$lang] = null;
+                                }
                             }
 						}
 					}
@@ -595,7 +511,8 @@ class ObjectManager {
 				// for each computed field, build an array holding ids of incomplete objects
 				$oids = array();
 				// if store attribute is set and no result was found, we need to compute the value
-				// note : we use is_null() rather than empty() because an empty value could be the result of a calculation (this implies that the DB schema has 'DEFAULT NULL' for the associated column)
+				// note : we use is_null() rather than empty() because an empty value could be the result of a calculation 
+                // (this implies that the DB schema has 'DEFAULT NULL' for the associated column)
 				foreach($ids as $oid) if(is_null($this->cache[$class][$oid][$field][$lang])) $oids[] = $oid;
 				// compute field for incomplete objects
 				$load_fields['function']($this, $oids, array($field));
@@ -878,11 +795,10 @@ todo : to validate
                     EventListener::ExceptionHandler(new Exception('unknown field ('.$field.') in $fields arg'), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
                 }
             }
-
             
             if(!empty($fields)) {
-// todo : deal with returned value            
-                $this->write($class, $oid, $fields, $lang);     
+                $res_w = $this->write($class, $oid, $fields, $lang);
+                if($res_w < 0) $res = $res_w;
             }
 		}
 		catch(Exception $e) {
@@ -918,12 +834,15 @@ todo: signature differs from other methods	(returned value)
                 }
             }
 
-			// 2) validity of objects identifiers
-            $ids = $this->filterValidObjectIds($class, $ids);
+   			// 3) check $fields arg validity
             
-
-			// 3) check $fields arg validity
+            // get stattic instance and check that given class exists
 			$object = &$this->getStaticInstance($class);
+            
+			// check validity of objects identifiers
+            $ids = $this->filterValidIdentifiers($class, $ids);
+            
+            // remove unknown fields
 			$allowed_fields = $object->getFieldsNames();
 			// if no fields have been specified, we store the whole object
 			if(empty($fields)) $fields = $allowed_fields;
@@ -946,14 +865,14 @@ todo: signature differs from other methods	(returned value)
 			$onchange_fields = array();
 			foreach($ids as $oid) {
 				foreach($fields as $field => $value) {
-					// check if the modification does trigger an onchange event
+					// remember fields whose modification triggers an onchange event
 					if(isset($schema[$field]['onchange'])) $onchange_fields[] = $field;
-					$this->cache[$class][$oid][$field][$lang] = $this->adapt('ui', 'orm', $schema[$field]['type'], $value);
+					$this->cache[$class][$oid][$field][$lang] = DataAdapter::adapt('ui', 'orm', $schema[$field]['type'], $value);
 				}
 			}
 
 			
-			// 5) store selected fields to DB
+			// 5) write selected fields to DB
 			$this->store($class, $ids, array_keys($fields), $lang);
 
 
@@ -1000,7 +919,7 @@ todo: signature differs from other methods	(returned value)
 
 			// remove duplicate ids, if any
 			$ids = array_unique($ids);
-            
+
             // ensure ids are numerical values
             foreach($ids as $key => $oid) {      
                  if(!is_numeric($oid) || $oid == 0) {
@@ -1010,22 +929,26 @@ todo: signature differs from other methods	(returned value)
 
             // if no ids were specified, the result is an empty list
 			if(empty($ids)) return $res;
+
+
+            // 3) check $fields arg validity
+
+            // get stattic instance and check that given class exists
+			$object = &$this->getStaticInstance($class);
             
 			// remove duplicate fields, if any
 			$fields = array_unique($fields);
-
-			// 2) validity of objects identifiers
-            $ids = $this->filterValidObjectIds($class, $ids);
-
             
-			// 3) check $fields arg validity
-			$object = &$this->getStaticInstance($class);
+			// checks validity of objects identifiers
+            $ids = $this->filterValidIdentifiers($class, $ids);
+            			
+            // remove unknown fields
 			$allowed_fields = $object->getFieldsNames();
 			// if no fields have been specified, we load the whole object
 			if(empty($fields)) $fields = $allowed_fields;
 			else {
-				for($i = 0, $j = count($fields); $i < $j; ++$i) {
-					// handle 'dot' notation (check will apply on root field)
+                // handle 'dot' notation (check will apply on root field)
+				for($i = 0, $j = count($fields); $i < $j; ++$i) {					
 					$field = explode('.', $fields[$i])[0];
 					// remove fields not defined in related schema
 					if(!in_array($field, $allowed_fields)) {
@@ -1034,13 +957,13 @@ todo: signature differs from other methods	(returned value)
 					}
 				}
 			}
-
             
 			// 4) check among requested fields wich ones are not yet present in the internal buffer
 			// if internal buffer is empty, query the DB to load all fields from requested objects 
-			if(empty($this->cache)) $this->load($class, $ids, $fields, $lang);			
+			if(empty($this->cache) || !isset($this->cache[$class])) $this->load($class, $ids, $fields, $lang);			
 			else {
                 // check if some objects are fully or partially loaded
+                // use a hash to load all objects having the same missing fields at once
 				$fields_hash = array();
 				foreach($ids as $oid) {                
 					// find out missing fields for each object
@@ -1177,7 +1100,7 @@ todo: signature differs from other methods	(returned value)
 			// if(!AccessController::hasRight($user_id, $object_class, array(0), R_READ)) throw new Exception("user($user_id) does not have permission to read objects of class ($object_class)", NOT_ALLOWED);
 			if(empty($order)) throw new Exception("sorting order field cannot be empty", MISSING_PARAM);
             
-            // check and adapt domain format
+            // check and fix domain format
             if($domain && !is_array($domain)) throw new Exception("if domain is specified, it must be an array", INVALID_PARAM);
             else if($domain) {
                 // valid format : [[['field', 'operator', 'value']]]
@@ -1338,6 +1261,11 @@ todo: signature differs from other methods	(returned value)
 			}
 
 			$res_list = array_unique($res_list);
+            
+            // mark resulting identifiers as safe (matching existing objets)
+            foreach($res_list as $object_id) {
+                $this->identifiers[$object_class][$object_id] = true;
+            }
 		}
 		catch(Exception $e) {
 			EventListener::ExceptionHandler($e, __METHOD__);

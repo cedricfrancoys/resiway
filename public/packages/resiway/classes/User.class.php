@@ -18,7 +18,7 @@ class User extends \easyobject\orm\Object {
 
             /*
              Possible values:
-             1 : Full name (ex.: Cédric Françoys)
+             1 : Full name (ex.: Cédric Françoys) [default]
              2 : Firstname and lastname initial (ex.: Cédric F.)
              3 : Firstname only (ex.: Cédric)
             */

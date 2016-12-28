@@ -5,6 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
+use html\HTMLPurifier_Config as HTMLPurifier_Config;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -27,9 +28,6 @@ $params = QNLib::announce(
 $question_id = $params['id'];
 
 list($result, $error_message_ids) = [true, []];
-
-
-
 
 try {
     
@@ -71,13 +69,30 @@ try {
         $editor_data = ResiAPI::loadUser($question_data['modifier']);
         if($editor_data < 0) throw new Exception("question_editor_unknown", QN_ERROR_UNKNOWN_OBJECT);        
         $result['modifier'] = $editor_data;
-    }
-    
+    }    
       
     // retrieve actions performed by the user on this question
     $question_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Question', $question_id);
     $result['history'] = $question_history[$question_id];
 
+    // retrieve tags
+    $result['tags'] = [];
+    $res = $om->read('resiway\Tag', $question_data['tags_ids'], ['title', 'description', 'path', 'parent_path']);        
+    if($res > 0) {
+        $tags = [];
+        foreach($res as $tag_id => $tag_data) {           
+            $tags[$tag_id] = array(
+                                        'id'            => $tag_id,
+                                        'title'         => $tag_data['title'], 
+                                        'description'   => $tag_data['description'],                                         
+                                        'path'          => $tag_data['path'],
+                                        'parent_path'   => $tag_data['parent_path']
+                                    );
+        }      
+        
+        // asign resulting array to returned value
+        $result['tags'] = array_values($tags);
+    }
 
     // retrieve comments
     // output JSON type has to be Array
@@ -119,7 +134,7 @@ try {
     // retreive answers
     // output JSON type has to be Array
     $result['answers'] = [];
-    $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'modifier', 'modified', 'content', 'score', 'comments_ids']);    
+    $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'modifier', 'modified', 'content', 'content_excerpt', 'score', 'comments_ids']);    
     if($res > 0) {
         // memorize answers authors identifiers for later load
         $answers_authors_ids = [];
@@ -130,13 +145,14 @@ try {
             $answers_authors_ids[] = $answer_data['creator'];
             $answers_comments_ids = array_merge($answers_comments_ids, $answer_data['comments_ids']);
             $answers[$answer_id] = array(
-                                    'id'            => $answer_id,
-                                    'created'       => ResiAPI::dateISO($answer_data['created']), 
-                                    'content'       => $answer_data['content'], 
-                                    'score'         => $answer_data['score'],
-                                    'comments_ids'  => $answer_data['comments_ids'],
-                                    'comments'      => [],
-                                    'history'       => []);
+                                    'id'                => $answer_id,
+                                    'created'           => ResiAPI::dateISO($answer_data['created']), 
+                                    'content'           => $answer_data['content'], 
+                                    'content_excerpt'   => $answer_data['content_excerpt'],                                     
+                                    'score'             => $answer_data['score'],
+                                    'comments_ids'      => $answer_data['comments_ids'],
+                                    'comments'          => [],
+                                    'history'           => []);
         }
 
         // retrieve answers authors

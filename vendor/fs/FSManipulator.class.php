@@ -55,18 +55,18 @@ class FSManipulator {
 	}
 
 	public static function getSanitizedName($file_name) {
-		$special_chars = array("?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}");
-		// remove accentuated chars
-		$file_name = htmlentities($file_name, ENT_QUOTES, 'UTF-8');
-		$file_name = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $file_name);
-		$file_name = html_entity_decode($file_name, ENT_QUOTES, 'UTF-8');
-		// remove special chars
-		$file_name = str_replace($special_chars, '', $file_name);
-		// replace spaces with underscore
-		$file_name = preg_replace('/[\s-]+/', '_', $file_name);
-		// trim the end of the string
-		$file_name = trim($file_name, '.-_');
-		return $file_name;
+        // remove accentuated chars
+        $file_name = htmlentities($file_name, ENT_QUOTES, 'UTF-8');
+        $file_name = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
+        $file_name = html_entity_decode($file_name, ENT_QUOTES, 'UTF-8');
+        // remove all non space-alphanum-dot-underscore-dash chars
+        $file_name = preg_replace('/[^\s\.-_a-z0-9]/i', '', $file_name);
+        // replace spaces with underscores
+        $file_name = preg_replace('/[\s-]+/', '_', $file_name);           
+        // trim the end of the string
+        $file_name = trim($file_name, ' .-_');
+        // make string lowercase and return
+        return strtolower($file_name);
 	}
 
 }

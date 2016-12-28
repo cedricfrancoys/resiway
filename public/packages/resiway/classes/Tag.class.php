@@ -22,7 +22,14 @@ class Tag extends \easyobject\orm\Object {
                                     'multilang'         => true,
                                     'result_type'       => 'string', 
                                     'function'          => 'resiway\Tag::getPath'),
-            
+                                    
+            'parent_path'		=> array(
+                                    'type'              => 'function', 
+                                    'store'             => true,
+                                    'multilang'         => true,
+                                    'result_type'       => 'string', 
+                                    'function'          => 'resiway\Tag::getParentPath'),
+                                    
             'children_ids'		=> array(
                                     'type'              => 'one2many', 
                                     'foreign_object'    => 'resiway\Tag', 
@@ -73,13 +80,28 @@ class Tag extends \easyobject\orm\Object {
     public static function getPath($om, $oids, $lang) {
         $result = [];
         $res = $om->read('resiway\Tag', $oids, ['title', 'parent_id', 'parent_id.path'], $lang);        
-        foreach($res as $oid => $object_data) {
-            if(isset($object_data['parent_id']) && $object_data['parent_id'] > 0) {
-                $result[$oid] = $object_data['parent_id.path'].'/'.self::slugify($object_data['title']);
+        foreach($oids as $oid) {
+            $result[$oid] = '';
+            if(isset($res[$oid])) {
+                $object_data = $res[$oid];
+                if(isset($object_data['parent_id']) && $object_data['parent_id'] > 0) {
+                    $result[$oid] = $object_data['parent_id.path'].'/'.self::slugify($object_data['title']);
+                }
+                else $result[$oid] = self::slugify($object_data['title']);
             }
-            else $result[$oid] = self::slugify($object_data['title']);
         }
         return $result;        
     }  
 
+    public static function getParentPath($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read('resiway\Tag', $oids, ['parent_id.path'], $lang);
+        foreach($oids as $oid) {
+            $result[$oid] = '';
+            if(isset($res[$oid]) && isset($res[$oid]['parent_id.path'])) { 
+                $result[$oid] = $res[$oid]['parent_id.path'];
+            }
+        }
+        return $result;        
+    }  
 }

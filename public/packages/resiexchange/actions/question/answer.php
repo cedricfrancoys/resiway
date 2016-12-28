@@ -4,7 +4,6 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
 use html\HTMLPurifier as HTMLPurifier;
 use html\HTMLPurifierConfig as HTMLPurifierConfig;
 
@@ -21,7 +20,7 @@ $params = QNLib::announce([
                             'required'      => true
                             ),
         'content'	    => array(
-                            'description'   => 'Content of the subitted question.',
+                            'description'   => 'Content of the submitted answer.',
                             'type'          => 'string', 
                             'required'      => true
                             )
@@ -69,26 +68,27 @@ try {
         null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {    
-            // create a new comment + write given value
+            // create a new answer + write given value
             $answer_id = $om->create('resiexchange\Answer', [ 
-                            'creator'       => $user_id,     
-                            'question_id'   => $object_id,
-                            'content'       => $params['content']
+                            'creator'           => $user_id,     
+                            'question_id'       => $object_id,
+                            'content'           => $params['content']
                           ]);
 
             if($answer_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
-            // read created comment as returned value
-            $res = $om->read('resiexchange\Answer', $answer_id, ['creator', 'created', 'content', 'score']);
+            // read created answer as returned value
+            $res = $om->read('resiexchange\Answer', $answer_id, ['creator', 'created', 'content', 'content_excerpt', 'score']);
             if($res > 0) {
                 $result = array(
-                            'id'        => $answer_id,
-                            'creator'   => ResiAPI::loadUser($user_id), 
-                            'created'   => ResiAPI::dateISO($res[$answer_id]['created']), 
-                            'content'   => $res[$answer_id]['content'], 
-                            'score'     => $res[$answer_id]['score'],
-                            'comments'  => [],                            
-                            'history'   => []
+                            'id'                => $answer_id,
+                            'creator'           => ResiAPI::loadUser($user_id), 
+                            'created'           => ResiAPI::dateISO($res[$answer_id]['created']), 
+                            'content'           => $res[$answer_id]['content'], 
+                            'content_excerpt'   => $res[$answer_id]['content_excerpt'],                             
+                            'score'             => $res[$answer_id]['score'],
+                            'comments'          => [],                            
+                            'history'           => []
                           );
             }
             else $result = $res;
@@ -96,6 +96,13 @@ try {
         },
         null,                                                      // $undo
         [                                                          // $limitations
+            function ($om, $user_id, $action_id, $object_class, $object_id) 
+            use ($params) {
+                if(strlen($params['content']) < RESIEXCHANGE_ANSWER_CONTENT_LENGTH_MIN
+                || strlen($params['content']) > RESIEXCHANGE_ANSWER_CONTENT_LENGTH_MAX) {
+                    throw new Exception("content_length_invalid", QN_ERROR_INVALID_PARAM); 
+                }
+            },
             // user cannot perform action on an object more than once
             function ($om, $user_id, $action_id, $object_class, $object_id) {
                 if(ResiAPI::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {

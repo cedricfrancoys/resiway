@@ -1,6 +1,9 @@
 <?php
 namespace resiexchange;
 
+use easyobject\orm\DataAdapter as DataAdapter;
+
+
 class Answer extends \easyobject\orm\Object {
 
     public static function getColumns() {
@@ -10,8 +13,15 @@ class Answer extends \easyobject\orm\Object {
             'question_id'           => array('type' => 'many2one', 'foreign_object'=> 'resiexchange\Question'),
 
             /* text describing the answer */
-            'content'			    => array('type' => 'text'),
+            'content'			    => array('type' => 'html', 'onchange' => 'resiexchange\Answer::onchangeContent'),
 
+            'content_excerpt'       => array(
+                                        'type'              => 'function',
+                                        'result_type'       => 'short_text',
+                                        'store'             => true, 
+                                        'function'          => 'resiexchange\Answer::getContentExcerpt'
+                                       ),
+                                       
             /* number of times this answer has been voted (up and down) */
             'count_votes'			=> array('type' => 'integer'),
 
@@ -30,4 +40,43 @@ class Answer extends \easyobject\orm\Object {
             
         );
     }
+
+    public static function getDefaults() {
+        return array(
+             'count_votes'      => function() { return 0; },
+             'score'            => function() { return 0; },             
+             'count_flags'      => function() { return 0; },                          
+        );
+    }
+    
+    public static function excerpt($html, $max_chars) {
+        $res = '';        
+        // convert html to txt
+        $string = DataAdapter::adapt('ui', 'orm', 'text', $html);
+        $len = 0;
+        for($i = 0, $parts = explode(' ', $string), $j = count($parts); $i < $j; ++$i) {
+            $piece = $parts[$i].' ';
+            $p_len = strlen($piece);
+            if($len + $p_len > $max_chars) break;
+            $len += $p_len;
+            $res .= $piece;
+        } if($len == 0) $res = substr($string, 0, $max_chars);
+        return $res;
+    }
+    
+    public static function onchangeContent($om, $oids, $lang) {
+        // force re-compute content_excerpt
+        $om->write('resiexchange\Answer', $oids, ['content_excerpt' => null], $lang);        
+    }
+    
+    // Returns excerpt of the content of max 200 chars cutting on a word-basis   
+    // todo: define excerpt length in config file
+    public static function getContentExcerpt($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read('resiexchange\Answer', $oids, ['content']);
+        foreach($res as $oid => $odata) {
+            $result[$oid] = self::excerpt($odata['content'], 200);
+        }
+        return $result;        
+    }    
 }

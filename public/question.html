@@ -4,16 +4,7 @@
             <h1>{{question.title}}</h1>
         </div>
     </div>
-</div>    
-    <script type="text/ng-template" id="popover-custom.html">
-    <div style="line-height: 20px; min-height: 20px;">
-        <button type="button" class="close" style="margin-left: 30px;" ng-click="closePopover({$event: $event})">
-            <span aria-hidden="true">&times;</span>
-            <span class="sr-only">Close</span>
-        </button>      
-        <div style="float: left;">{{popover.content}}</div>      
-    </div>
-    </script>
+</div>
 <div class="grid wrapper">
 
     <div class="col-8-12">
@@ -26,7 +17,7 @@
                      ng-class="{on: question.history['resiexchange_question_voteup']}">
                     <a href
                        id="question-voteup"
-                       title="This question shows research effort; it is useful and clear"
+                       title="{{'QUESTION_VOTEUP_TOOLTIP' | translate}}"
                        class="fa fa-caret-up" 
                        ng-click="questionVoteUp($event)" 
                        uib-popover-template="'popover-custom.html'" 
@@ -41,7 +32,7 @@
                      ng-class="{on: question.history['resiexchange_question_votedown']}">
                     <a href
                        id="question-votedown"
-                       title="This question does not show any research effort; it is unclear or not useful"
+                       title="{{'QUESTION_VOTEDOWN_TOOLTIP' | translate}}"
                        class="fa fa-caret-down" 
                        ng-click="questionVoteDown($event)" 
                        uib-popover-template="'popover-custom.html'" 
@@ -72,7 +63,7 @@
                 </div>
                 
                 <div class="tags">
-                    <a href="/questions/tagged/c%2b%2b" class="tag" title="" rel="tag">c++</a> <a href="/questions/tagged/loops" class="tag" title="" rel="tag">loops</a> <a href="/questions/tagged/operators" class="tag" title="" rel="tag">operators</a> 
+                    <a ng-repeat="tag in question.tags" href="#/questions/search" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
                 </div>
                 
                 <div class="footer">
@@ -83,7 +74,7 @@
                                title="short permalink to this question">
                                 <i class="fa fa-share-alt" aria-hidden="true"></i> share
                             </a>&nbsp;
-                            <a href>
+                            <a href="#/question/edit/{{question.id}}">
                                 <i class="fa fa-pencil" aria-hidden="true"></i> edit
                             </a>&nbsp;                            
                             <a href                                         
@@ -99,13 +90,12 @@
                             <a href 
                                ng-show="user.id==question.creator.id"
                                class="delete-post-link" 
-                               title="delete this post if you are really sure you no longer want it">
-                                <i class="fa fa-remove" 
-                                   ng-click="questionDelete($event)" 
-                                   uib-popover-template="'popover-custom.html'" 
-                                   popover-trigger="'toggle-popover'" 
-                                   popover-placement="right"                                  
-                                   aria-hidden="true"></i> delete
+                               title="delete this post if you are really sure you no longer want it"
+                               ng-click="questionDelete($event)"
+                               uib-popover-template="'popover-custom.html'"
+                               popover-trigger="'toggle-popover'"
+                               popover-placement="right">
+                                <i class="fa fa-remove" aria-hidden="true"></i> delete
                             </a>                            
                         </div>
                         <!--                            
@@ -217,16 +207,16 @@
                     <a href 
                        ng-click="question.newCommentShow = true" 
                        class="js-add-link comments-link " 
-                       title="Use comments to ask for more information or suggest improvements. Avoid answering questions in comments." >
-                       add a comment</a>
+                       title="{{ 'QUESTION_COMMENTS_ADD_TITLE' | translate}}" >
+                       {{ 'QUESTION_COMMENTS_ADD' | translate}}</a>
                     <span class="js-link-separator ">&nbsp;|&nbsp;</span>
                     <a href 
                        ng-click="question.commentsLimit=1000" 
                        class="js-show-link comments-link " 
-                       title="expand to show all comments on this post">
-                       show all comments</a>
+                       title="{{ 'QUESTION_COMMENTS_SHOW_ALL_TITLE' | translate}}">
+                       {{ 'QUESTION_COMMENTS_SHOW_ALL' | translate}}</a>
                     <div class="wrapper new-comment" style="margin-top: 10px;" ng-show="question.newCommentShow">
-                        <textarea ng-model="question.newCommentContent" style="width: 100%;" placeholder="Add your comment here"></textarea>
+                        <textarea ng-model="question.newCommentContent" style="width: 100%;" placeholder="{{ 'QUESTION_COMMENTS_ADD_PLACEHOLDER' | translate }}"></textarea>
                         <button id="question-addComment" 
                                 class="btn btn-primary btn-xs"
                                 ng-click="questionComment($event)"
@@ -245,7 +235,7 @@
         <div class="answers">
         
             <div class="subheader">
-                <h2>{{question.answers.length}} Answers</h2>
+                <h2>{{question.answers.length}} {{'QUESTION_ANSWERS_COUNT_LABEL' | translate}}</h2>
                 
                 <div id="sort-dropdown" ng-controller="DropdownCtrl">
                     <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
@@ -317,7 +307,7 @@
                                    class="short-link" >
                                     <i class="fa fa-share-alt" aria-hidden="true"></i> share
                                 </a>&nbsp;
-                                <a href>
+                                <a href="#/answer/edit/{{answer.id}}">
                                     <i class="fa fa-pencil" aria-hidden="true"></i> edit
                                 </a>&nbsp;                               
                                 <a href                                         
@@ -494,7 +484,7 @@
         
         <div class="user-answer" ng-hide="user.id && question.history['resiexchange_question_answer']">
             <div class="subheader">
-                <h2>Your Answer</h2>
+                <h2>{{ 'QUESTION_USER_ANSWER' | translate}}</h2>
             </div>
             <div class="wrapper">
                 <div class="content" text-angular="text-angular" 

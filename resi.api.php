@@ -1,12 +1,28 @@
 <?php
 use easyobject\orm\ObjectManager as ObjectManager;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
+use html\HTMLPurifier_Config as HTMLPurifier_Config;
 
 // these utilities require inclusion of main configuration file 
 require_once('qn.lib.php');
 
 class ResiAPI {
 
+    public static function getHTMLPurifierConfig() {
+        // clean HTML input html
+        // strict cleaning: remove non-standard tags and attributes    
+        $config = HTMLPurifier_Config::createDefault();
+        $config->set('URI.Base',                'http://www.resiway.gdn/');
+        $config->set('URI.MakeAbsolute',        true);                  // make all URLs absolute using the base URL set above
+        $config->set('AutoFormat.RemoveEmpty',  true);                  // remove empty elements
+        $config->set('HTML.Doctype',            'XHTML 1.0 Strict');    // valid XML output
+        $config->set('CSS.AllowedProperties',   []);                    // remove all CSS
+        // allow only tags and attributes that match most lightweight markup language 
+        $config->set('HTML.AllowedElements',    array('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'a', 'img', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'ul', 'ol', 'li', 'strong', 'b', 'i', 'code', 'blockquote'));
+        $config->set('HTML.AllowedAttributes',  array('a.href', 'img.src'));
+        return $config;
+    }
+    
     // Converts a SQL formatted date to ISO 8601
     public static function dateISO($sql_date) {
         $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $sql_date);
@@ -45,6 +61,7 @@ class ResiAPI {
         return $res[0];
     }
 
+    
     /**
     * Provides an array holding fields names holding public information
     * This array is used n order to determine which data is public.
@@ -52,6 +69,7 @@ class ResiAPI {
     */
     public static function userPublicFields() {
         return ['id', 
+                'registered',
                 'display_name', 
                 'picture', 
                 'reputation', 
@@ -76,15 +94,29 @@ class ResiAPI {
     * Tells if given user is allowed to perform given action.
     * If given user or action is unknown, returns false
     *
-    * @param    integer  $user_id    identifier of the user performing the action
-    * @param    integer  $action_id  identifier of the action being performed
+    * @param    integer  $user_id       identifier of the user performing the action
+    * @param    integer  $action_id     identifier of the action being performed
+    * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
+    * @param    integer  $object_id     identifier of the object on which action is performed    
     * @return   boolean 
     */    
-    public static function isActionAllowed($user_id, $action_id) {
+    public static function isActionAllowed($user_id, $action_id, $object_class, $object_id) {
         // check params consistency
         if($user_id <= 0 || $action_id <= 0) return false;
 
+        // all actions are granted to root user
+        if($user_id == 1) return true;
+        
         $om = &ObjectManager::getInstance();
+
+        if($object_id > 0) {
+            // retrieve object data 
+            $res = $om->read($object_class, $object_id, ['id', 'creator']);
+            if($res < 0 || !isset($res[$object_id])) return false;
+            
+            // unless specified in action limitations, all actions are granted on an object owner
+            if($user_id == $res[$object_id]['creator']) return true;
+        }
         
         // read user data
         $res = $om->read('resiway\User', $user_id, ['reputation']);        
@@ -100,11 +132,10 @@ class ResiAPI {
         // check objects consistency
         if(!isset($action_data['required_reputation']) || !isset($user_data['reputation'])) return false;
         
-        // check reputation
-        if($action_data['required_reputation'] > $user_data['reputation']) return false;
+        // check user reputation against minimum reputation required to perform the action
+        if($user_data['reputation'] >= $action_data['required_reputation']) return true;
 
-        // action is allowed
-        return true;
+        return false;
     }
     
     /**
@@ -239,9 +270,11 @@ class ResiAPI {
         
         if($action_data['user_increment'] != 0) {
             // retrieve user data
-            $res = $om->read('resiway\User', $user_id);
+            $res = $om->read('resiway\User', $user_id, ['registered', 'reputation']);
             if($res < 0 || !isset($res[$user_id])) return false;          
             $user_data = $res[$user_id];
+            // prevent reputation update for non-registered users
+            if(!$user_data['registered']) return false;
             $om->write('resiway\User', $user_id, array('reputation' => $user_data['reputation']+($sign*$action_data['user_increment'])));            
         }
         
@@ -250,9 +283,11 @@ class ResiAPI {
             $res = $om->read($object_class, $object_id, ['creator']);
             if(!is_array($res) || !isset($res[$object_id])) return false;
             $author_id = $res[$object_id]['creator'];
-            $res = $om->read('resiway\User', $author_id, ['reputation']);        
+            $res = $om->read('resiway\User', $author_id, ['registered', 'reputation']);        
             if(!is_array($res) || !isset($res[$author_id])) return false;    
-            $author_data = $res[$author_id];            
+            $author_data = $res[$author_id];
+            // prevent reputation update for non-registered users
+            if(!$author_data['registered']) return false;            
             $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+($sign*$action_data['author_increment'])));        
         }
             
@@ -392,11 +427,12 @@ class ResiAPI {
         // 0) retrieve parameters 
         
         // retrieve object data (making sure defaults fields are loaded)
-        $res = $om->read($object_class, $object_id, array_merge(['id', 'creator', 'created', 'modified', 'modifier'], $object_fields));
-        if($res < 0 || !isset($res[$object_id])) throw new Exception("object_unknown", QN_ERROR_INVALID_PARAM);
-        $object_data = $res[$object_id];        
-
-        // retrieve user object
+        if($object_id > 0) {
+            $res = $om->read($object_class, $object_id, array_merge(['id', 'creator', 'created', 'modified', 'modifier'], $object_fields));
+            if($res < 0 || !isset($res[$object_id])) throw new Exception("object_unknown", QN_ERROR_INVALID_PARAM);   
+        }
+        
+        // retrieve current user identifier
         $user_id = self::userId();
         if($user_id <= 0) throw new Exception("user_unidentified", QN_ERROR_NOT_ALLOWED);
 
@@ -411,7 +447,7 @@ class ResiAPI {
         
         // 1) check rights
         
-        if(!self::isActionAllowed($user_id, $action_id)) {
+        if(!self::isActionAllowed($user_id, $action_id, $object_class, $object_id)) {
             throw new Exception("user_reputation_insufficient", QN_ERROR_NOT_ALLOWED);  
         }
         

@@ -67,10 +67,12 @@ try {
     if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
     $authors_ids = [];
+    $tags_ids = [];
     $questions = [];
     foreach($res as $question_id => $question_data) {
         // remember creators ids for each question
         $authors_ids = array_merge($authors_ids, (array) $question_data['creator']); 
+        $tags_ids = array_merge($tags_ids, (array) $question_data['tags_ids']);         
         
         $questions[$question_id] = array(
                                     'id'            => $question_id,
@@ -91,6 +93,25 @@ try {
         $author_id = $question_data['creator'];
         $questions[$question_id]['creator'] = $questions_authors[$author_id];
     }
+   
+    // retrieve tags
+    $questions_tags = $om->read('resiway\Tag', $tags_ids, ['title', 'path', 'parent_path', 'description']);        
+    if($questions_tags < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
+
+    foreach($res as $question_id => $question_data) {
+        $questions[$question_id]['tags'] = [];
+        foreach($question_data['tags_ids'] as $tag_id) {
+            $tag_data = $questions_tags[$tag_id];
+            $questions[$question_id]['tags'][] = array(
+                                        'id'            => $tag_id,
+                                        'title'         => $tag_data['title'], 
+                                        'path'          => $tag_data['path'],
+                                        'parent_path'   => $tag_data['parent_path'],
+                                        'description'   => $tag_data['description']
+                                    );            
+        }
+    }    
+        
     $result = array_values($questions);
     
 }

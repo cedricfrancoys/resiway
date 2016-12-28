@@ -10,13 +10,16 @@ class QuestionComment extends \easyobject\orm\Object {
             
             'question_id'       => array('type' => 'many2one', 'foreign_object' => 'resiexchange\Question'),
             
-            'score'             => array('type' => 'integer')            
+            'score'             => array('type' => 'integer'),
+            
+            'count_flags'       => array('type' => 'integer')            
         );
     }
     
     public static function getDefaults() {
         return array(        
-             'score'            => function() { return 0; },             
+             'score'            => function() { return 0; },
+             'count_flags'      => function() { return 0; },             
         );
     }
     

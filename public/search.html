@@ -61,10 +61,8 @@
                 </h3>
                 <div class="excerpt">{{question.content}}</div>
                 
-                <div class="tags t-cñ t-cçç t-visual-studio t-windows-8 t-microsoft-metro">
-                    <a href="/questions/tagged/c%23" class="tag" title="show questions tagged 'c#'" rel="tag">c#</a> 
-                    <a href="/questions/tagged/c%2b%2b" class="tag" title="" rel="tag">c++</a> 
-                    <a href="/questions/tagged/visual-studio" class="tag" title="" rel="tag">visual-studio</a> 
+                <div class="tags">
+                    <a ng-repeat="tag in question.tags" href="#/questions/search" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
                 </div>
                 <div class="started">
                     <div class="signature owner">

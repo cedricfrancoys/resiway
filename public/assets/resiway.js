@@ -4,7 +4,41 @@
 // todo : uplad images (avatar)
 // @see : http://stackoverflow.com/questions/13963022/angularjs-how-to-implement-a-simple-file-upload-with-multipart-form?answertab=votes#tab-top
 
-
+/**
+* Converts to lower case and strips accents
+* this method is used in myListFilter, a custom filter for dsiplaying categories list
+* using the oi-select angular plugin
+*
+* note : this is not valid for non-latin charsets !
+*/
+String.prototype.toLowerASCII = function () {
+    var str = this.toLocaleLowerCase();
+    var result = '';
+    var convert = {
+        192:'a', 193:'a', 194:'a', 195:'a', 196:'a', 197:'a',
+        224:'a', 225:'a', 226:'a', 227:'a', 228:'a', 229:'a',
+        200:'e', 201:'e', 202:'e', 203:'e',
+        232:'e', 233:'e', 234:'e', 235:'e',
+        204:'i', 205:'i', 206:'i', 207:'i',
+        236:'i', 237:'i', 238:'i', 239:'i',
+        210:'o', 211:'o', 212:'o', 213:'o', 214:'o', 216:'o',
+        240:'o', 242:'o', 243:'o', 244:'o', 245:'o', 246:'o',
+        217:'u', 218:'u', 219:'u', 220:'u',      
+        249:'u', 250:'u', 251:'u', 252:'u'
+    };
+    for (var i = 0, code; i < str.length; i++) {
+        code = str.charCodeAt(i);
+        if(code < 128) {
+            result = result + str.charAt(i);
+        }
+        else {
+            if(typeof convert[code] != 'undefined') {
+                result = result + convert[code];   
+            }
+        }
+    }
+    return result;
+}
 
 
 
@@ -13,7 +47,8 @@ var resiway = angular.module('resiway', [
 'ngSanitize',
 'ngCookies', 
 'ngAnimate', 
-'angular-lightweight-markdown-editor', 
+'oi.select',
+'pascalprecht.translate',
 'textAngular',
 'ngRoute',
     // dependencies
@@ -26,14 +61,23 @@ var resiway = angular.module('resiway', [
                 $provide, 
                 $routeProvider, 
                 $routeParamsProvider,
+                $translateProvider,
                 $locationProvider, 
                 $anchorScrollProvider, 
                 $httpProvider) {
     // $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false}).hashPrefix('!');
     $locationProvider.html5Mode({enabled: false, requireBase: false, rewriteLinks: false});
-
+    
     //$anchorScrollProvider.disableAutoScrolling();
 
+    $translateProvider.preferredLanguage('fr');
+
+    $translateProvider.useStaticFilesLoader({
+      prefix: '/i18n/locale-',
+      suffix: '.json'
+    });
+    $translateProvider.useSanitizeValueStrategy('sanitize');
+    
     // add fulscreen capability to textAngular editor
     $provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) { 
         // $delegate is the taOptions we are decorating
@@ -104,13 +148,51 @@ var resiway = angular.module('resiway', [
     * so it can be manipulated the same way in view and in controller
     */
     $routeProvider
-    .when('/search/:channel?', {
+    .when('/questions/:channel?', {
         templateUrl : 'search.html',
         controller  : 'searchController as ctrl'
     })
-    .when('/question/post', {
-        templateUrl : 'newQuestion.html',
-        controller  : 'newQuestionController as ctrl'
+    .when('/question/edit/:id', {
+        templateUrl : 'editQuestion.html',
+        controller  : 'editQuestionController as ctrl',
+        resolve     : {
+            /**
+            * editQuestionController will wait for these promises to be resolved and provided as services
+            */
+            question: function($http, $route, $sce) {
+                // new question
+                if($route.current.params.id == 0 
+                || typeof $route.current.params.id == 'undefined') return {};
+                return $http.get('index.php?get=resiexchange_question&id='+$route.current.params.id)
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') return {};
+                        // mark html as safe
+                        data.result.content = $sce.trustAsHtml(data.result.content); 
+                        return data.result;
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return {};
+                    }
+                );
+            },            
+            categories: function($http, $sce) {
+                return $http.get('index.php?get=resiway_categories')
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') return [];
+                        return data.result;
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return [];
+                    }
+                );
+            }
+        }        
     })    
     .when('/question/:id', {
         templateUrl : 'question.html',
@@ -122,43 +204,71 @@ var resiway = angular.module('resiway', [
             */
             question: function($http, $route, $sce) {
 
-                    if($route.current.params.id == undefined) return {};
+                if(typeof $route.current.params.id == 'undefined') return {};
 
-                    return $http.get('index.php?get=resiexchange_question&id='+$route.current.params.id)
-                    .then(
-                        function successCallback(response) {
-                            var data = response.data;
-                            if(typeof data.result != 'object') return {};
-                                 
-                            // adapt result to view requirements
-                            var attributes = {
-                                commentsLimit: 5,
-                                newCommentShow: false,
-                                newCommentContent: '',
-                                newAnswerContent: ''                               
-                            }
-                            // mark html as safe
-                            data.result.content = $sce.trustAsHtml(data.result.content);                               
-                            // add special fields
-                            angular.extend(data.result, attributes);
-                            
-                            angular.forEach(data.result.answers, function(value, index) {
-                                // mark html as safe
-                                data.result.answers[index].content = $sce.trustAsHtml(data.result.answers[index].content);
-                                // add special fields
-                                angular.extend(data.result.answers[index], attributes);
-                            });
-                            
-                            return data.result;
-                        },
-                        function errorCallback(response) {
-                            // something went wrong server-side
-                            return {};
+                return $http.get('index.php?get=resiexchange_question&id='+$route.current.params.id)
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') return {};
+                             
+                        // adapt result to view requirements
+                        var attributes = {
+                            commentsLimit: 5,
+                            newCommentShow: false,
+                            newCommentContent: '',
+                            newAnswerContent: ''                               
                         }
-                    );
+                        // mark html as safe
+                        data.result.content = $sce.trustAsHtml(data.result.content);                               
+                        // add special fields
+                        angular.extend(data.result, attributes);
+                        
+                        angular.forEach(data.result.answers, function(value, index) {
+                            // mark html as safe
+                            data.result.answers[index].content = $sce.trustAsHtml(data.result.answers[index].content);
+                            // add special fields
+                            angular.extend(data.result.answers[index], attributes);
+                        });
+                        
+                        return data.result;
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return {};
+                    }
+                );
             }
         }
     })
+    .when('/answer/edit/:id', {
+        templateUrl : 'editAnswer.html',
+        controller  : 'editAnswerController as ctrl',
+        resolve     : {
+            /**
+            * editQuestionController will wait for these promises to be resolved and provided as services
+            */
+            answer: function($http, $route, $sce) {
+                // new question
+                if($route.current.params.id == 0 
+                || typeof $route.current.params.id == 'undefined') return {};
+                return $http.get('index.php?get=resiexchange_answer&id='+$route.current.params.id)
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') return {};
+                        // mark html as safe
+                        data.result.content = $sce.trustAsHtml(data.result.content); 
+                        return data.result;
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return {};
+                    }
+                );
+            }
+        }        
+    })     
     .when('/user', {
         templateUrl : 'user.html',
         controller  : 'userController as ctrl'
@@ -379,14 +489,12 @@ var resiway = angular.module('resiway', [
                 function(user_id) {
                     $auth.userData(user_id)
                     .then(
-                        // success handler
-                        function(data) {
+                        function successHandler(data) {
                             $rootScope.user_id = user_id;
                             $rootScope.user = data;
                             deferred.resolve(data);
                         },
-                        // error handler
-                        function() {
+                        function errorHandler() {
                             // something went wrong server-side
                             deferred.reject();                                
                         }
@@ -456,20 +564,106 @@ var resiway = angular.module('resiway', [
 })
 
 
+/**
+* there can only be one popover at the same time on the whole page
+* to display a popover, we need an anchor : a node having an id and a uid-popover-template attribute
+* an event can be triggered by a A node or any of its sub-nodes
+*/
+.service('feedback', function($window) {
+    var popover = {
+        content: '',
+        elem: null
+    };
+    return {
+        /**
+        * Getter for popover content
+        *
+        */
+        content: function() {
+            return popover.content;
+        },
+        
+        /**
+        * Scrolls to target element
+        * if msg is not empty, displays popover 
+        */           
+        popover: function (selector, msg) {
+            // popover has been previously assign
+            closePopover();
+
+            // retrieve element
+            var elem = angular.element(document.querySelector( selector ));
+            
+            // save target content and element
+            popover.content = msg;
+            popover.elem = elem;
+
+            // scroll to element, if outside viewport
+            var elemYOffset = elem[0].offsetTop;
+
+            if(elemYOffset < $window.pageYOffset 
+            || elemYOffset > ($window.pageYOffset + $window.innerHeight)) {
+                $window.scrollTo(0, elemYOffset-($window.innerHeight/4));
+            }
+            
+            if(msg.length > 0) {
+                // trigger popover display (toggle)
+                elem.triggerHandler('toggle-popover');
+            }            
+        },
+        
+        /**
+        * Close current popover, if any
+        * 
+        */           
+        close: function() {
+            closePopover();
+        },
+        
+        /**
+        * Retrieves the node holding the uib-popover* attribute
+        * returns the selector allowing to retrieve this node 
+        *
+        */
+        selector: function(domElement) {
+            return selectorFromElement(domElement);
+        }
+        
+    };
+
+    // @private methods
+    function closePopover() {
+        if(popover.elem) {
+            popover.elem.triggerHandler('toggle-popover');
+            popover.elem = null; 
+        }        
+    }
+    
+    function selectorFromElement(domElement) {
+        var element = angular.element(domElement);
+        while(typeof element.attr('id') == 'undefined'
+           || typeof element.attr('uib-popover-template') == 'undefined') {
+            element = element.parent();
+        }
+        return '#' + element.attr('id');          
+    }
+
+})
 
 
 
-
-.run( function($document, $window, $timeout, $rootScope, $location, $anchorScroll, $cookieStore, $authentication, $actions) {
+.run( function($document, $window, $timeout, $rootScope, $location, $anchorScroll, $cookieStore, $authentication, $actions, feedback) {
     console.log('run method invoked');
 
- 
+    // bind rootScope with feedback service (popover display)
+    $rootScope.popover = feedback;
+    
     // @model   global data model
     
     const signPath = '/user/sign';
     
-    $rootScope.viewContentLoading = true;
-    
+    $rootScope.viewContentLoading = true;   
+        
     /* Currently pending action, if any
      * expected struct : { 
                             action:     string, 
@@ -624,11 +818,11 @@ var resiway = angular.module('resiway', [
             if(timestamp != NaN) {
                 var date = new Date(timestamp);
                 res = date.toLocaleString('fr', { 
-                            weekday: 'long', 
-                            year: 'numeric', 
-                            month: 'short', 
-                            day: 'numeric', 
-                            hour: 'numeric', 
+                            weekday:'long', 
+                            year:   'numeric', 
+                            month:  'short', 
+                            day:    'numeric', 
+                            hour:   'numeric', 
                             minute: 'numeric' 
                        });
             }
@@ -649,7 +843,7 @@ var resiway = angular.module('resiway', [
                     return diff + " days ago";
                 }
                 if(diff < 30) {
-                    var diff_w = Math.floor($diff / 7);
+                    var diff_w = Math.floor(diff / 7);
                     if(diff_w == 1) return 'last week';
                     return diff_w + " weeks ago";
                 }
@@ -727,70 +921,49 @@ var resiway = angular.module('resiway', [
  * Question controller
  *
  */
-.controller('questionController', function(question, $rootScope, $scope, $window, $sce, $http, $actions, $timeout, textAngularManager) {
+.controller('questionController', function(question, feedback, $scope, $window, $location, $sce, $uibModal, $actions, $timeout, textAngularManager) {
     console.log('question controller');
     
     var ctrl = this;
 
-    
-    ctrl.buildSelector = function(element) {
-        while(typeof element.attr('id') == 'undefined') element = element.parent();
-        return '#' + element.attr('id');          
-    }
-    
     // @model
-    $scope.popover = {
-        content: '',
-        elem: null
-    };
-    
     $scope.question = question;
-    
+
+// todo : move this to root controller
+    ctrl.open = function (title_id, header_id, content) {
+        return $uibModal.open({
+            animation: true,
+            ariaLabelledBy: 'modal-title',
+            ariaDescribedBy: 'modal-body',
+            templateUrl: 'modal-custom.html',
+            controller: function ($uibModalInstance, items) {
+                var ctrl = this;
+                ctrl.title_id = title_id;
+                ctrl.header_id = header_id;
+                ctrl.body = content;
+                
+                ctrl.ok = function () {
+                    $uibModalInstance.close();
+                };
+                ctrl.cancel = function () {
+                    $uibModalInstance.dismiss();
+                };
+            },
+            controllerAs: 'ctrl', 
+            size: 'md',
+            appendTo: angular.element(document.querySelector(".modal-wrapper")),
+            resolve: {
+                items: function () {
+                  return ctrl.items;
+                }
+            }
+        }).result;
+    };    
        
 
     // @methods
-    
-    /*
-    * Close current popover (calls in view only)
-    */
-    $scope.closePopover = function () {
-        // there can be only one popover displayed at a time
-        $scope.popover.elem.triggerHandler('toggle-popover');
-        $scope.popover.elem = null;        
-    };
-    
-    /**
-    * Displays a popover with feedback in case of error
-    Note: this method has to be defined in the scope because it is called in actions callbacks
-    */
-    $scope.feedback = function(selector, msg) {       
-        // popover has been previously assign
-        if($scope.popover.elem) $scope.closePopover();
-
-        // retrieve element
-        var elem = angular.element(document.querySelector( selector ));
-        
-        // save target content and element
-        $scope.popover.content = msg;
-        $scope.popover.elem = elem;
-
-
-        // scroll to element, if outside viewport
-        var elemYOffset = elem[0].offsetTop;
-
-        if(elemYOffset < $window.pageYOffset 
-        || elemYOffset > ($window.pageYOffset + $window.innerHeight)) {
-            $window.scrollTo(0, elemYOffset-($window.innerHeight/4));
-        }
-        
-        if(msg.length > 0) {
-            // trigger popover display (toggle)
-            elem.triggerHandler('toggle-popover');
-        }
-    };
-
     $scope.questionComment = function($event) {
-        var selector = ctrl.buildSelector(angular.element($event.target));
+        var selector = feedback.selector($event.target);
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_comment',
@@ -810,7 +983,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);
+                    feedback.popover(selector, msg);
                 }
                 else {
                     var comment_id = data.result.id;
@@ -821,7 +994,7 @@ var resiway = angular.module('resiway', [
                     // wait for next digest cycle
                     $timeout(function() {
                         // scroll to newly created comment
-                        $scope.feedback('#comment-'+comment_id, '');
+                        feedback.popover('#comment-'+comment_id, '');
                     });
                 }
             }        
@@ -829,7 +1002,7 @@ var resiway = angular.module('resiway', [
     };
 
     $scope.questionFlag = function ($event) {
-        var selector = ctrl.buildSelector(angular.element($event.target));           
+        var selector = feedback.selector($event.target);           
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_flag',
@@ -848,7 +1021,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);                    
+                    feedback.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.history['resiexchange_question_flag'] = data.result;
@@ -858,7 +1031,7 @@ var resiway = angular.module('resiway', [
     };
 
     $scope.questionAnswer = function($event) {
-        var selector = ctrl.buildSelector(angular.element($event.target));                   
+        var selector = feedback.selector($event.target);                   
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_answer',
@@ -878,7 +1051,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);
+                    feedback.popover(selector, msg);
                 }
                 else {
                     var answer_id = data.result.id;
@@ -897,7 +1070,7 @@ var resiway = angular.module('resiway', [
                     // wait for next digest cycle
                     $timeout(function() {
                         // scroll to newly created answer
-                        $scope.feedback('#answer-'+answer_id, '');
+                        feedback.popover('#answer-'+answer_id, '');
                     });                    
                 }
             }        
@@ -905,7 +1078,7 @@ var resiway = angular.module('resiway', [
     };  
     
     $scope.questionVoteUp = function ($event) {
-        var selector = ctrl.buildSelector(angular.element($event.target));
+        var selector = feedback.selector($event.target);
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_voteup',
@@ -931,8 +1104,7 @@ var resiway = angular.module('resiway', [
                     // todo : get error_id translation
                     var msg = error_id;
                     
-                    //$scope.feedback('.question .vote .vote-up', msg);
-                    $scope.feedback(selector, msg);
+                    feedback.popover(selector, msg);
 
                 }
             }        
@@ -940,7 +1112,7 @@ var resiway = angular.module('resiway', [
     };
     
     $scope.questionVoteDown = function ($event) {
-        var selector = ctrl.buildSelector(angular.element($event.target));
+        var selector = feedback.selector($event.target);
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_votedown',
@@ -965,14 +1137,14 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);                    
+                    feedback.popover(selector, msg);                    
                 }
             }        
         });
     };    
 
     $scope.questionStar = function ($event) {
-        var selector = ctrl.buildSelector(angular.element($event.target));
+        var selector = feedback.selector($event.target);
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_star',
@@ -989,7 +1161,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);                    
+                    feedback.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.history['resiexchange_question_star'] = data.result;
@@ -1005,7 +1177,7 @@ var resiway = angular.module('resiway', [
     };      
 
     $scope.questionCommentVoteUp = function ($event, index) {
-        var selector = ctrl.buildSelector(angular.element($event.target));    
+        var selector = feedback.selector($event.target);    
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_questioncomment_voteup',
@@ -1024,7 +1196,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);                    
+                    feedback.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.comments[index].history['resiexchange_questioncomment_voteup'] = data.result;
@@ -1039,8 +1211,46 @@ var resiway = angular.module('resiway', [
         });
     };
     
+    $scope.questionDelete = function ($event) {
+        ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title).then(
+            function () {
+                var selector = feedback.selector($event.target);                  
+                $actions.perform({
+                    // valid name of the action to perform server-side
+                    action: 'resiexchange_question_delete',
+                    // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                    data: {question_id: $scope.question.id},
+                    // scope in wich callback function will apply 
+                    scope: $scope,
+                    // callback function to run after action completion (to handle error cases, ...)
+                    callback: function($scope, data) {
+                        // we need to do it this way because current controller might be destroyed in the meantime
+                        // (if route is changed to signin form)
+                        if(data.result === true) {                  
+                            // go back to questions list
+                            $location.path('/questions');
+                        }
+                        else if(data.result === false) { 
+                            // deletion toggle : we shouldn't reach this point with this controller
+                        }
+                        else {
+                            // result is an error code
+                            var error_id = data.error_message_ids[0];                    
+                            // todo : get error_id translation
+                            var msg = error_id;
+                            feedback.popover(selector, msg);
+                        }
+                    }        
+                });
+            }, 
+            function () {
+                // dismissed
+            }
+        );     
+    };
+    
     $scope.answerVoteUp = function ($event, index) {
-        var selector = ctrl.buildSelector(angular.element($event.target));           
+        var selector = feedback.selector($event.target);           
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_voteup',
@@ -1065,14 +1275,14 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);
+                    feedback.popover(selector, msg);
                 }
             }        
         });
     };
     
     $scope.answerVoteDown = function ($event, index) {
-        var selector = ctrl.buildSelector(angular.element($event.target));        
+        var selector = feedback.selector($event.target);        
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_votedown',
@@ -1097,14 +1307,14 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);
+                    feedback.popover(selector, msg);
                 }
             }        
         });
     };      
     
     $scope.answerFlag = function ($event, index) {
-        var selector = ctrl.buildSelector(angular.element($event.target));           
+        var selector = feedback.selector($event.target);           
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_flag',
@@ -1123,7 +1333,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);                    
+                    feedback.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.answers[index].history['resiexchange_answer_flag'] = data.result;
@@ -1133,7 +1343,7 @@ var resiway = angular.module('resiway', [
     };
     
     $scope.answerComment = function($event, index) {
-        var selector = ctrl.buildSelector(angular.element($event.target));
+        var selector = feedback.selector($event.target);
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_comment',
@@ -1153,7 +1363,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);
+                    feedback.popover(selector, msg);
                 }
                 else {
                     var answer_id = $scope.question.answers[index].id;
@@ -1165,7 +1375,7 @@ var resiway = angular.module('resiway', [
                     // wait for next digest cycle
                     $timeout(function() {
                         // scroll to newly created comment
-                        $scope.feedback('#comment-'+answer_id+'-'+comment_id, '');
+                        feedback.popover('#comment-'+answer_id+'-'+comment_id, '');
                     });
                 }
             }        
@@ -1173,7 +1383,7 @@ var resiway = angular.module('resiway', [
     };    
         
     $scope.answerCommentVoteUp = function ($event, answer_index, index) {
-        var selector = ctrl.buildSelector(angular.element($event.target));           
+        var selector = feedback.selector($event.target);           
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answercomment_voteup',
@@ -1192,7 +1402,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);                    
+                    feedback.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'] = data.result;
@@ -1208,7 +1418,7 @@ var resiway = angular.module('resiway', [
     };
 
     $scope.answerCommentFlag = function ($event, answer_index, index) {
-        var selector = ctrl.buildSelector(angular.element($event.target));           
+        var selector = feedback.selector($event.target);           
         $actions.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answercomment_flag',
@@ -1227,7 +1437,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);                    
+                    feedback.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] = data.result;
@@ -1236,49 +1446,229 @@ var resiway = angular.module('resiway', [
         });
     };
 
-    $scope.answerDelete = function ($event, index) {        
-        var selector = ctrl.buildSelector(angular.element($event.target));       
+    $scope.answerDelete = function ($event, index) {
+        ctrl.open('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt).then(
+            function () {
+                var selector = feedback.selector($event.target);                  
+                $actions.perform({
+                    // valid name of the action to perform server-side
+                    action: 'resiexchange_answer_delete',
+                    // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                    data: {answer_id: $scope.question.answers[index].id},
+                    // scope in wich callback function will apply 
+                    scope: $scope,
+                    // callback function to run after action completion (to handle error cases, ...)
+                    callback: function($scope, data) {
+                        // we need to do it this way because current controller might be destroyed in the meantime
+                        // (if route is changed to signin form)
+                        if(data.result === true) {                  
+                            $scope.question.answers.splice(index, 1);
+                            // show user-answer block
+                            $scope.question.history['resiexchange_question_answer'] = false;                    
+                        }
+                        else if(data.result === false) { 
+                            // deletion toggle : we shouldn't reach this point with this controller
+                        }
+                        else {
+                            // result is an error code
+                            var error_id = data.error_message_ids[0];                    
+                            // todo : get error_id translation
+                            var msg = error_id;
+                            feedback.popover(selector, msg);
+                        }
+                    }        
+                });
+            }, 
+            function () {
+                // dismissed
+            }
+        );     
+    };
+    
+})
+
+
+.controller('editAnswerController', function(answer, feedback, $scope, $window, $location, $sce, $actions, textAngularManager) {
+    console.log('editAnswer controller');
+    
+    var ctrl = this;   
+  
+    // @model
+    $scope.answer = answer;
+    
+    // @methods
+    $scope.answerPost = function($event) {
+        var selector = feedback.selector($event.target);
         $actions.perform({
             // valid name of the action to perform server-side
-            action: 'resiexchange_answer_delete',
+            action: 'resiexchange_answer_edit',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
-            data: {answer_id: $scope.question.answers[index].id},
+            data: {
+                answer_id: $scope.answer.id,
+                content: $scope.answer.content
+            },
             // scope in wich callback function will apply 
             scope: $scope,
             // callback function to run after action completion (to handle error cases, ...)
             callback: function($scope, data) {
                 // we need to do it this way because current controller might be destroyed in the meantime
                 // (if route is changed to signin form)
-                if(data.result === true) {                  
-                    $scope.question.answers.splice(index, 1);
-                    // show user-answer block
-                    $scope.question.history['resiexchange_question_answer'] = false;                    
-                }
-                else if(data.result === false) { 
-                    // deletion toggle : we shouldn't reach this point with this controller
-                }
-                else {
+                if(typeof data.result != 'object') {
                     // result is an error code
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    $scope.feedback(selector, msg);
+                    feedback.popover(selector, msg);
+                }
+                else {
+                    var question_id = data.result.question_id;
+                    $location.path('/question/'+question_id);
                 }
             }        
         });
-    };
-    
-      
+    };     
 })
-
 
 /**
-* Display given user public profile
+* Display given question with all details
 *
 */
-.controller('newQuestionController', function($sce, textAngularManager) {
-    console.log('newQuestion controller');    
+.controller('editQuestionController', function(question, categories, feedback, $scope, $window, $location, $sce, $actions, textAngularManager) {
+    console.log('editQuestion controller');
+    
+    var ctrl = this;   
+
+    // @view
+    $scope.categories = categories; 
+    
+    // @model
+    $scope.question = question;
+    
+    /**
+    * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
+    */
+    // save initial tags_ids
+    $scope.initial_tags_ids = [];
+    angular.forEach($scope.question.tags, function(tag, index) {
+        $scope.initial_tags_ids.push('-'+tag.id);
+    });
+    
+    // @events
+    $scope.$watch('question.tags', function() {
+        // reset selection
+        $scope.question.tags_ids = angular.copy($scope.initial_tags_ids);
+        angular.forEach($scope.question.tags, function(tag, index) {
+            $scope.question.tags_ids.push('+'+tag.id);
+        });
+    });
+
+    // @methods
+    $scope.questionPost = function($event) {
+        var selector = feedback.selector(angular.element($event.target));                   
+        $actions.perform({
+            // valid name of the action to perform server-side
+            action: 'resiexchange_question_edit',
+            // string representing the data to submit to action handler (i.e.: serialized value of a form)
+            data: {
+                question_id: (angular.isUndefined($scope.question.id)?0:$scope.question.id),
+                title: $scope.question.title,
+                content: $scope.question.content,
+                tags_ids: $scope.question.tags_ids
+            },
+            // scope in wich callback function will apply 
+            scope: $scope,
+            // callback function to run after action completion (to handle error cases, ...)
+            callback: function($scope, data) {
+                // we need to do it this way because current controller might be destroyed in the meantime
+                // (if route is changed to signin form)
+                if(typeof data.result != 'object') {
+                    // result is an error code
+                    var error_id = data.error_message_ids[0];                    
+                    // todo : get error_id translation
+                    var msg = error_id;
+                    feedback.popover(selector, msg);
+                }
+                else {
+                    var question_id = data.result.id;
+                    $location.path('/question/'+question_id);
+                }
+            }        
+        });
+    };  
+       
 })
+/**
+* display select widget with selected items
+*/
+.filter('resiSearchFilter', function($sce) {
+    return function(label, query, item, options, element) {
+        var closeIcon = '<span class="close select-search-list-item_selection-remove">×</span>';
+        return $sce.trustAsHtml(item.title + closeIcon);
+    };
+})
+.filter('resiDropdownFilter', ['$sce', 'oiSelectEscape', function($sce, oiSelectEscape) {
+    return function(label, query, item) {
+        var html;
+        if (query.length > 0 || angular.isNumber(query)) {
+            label = item.title.toString();
+            query = oiSelectEscape(query);
+            html = label.replace(new RegExp(query, 'gi'), '<strong>$&</strong>');
+        } 
+        else {
+            html = item.title;
+        }
+
+        return $sce.trustAsHtml(html);
+    };
+}])
+.filter('resiListFilter', ['oiSelectEscape', function(oiSelectEscape) {
+    function ascSort(input, query, getLabel, options) {
+        var i, j, isFound, output, output1 = [], output2 = [], output3 = [], output4 = [];
+
+        if (query) {
+            query = oiSelectEscape(query).toLowerASCII();
+            for (i = 0, isFound = false; i < input.length; i++) {
+                isFound = getLabel(input[i]).toLowerASCII().match(new RegExp(query));
+
+                if (!isFound && options && (options.length || options.fields)) {
+                    for (j = 0; j < options.length; j++) {
+                        if (isFound) break;
+                        isFound = String(input[i][options[j]]).toLowerASCII().match(new RegExp(query));
+                    }
+                }
+                if (isFound) {
+                    output1.push(input[i]);
+                }
+            }
+            for (i = 0; i < output1.length; i++) {
+                if (getLabel(output1[i]).toLowerASCII().match(new RegExp('^' + query))) {
+                    output2.push(output1[i]);
+                } 
+                else {
+                    output3.push(output1[i]);
+                }
+            }
+            output = output2.concat(output3);
+
+            if (options && (options === true || options.all)) {
+                inputLabel: for (i = 0; i < input.length; i++) {
+                    for (j = 0; j < output.length; j++) {
+                        if (input[i] === output[j]) {
+                            continue inputLabel;
+                        }
+                    }
+                    output4.push(input[i]);
+                }
+                output = output.concat(output4);
+            }
+        } 
+        else {
+            output = [].concat(input);
+        }
+        return output;
+    }
+    return ascSort;
+}])
 
 /**
 * Display given user public profile

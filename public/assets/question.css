@@ -78,7 +78,7 @@
 }
 
 .answers .answer.on {
-    background-color: #b1c5df;
+    background-color: #fff4df;
 }
 
 .user-answer .subheader {
@@ -263,7 +263,7 @@
     border-color: transparent;
 }
 
-.user-answer .content {
+.user-question .content, .user-answer .content {
     margin-bottom: 20px;
 }
 

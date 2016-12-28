@@ -14,18 +14,19 @@
     <script src="assets/angular-touch.min.js"></script>
     <script src="assets/angular-sanitize.js"></script>
     <script src="assets/angular-cookies.js"></script>
-    <script src="assets/ui-bootstrap-tpls-2.2.0.min.js"></script>
-    <script src="assets/angular-route.min.js"></script>    
-    <script src="assets/md5.js"></script>
 
+    <script src="assets/angular-route.min.js"></script>    
+    <script src="assets/angular-translate.min.js"></script>    
+    <script src="assets/angular-translate-loader-static-files.min.js"></script>  
+    
+    
+    <script src="assets/ui-bootstrap-tpls-2.2.0.min.js"></script>    
+    <script src="assets/md5.js"></script>
     
     <script src='assets/textAngular-rangy.min.js'></script>
     <script src='assets/textAngular-sanitize.min.js'></script>
-    <script src='assets/textAngular.min.js'></script>
-    <!--
-    <script src='assets/textAngular.js'></script>
-    <script src='assets/textAngularSetup.js'></script>    
-    -->
+    <script src='assets/textAngular.min.js'></script>   
+    
     <script src='assets/select-tpls.min.js'></script>
     
     <script src="assets/resiway.js"></script>
@@ -35,7 +36,7 @@
     <link rel="stylesheet" href="assets/font-awesome.css">
     <link rel="stylesheet" href="assets/style.css"/>
     <link rel="stylesheet" href="assets/question.css"/>    
-    <link rel="stylesheet" href="assets/select.min.css"/>
+    <link rel="stylesheet" href="assets/select.css"/>
     
 
     <link rel="stylesheet" href="assets/textAngular.css" type="text/css">
@@ -48,12 +49,37 @@
 </head>
 
 <body class="ng-cloak">
-
+    <!-- templates in rootScope -->
+    <script type="text/ng-template" id="popover-custom.html">
+    <div style="line-height: 20px; min-height: 20px;">
+        <button type="button" 
+                class="close" 
+                style="margin-left: 30px;" 
+                ng-click="popover.close()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>      
+        <div style="float: left;">{{popover.content()}}</div>
+    </div>
+    </script>
+    <script type="text/ng-template" id="modal-custom.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">{{ctrl.title_id | translate}}</h3>
+        </div>
+        <div class="modal-body" id="modal-body">
+            {{ctrl.header_id | translate}}        
+            <pre>{{ctrl.body}}</pre>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-success" type="button" autofocus="true" ng-click="ctrl.ok()">{{'MODAL_OK' | translate}}</button>
+            <button class="btn btn-warning" type="button" ng-click="ctrl.cancel()">{{'MODAL_CANCEL' | translate}}</button>
+        </div>
+    </script>
+    
     <div ng-include="'topbar.html'"></div>
 
-    <div id="body">
-    
-        
+    <div id="body">   
+        <div class="modal-wrapper"></div>
         <div class="container">
             <div ng-include="'menu.html'"></div>
             <div ng-show="viewContentLoading" style="width: 100%; line-height: 250px; text-align: center;"><i style="font-size: 30px;" class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
@@ -64,7 +90,17 @@
 
     <div id="footer">
         <div class="grid wrapper">
-            <div class="col-1-1 nopad">test
+            <div class="container col-1-1">
+
+                    <p>            
+                    Chez Resiway, notre objectif ultime est de devenir inutile.
+                    Pour cette raison, tous les contenus présents sur les sites du réseau ResiWay sont libres.
+                    </p>
+                    <p>ResiWay is an international nonprofit organization &bull; site design, logo, site content &amp; user contributions licensed under <a href="https://creativecommons.org/licenses/by-sa/3.0/deed.fr">CC by-sa 3.0</a></p>
+                    <div>
+                        <center>À propos | Aide | Nous soutenir | Mentions légales | Mon compte | Contact</center>
+                    </div>
+
             </div>
         </div>
     </div>    

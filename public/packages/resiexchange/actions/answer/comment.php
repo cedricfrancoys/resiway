@@ -4,7 +4,6 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
 
 
 // force silent mode (debug output would corrupt json data)
@@ -12,7 +11,7 @@ set_silent(true);
 
 // announce script and fetch parameters values
 $params = QNLib::announce([
-    'description'	=>	"Registers a question as favorite for current user",
+    'description'	=>	"Adds a new comment to an answer",
     'params' 		=>	[
         'answer_id'	    => array(
                             'description'   => 'Identifier of the answer the user is commenting.',

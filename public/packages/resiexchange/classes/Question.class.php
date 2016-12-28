@@ -1,6 +1,9 @@
 <?php
 namespace resiexchange;
 
+use easyobject\orm\DataAdapter as DataAdapter;
+
+
 class Question extends \easyobject\orm\Object {
 
     public static function getColumns() {
@@ -9,11 +12,11 @@ class Question extends \easyobject\orm\Object {
             'title'				    => array('type' => 'string', 'onchange' => 'resiexchange\Question::onchangeTitle'),
                            
             /* text describing the question */
-            'content'			    => array('type' => 'text', 'onchange' => 'resiexchange\Question::onchangeContent'),
+            'content'			    => array('type' => 'html', 'onchange' => 'resiexchange\Question::onchangeContent'),
 
             'content_excerpt'       => array(
                                         'type'              => 'function',
-                                        'result_type'       => 'string',
+                                        'result_type'       => 'short_text',
                                         'store'             => true, 
                                         'function'          => 'resiexchange\Question::getContentExcerpt'
                                        ),
@@ -78,11 +81,12 @@ class Question extends \easyobject\orm\Object {
         );
     }
 
-    public static function excerpt($string, $max_chars) {
-        $res = '';
+    public static function excerpt($html, $max_chars) {
+        $res = '';        
+        // convert html to txt
+        $string = DataAdapter::adapt('ui', 'orm', 'text', $html);
         $len = 0;
-        $parts = explode(' ', $string);
-        for($i = 0, $j = count($parts); $i < $j; ++$i) {
+        for($i = 0, $parts = explode(' ', $string), $j = count($parts); $i < $j; ++$i) {
             $piece = $parts[$i].' ';
             $p_len = strlen($piece);
             if($len + $p_len > $max_chars) break;
@@ -94,8 +98,7 @@ class Question extends \easyobject\orm\Object {
     
     public static function onchangeContent($om, $oids, $lang) {
         // force re-compute content_excerpt
-        $om->write('resiexchange\Question', $oids, ['content_excerpt' => null], $lang);
-        
+        $om->write('resiexchange\Question', $oids, ['content_excerpt' => null], $lang);        
     }
 
     // Returns excerpt of the content of max 200 chars cutting on a word-basis   
@@ -104,7 +107,7 @@ class Question extends \easyobject\orm\Object {
         $result = [];
         $res = $om->read('resiexchange\Question', $oids, ['content']);
         foreach($res as $oid => $odata) {
-            $result[$oid] = Question::excerpt($odata['content'], 200);
+            $result[$oid] = self::excerpt($odata['content'], 200);
         }
         return $result;        
     }
