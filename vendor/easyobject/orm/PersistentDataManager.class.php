@@ -41,12 +41,12 @@ class PersistentDataManager {
         unset($this->valuesTable[$key]);
     }
     
-	public function retrieve($key, $default=null) {
+	public function get($key, $default=null) {
         if(!isset($this->valuesTable[$key])) return $default;
     	return $this->valuesTable[$key];
 	}
 
-	public function register($key, $value) {
+	public function set($key, $value) {
 		$this->valuesTable[$key] = $value;
 		return $value;
 	}

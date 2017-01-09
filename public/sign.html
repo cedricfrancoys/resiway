@@ -1,11 +1,12 @@
 <div class="grid wrapper login-pane">
-    <div class="col-4-12" ng-show="ctrl.mode=='in'" ng-cloak>
+    <div class="col-4-12" ng-show="ctrl.mode=='' || ctrl.mode=='in'" ng-cloak>
         <div class=" ">
             <div class="panel-heading">
-                <div class="panel-title"><i class="fa fa-sign-in" aria-hidden="true"></i> Sign In</div>                
+                <div class="panel-title"><i class="fa fa-sign-in" aria-hidden="true"></i> Sign In</div>
+                <div style="padding-top: 10px;">Identifiez-vous pour valider vos actions.</div>                
             </div>
-            <div style="padding-top:30px" class="panel-body" >
-                <div uib-alert ng-repeat="alert in signAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignAlert($index)">{{alert.msg}}</div>
+            <div style="padding-top:20px" class="panel-body" >
+                <div uib-alert ng-repeat="alert in signInAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignInAlert($index)">{{alert.msg}}</div>
                 
                 <form id="loginform" class="form-horizontal" role="form">       
                     <div class="input-group" style="margin-bottom: 25px">
@@ -25,7 +26,11 @@
                     </div>
                     <div style="margin-top:10px;" class="form-group">
                         <div class="col-sm-12 controls">
-                          <button type="submit" id="btn-login" style="width: 100%;" class="btn btn-primary col-sm-12" ng-click="ctrl.signIn()">Login</button>
+                          <button type="submit" 
+                                  id="btn-login" 
+                                  style="width: 100%;" 
+                                  class="btn btn-primary col-sm-12" 
+                                  ng-click="ctrl.signIn()">Login</button>
                         </div>
                     </div>
                    
@@ -33,12 +38,52 @@
             </div>                     
         </div>
     </div>        
+    
+    <div class="col-4-12" ng-show="ctrl.mode=='' || ctrl.mode=='up'" ng-cloak>
+        <div class=" ">
+            <div class="panel-heading">
+                <div class="panel-title"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign Up</div>                
+                <div style="padding-top: 10px;">Inscrivez-vous pour participer à ResiWay</div>                   
+            </div>
+            <div style="padding-top:20px" class="panel-body" >
+                <div uib-alert ng-repeat="alert in signUpAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignUpAlert($index)">{{alert.msg}}</div>
+                
+                <form id="loginform" class="form-horizontal" role="form">       
+                    <div class="input-group" style="margin-bottom: 25px">
+                        <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
+                        <input ng-model="firstname" id="user-firstname" type="text" class="form-control" name="firstname" value="" placeholder="first name">                                        
+                    </div>
+                    <div class="input-group" style="margin-bottom: 25px">
+                        <span class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></span>
+                        <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="email">                                        
+                    </div>
+                    <div class="input-group" style="visibility: hidden;">
+                      <div class="checkbox">
+                        <label>
+                          <input type="checkbox" > &nbsp;
+                        </label>
+                      </div>
+                    </div>
+                    <div style="margin-top:10px;" class="form-group">
+                        <div class="col-sm-12 controls">
+                          <a href 
+                             id="btn-login"
+                             style="width: 100%;" 
+                             class="btn btn-primary col-sm-12" 
+                             ng-click="ctrl.signUp()">Register</a>
+                        </div>
+                    </div>
+                   
+                </form>
+            </div>                     
+        </div>
+    </div>
     <div class="col-4-12" ng-show="ctrl.mode=='recover'" ng-cloak>
         <div class="">
             <div class="panel-heading">
                 <div class="panel-title"><i class="fa fa-unlock-alt" aria-hidden="true"></i> Forgotten password ?</div>
             </div>
-            <div style="padding-top:30px" class="panel-body" >
+            <div style="padding-top:20px" class="panel-body" >
                 <div uib-alert ng-repeat="alert in recoverAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeRecoverAlert($index)">{{alert.msg}}</div>
                 
                 <form id="loginform" class="form-horizontal" role="form">       
@@ -66,40 +111,6 @@
                 </form>
             </div>                     
         </div>        
-    </div>
-    <div class="col-4-12" ng-show="ctrl.mode=='up'" ng-cloak>
-        <div class=" ">
-            <div class="panel-heading">
-                <div class="panel-title"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign Up</div>                
-            </div>
-            <div style="padding-top:30px" class="panel-body" >
-                <div uib-alert ng-repeat="alert in signAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignAlert($index)">{{alert.msg}}</div>
-                
-                <form id="loginform" class="form-horizontal" role="form">       
-                    <div class="input-group" style="margin-bottom: 25px">
-                        <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
-                        <input ng-model="firstname" id="user-firstname" type="text" class="form-control" name="firstname" value="" placeholder="first name">                                        
-                    </div>
-                    <div class="input-group" style="margin-bottom: 25px">
-                        <span class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></span>
-                        <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="email">                                        
-                    </div>
-                    <div class="input-group" style="visibility: hidden;">
-                      <div class="checkbox">
-                        <label>
-                          <input type="checkbox" > &nbsp;
-                        </label>
-                      </div>
-                    </div>
-                    <div style="margin-top:10px;" class="form-group">
-                        <div class="col-sm-12 controls">
-                          <a id="btn-login" href style="width: 100%;" class="btn btn-primary col-sm-12" ng-click="ctrl.signUp()">Register</a>
-                        </div>
-                    </div>
-                   
-                </form>
-            </div>                     
-        </div>
     </div>    
     <div class="col-4-12 nopad">
         <div class="panel-heading">

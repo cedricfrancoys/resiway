@@ -8,7 +8,17 @@ class Answer extends \easyobject\orm\Object {
 
     public static function getColumns() {
         return array(
+            /* all objects must define a 'name' column (default is id) */
+            'name'				    => array('type' => 'alias', 'alias' => 'title'),
 
+            /* subject of the question */
+            'title'				    => array(
+                                        'type'              => 'function',
+                                        'result_type'       => 'string', 
+                                        'store'             => false,
+                                        'function'          => 'resiexchange\Answer::getTitle'
+                                        ),
+                                        
             /* identifier of the question to which the answer refers to */
             'question_id'           => array('type' => 'many2one', 'foreign_object'=> 'resiexchange\Question'),
 
@@ -78,5 +88,16 @@ class Answer extends \easyobject\orm\Object {
             $result[$oid] = self::excerpt($odata['content'], 200);
         }
         return $result;        
-    }    
+    }
+    
+    public static function getTitle($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read('resiexchange\Answer', $oids, ['question_id']);
+        $questions_ids = array_map(function($a){return $a['question_id'];}, $res);
+        $questions = $om->read('resiexchange\Question', $questions_ids, ['title']);
+        foreach($res as $oid => $odata) {
+            $result[$oid] = $questions[$odata['question_id']]['title'];
+        }
+        return $result;        
+    }        
 }

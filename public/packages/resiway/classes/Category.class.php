@@ -2,37 +2,39 @@
 namespace resiway;
 
 
-class Tag extends \easyobject\orm\Object {
+class Category extends \easyobject\orm\Object {
 
     public static function getColumns() {
         return array(
-
-            'title'             => array('type' => 'string', 'multilang' => true, 'onchange' => 'resiway\Tag::onchangeTitle'),
+            /* all objects must define a 'name' column (default is id) */
+            'name'				=> array('type' => 'alias', 'alias' => 'title'),
+            
+            'title'             => array('type' => 'string', 'multilang' => true, 'onchange' => 'resiway\Category::onchangeTitle'),
             
             'description'		=> array('type' => 'short_text', 'multilang' => true),
             
             'parent_id'			=> array(
                                     'type'              => 'many2one', 
-                                    'foreign_object'    => 'resiway\Tag', 
-                                    'onchange'          => 'resiway\Tag::onchangeTitle'),
+                                    'foreign_object'    => 'resiway\Category', 
+                                    'onchange'          => 'resiway\Category::onchangeTitle'),
                                     
             'path'				=> array(
                                     'type'              => 'function', 
                                     'store'             => true,
                                     'multilang'         => true,
                                     'result_type'       => 'string', 
-                                    'function'          => 'resiway\Tag::getPath'),
+                                    'function'          => 'resiway\Category::getPath'),
                                     
             'parent_path'		=> array(
                                     'type'              => 'function', 
                                     'store'             => true,
                                     'multilang'         => true,
                                     'result_type'       => 'string', 
-                                    'function'          => 'resiway\Tag::getParentPath'),
+                                    'function'          => 'resiway\Category::getParentPath'),
                                     
             'children_ids'		=> array(
                                     'type'              => 'one2many', 
-                                    'foreign_object'    => 'resiway\Tag', 
+                                    'foreign_object'    => 'resiway\Category', 
                                     'foreign_field'     => 'parent_id', 
                                     'order'             => 'name'),
 
@@ -71,15 +73,15 @@ class Tag extends \easyobject\orm\Object {
     */
     public static function onchangeTitle($om, $oids, $lang) {
         // force re-compute mnemonic and path
-        $om->write('resiway\Tag', $oids, ['path' => null], $lang);
+        $om->write('resiway\Category', $oids, ['path' => null], $lang);
         // find children tags and force to re-compute path
-        $tags_ids = $om->search('resiway\Tag', ['parent_id', 'in', $oids]);
-        if($tags_ids > 0 && count($tags_ids)) Tag::onchangeTitle($om, $tags_ids, $lang);
+        $tags_ids = $om->search('resiway\Category', ['parent_id', 'in', $oids]);
+        if($tags_ids > 0 && count($tags_ids)) Category::onchangeTitle($om, $tags_ids, $lang);
     }
 
     public static function getPath($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiway\Tag', $oids, ['title', 'parent_id', 'parent_id.path'], $lang);        
+        $res = $om->read('resiway\Category', $oids, ['title', 'parent_id', 'parent_id.path'], $lang);        
         foreach($oids as $oid) {
             $result[$oid] = '';
             if(isset($res[$oid])) {
@@ -95,7 +97,7 @@ class Tag extends \easyobject\orm\Object {
 
     public static function getParentPath($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiway\Tag', $oids, ['parent_id.path'], $lang);
+        $res = $om->read('resiway\Category', $oids, ['parent_id.path'], $lang);
         foreach($oids as $oid) {
             $result[$oid] = '';
             if(isset($res[$oid]) && isset($res[$oid]['parent_id.path'])) { 

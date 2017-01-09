@@ -4,81 +4,44 @@
 // todo : uplad images (avatar)
 // @see : http://stackoverflow.com/questions/13963022/angularjs-how-to-implement-a-simple-file-upload-with-multipart-form?answertab=votes#tab-top
 
-/**
-* Converts to lower case and strips accents
-* this method is used in myListFilter, a custom filter for dsiplaying categories list
-* using the oi-select angular plugin
-*
-* note : this is not valid for non-latin charsets !
-*/
-String.prototype.toLowerASCII = function () {
-    var str = this.toLocaleLowerCase();
-    var result = '';
-    var convert = {
-        192:'a', 193:'a', 194:'a', 195:'a', 196:'a', 197:'a',
-        224:'a', 225:'a', 226:'a', 227:'a', 228:'a', 229:'a',
-        200:'e', 201:'e', 202:'e', 203:'e',
-        232:'e', 233:'e', 234:'e', 235:'e',
-        204:'i', 205:'i', 206:'i', 207:'i',
-        236:'i', 237:'i', 238:'i', 239:'i',
-        210:'o', 211:'o', 212:'o', 213:'o', 214:'o', 216:'o',
-        240:'o', 242:'o', 243:'o', 244:'o', 245:'o', 246:'o',
-        217:'u', 218:'u', 219:'u', 220:'u',      
-        249:'u', 250:'u', 251:'u', 252:'u'
-    };
-    for (var i = 0, code; i < str.length; i++) {
-        code = str.charCodeAt(i);
-        if(code < 128) {
-            result = result + str.charAt(i);
-        }
-        else {
-            if(typeof convert[code] != 'undefined') {
-                result = result + convert[code];   
-            }
-        }
-    }
-    return result;
-}
 
 
-
+// Instanciate resiway module
 var resiway = angular.module('resiway', [
-'ui.bootstrap',
-'ngSanitize',
-'ngCookies', 
-'ngAnimate', 
-'oi.select',
-'pascalprecht.translate',
-'textAngular',
-'ngRoute',
     // dependencies
-    function() {
-        console.log('resilib module init');
-    }
+    'ngRoute', 
+    'ngSanitize',
+    'ngCookies', 
+    'ngAnimate', 
+    'ui.bootstrap',    
+    'oi.select',    
+    'textAngular',
+    'pascalprecht.translate'
 ])
 
 .config(function(
-                $provide, 
-                $routeProvider, 
-                $routeParamsProvider,
+                $provide,
                 $translateProvider,
                 $locationProvider, 
                 $anchorScrollProvider, 
-                $httpProvider) {
+                $httpProvider,
+                $httpParamSerializerJQLikeProvider) {
     // $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false}).hashPrefix('!');
     $locationProvider.html5Mode({enabled: false, requireBase: false, rewriteLinks: false});
     
     //$anchorScrollProvider.disableAutoScrolling();
 
-    $translateProvider.preferredLanguage('fr');
+    // we expect a file holding the translation var definition 
+    // to be loaded in index.html
+    if(typeof translations != 'undefined') {
+        $translateProvider
+          .translations('custom', translations)
+          .preferredLanguage('custom')
+          .useSanitizeValueStrategy('sanitize');          
+    }
 
-    $translateProvider.useStaticFilesLoader({
-      prefix: '/i18n/locale-',
-      suffix: '.json'
-    });
-    $translateProvider.useSanitizeValueStrategy('sanitize');
     
-    // add fulscreen capability to textAngular editor
+    // Provide fulscreen capability to textAngular editor
     $provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) { 
         // $delegate is the taOptions we are decorating
         taRegisterTool('fullScreen', {
@@ -139,524 +102,21 @@ var resiway = angular.module('resiway', [
         taOptions.toolbar[1].push('fullScreen');
         return taOptions;
     }]);
-
-    /**
-    * Routes definition
-    * This call associates handled URL with their related views and controllers
-    * 
-    * As a convention, a 'ctrl' member is always defined inside a controller as itself
-    * so it can be manipulated the same way in view and in controller
-    */
-    $routeProvider
-    .when('/questions/:channel?', {
-        templateUrl : 'search.html',
-        controller  : 'searchController as ctrl'
-    })
-    .when('/question/edit/:id', {
-        templateUrl : 'editQuestion.html',
-        controller  : 'editQuestionController as ctrl',
-        resolve     : {
-            /**
-            * editQuestionController will wait for these promises to be resolved and provided as services
-            */
-            question: function($http, $route, $sce) {
-                // new question
-                if($route.current.params.id == 0 
-                || typeof $route.current.params.id == 'undefined') return {};
-                return $http.get('index.php?get=resiexchange_question&id='+$route.current.params.id)
-                .then(
-                    function successCallback(response) {
-                        var data = response.data;
-                        if(typeof data.result != 'object') return {};
-                        // mark html as safe
-                        data.result.content = $sce.trustAsHtml(data.result.content); 
-                        return data.result;
-                    },
-                    function errorCallback(response) {
-                        // something went wrong server-side
-                        return {};
-                    }
-                );
-            },            
-            categories: function($http, $sce) {
-                return $http.get('index.php?get=resiway_categories')
-                .then(
-                    function successCallback(response) {
-                        var data = response.data;
-                        if(typeof data.result != 'object') return [];
-                        return data.result;
-                    },
-                    function errorCallback(response) {
-                        // something went wrong server-side
-                        return [];
-                    }
-                );
-            }
-        }        
-    })    
-    .when('/question/:id', {
-        templateUrl : 'question.html',
-        controller  : 'questionController as ctrl',
-        reloadOnSearch: false,
-        resolve     : {
-            /**
-            * questionController will wait for these promises to be resolved and provided as services
-            */
-            question: function($http, $route, $sce) {
-
-                if(typeof $route.current.params.id == 'undefined') return {};
-
-                return $http.get('index.php?get=resiexchange_question&id='+$route.current.params.id)
-                .then(
-                    function successCallback(response) {
-                        var data = response.data;
-                        if(typeof data.result != 'object') return {};
-                             
-                        // adapt result to view requirements
-                        var attributes = {
-                            commentsLimit: 5,
-                            newCommentShow: false,
-                            newCommentContent: '',
-                            newAnswerContent: ''                               
-                        }
-                        // mark html as safe
-                        data.result.content = $sce.trustAsHtml(data.result.content);                               
-                        // add special fields
-                        angular.extend(data.result, attributes);
-                        
-                        angular.forEach(data.result.answers, function(value, index) {
-                            // mark html as safe
-                            data.result.answers[index].content = $sce.trustAsHtml(data.result.answers[index].content);
-                            // add special fields
-                            angular.extend(data.result.answers[index], attributes);
-                        });
-                        
-                        return data.result;
-                    },
-                    function errorCallback(response) {
-                        // something went wrong server-side
-                        return {};
-                    }
-                );
-            }
-        }
-    })
-    .when('/answer/edit/:id', {
-        templateUrl : 'editAnswer.html',
-        controller  : 'editAnswerController as ctrl',
-        resolve     : {
-            /**
-            * editQuestionController will wait for these promises to be resolved and provided as services
-            */
-            answer: function($http, $route, $sce) {
-                // new question
-                if($route.current.params.id == 0 
-                || typeof $route.current.params.id == 'undefined') return {};
-                return $http.get('index.php?get=resiexchange_answer&id='+$route.current.params.id)
-                .then(
-                    function successCallback(response) {
-                        var data = response.data;
-                        if(typeof data.result != 'object') return {};
-                        // mark html as safe
-                        data.result.content = $sce.trustAsHtml(data.result.content); 
-                        return data.result;
-                    },
-                    function errorCallback(response) {
-                        // something went wrong server-side
-                        return {};
-                    }
-                );
-            }
-        }        
-    })     
-    .when('/user', {
-        templateUrl : 'user.html',
-        controller  : 'userController as ctrl'
-    })
-    .when('/user/sign/:mode?', {
-        templateUrl : 'sign.html',
-        controller  : 'signController as ctrl',
-        reloadOnSearch: false
-    })
-    .otherwise({
-        templateUrl : 'home.html',
-        controller  : 'homeController as ctrl'
-    });    
     
     
     // Use x-www-form-urlencoded Content-Type
-    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';
-    
-    // Override $http service's default transformRequest
-    $httpProvider.defaults.transformRequest = [function(data) {
-        // prepare the request data for the form post.
-        return( serializeData( data ) );
-
-        /**
-        * Serialize the given Object into a key-value pair string. This
-        * method expects an object and will default to the toString() method.
-        * 
-        * This is an atered version of the jQuery.param() method which
-        * will serialize a data collection for Form posting.
-        *
-        * @private
-        * @source: https://github.com/jquery/jquery/blob/master/src/serialize.js#L45
-        */      
-        function serializeData( data ) {
-            // If this is not an object, defer to native stringification.
-            if ( ! angular.isObject( data ) ) {
-                return( ( data == null ) ? "" : data.toString() );
-            }
-            var buffer = [];
-            // Serialize each key in the object.
-            for ( var name in data ) {
-                if ( ! data.hasOwnProperty( name ) ) {
-                    continue;
-                }
-                var value = data[ name ];
-                buffer.push(
-                    encodeURIComponent( name ) +
-                    "=" +
-                    encodeURIComponent( ( value == null ) ? "" : value )
-                );
-            }
-            // Serialize the buffer and clean it up for transportation.
-            return buffer
-                .join( "&" )
-                .replace( /%20/g, "+" );
-        }        
-    }];    
-    
-})
-
-/**
-*
-*/
-.service('$authentication', function($rootScope, $http, $q, $cookieStore) {
-    var $auth = this;
-    
-
-    // @init
-    $auth.username = '';
-    $auth.password = '';
-    
-    // @private
-    this.userId = function() {
-        var deferred = $q.defer();
-        // attempt to log the user in
-        $http.get('index.php?get=resiway_user_id').then(
-        function successCallback(response) {
-            if(typeof response.data.result != 'undefined'
-            && response.data.result > 0) {
-                deferred.resolve(response.data.result);
-            } 
-            else {
-                deferred.reject(); 
-            }
-        },
-        function errorCallback(response) {
-            deferred.reject();
-        });
-        return deferred.promise;            
-    };
-        
-    // @private
-    this.userData = function(user_id) {
-        var deferred = $q.defer();
-        // attempt to retrieve user data
-// todo : define a custom controller to retrieve user data        
-        $http.get('index.php?get=core_objects_read&class_name=resiway\\User&ids[]='+user_id)
-        .success(function(data, status, headers, config) {
-            if(typeof data == 'object' 
-            && typeof data.result == 'object'
-            && typeof data.result[user_id] != 'undefined') {
-                deferred.resolve(data.result[user_id]);
-            }
-            else {
-                deferred.reject();
-            }
-        })
-        .error(function(data, status, headers, config) {
-            deferred.reject();
-        });    
-        return deferred.promise;            
-    };
-
-
-    /**
-    *
-    * This method is called:
-    *  at runtime (run method), if a cookie is retrieved
-    *  in the sign controller
-    *  in the register controller
-    *
-    * @public
-    */
-    this.setCredentials = function (username, password, store) {
-        $auth.username = username;
-        $auth.password = password;
-        // store crendentials in the cookie
-        if(store) {
-            $cookieStore.put('username', username);
-            $cookieStore.put('password', password);
-        }             
-    };
-    
-    // @public
-    this.clearCredentials = function () {
-        $auth.username = '';
-        $auth.password = '';        
-        $rootScope.user_id = 0;
-        $rootScope.user = {};
-        $cookieStore.remove('username');
-        $cookieStore.remove('password'); 
-    };    
-    
-
-    // @private
-    this.login = function() {
-        var deferred = $q.defer();
-        if(typeof $auth.username == 'undefined'
-        || typeof $auth.password == 'undefined'
-        || !$auth.username.length 
-        || !$auth.password.length) {
-            $auth.clearCredentials();
-            // reject with a 'missing_param' error code
-            deferred.reject({'result': -2});
-        }
-        else {
-            $http.get('index.php?do=resiway_user_login&login='+$auth.username+'&password='+$auth.password)
-            .then(
-                function successCallback(response) {
-                    if(typeof response.data.result == 'undefined') {
-                        // something went wrong server-side
-                        deferred.reject({'result': -1});
-                    }
-                    else {
-                        if(response.data.result < 0) {
-                            // given values not accepted
-                            $auth.clearCredentials();
-                            deferred.reject(response.data);
-                        }
-                        else {
-                            deferred.resolve(response.data.result);
-                        }
-                    }
-                },
-                function errorCallback(response) {
-                    // something went wrong server-side
-                    deferred.reject({'result': -1});
-                }
-            );
-        }
-        return deferred.promise;
-    };
-    
-    // @public
-    // this method works in best-effort to ensure user identification
-    // tries to recover if a session is already set server-side
-    // otherwise it uses current credentials to log user in and read related data
-    //
-    this.authenticate = function() {
-        var deferred = $q.defer();
-        
-        // if the user is already logged in
-        if($rootScope.user_id > 0) {        
-            deferred.resolve($rootScope.user);
-        }
-        // user is still unidentified
-        else {
-            // request user_id (checks if seesion is set server-side)
-            $auth.userId().then(
-            // session is already set
-            function(user_id) {
-                // fetch related data
-                $auth.userData(user_id).then(
-                function(data) {
-                    $rootScope.user_id = user_id;
-                    $rootScope.user = data;
-                    deferred.resolve(data);
-                },
-                function() {
-                    // something went wrong server-side
-                    deferred.reject(); 
-                });                    
-            },
-            // user is not identified yet
-            function() {                    
-                // try to sign in with current credentials                    
-                $auth.login().then(
-                function(user_id) {
-                    $auth.userData(user_id)
-                    .then(
-                        function successHandler(data) {
-                            $rootScope.user_id = user_id;
-                            $rootScope.user = data;
-                            deferred.resolve(data);
-                        },
-                        function errorHandler() {
-                            // something went wrong server-side
-                            deferred.reject();                                
-                        }
-                    );                            
-                },
-                function(data) {
-                    // given values were not accepted 
-                    // or something went wrong server-side
-                    deferred.reject();  
-                });
-            });
-        }
-        return deferred.promise;
-    };
-
+    $httpProvider.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=utf-8';    
+    $httpProvider.defaults.paramSerializer = '$httpParamSerializerJQLike';    
+    $httpProvider.defaults.transformRequest.unshift($httpParamSerializerJQLikeProvider.$get());
 })
 
 
 
-.service('$actions', function($rootScope, $http, $location, $authentication) {
-    
-    this.perform = function(action) {
-        var defaults = {
-            // valid name of the action to perform server-side
-            action: '',
-            // string representing the data to submit to action handler (i.e.: serialized value of a form)
-            data: '',
-            // path to return to once user is identified
-            next_path: $location.path(),
-            // scope in wich callback function will apply
-            scope: null,
-            // callback function to run after action completion (to handle error cases, ...)
-            callback: function(scope, data) {}
-        };
-        
-        var task = angular.extend({}, defaults, action);
-        
-        $authentication.authenticate().then(
-        // user is authentified and can perform the action
-        function() {
-            // pending action has been processed : reset it from global scope
-            $rootScope.pendingAction = null;
-            // submit action to the server, if any
-            if(typeof task.action != 'undefined'
-            && task.action.length > 0) {
-                $http.post('index.php?do='+task.action, task.data).then(
-                function successCallback(response) {
-                    if(typeof task.callback == 'function') {
-                        task.callback(task.scope, response.data);
-                    }
-                },
-                function errorCallback() {
-                    // something went wrong server-side
-                });
-            }
-        },
-        // user is still unidentified
-        function() {
-            // store pending action for completion after identification
-            $rootScope.pendingAction = task;
-            // display signin / signup form
-            $location.hash('');
-            $location.path('/user/sign');
-        });
-    };
-    
-})
-
-
-/**
-* there can only be one popover at the same time on the whole page
-* to display a popover, we need an anchor : a node having an id and a uid-popover-template attribute
-* an event can be triggered by a A node or any of its sub-nodes
-*/
-.service('feedback', function($window) {
-    var popover = {
-        content: '',
-        elem: null
-    };
-    return {
-        /**
-        * Getter for popover content
-        *
-        */
-        content: function() {
-            return popover.content;
-        },
-        
-        /**
-        * Scrolls to target element
-        * if msg is not empty, displays popover 
-        */           
-        popover: function (selector, msg) {
-            // popover has been previously assign
-            closePopover();
-
-            // retrieve element
-            var elem = angular.element(document.querySelector( selector ));
-            
-            // save target content and element
-            popover.content = msg;
-            popover.elem = elem;
-
-            // scroll to element, if outside viewport
-            var elemYOffset = elem[0].offsetTop;
-
-            if(elemYOffset < $window.pageYOffset 
-            || elemYOffset > ($window.pageYOffset + $window.innerHeight)) {
-                $window.scrollTo(0, elemYOffset-($window.innerHeight/4));
-            }
-            
-            if(msg.length > 0) {
-                // trigger popover display (toggle)
-                elem.triggerHandler('toggle-popover');
-            }            
-        },
-        
-        /**
-        * Close current popover, if any
-        * 
-        */           
-        close: function() {
-            closePopover();
-        },
-        
-        /**
-        * Retrieves the node holding the uib-popover* attribute
-        * returns the selector allowing to retrieve this node 
-        *
-        */
-        selector: function(domElement) {
-            return selectorFromElement(domElement);
-        }
-        
-    };
-
-    // @private methods
-    function closePopover() {
-        if(popover.elem) {
-            popover.elem.triggerHandler('toggle-popover');
-            popover.elem = null; 
-        }        
-    }
-    
-    function selectorFromElement(domElement) {
-        var element = angular.element(domElement);
-        while(typeof element.attr('id') == 'undefined'
-           || typeof element.attr('uib-popover-template') == 'undefined') {
-            element = element.parent();
-        }
-        return '#' + element.attr('id');          
-    }
-
-})
-
-
-
-.run( function($document, $window, $timeout, $rootScope, $location, $anchorScroll, $cookieStore, $authentication, $actions, feedback) {
+.run( function($document, $window, $timeout, $rootScope, $location, $anchorScroll, $cookieStore, authenticationService, actionService, feedbackService) {
     console.log('run method invoked');
 
-    // bind rootScope with feedback service (popover display)
-    $rootScope.popover = feedback;
+    // bind rootScope with feedbackService service (popover display)
+    $rootScope.popover = feedbackService;
     
     // @model   global data model
     
@@ -677,7 +137,7 @@ var resiway = angular.module('resiway', [
     
     /**
     * Previous path 
-    * Required in order to return to previous location when user goes to sign page (login/register)
+    * Required in order to return to previous location when user goes to sign page (signin/signup)
     * This value is set when event $locationChangeSuccess occurs
     */
     $rootScope.previousPath = '/';
@@ -697,6 +157,7 @@ var resiway = angular.module('resiway', [
     $rootScope.user = null;
  
     $rootScope.$on('$locationChangeStart', function(angularEvent) {
+        // show loading spinner
         $rootScope.viewContentLoading = true;
     });
 
@@ -706,7 +167,7 @@ var resiway = angular.module('resiway', [
         if($rootScope.currentPath) {
             $rootScope.previousPath = $rootScope.currentPath;
         }
-        $rootScope.currentPath  = $location.path();
+        $rootScope.currentPath = $location.path();
 
         console.log('previous path: '+$rootScope.previousPath);
         console.log('current path: '+$rootScope.currentPath);        
@@ -721,33 +182,23 @@ var resiway = angular.module('resiway', [
     */
     $rootScope.$on('$viewContentLoaded', function(params) {
         console.log('$viewContentLoaded received');
-
+        // hide loading spinner
         $rootScope.viewContentLoading = false;
 
-        // wait next digest cycle to run following code
+        // wait next digest cycle and:
+        // - check if we have to scroll
+        // - perform pending action, if any
         $timeout(function() {
                 
             if( $location.hash().length) {
                 var elem = angular.element(document.querySelector( '#'+$location.hash() ))
-                console.log(elem);
-                //$anchorScroll(elem);
-
-                // todo : wrong offset
-                console.log(elem[0].offsetTop);
+                // scroll a bti higher than the element itself
                 $window.scrollTo(0, elem[0].offsetTop-55);
             }
             else {
                 // scroll to top
                 $window.scrollTo(0, 0);
-            }
-    /*            
-                $anchorScroll.yOffset = angular.element(document.querySelector( '.topbar' ));
-                $anchorScroll('.topbar');
-                
-                $window.scrollTo(0, 0);
-                // $window.scrollTo(0, angular.element('put here your element').offsetTop); 
-        */        
-                
+            }                
 
             if($rootScope.user_id == 0
             && $rootScope.previousPath.substring(0, signPath.length) == signPath
@@ -757,14 +208,14 @@ var resiway = angular.module('resiway', [
                 console.log('pending action disgarded');
                 $rootScope.pendingAction = null;
             }
-            // At this point view has been loaded and controller is ready
-            // process pending action, if any                    
+            // At this point, view has been loaded and controller is ready
             if($rootScope.pendingAction
             && $rootScope.currentPath.substring(0, signPath.length) != signPath) {
+                // process pending action, if any                                    
                 console.log('continuing ation');
                 console.log($rootScope.pendingAction);
                 $rootScope.pendingAction.scope = params.targetScope;
-                $actions.perform($rootScope.pendingAction);
+                actionService.perform($rootScope.pendingAction);
             }
         });
     });
@@ -782,14 +233,10 @@ var resiway = angular.module('resiway', [
     var password = $cookieStore.get('password');            
     // set read values as current credentials 
     // (those will be removed if login is unsuccessful)        
-    $authentication.setCredentials(username, password);
+    authenticationService.setCredentials(username, password);
     // try to authenticate or restore the session
-    $authentication.authenticate();
-
-
-
-    
-    // load translations            
+    authenticationService.authenticate();
+       
 
     // set some behaviour on DOM ready
     $document.ready(function () {
@@ -809,7 +256,13 @@ var resiway = angular.module('resiway', [
     console.log('root controller');
 
 
-       
+    rootCtrl.makeLink = function(object_class, object_id) {
+        switch(object_class) {    
+        case 'resiexchange\\Question': return '#/question/'+object_id;
+        case 'resiway\Category': return '#/category/'+object_id;
+        }
+    };
+    
     rootCtrl.humanReadable = {
         
         date: function(value) {
@@ -887,7 +340,7 @@ var resiway = angular.module('resiway', [
   
 })
 
-.controller('searchController', function($scope, $http, $httpParamSerializer) {
+.controller('searchController', function($scope, $http) {
     console.log('search controller');
 
     var ctrl = this;
@@ -897,15 +350,9 @@ var resiway = angular.module('resiway', [
     
     // @init
     (function () {
-        // request possible actions with their related required reputations
-        $http.get( 'index.php?get=resiway_privileges&'+$httpParamSerializer({'domain[0][]': ['object_class', '=', 'resiexchange\\Question']}) )
-        .success(function() {
-        })
-        .error(function() {
-        });
-        
+
     
-        $http.get('index.php?get=resiexchange_questions')
+        $http.get('index.php?get=resiexchange_question_list')
         .success(function(data, status, headers, config) {
             // data should be an object 
             if(typeof data != 'object' || typeof data.result != 'object') throw new Error('Something went wrong while retrieving questions.');
@@ -917,11 +364,82 @@ var resiway = angular.module('resiway', [
 
 })
 
+.controller('categoriesController', function(categories, $scope) {
+    console.log('categories controller');
+
+    var ctrl = this;
+
+    // @data model
+    $scope.categories = categories;
+    
+})
+
+.controller('editCategoryController', function(category, categories, feedbackService, $scope, $window, $location, actionService) {
+    console.log('editCategory controller');
+    
+    var ctrl = this;   
+
+    // @view
+    $scope.categories = categories; 
+    
+    // @model
+    $scope.category = category;
+
+    // set initial parent 
+    angular.forEach($scope.categories, function(category, index) {
+        if(category.id == $scope.category.parent_id) {
+            $scope.category.parent = category; 
+        }
+    });       
+    
+    // @events
+    $scope.$watch('category.parent', function() {
+        console.log($scope.category.parent);
+        $scope.category.parent_id = $scope.category.parent.id;
+        console.log($scope.category.parent_id);        
+    });
+
+    // @methods
+    $scope.categoryPost = function($event) {
+        var selector = feedbackService.selector(angular.element($event.target));                   
+        actionService.perform({
+            // valid name of the action to perform server-side
+            action: 'resiway_category_edit',
+            // string representing the data to submit to action handler (i.e.: serialized value of a form)
+            data: {
+                category_id: (angular.isUndefined($scope.category.id)?0:$scope.category.id),
+                title: $scope.category.title,
+                description: $scope.category.description,
+                parent_id: $scope.category.parent_id
+            },
+            // scope in wich callback function will apply 
+            scope: $scope,
+            // callback function to run after action completion (to handle error cases, ...)
+            callback: function($scope, data) {
+                // we need to do it this way because current controller might be destroyed in the meantime
+                // (if route is changed to signin form)
+                if(typeof data.result != 'object') {
+                    // result is an error code
+                    var error_id = data.error_message_ids[0];                    
+                    // todo : get error_id translation
+                    var msg = error_id;
+                    feedbackService.popover(selector, msg);
+                }
+                else {
+                    $location.path('/categories');
+                }
+            }        
+        });
+    };  
+       
+})
+
+
 /**
  * Question controller
  *
  */
-.controller('questionController', function(question, feedback, $scope, $window, $location, $sce, $uibModal, $actions, $timeout, textAngularManager) {
+.controller('questionController', function(question, feedbackService, $scope, $window, $location, $sce, $uibModal, actionService, $timeout, textAngularManager) {
     console.log('question controller');
     
     var ctrl = this;
@@ -963,8 +481,8 @@ var resiway = angular.module('resiway', [
 
     // @methods
     $scope.questionComment = function($event) {
-        var selector = feedback.selector($event.target);
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_comment',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -983,7 +501,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
                 }
                 else {
                     var comment_id = data.result.id;
@@ -994,7 +512,7 @@ var resiway = angular.module('resiway', [
                     // wait for next digest cycle
                     $timeout(function() {
                         // scroll to newly created comment
-                        feedback.popover('#comment-'+comment_id, '');
+                        feedbackService.popover('#comment-'+comment_id, '');
                     });
                 }
             }        
@@ -1002,8 +520,8 @@ var resiway = angular.module('resiway', [
     };
 
     $scope.questionFlag = function ($event) {
-        var selector = feedback.selector($event.target);           
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);           
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_flag',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1021,7 +539,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);                    
+                    feedbackService.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.history['resiexchange_question_flag'] = data.result;
@@ -1031,8 +549,8 @@ var resiway = angular.module('resiway', [
     };
 
     $scope.questionAnswer = function($event) {
-        var selector = feedback.selector($event.target);                   
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);                   
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_answer',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1051,7 +569,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
                 }
                 else {
                     var answer_id = data.result.id;
@@ -1070,7 +588,7 @@ var resiway = angular.module('resiway', [
                     // wait for next digest cycle
                     $timeout(function() {
                         // scroll to newly created answer
-                        feedback.popover('#answer-'+answer_id, '');
+                        feedbackService.popover('#answer-'+answer_id, '');
                     });                    
                 }
             }        
@@ -1078,8 +596,8 @@ var resiway = angular.module('resiway', [
     };  
     
     $scope.questionVoteUp = function ($event) {
-        var selector = feedback.selector($event.target);
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_voteup',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1104,7 +622,7 @@ var resiway = angular.module('resiway', [
                     // todo : get error_id translation
                     var msg = error_id;
                     
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
 
                 }
             }        
@@ -1112,8 +630,8 @@ var resiway = angular.module('resiway', [
     };
     
     $scope.questionVoteDown = function ($event) {
-        var selector = feedback.selector($event.target);
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_votedown',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1137,15 +655,15 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);                    
+                    feedbackService.popover(selector, msg);                    
                 }
             }        
         });
     };    
 
     $scope.questionStar = function ($event) {
-        var selector = feedback.selector($event.target);
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_star',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1161,7 +679,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);                    
+                    feedbackService.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.history['resiexchange_question_star'] = data.result;
@@ -1177,8 +695,8 @@ var resiway = angular.module('resiway', [
     };      
 
     $scope.questionCommentVoteUp = function ($event, index) {
-        var selector = feedback.selector($event.target);    
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);    
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_questioncomment_voteup',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1196,7 +714,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);                    
+                    feedbackService.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.comments[index].history['resiexchange_questioncomment_voteup'] = data.result;
@@ -1214,8 +732,8 @@ var resiway = angular.module('resiway', [
     $scope.questionDelete = function ($event) {
         ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title).then(
             function () {
-                var selector = feedback.selector($event.target);                  
-                $actions.perform({
+                var selector = feedbackService.selector($event.target);                  
+                actionService.perform({
                     // valid name of the action to perform server-side
                     action: 'resiexchange_question_delete',
                     // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1238,7 +756,7 @@ var resiway = angular.module('resiway', [
                             var error_id = data.error_message_ids[0];                    
                             // todo : get error_id translation
                             var msg = error_id;
-                            feedback.popover(selector, msg);
+                            feedbackService.popover(selector, msg);
                         }
                     }        
                 });
@@ -1250,8 +768,8 @@ var resiway = angular.module('resiway', [
     };
     
     $scope.answerVoteUp = function ($event, index) {
-        var selector = feedback.selector($event.target);           
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);           
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_voteup',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1275,15 +793,15 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
                 }
             }        
         });
     };
     
     $scope.answerVoteDown = function ($event, index) {
-        var selector = feedback.selector($event.target);        
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);        
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_votedown',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1307,15 +825,15 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
                 }
             }        
         });
     };      
     
     $scope.answerFlag = function ($event, index) {
-        var selector = feedback.selector($event.target);           
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);           
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_flag',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1333,7 +851,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);                    
+                    feedbackService.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.answers[index].history['resiexchange_answer_flag'] = data.result;
@@ -1343,8 +861,8 @@ var resiway = angular.module('resiway', [
     };
     
     $scope.answerComment = function($event, index) {
-        var selector = feedback.selector($event.target);
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_comment',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1363,7 +881,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
                 }
                 else {
                     var answer_id = $scope.question.answers[index].id;
@@ -1375,7 +893,7 @@ var resiway = angular.module('resiway', [
                     // wait for next digest cycle
                     $timeout(function() {
                         // scroll to newly created comment
-                        feedback.popover('#comment-'+answer_id+'-'+comment_id, '');
+                        feedbackService.popover('#comment-'+answer_id+'-'+comment_id, '');
                     });
                 }
             }        
@@ -1383,8 +901,8 @@ var resiway = angular.module('resiway', [
     };    
         
     $scope.answerCommentVoteUp = function ($event, answer_index, index) {
-        var selector = feedback.selector($event.target);           
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);           
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answercomment_voteup',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1402,7 +920,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);                    
+                    feedbackService.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'] = data.result;
@@ -1418,8 +936,8 @@ var resiway = angular.module('resiway', [
     };
 
     $scope.answerCommentFlag = function ($event, answer_index, index) {
-        var selector = feedback.selector($event.target);           
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);           
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answercomment_flag',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1437,7 +955,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);                    
+                    feedbackService.popover(selector, msg);                    
                 }                
                 else {
                     $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] = data.result;
@@ -1449,8 +967,8 @@ var resiway = angular.module('resiway', [
     $scope.answerDelete = function ($event, index) {
         ctrl.open('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt).then(
             function () {
-                var selector = feedback.selector($event.target);                  
-                $actions.perform({
+                var selector = feedbackService.selector($event.target);                  
+                actionService.perform({
                     // valid name of the action to perform server-side
                     action: 'resiexchange_answer_delete',
                     // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1474,7 +992,7 @@ var resiway = angular.module('resiway', [
                             var error_id = data.error_message_ids[0];                    
                             // todo : get error_id translation
                             var msg = error_id;
-                            feedback.popover(selector, msg);
+                            feedbackService.popover(selector, msg);
                         }
                     }        
                 });
@@ -1488,7 +1006,7 @@ var resiway = angular.module('resiway', [
 })
 
 
-.controller('editAnswerController', function(answer, feedback, $scope, $window, $location, $sce, $actions, textAngularManager) {
+.controller('editAnswerController', function(answer, feedbackService, $scope, $window, $location, $sce, actionService, textAngularManager) {
     console.log('editAnswer controller');
     
     var ctrl = this;   
@@ -1498,8 +1016,8 @@ var resiway = angular.module('resiway', [
     
     // @methods
     $scope.answerPost = function($event) {
-        var selector = feedback.selector($event.target);
-        $actions.perform({
+        var selector = feedbackService.selector($event.target);
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_answer_edit',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1518,7 +1036,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
                 }
                 else {
                     var question_id = data.result.question_id;
@@ -1533,7 +1051,7 @@ var resiway = angular.module('resiway', [
 * Display given question with all details
 *
 */
-.controller('editQuestionController', function(question, categories, feedback, $scope, $window, $location, $sce, $actions, textAngularManager) {
+.controller('editQuestionController', function(question, categories, feedbackService, $scope, $window, $location, $sce, actionService, textAngularManager) {
     console.log('editQuestion controller');
     
     var ctrl = this;   
@@ -1564,8 +1082,8 @@ var resiway = angular.module('resiway', [
 
     // @methods
     $scope.questionPost = function($event) {
-        var selector = feedback.selector(angular.element($event.target));                   
-        $actions.perform({
+        var selector = feedbackService.selector(angular.element($event.target));                   
+        actionService.perform({
             // valid name of the action to perform server-side
             action: 'resiexchange_question_edit',
             // string representing the data to submit to action handler (i.e.: serialized value of a form)
@@ -1586,7 +1104,7 @@ var resiway = angular.module('resiway', [
                     var error_id = data.error_message_ids[0];                    
                     // todo : get error_id translation
                     var msg = error_id;
-                    feedback.popover(selector, msg);
+                    feedbackService.popover(selector, msg);
                 }
                 else {
                     var question_id = data.result.id;
@@ -1674,15 +1192,147 @@ var resiway = angular.module('resiway', [
 * Display given user public profile
 *
 */
-.controller('userController', function() {
-    console.log('user controller');    
+.controller('editUserController', function(user, $scope) {
+    console.log('editUser controller');    
+    
+    var ctrl = this;
+
+    $scope.user = user;    
+    $scope.publicity_mode = null;
+
+// todo: translate    
+    ctrl.modes = [ {id: 1, text: 'Fullname'}, {id: 2, text: 'Firstname + Lastname inital'}, {id: 3, text: 'Firstname only'}]
+    
+    // @init
+    angular.forEach(ctrl.modes, function(mode) {
+        if(mode.id == $scope.user.publicity_mode) {
+            $scope.publicity_mode = {id: mode.id, text: mode.text};                
+        }
+    });
+    
+    $scope.$watch('publicity_mode', function() {
+        $scope.user.publicity_mode = $scope.publicity_mode.id;
+        console.log($scope.user.publicity_mode);
+    });
+
+
+})
+
+.controller('userProfileController', ['user', '$scope', '$http', function(user, $scope, $http) {
+    console.log('userProfile controller');
+    
+    var ctrl = this;
+    
+    ctrl.user = user;
+    ctrl.actions = -1;    
+    ctrl.answers = -1;
+    ctrl.favorites = -1;    
+
+    var defaults = {
+        total: -1,
+        currentPage: 1,
+    };
+
+    ctrl.load = function(config) {
+        // reset questions list (triggers loader display)
+        config.items = -1;          
+        $http.post('index.php?get='+config.provider, {
+            domain: config.domain,
+            start: (config.currentPage-1)*config.limit,
+            limit: config.limit,
+            total: config.total
+        }).then(
+        function successCallback(response) {
+            var data = response.data;
+            config.items = data.result;
+            config.total = data.total;
+        },
+        function errorCallback() {
+            // something went wrong server-side
+        });
+    };   
+    
+    angular.merge(ctrl, {
+        actions: {
+            items: -1,
+            total: -1,
+            currentPage: 1,
+            limit: 5,
+            domain: [['user_id', '=', ctrl.user.id],['reputation_increment','<>', 0]],
+            provider: 'resiway_actionlog_list'
+        },
+        questions: {
+            items: -1,
+            total: -1,
+            currentPage: 1,
+            limit: 5,
+            domain: ['creator', '=', ctrl.user.id],
+            provider: 'resiexchange_question_list'
+        },
+        answers: {
+            items: -1,
+            total: -1,
+            currentPage: 1,
+            limit: 5,
+            domain: ['creator', '=', ctrl.user.id],
+            provider: 'resiexchange_answer_list'
+        },
+        favorites: {
+            items: -1,
+            total: -1,
+            currentPage: 1,
+            limit: 5,
+            // 'resiexchange_question_star' == action (id=4)
+            domain: [['user_id', '=', ctrl.user.id], ['action_id','=','4']],
+            provider: 'resiway_actionlog_list'
+        }        
+    });
+
+    
+   
+}])
+
+
+.controller('userNotificationsController', function($scope, $rootScope, actionService, feedbackService) {
+    console.log('userNotifications controller');
+    
+    var ctrl = this;
+    
+    ctrl.dismiss = function($event, index) {
+        var selector = feedbackService.selector($event.target);         
+        actionService.perform({
+            // valid name of the action to perform server-side
+            action: 'resiway_notification_dismiss',
+            // string representing the data to submit to action handler (i.e.: serialized value of a form)
+            data: {
+                notification_id: $rootScope.user.notifications[index].id
+            },
+            // scope in wich callback function will apply 
+            scope: $scope,
+            // callback function to run after action completion (to handle error cases, ...)
+            callback: function($scope, data) {
+                // we need to do it this way because current controller might be destroyed in the meantime
+                // (if route is changed to signin form)
+                if(typeof data.result != 'object') {
+                    // result is an error code
+                    var error_id = data.error_message_ids[0];                    
+                    // todo : get error_id translation
+                    var msg = error_id;
+                    feedbackService.popover(selector, msg);
+                }
+                else {
+                    $rootScope.user.notifications.splice(index, 1); 
+                }
+            }        
+        });        
+    };
 })
 
 /**
 * 
 * Once successfully identified, this controller will redirect to previously stored location, if any
 */
-.controller('signController', function($scope, $rootScope, $authentication, $location, $routeParams) {
+.controller('signController', function($scope, $rootScope, authenticationService, $location, $routeParams) {
     
     /*
     this controller displays a form for collecting user credentials
@@ -1691,8 +1341,8 @@ var resiway = angular.module('resiway', [
     console.log('sign controller');
     var ctrl = this;
     
-    // set default mode to 'sign in'
-    ctrl.mode = 'in'; 
+    // set default mode to blank
+    ctrl.mode = ''; 
     
     // asign mode from URL if it matches one of the allowed modes
     switch($routeParams.mode) {
@@ -1708,15 +1358,19 @@ var resiway = angular.module('resiway', [
     $scope.username = '';
     $scope.password = '';
     $scope.email = '';    
-    $scope.signAlerts = [];
+    $scope.signInAlerts = [];
+    $scope.signUpAlerts = [];    
     $scope.recoverAlerts = [];
     // alerts format : { type: 'danger|warning|success', msg: 'Alert message.' }
     
     
-    ctrl.closeSignAlert = function(index) {
-        $scope.signAlerts.splice(index, 1);
+    ctrl.closeSignInAlert = function(index) {
+        $scope.signInAlerts.splice(index, 1);
     };
 
+    ctrl.closeSignUpAlert = function(index) {
+        $scope.signUpAlerts.splice(index, 1);
+    };
     
     ctrl.closeRecoverAlert = function(index) {
         $scope.recoverAlerts.splice(index, 1);
@@ -1725,18 +1379,18 @@ var resiway = angular.module('resiway', [
     ctrl.signIn = function () {       
         if($scope.username.length == 0 || $scope.password.length == 0) {
             if($scope.username.length == 0) {
-                $scope.signAlerts.push({ type: 'warning', msg: 'Please, provide your email as identifier.' });                
+                $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your email as identifier.' });                
             }
             if($scope.password.length == 0) {
-                $scope.signAlerts.push({ type: 'warning', msg: 'Please, provide your password.' });                
+                $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your password.' });                
             }
         }
         else {
             // form is complete
-            $authentication.setCredentials($scope.username, hex_md5($scope.password), $scope.remember);
+            authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
 
             // attempt to log the user in
-            $authentication.authenticate().then(
+            authenticationService.authenticate().then(
             function successHandler(data) {
                 // if some action is pending, return to URL where it occured
                 if($rootScope.pendingAction
@@ -1748,8 +1402,8 @@ var resiway = angular.module('resiway', [
                 }
             },
             function errorHandler() {
-                $authentication.clearCredentials();
-                $scope.signAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
+                authenticationService.clearCredentials();
+                $scope.signInAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
             });        
         }
     };
@@ -1757,31 +1411,36 @@ var resiway = angular.module('resiway', [
     ctrl.signUp = function() {
         if($scope.username.length == 0 || $scope.firstname.length == 0) {
             if($scope.username.length == 0) {
-                $scope.signAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
+                $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
             }
             if($scope.firstname.length == 0) {
-                $scope.signAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
+                $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
             }
         }
         else {
-            /*
-            register
-            .then(
+            authenticationService.register($scope.username, $scope.firstname).then(
             function successHandler(data) {
-                // if some action is pending, return to URL where it occured
-                if($rootScope.pendingAction
-                && typeof $rootScope.pendingAction.next_path != 'undefined') {
-                   $location.path($rootScope.pendingAction.next_path);
-                }
-                else {
-                    $location.path('/');
-                }
+                authenticationService.authenticate().then(
+                function successHandler(data) {
+                    // if some action is pending, return to URL where it occured
+                    if($rootScope.pendingAction
+                    && typeof $rootScope.pendingAction.next_path != 'undefined') {
+                       $location.path($rootScope.pendingAction.next_path);
+                    }
+                    else {
+                        $location.path($rootScope.previousPath);
+                    }
+                },
+                function errorHandler() {
+                    authenticationService.clearCredentials();
+                    $scope.signUpAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
+                });  
             },
             function errorHandler(data) {
                 // server fault, email already registered, ...
-                $scope.signAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
+                $scope.signUpAlerts = [{ type: 'danger', msg: 'Email address invalid or already registered.' }];
             });             
-            */
+
         }
     };
 
@@ -1804,13 +1463,14 @@ var resiway = angular.module('resiway', [
                             $rootScope, 
                             $location, 
                             $timeout,
-                            $actions,
-                            $authentication) {
+                            actionService,
+                            authenticationService) {
         console.log('topbar controller');
         
         // @model
         $rootScope.showPlatformDropdown = false;
         $rootScope.showUserDropdown = false;
+        $rootScope.showNotifyDropdown = false;        
 
         
         //events       
@@ -1823,7 +1483,8 @@ var resiway = angular.module('resiway', [
             // evalAsync
             $scope.$apply(function() {
                 $rootScope.showPlatformDropdown = false;
-                $rootScope.showUserDropdown = false;       
+                $rootScope.showUserDropdown = false;
+                $rootScope.showNotifyDropdown = false; 
             });
         });
 
@@ -1841,12 +1502,30 @@ var resiway = angular.module('resiway', [
         $rootScope.$watch('user_id', $scope.updateLoginButton);              
         
         $scope.togglePlatformDropdown = function() {
+            if(!$rootScope.showPlatformDropdown) {
+                $rootScope.showUserDropdown = false;
+                $rootScope.showNotifyDropdown = false; 
+            }
             $rootScope.showPlatformDropdown = !$rootScope.showPlatformDropdown;
         };
         
         $scope.toggleUserDropdown = function() {
+            if(!$rootScope.showUserDropdown) {
+                $rootScope.showPlatformDropdown = false;
+                $rootScope.showNotifyDropdown = false; 
+            }
             $rootScope.showUserDropdown = !$rootScope.showUserDropdown;
         };
+
+        $scope.toggleNotifyDropdown = function() {
+            if(!$rootScope.showNotifyDropdown) {
+                $rootScope.showUserDropdown = false;
+                $rootScope.showPlatformDropdown = false; 
+            }   
+            $rootScope.showNotifyDropdown = !$rootScope.showNotifyDropdown; 
+        };
+                
+        
         
         $scope.signIn = function() {
             console.log('connection');
@@ -1859,25 +1538,19 @@ var resiway = angular.module('resiway', [
         };
         
         $scope.signOut = function(){
-            $actions.perform({
-                action: 'resiway_user_logout',
+            actionService.perform({
+                action: 'resiway_user_signout',
                 next_path: '/',
                 callback: function($scope, data) {
-                    $authentication.clearCredentials();
+                    authenticationService.clearCredentials();
                     $rootScope.showUserDropdown = false;
                 }
             });
         };
     }
 )
-.controller('QuestionsListTabsCtrl', function ($scope, $timeout, $window) {
 
-  $scope.updateSelection = function() {
-    $timeout(function() {
-      
-    });
-  };
-})
+
 .controller('DropdownCtrl', function ($scope, $log) {
   $scope.items = [
     {txt: 'Les plus récentes', icon: 'fa-plus-circle'},

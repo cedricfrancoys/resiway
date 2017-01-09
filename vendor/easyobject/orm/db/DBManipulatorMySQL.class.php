@@ -201,7 +201,7 @@ class DBManipulatorMySQL extends DBManipulator {
 	 * @param	string $order name of the order field
 	 * @return	resource reference to query resource
 	 */
-	public function getRecords($tables, $fields=NULL, $ids=NULL, $conditions=NULL, $id_field='id', $order='', $sort='ASC', $start='0', $limit='0') {       
+	public function getRecords($tables, $fields=NULL, $ids=NULL, $conditions=NULL, $id_field='id', $order='', $sort='ASC', $start=0, $limit=0) {       
 		// cast tables to an array (passing a single table is accepted)
 		if(!is_array($tables))						$tables = (array) $tables;
 		// in case fields is not null ans is not an array, cast it to an array (passing a single field is accepted)		
@@ -240,7 +240,7 @@ class DBManipulatorMySQL extends DBManipulator {
 		if(!empty($order)) $sql .= ' ORDER BY '.DBManipulatorMySQL::escapeFieldName($order)." $sort";
 
 		// limit clause
-		if(!empty($limit)) $sql .= " LIMIT $start, $limit";
+		if($limit) $sql .= sprintf(" LIMIT %d, %d", $start, $limit);
 		return $this->sendQuery($sql);
 	}
 

@@ -64,6 +64,7 @@
 
 
 .question {
+    position: relative;
 }
 
 .answers, .user-answer {
@@ -383,13 +384,14 @@
 }
 
 
-.question.narrow .summary {
+.question .summary {
     float: left;
     width: calc(100% - 70px);
     padding: 0;
+    padding-top: 4px;
 }
 
-.question.narrow .summary h3 {
+.question .summary h3 {
     padding: 0;
     border: 0;
     margin: 0;
@@ -399,11 +401,11 @@
     line-height: 1.4;
 }
 
-.question.narrow .summary .excerpt {
+.question .summary .excerpt {
     padding-bottom: 5px;
 }
 
-.question.narrow .summary .started {
+.question .summary .started {
     float: right;
     width: 200px;
     font-size: 12px;
@@ -412,11 +414,11 @@
     white-space: nowrap;
 }
 
-.question.narrow .summary .started .started-link:hover {
+.question .summary .started .started-link:hover {
     color: #07C;
 }
 
-.question.narrow .summary .started .started-link {
+.question .summary .started .started-link {
     font-size: 12px;
     color: #9199a1;
 }
@@ -428,4 +430,40 @@
 
 .question.narrow .status.answered {
     border-color: rgba(69,161,99,0.5);
+}
+
+
+.post-summary {
+    padding: 6px 0 9px 15px;
+    border-bottom: 1px solid #eff0f1;
+    width: 100%;
+}
+
+.post-summary a:hover, .post-summary a:active {
+    color: #3af;
+    text-decoration: none;
+}
+
+.post-summary h3 {
+    display: inline-block;
+    padding: 0;
+    border: 0;
+    margin: 0;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 1.5;
+    padding-top: 1px;
+    width: calc(100% - 50px);
+}
+
+.post-summary .mini-counts {
+    min-width: 36px; 
+    margin-right: 10px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.post-summary .date {
+    line-height: 1.5;
+    padding-top: 1px;
 }

@@ -5,9 +5,12 @@ use easyobject\orm\DataAdapter as DataAdapter;
 
 
 class Question extends \easyobject\orm\Object {
-
+   
     public static function getColumns() {
         return array(
+            /* all objects must define a 'name' column (default is id) */
+            'name'				    => array('type' => 'alias', 'alias' => 'title'),
+            
             /* subject of the question */
             'title'				    => array('type' => 'string', 'onchange' => 'resiexchange\Question::onchangeTitle'),
                            
@@ -34,19 +37,19 @@ class Question extends \easyobject\orm\Object {
             'count_stars'			=> array('type' => 'integer'),
 
             /* resulting score based on up and down votes */
+            'count_flags'	        => array('type' => 'integer'),    
+            
+            /* resulting score based on up and down votes */
             'score'			        => array('type' => 'integer'),
 
-            /* resulting score based on up and down votes */
-            'count_flags'	        => array('type' => 'integer'),            
-            
             'url_id'			    => array('type' => 'many2one', 'foreign_object' => 'core\UrlResolver'),
 
             /* identifiers of the tags to which the question belongs */
-            'tags_ids'	            => array(
+            'categories_ids'	    => array(
                                         'type' 			    => 'many2many', 
-                                        'foreign_object'	=> 'resiway\Tag', 
+                                        'foreign_object'	=> 'resiway\Category', 
                                         'foreign_field'		=> 'questions_ids', 
-                                        'rel_table'		    => 'resiexchange_rel_question_tag', 
+                                        'rel_table'		    => 'resiexchange_rel_question_category', 
                                         'rel_foreign_key'	=> 'tag_id', 
                                         'rel_local_key'		=> 'question_id'
                                         ),

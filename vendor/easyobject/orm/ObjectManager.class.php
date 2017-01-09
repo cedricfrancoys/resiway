@@ -47,12 +47,13 @@ class ObjectManager {
     */
 	private $db;
 
-	public static $simple_types	= array('boolean', 'integer', 'float', 'string', 'short_text', 'text', 'html', 'date', 'time', 'datetime', 'timestamp', 'selection', 'binary', 'many2one');
+    public static $virtual_types = array('alias');
+	public static $simple_types	 = array('boolean', 'integer', 'float', 'string', 'short_text', 'text', 'html', 'date', 'time', 'datetime', 'timestamp', 'selection', 'binary', 'many2one');
 	public static $complex_types = array('one2many', 'many2many', /* 'related', */ 'function');
 
 	public static $valid_attributes = array(
 			'boolean'		=> array('type', 'onchange'),
-			'integer'		=> array('type', 'onchange'),
+			'integer'		=> array('type', 'onchange', 'selection', 'unique'),
 			'float'			=> array('type', 'onchange', 'precision'),
 			'string'		=> array('type', 'onchange', 'multilang', 'selection', 'unique'),
 			'short_text'	=> array('type', 'onchange', 'multilang'),
@@ -303,6 +304,10 @@ class ObjectManager {
 		try {
 			// array holding functions to load each type of fields
 			$load_fields = array(
+            // 'alias'
+			'alias'	=>	function($om, $ids, $fields) {
+                // nothing to do : this type is handled in read methods
+            },
 			// 'multilang' is a particular case of simple field
 			'multilang'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
 				try {
@@ -784,7 +789,7 @@ todo : to validate
             
 			//check $fields arg validity
 			$object = &$this->getStaticInstance($class);
-			$allowed_fields = $object->getFieldsNames();
+			$allowed_fields = $object->getFields();
 
             foreach($fields as $field => $values) {
                 // handle 'dot' notation (ignore '.' and following chars)
@@ -843,7 +848,7 @@ todo: signature differs from other methods	(returned value)
             $ids = $this->filterValidIdentifiers($class, $ids);
             
             // remove unknown fields
-			$allowed_fields = $object->getFieldsNames();
+			$allowed_fields = $object->getFields();
 			// if no fields have been specified, we store the whole object
 			if(empty($fields)) $fields = $allowed_fields;
 			else {
@@ -922,9 +927,7 @@ todo: signature differs from other methods	(returned value)
 
             // ensure ids are numerical values
             foreach($ids as $key => $oid) {      
-                 if(!is_numeric($oid) || $oid == 0) {
-                     unset($ids[$key]);
-                 }
+                 if(!is_numeric($oid) || $oid == 0) unset($ids[$key]);
             }
 
             // if no ids were specified, the result is an empty list
@@ -933,17 +936,15 @@ todo: signature differs from other methods	(returned value)
 
             // 3) check $fields arg validity
 
-            // get stattic instance and check that given class exists
+            // get static instance and check that given class exists
 			$object = &$this->getStaticInstance($class);
-            
-			// remove duplicate fields, if any
-			$fields = array_unique($fields);
-            
+            $schema = $object->getSchema();
+
 			// checks validity of objects identifiers
             $ids = $this->filterValidIdentifiers($class, $ids);
-            			
+            
             // remove unknown fields
-			$allowed_fields = $object->getFieldsNames();
+			$allowed_fields = $object->getFields();
 			// if no fields have been specified, we load the whole object
 			if(empty($fields)) $fields = $allowed_fields;
 			else {
@@ -955,8 +956,13 @@ todo: signature differs from other methods	(returned value)
 						unset($fields[$i]);
 						EventListener::ExceptionHandler(new Exception('unknown field '.$field.' in $fields arg'), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
 					}
+                    else if($schema[$field]['type'] == 'alias') {
+                        $fields[] = $schema[$field]['alias'];
+                    }
 				}
 			}
+			// remove duplicate fields, if any
+			$fields = array_unique($fields);
             
 			// 4) check among requested fields wich ones are not yet present in the internal buffer
 			// if internal buffer is empty, query the DB to load all fields from requested objects 
@@ -986,13 +992,29 @@ todo: signature differs from other methods	(returned value)
                     EventListener::ExceptionHandler(new Exception("unknown object #'$oid' for class : '$class'", UNKNOWN_OBJECT), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);                        
                     continue;
                 }
+                // init result for given id, if missing
                 if(!isset($res[$oid])) $res[$oid] = array();
-				foreach($fields as $field) {
+				for($i = 0, $j = count($fields); $i < $j; ++$i) {
+                    // handle dot notation
+                    $field = explode('.', $fields[$i])[0];
+                    // handle aliases
+                    if($schema[$field]['type'] == 'alias') {
+                        $res[$oid][$field] = $this->cache[$class][$oid][$schema[$field]['alias']][$lang];
+                    }
+                    else {
+                        // use final notation (direct or dot)
+                        $field = $fields[$i];
+                        $res[$oid][$field] = $this->cache[$class][$oid][$field][$lang];             
+                    }
+                        
+                    /*
+                    // this should not occur unless the schema in DB does not match object columns
                     if(!isset($this->cache[$class][$oid][$field])) {
                         EventListener::ExceptionHandler(new Exception("value not found for field '$field' of object '$class' #'$oid'", UNKNOWN_OBJECT), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);                        
                         continue;
                     }
-					$res[$oid][$field] = $this->cache[$class][$oid][$field][$lang];
+                    */
+					
 				}
 			}
 		}
@@ -1017,6 +1039,7 @@ todo: signature differs from other methods	(returned value)
 // todo : validate this code
         // get DB handler (init DB connection if necessary)
         $db = $this->getDBHandler();
+        $result = [];
         
 		try {
             // cast ids to an array (passing a single id is accepted)
@@ -1026,14 +1049,16 @@ todo: signature differs from other methods	(returned value)
             foreach($ids as $key => $oid) {      
                  if(!is_numeric($oid)) unset($ids[$key]);
             }
-            $result = $ids;
-            
+         
             if(empty($ids)) throw new Exception("argument is not an array of objects identifiers : '$ids'", INVALID_PARAM);
             
 			// 1) check rights and object schema
 			$object = &$this->getStaticInstance($object_class);
 			$schema = $object->getSchema();
 
+			// checks validity of objects identifiers
+            $ids = $this->filterValidIdentifiers($object_class, $ids);
+            
 			foreach($ids as $object_id) {
                 // this has been moved to qn.api.php
 				// if(!AccessController::hasRight($user_id, $object_class, (array) $object_id, R_DELETE)) throw new Exception("user($user_id) does not have permission to remove object($object_class)", NOT_ALLOWED);
@@ -1044,6 +1069,7 @@ todo: signature differs from other methods	(returned value)
 						$this->write($def['foreign_object'], $res[$object_id][$field], array($def['foreign_field'] => '0'));
 					}
 				}
+                $result[] = $ids;
 			}
 
 			// 2) remove object from DB

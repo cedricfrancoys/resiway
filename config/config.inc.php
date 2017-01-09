@@ -101,7 +101,7 @@ namespace {
     *
     * Possible values are: 'DB' (database) and 'FS' (filesystem)
     */
-    define('BINARY_STORAGE_MODE', 'DB');
+    define('BINARY_STORAGE_MODE', 'FS');
 
 
     /**

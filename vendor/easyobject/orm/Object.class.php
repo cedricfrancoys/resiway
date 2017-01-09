@@ -25,8 +25,6 @@ namespace easyobject\orm;
 	This class holds the description of an object (and not the object itself)
 */
 class Object {
-
-	private $id;
 	
 	/**
 	 * Complete object schema, containing all columns (including special ones as object id)
@@ -35,16 +33,27 @@ class Object {
 	 * @access private
 	 */
 	private $schema;
+    
+    private $fields;
 
 	/**
 	 * Constructor
 	 *
 	 * @access public
-	 * @param  integer $id
 	 */
-	public final function __construct($id=0) {
-		$this->id = $id;
-		$this->schema = array_merge(Object::getSpecialColumns(), $this->getColumns());
+	public final function __construct() {
+        // schema is the concatenation of spcecial-columns and custom-defined columns
+		$this->schema = array_merge(self::getSpecialColumns(), $this->getColumns());
+		
+        // make sure that a field 'name' is always defined 
+		if( !isset($this->schema['name']) ) {
+            // if no field 'name' is defined, fall back to 'id' field
+            $this->schema['name'] = array( 'type' => 'alias', 'alias' => 'id' );
+        }
+        // set array holding fields names
+        $this->fields = array_keys($this->schema);
+        
+        // set fields to default values, if any
 		$this->setDefaults();
 	}
 
@@ -53,9 +62,6 @@ class Object {
 			$defaults = $this->getDefaults();
 			// get default values, set fields for default language, and mark fields as modified
 			foreach($defaults as $field => $default_value) if(isset($this->schema[$field]) && is_callable($default_value)) $fields_values[$field] = call_user_func($default_value);
-			// we use the 0 as user id so that the modifier field is left to 0
-			// (which is necessary to make the distinction between objects being created/drafts and objects actually created)
-			$this->setValues(0, $fields_values);
     	}
 	}
 
@@ -82,6 +88,14 @@ class Object {
 		return $this->schema;
 	}
 
+    /**
+	* Returns the fields names of the specified types
+	*
+	*/
+	public final function getFields() {
+		return $this->fields;
+	}	
+    
 	/**
 	* Returns the user-defined part of the schema (i.e. fields list with types and other attributes)
 	* This method must be overridden by children classes.
@@ -102,72 +116,6 @@ class Object {
 		return strtolower(str_replace('\\', '_', get_class($this)));
 	}
 
-	/**
-	* Returns the name of the field to be used as 'name'
-	* This method may be overridden by children classes
-	*
-	* @access public
-	*/
-	public function getName() {
-		$fields = $this->getColumns();
-		if(isset($fields['name'])) return 'name';		
-		return array_keys($fields)[0];
-	}
 
-	/**
-	* Gets object id
-	*
-	* @access public
-	* @return integer The unique identifier of the current object (unicity scope is the object class)
-	*/
-	public final function getId() {
-		return $this->id;
-	}
-
-
-	/**
-	* Returns the fields names of the specified types
-	*
-	* @param array $types_list allows to restrict the result to specified types (the method willl only return fields from which type is present in the list)
-	*/
-	public final function getFieldsNames($types_list=NULL) {
-		$result_array = array();
-		if(!is_array($types_list) || is_null($types_list))	$result_array = array_keys($this->schema);
-		else {
-			foreach($this->schema as $field_name => $field_description) {
-				if(in_array($field_description['type'], $types_list)) $result_array[] = $field_name;
-			}
-		}
-		return $result_array;
-	}
-
-
-
-	/**
-	* Magic method for handling dynamic getters and setters
-	*
-	* @param string $name
-	* @param array $arguments
-	*/
-	public function __call($name, $arguments) {
-		// get the parts of the virtual method invoked
-		$method	= strtolower(substr($name, 0, 3));
-		$field	= strtolower(substr($name, 3));
-		// check that the specified field does exist
-		if(in_array($field, array_keys(array_change_key_case($this->schema, CASE_LOWER)))) {
-			switch($method) {
-				case 'get':
-// todo : in case of  relational fields we could return an object instead of an id
-					$values = $this->getValues(array($field));
-					return $values[$field];
-					break;
-				case 'set':
-					// we use the global method 'update' in order to retrieve the user id associated with the current session
-
-					update(get_class($this), array($this->getId()), array($field=>$arguments[0]));
-					break;
-			}
-		}
-	}
 
 }

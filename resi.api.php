@@ -28,7 +28,22 @@ class ResiAPI {
         $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $sql_date);
         return date("c", $dateTime->getTimestamp());
     }
-    
+
+// todo
+    public static function makeLink($object_class, $object_Id) {
+        $link = '';
+        switch($object_class) {
+            case 'resiway\User': return '#/user/'.$object_id;
+            case 'resiway\Category':
+            case 'resiway\Badge':            
+            case 'resiexchange\Question':
+            case 'resiexchange\Answer':
+            case 'resiexchange\QuestionComment':
+            case 'resiexchange\AnswerComment':                        
+        }
+        return $link;
+    }
+        
     /**
     * Retrieves current user identifier.
     * If user is not logged in, returns 0 (GUEST_USER_ID)
@@ -37,7 +52,7 @@ class ResiAPI {
     */
     public static function userId() {
         $pdm = &PersistentDataManager::getInstance();
-        return $pdm->retrieve('user_id', 0);
+        return $pdm->get('user_id', 0);
     }
     
     /**
@@ -69,13 +84,26 @@ class ResiAPI {
     */
     public static function userPublicFields() {
         return ['id', 
-                'registered',
-                'display_name', 
-                'picture', 
+                'verified',
+                'display_name',
+                'hash',
+                'about',
                 'reputation', 
                 'count_badges_1', 
                 'count_badges_2', 
                 'count_badges_3'
+               ];
+    }
+
+    public static function userPrivateFields() {
+        return ['login', 
+                'firstname',
+                'lastname', 
+                'language', 
+                'country', 
+                'location',
+                'publicity_mode',
+                'notifications_ids'
                ];
     }
     
@@ -89,7 +117,68 @@ class ResiAPI {
         if($res < 0 || !isset($res[$user_id])) return QN_ERROR_UNKNOWN_OBJECT;    
         return $res[$user_id];        
     }
+
+// todo
+/*
+private static function registerReputationUpdate()
+*/
     
+    /**
+    * Reflects performed action on user's and object author's reputations
+    * by action increment or its opposite, according to $sign parameter
+    *
+    * @param    integer  $user_id       identifier of the user performing the action
+    * @param    integer  $action_id     identifier of the action being performed
+    * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
+    * @param    integer  $object_id     identifier of the object on which action is performed
+    * @param    integer  $sign          +1 for incrementing reputation, -1 to decrement it
+    * @return   boolean  returns true on succes, false if something went wrong
+    */      
+    private static function impactReputation($user_id, $action_id, $object_class, $object_id, $sign=1) {    
+        // check params consistency
+        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return false;
+        
+        $om = &ObjectManager::getInstance();
+
+        // retrieve action data
+        $res = $om->read('resiway\Action', $action_id, ['name', 'user_increment', 'author_increment']);
+        if($res < 0 || !isset($res[$action_id])) return false;    
+        $action_data = $res[$action_id];
+        
+        if($action_data['user_increment'] != 0) {
+            // retrieve user data
+            $res = $om->read('resiway\User', $user_id, ['verified', 'reputation']);
+            if($res < 0 || !isset($res[$user_id])) return false;          
+            $user_data = $res[$user_id];
+            // prevent reputation update for non-verified users
+            if(!$user_data['verified']) return false;
+            $om->write('resiway\User', $user_id, array('reputation' => $user_data['reputation']+($sign*$action_data['user_increment'])));            
+            /*
+            user_id = $user_id,
+            increment = $sign*$action_data['user_increment']
+            reason = $action_data['name']
+            link = makeLink($object-class, $object_id)
+            description = 
+            */
+        }
+        
+        if($action_data['author_increment'] != 0) {
+            // retrieve author data (creator of targeted object)
+            $res = $om->read($object_class, $object_id, ['creator']);
+            if(!is_array($res) || !isset($res[$object_id])) return false;
+            $author_id = $res[$object_id]['creator'];
+            $res = $om->read('resiway\User', $author_id, ['verified', 'reputation']);        
+            if(!is_array($res) || !isset($res[$author_id])) return false;    
+            $author_data = $res[$author_id];
+            // prevent reputation update for non-verified users
+            if(!$author_data['verified']) return false;            
+            $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+($sign*$action_data['author_increment'])));        
+        }
+            
+        return true;
+    }
+    
+
     /**
     * Tells if given user is allowed to perform given action.
     * If given user or action is unknown, returns false
@@ -176,14 +265,16 @@ class ResiAPI {
     public static function registerAction($user_id, $action_id, $object_class, $object_id) {
         $om = &ObjectManager::getInstance();
 
-        if($om->create('resiway\ActionLog', [
+        $action_log_id = $om->create('resiway\ActionLog', [
                         'user_id'       => $user_id, 
                         'action_id'     => $action_id, 
                         'object_class'  => $object_class, 
                         'object_id'     => $object_id
-                       ]) <= 0) {
-            return false;
-        }            
+                       ]);
+                       
+        if($action_log_id <= 0) return false;
+        
+        self::impactReputation($user_id, $action_id, $object_class, $object_id, 1);
         
         return true;
     }
@@ -208,9 +299,12 @@ class ResiAPI {
                                 ], 'created', 'desc');
                    
         if($log_ids < 0 || !count($log_ids)) return false;
+        $action_log_id = $log_ids[0];
         
-        $res = $om->remove('resiway\ActionLog', $log_ids[0], true);
-        if(!in_array($log_ids[0], $res)) return false;
+        $res = $om->remove('resiway\ActionLog', $action_log_id, true);
+        if(!in_array($action_log_id, $res)) return false;
+        
+        self::impactReputation($user_id, $action_id, $object_class, $object_id, -1);  
         
         return true;
     }
@@ -246,79 +340,7 @@ class ResiAPI {
         return $history;
     }    
 
-    /**
-    * Reflects performed action on user's and object author's reputations
-    * by action increment or its opposite, according to $sign parameter
-    *
-    * @param    integer  $user_id       identifier of the user performing the action
-    * @param    integer  $action_id     identifier of the action being performed
-    * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
-    * @param    integer  $object_id     identifier of the object on which action is performed
-    * @param    integer  $sign          +1 for incrementing reputation, -1 to decrement it
-    * @return   boolean  returns true on succes, false if something went wrong
-    */      
-    private static function impactReputation($user_id, $action_id, $object_class, $object_id, $sign=1) {    
-        // check params consistency
-        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return false;
-        
-        $om = &ObjectManager::getInstance();
-
-        // retrieve action data
-        $res = $om->read('resiway\Action', $action_id, ['user_increment', 'author_increment']);
-        if($res < 0 || !isset($res[$action_id])) return false;    
-        $action_data = $res[$action_id];
-        
-        if($action_data['user_increment'] != 0) {
-            // retrieve user data
-            $res = $om->read('resiway\User', $user_id, ['registered', 'reputation']);
-            if($res < 0 || !isset($res[$user_id])) return false;          
-            $user_data = $res[$user_id];
-            // prevent reputation update for non-registered users
-            if(!$user_data['registered']) return false;
-            $om->write('resiway\User', $user_id, array('reputation' => $user_data['reputation']+($sign*$action_data['user_increment'])));            
-        }
-        
-        if($action_data['author_increment'] != 0) {
-            // retrieve author data (creator of targeted object)
-            $res = $om->read($object_class, $object_id, ['creator']);
-            if(!is_array($res) || !isset($res[$object_id])) return false;
-            $author_id = $res[$object_id]['creator'];
-            $res = $om->read('resiway\User', $author_id, ['registered', 'reputation']);        
-            if(!is_array($res) || !isset($res[$author_id])) return false;    
-            $author_data = $res[$author_id];
-            // prevent reputation update for non-registered users
-            if(!$author_data['registered']) return false;            
-            $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+($sign*$action_data['author_increment'])));        
-        }
-            
-        return true;
-    }
     
-    /**
-    * Reflects performed action on user's and object author's reputations
-    *
-    * @param    integer  $user_id       identifier of the user performing the action
-    * @param    integer  $action_id     identifier of the action being performed
-    * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
-    * @param    integer  $object_id     identifier of the object on which action is performed
-    * @return   boolean  returns true on succes, false if something went wrong
-    */    
-    public static function applyActionOnReputation($user_id, $action_id, $object_class, $object_id) {
-        return self::impactReputation($user_id, $action_id, $object_class, $object_id, 1);
-    }
-
-    /**
-    * Undo reflection of action on user's and object author's reputations
-    *
-    * @param    integer  $user_id       identifier of the user performing the action
-    * @param    integer  $action_id     identifier of the action being performed
-    * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
-    * @param    integer  $object_id     identifier of the object on which action is performed
-    * @return   boolean  returns true on succes, false if something went wrong
-    */     
-    public static function unapplyActionOnReputation($user_id, $action_id, $object_class, $object_id) {
-        return self::impactReputation($user_id, $action_id, $object_class, $object_id, -1);        
-    }
     
     /**
     * Updates badges status for user and object author.
@@ -465,19 +487,16 @@ class ResiAPI {
         if($toggle
            && self::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {
             self::unregisterAction($user_id, $action_id, $object_class, $object_id);        
-            self::unapplyActionOnReputation($user_id, $action_id, $object_class, $object_id);
             $result = $undo($om, $user_id, $object_class, $object_id);                    
         }
         else {
             if(isset($concurrent_action_id) 
                && self::isActionRegistered($user_id, $concurrent_action_id, $object_class, $object_id)) {
                 self::unregisterAction($user_id, $concurrent_action_id, $object_class, $object_id);        
-                self::unapplyActionOnReputation($user_id, $concurrent_action_id, $object_class, $object_id);
                 $result = $undo($om, $user_id, $object_class, $object_id);
             }
             else {
                 self::registerAction($user_id, $action_id, $object_class, $object_id);        
-                self::applyActionOnReputation($user_id, $action_id, $object_class, $object_id);
                 $result = $do($om, $user_id, $object_class, $object_id);            
             }
         }

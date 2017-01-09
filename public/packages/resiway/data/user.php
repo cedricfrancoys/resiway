@@ -32,10 +32,30 @@ list($result, $error_message_ids) = [true, []];
 try {
     
     $om = &ObjectManager::getInstance();
-  
+
+    $user_id = ResiAPI::userId();
+    if($user_id < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
+    
+    $object_fields = ResiAPI::userPublicFields();
+    
+    // user and admins have acess to all fields
+    if($user_id == $object_id
+    || $user_id == 1) {
+        $object_fields = array_merge($object_fields, ResiAPI::userPrivateFields());
+    }
+    
     // retrieve given user
-    $res = $om->read($object_class, $object_id, ResiAPI::userPublicFields());
+    $res = $om->read($object_class, $object_id, $object_fields);
     if($res < 0 || !isset($res[$object_id])) throw new Exception("user_unknown", QN_ERROR_INVALID_PARAM);
+    
+    // retrieve notifications
+    $res[$object_id]['notifications'] = [];
+    if(isset($res[$object_id]['notifications_ids'])) {
+        $notifications = $om->read('resiway\UserNotification', $res[$object_id]['notifications_ids']);
+        if($notifications > 0) {
+            $res[$object_id]['notifications'] = array_values($notifications);
+        }
+    }
     
     $result = $res[$object_id];
 }

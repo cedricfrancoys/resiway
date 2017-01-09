@@ -27,10 +27,21 @@
                 </li>
             </ul>
         </div>        
+        <div class="notify-dialog panel" ng-show="showNotifyDropdown">
+            <div class="head">NOTIFICATIONS</div>
+            <ul>
+                <li ng-repeat="(notification_index, notification) in user.notifications">
+                    <div class="title">{{notification.title}}</div>
+                    <div class="descr">{{notification.content}}</div>
+                </li>
+            </ul>
+            <div class="foot"><a href="#/user/notifications"><i class="fa fa-plus" aria-hidden="true"></i> Voir toutes les notifications</a></div>
+        </div>
+        
         <div class="user-dialog panel" ng-show="showUserDropdown">
             <ul>
                 <li class="btn">
-                    <a href><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
+                    <a href="#user/edit/{{user_id}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
                 </li>
                 <li class="btn">
                    <a href><i class="fa fa-cogs" aria-hidden="true"></i> Paramètres</a>
@@ -39,12 +50,19 @@
                    <a href ng-click="signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion</a>
                 </li>
             </ul>
-        </div>        
+        </div>
+        
         <div class="col-1-1">
-            <div class="platform-btn resinet" ng-class="{open: showPlatformDropdown}" ng-click="togglePlatformDropdown()">
-                <div class="app-icon"></div>
-                <i class="fa fa-caret-down" aria-hidden="true"></i>          
-            </div>            
+            <div class="platform-items">
+                <div class="platform-btn resilib" ng-class="{open: showPlatformDropdown}" ng-click="togglePlatformDropdown()">
+                    <div class="app-icon"></div>
+                    <i class="fa fa-caret-down" aria-hidden="true"></i>          
+                </div>            
+                <div id="notify-btn" class="notify-btn ng-hide" ng-class="{open: showNotifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user_id">
+                    <i class="fa fa-inbox" aria-hidden="true"></i>
+                    <span ng-show="user.notifications.length" class="unread-count">{{user.notifications.length}}</span>
+                </div>
+            </div>
             <div id="login-btn" class="login-btn ng-hide">
                     <a class="" href ng-click="signIn()"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
                     <a class="" href ng-click="signUp()"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>

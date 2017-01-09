@@ -71,10 +71,10 @@
                                 <span class="relativetime">{{rootCtrl.humanReadable.date(question.created)}}</span>
                             </div>
                             <div class="user-avatar">
-                                <a href="#/users/{{question.creator.id}}"><img src="" alt="" width="32" height="32"></a>
+                                <a href="#/users/{{question.creator.id}}"><img ng-src="http://cdn.libravatar.org/avatar/{{question.creator.hash}}?s=32&d=identicon" alt="" width="32" height="32"></a>
                             </div>
                             <div class="user-details">
-                                <a href="#/users/{{question.creator.id}}">{{question.creator.display_name}}</a>
+                                <a href="#/user/profile/{{question.creator.id}}">{{question.creator.display_name}}</a>
                                 <div class="-flair">
                                     <span class="reputation-score" title="reputation score " dir="ltr">{{question.creator.reputation}}</span>
                                     <span class="badges">
