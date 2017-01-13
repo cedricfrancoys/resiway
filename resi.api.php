@@ -43,7 +43,17 @@ class ResiAPI {
         }
         return $link;
     }
-        
+
+    public static function userSign($login, $password) {
+        $om = &ObjectManager::getInstance();        
+        $errors = $om->validate('resiway\User', ['login' => $login, 'password' => $password]);
+        if(count($errors)) return QN_ERROR_INVALID_PARAM;
+        $ids = $om->search('resiway\User', [['login', '=', $login], ['password', '=', $password]]);
+        if($ids < 0 || !count($ids)) return QN_ERROR_INVALID_PARAM;
+        $pdm = &PersistentDataManager::getInstance();
+        return $pdm->set('user_id', $ids[0]);                
+    }
+    
     /**
     * Retrieves current user identifier.
     * If user is not logged in, returns 0 (GUEST_USER_ID)
@@ -88,7 +98,10 @@ class ResiAPI {
                 'display_name',
                 'hash',
                 'about',
-                'reputation', 
+                'reputation',
+                'count_questions', 
+                'count_answers', 
+                'count_comments',              
                 'count_badges_1', 
                 'count_badges_2', 
                 'count_badges_3'
@@ -107,7 +120,11 @@ class ResiAPI {
                ];
     }
     
-    public static function loadUser($user_id) {
+    /**
+    *
+    * to maintain a low load-time, this method should be used only when single user is requested 
+    */
+    public static function loadUserPublic($user_id) {
         // check params consistency
         if($user_id <= 0) return QN_ERROR_INVALID_PARAM;        
         
@@ -118,6 +135,20 @@ class ResiAPI {
         return $res[$user_id];        
     }
 
+    /**
+    *
+    * to maintain a low load-time, this method should be used only when single user is requested 
+    */
+    public static function loadUserPrivate($user_id) {
+        // check params consistency
+        if($user_id <= 0) return QN_ERROR_INVALID_PARAM;        
+        
+        $om = &ObjectManager::getInstance();        
+        
+        $res = $om->read('resiway\User', $user_id, array_merge(self::userPrivateFields(), self::userPublicFields()) );
+        if($res < 0 || !isset($res[$user_id])) return QN_ERROR_UNKNOWN_OBJECT;    
+        return $res[$user_id];        
+    }    
 // todo
 /*
 private static function registerReputationUpdate()
@@ -132,50 +163,50 @@ private static function registerReputationUpdate()
     * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
     * @param    integer  $object_id     identifier of the object on which action is performed
     * @param    integer  $sign          +1 for incrementing reputation, -1 to decrement it
-    * @return   boolean  returns true on succes, false if something went wrong
+    * @return   boolean  returns an array holding user an author resulting ids and increments
     */      
-    private static function impactReputation($user_id, $action_id, $object_class, $object_id, $sign=1) {    
-        // check params consistency
-        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return false;
+    private static function impactReputation($user_id, $action_id, $object_class, $object_id, $sign=1) {
+        $result = ['user' => ['id' => $user_id, 'increment' => 0], 'author' => ['id' => 0, 'increment' => 0]];
         
         $om = &ObjectManager::getInstance();
 
         // retrieve action data
         $res = $om->read('resiway\Action', $action_id, ['name', 'user_increment', 'author_increment']);
-        if($res < 0 || !isset($res[$action_id])) return false;    
-        $action_data = $res[$action_id];
-        
-        if($action_data['user_increment'] != 0) {
-            // retrieve user data
-            $res = $om->read('resiway\User', $user_id, ['verified', 'reputation']);
-            if($res < 0 || !isset($res[$user_id])) return false;          
-            $user_data = $res[$user_id];
-            // prevent reputation update for non-verified users
-            if(!$user_data['verified']) return false;
-            $om->write('resiway\User', $user_id, array('reputation' => $user_data['reputation']+($sign*$action_data['user_increment'])));            
-            /*
-            user_id = $user_id,
-            increment = $sign*$action_data['user_increment']
-            reason = $action_data['name']
-            link = makeLink($object-class, $object_id)
-            description = 
-            */
-        }
-        
-        if($action_data['author_increment'] != 0) {
-            // retrieve author data (creator of targeted object)
-            $res = $om->read($object_class, $object_id, ['creator']);
-            if(!is_array($res) || !isset($res[$object_id])) return false;
-            $author_id = $res[$object_id]['creator'];
-            $res = $om->read('resiway\User', $author_id, ['verified', 'reputation']);        
-            if(!is_array($res) || !isset($res[$author_id])) return false;    
-            $author_data = $res[$author_id];
-            // prevent reputation update for non-verified users
-            if(!$author_data['verified']) return false;            
-            $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+($sign*$action_data['author_increment'])));        
-        }
+        if($res > 0 && isset($res[$action_id])) {
+            $action_data = $res[$action_id];
             
-        return true;
+            if($action_data['user_increment'] != 0) {
+                // retrieve user data
+                $res = $om->read('resiway\User', $user_id, ['verified', 'reputation']);
+                if($res > 0 && isset($res[$user_id])) {
+                    $user_data = $res[$user_id];
+                    // prevent reputation update for non-verified users
+                    if($user_data['verified']) {
+                        $result['user']['increment'] = $sign*$action_data['user_increment'];
+                        $om->write('resiway\User', $user_id, array('reputation' => $user_data['reputation']+$result['user']['increment']));
+                    }
+                }
+            }
+            
+            if($action_data['author_increment'] != 0) {
+                // retrieve author data (creator of targeted object)
+                $res = $om->read($object_class, $object_id, ['creator']);
+                if($res > 0 && isset($res[$object_id])) {
+                    $author_id = $res[$object_id]['creator'];
+                    $result['author']['id'] = $author_id;
+                    $res = $om->read('resiway\User', $author_id, ['verified', 'reputation']);        
+                    if($res > 0 && isset($res[$author_id])) {    
+                        $author_data = $res[$author_id];            
+                        // prevent reputation update for non-verified users
+                        if($author_data['verified']) {                    
+                            $result['author']['increment'] = $sign*$action_data['author_increment'];            
+                            $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+$result['author']['increment']));
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
     }
     
 
@@ -263,20 +294,22 @@ private static function registerReputationUpdate()
     * @return   boolean  returns true if operation succeeds, false otherwise.    
     */
     public static function registerAction($user_id, $action_id, $object_class, $object_id) {
+        // check params consistency
+        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return;
+        
+        $impact = self::impactReputation($user_id, $action_id, $object_class, $object_id, 1);
+        
         $om = &ObjectManager::getInstance();
-
-        $action_log_id = $om->create('resiway\ActionLog', [
-                        'user_id'       => $user_id, 
-                        'action_id'     => $action_id, 
-                        'object_class'  => $object_class, 
-                        'object_id'     => $object_id
+        
+        $om->create('resiway\ActionLog', [
+                        'user_id'               => $user_id,
+                        'author_id'             => $impact['author']['id'],
+                        'action_id'             => $action_id, 
+                        'object_class'          => $object_class, 
+                        'object_id'             => $object_id,
+                        'user_increment'        => $impact['user']['increment'],
+                        'author_increment'      => $impact['author']['increment']                        
                        ]);
-                       
-        if($action_log_id <= 0) return false;
-        
-        self::impactReputation($user_id, $action_id, $object_class, $object_id, 1);
-        
-        return true;
     }
     
     /**
@@ -289,6 +322,11 @@ private static function registerReputationUpdate()
     * @return   boolean  returns true if operation succeeds, false otherwise.
     */
     public static function unregisterAction($user_id, $action_id, $object_class, $object_id) {
+        // check params consistency
+        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return;
+        
+        $impact = self::impactReputation($user_id, $action_id, $object_class, $object_id, -1);
+        
         $om = &ObjectManager::getInstance();
 
         $log_ids = $om->search('resiway\ActionLog', [
@@ -298,15 +336,9 @@ private static function registerReputationUpdate()
                                     ['object_id',    '=', $object_id]
                                 ], 'created', 'desc');
                    
-        if($log_ids < 0 || !count($log_ids)) return false;
-        $action_log_id = $log_ids[0];
-        
-        $res = $om->remove('resiway\ActionLog', $action_log_id, true);
-        if(!in_array($action_log_id, $res)) return false;
-        
-        self::impactReputation($user_id, $action_id, $object_class, $object_id, -1);  
-        
-        return true;
+        if($log_ids > 0 && count($log_ids)) {
+            $res = $om->remove('resiway\ActionLog', $log_ids, true);        
+        }        
     }
     
     /**

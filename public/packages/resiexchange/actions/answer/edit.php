@@ -67,7 +67,7 @@ try {
             if($res > 0) {
                 $result = array(
                                 'id'                => $object_id,
-                                'creator'           => ResiAPI::loadUser($user_id), 
+                                'creator'           => ResiAPI::loadUserPublic($user_id), 
                                 'created'           => ResiAPI::dateISO($res[$object_id]['created']),
                                 'question_id'       => $res[$object_id]['question_id'],                                
                                 'content'           => $res[$object_id]['content'],

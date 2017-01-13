@@ -5,7 +5,6 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
-use html\HTMLPurifier_Config as HTMLPurifier_Config;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -48,7 +47,7 @@ try {
     
     // retrieve question    
     $result = [];
-    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'modifier', 'modified', 'title', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'tags_ids', 'answers_ids', 'comments_ids']);
+    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'modifier', 'modified', 'title', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
     if($res < 0 || !isset($res[$question_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
     $question_data = $res[$question_id];
 
@@ -60,13 +59,13 @@ try {
 
     
     // retreive author data
-    $author_data = ResiAPI::loadUser($question_data['creator']);
+    $author_data = ResiAPI::loadUserPublic($question_data['creator']);
     if($author_data < 0) throw new Exception("question_author_unknown", QN_ERROR_UNKNOWN_OBJECT);
     $result['creator'] = $author_data;
 
     // retrieve eiditor data
     if($question_data['modifier'] > 0) {
-        $editor_data = ResiAPI::loadUser($question_data['modifier']);
+        $editor_data = ResiAPI::loadUserPublic($question_data['modifier']);
         if($editor_data < 0) throw new Exception("question_editor_unknown", QN_ERROR_UNKNOWN_OBJECT);        
         $result['modifier'] = $editor_data;
     }    
@@ -77,7 +76,7 @@ try {
 
     // retrieve tags
     $result['tags'] = [];
-    $res = $om->read('resiway\Category', $question_data['tags_ids'], ['title', 'description', 'path', 'parent_path']);        
+    $res = $om->read('resiway\Category', $question_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
     if($res > 0) {
         $tags = [];
         foreach($res as $tag_id => $tag_data) {           

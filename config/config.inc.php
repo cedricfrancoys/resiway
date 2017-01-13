@@ -94,7 +94,7 @@ namespace {
     *
     * Possible values are: 'ORM' and 'JSON' (router.json)
     */
-    define('ROUTING_METHOD', 'ORM');
+    define('ROUTING_METHOD', 'JSON');
     
     /**
     * Binary type storage mode

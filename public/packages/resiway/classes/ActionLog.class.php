@@ -7,15 +7,21 @@ class ActionLog extends \easyobject\orm\Object {
         return array(
             /* all objects must define a 'name' column (default is id) */
             'name'				    => array('type' => 'alias', 'alias' => 'object_name'),
-        
-            /* user performing the action */
-            'user_id'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
 
             /* action performed */
             'action_id'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\Action'),
+            
+            /* user performing the action */
+            'user_id'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
 
-            /* value by which reputation is updated, if any */ 
-            'reputation_increment'  => array('type' => 'integer'),
+            /* user author of targeted object */
+            'author_id'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
+
+            /* value by which user reputation is updated, if any */ 
+            'user_increment'  => array('type' => 'integer'),
+
+            /* value by which author reputation is updated, if any */ 
+            'author_increment'  => array('type' => 'integer'),
             
             /* class of the object the action applies to */ 
             'object_class'		    => array('type' => 'string'),

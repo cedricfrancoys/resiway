@@ -29,7 +29,7 @@ include_once('../qn.lib.php');
 
 
 // disable output
-set_silent(true);
+set_silent(false);
 
 session_start() or die(__FILE__.', line '.__LINE__.", unable to start session.");
 
@@ -85,17 +85,17 @@ if(count($parts) > 1) {
 		// use HTTP_REFERER if set
 		if(isset($_SERVER['HTTP_REFERER'])) {
 			// get path from referer's URL (current URL must have that part in common)
-			$referer_url = config\get_script_path($_SERVER['HTTP_REFERER']).'/';
+			$referer_url = config\QNlib::get_script_path($_SERVER['HTTP_REFERER']).'/';
 		}
 		else {
 			// otherwise, try to locate 'packages' folder in current URL (this should cover most cases)
-			$url = config\get_url();
+			$url = config\QNlib::get_url();
 // todo : redirect to 404
 			if(($pos = strpos($url, 'packages')) === false) die(); // unable to resolve URL
 			$referer_url = substr($url, 0, $pos);
 		}
 		// keep only the part following referer's url
-		$request_uri = substr(config\get_url(), strlen($referer_url));
+		$request_uri = substr(config\QNlib::get_url(), strlen($referer_url));
 		header('HTTP/1.0 200 OK');
 		header('Status: 200 OK');
 		header("Location: ".$base.$request_uri);
@@ -120,7 +120,7 @@ if(ROUTING_METHOD == 'ORM') {
     if(count($ids) <= 0) {
         if(($pos = strrpos($request_uri, '?')) !== false) $request_uri = substr($request_uri, 0, $pos);
         $ids = search('core\UrlResolver', array(array(array('human_readable_url', 'like', $request_uri))));
-        $additional_params = extract_params($_SERVER['REQUEST_URI']);
+        $additional_params = config\QNlib::extract_params($_SERVER['REQUEST_URI']);
     }
     if(count($ids) > 0) {
         $not_found = false;
@@ -146,11 +146,11 @@ if($not_found) {
 	// set the header to HTTP 404 and exit
 	header('HTTP/1.0 404 Not Found');
 	header('Status: 404 Not Found');
-	include_once('html/page_not_found.html');
+	include_once('packages/core/html/page_not_found.html');
 }
 // URL match found 
 else {
-	$additional_params = array_merge($additional_params, extract_params($complete_url));
+	$additional_params = array_merge($additional_params, config\QNlib::extract_params($complete_url));
 	// set the global var '$_REQUEST' (if a param is already set, its value is overwritten)
 	foreach($additional_params as $key => $value) $_REQUEST[$key] = $value;
 	// set the header to HTTP 200 and relay processing to index.php

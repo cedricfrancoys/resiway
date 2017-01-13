@@ -16,8 +16,8 @@ class User extends \easyobject\orm\Object {
             
             'password'			=> array('type' => 'string'),
             
-            'firstname'			=> array('type' => 'string'),
-            'lastname'			=> array('type' => 'string'),
+            'firstname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
+            'lastname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
 
             /* public hash (md5 of login/email) */
             'hash'              => array(
@@ -32,7 +32,7 @@ class User extends \easyobject\orm\Object {
              2 : Firstname and lastname initial (ex.: Cédric F.)
              3 : Firstname only (ex.: Cédric)
             */
-            'publicity_mode'    => array('type' => 'integer'),
+            'publicity_mode'    => array('type' => 'integer', 'onchange' => 'resiway\User::resetDisplayName'),
             
             'display_name'      => array(
                                     'type'          => 'function',
@@ -49,6 +49,10 @@ class User extends \easyobject\orm\Object {
             'about'			    => array('type' => 'text'),
             
             'reputation'		=> array('type' => 'integer'),
+
+            'count_questions'   => array('type' => 'integer'),
+            'count_answers'     => array('type' => 'integer'),
+            'count_comments'    => array('type' => 'integer'),    
             
             'count_badges_1'    => array('type' => 'integer'),
             'count_badges_2'    => array('type' => 'integer'),
@@ -87,6 +91,9 @@ class User extends \easyobject\orm\Object {
              'verified'             => function() { return false; },             
              'reputation'           => function() { return 1; },
              'publicity_mode'       => function() { return 1; },
+             'count_questions'      => function() { return 0; },
+             'count_answers'        => function() { return 0; },
+             'count_comments'       => function() { return 0; },             
              'count_badges_1'       => function() { return 0; },
              'count_badges_2'       => function() { return 0; },             
              'count_badges_3'       => function() { return 0; },                          
@@ -156,6 +163,10 @@ class User extends \easyobject\orm\Object {
             $result[$oid] = md5($odata['login']);
         }
         return $result;           
+    }
+    
+    public static function resetDisplayName($om, $oids, $lang) {
+        $om->write('resiway\User', $oids, ['display_name' => null]);
     }
     
     public static function getDisplayName($om, $oids, $lang) {

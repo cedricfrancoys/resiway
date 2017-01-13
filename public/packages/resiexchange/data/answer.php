@@ -5,7 +5,6 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
-use html\HTMLPurifier_Config as HTMLPurifier_Config;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);

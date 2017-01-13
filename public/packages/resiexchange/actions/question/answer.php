@@ -5,7 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use html\HTMLPurifier as HTMLPurifier;
-use html\HTMLPurifierConfig as HTMLPurifierConfig;
+use html\HTMLPurifier_Config as HTMLPurifier_Config;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -38,7 +38,7 @@ list($action_name, $object_class, $object_id) = [
 function purify($html) {
     // clean HTML input html
     // strict cleaning: remove non-standard tags and attributes    
-    $config = HTMLPurifierConfig::createDefault();
+    $config = HTMLPurifier_Config::createDefault();
     $config->set('URI.Base',                'http://www.resiway.gdn/');
     $config->set('URI.MakeAbsolute',        true);                  // make all URLs absolute using the base URL set above
     $config->set('AutoFormat.RemoveEmpty',  true);                  // remove empty elements
@@ -77,12 +77,18 @@ try {
 
             if($answer_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
+            // update user count_answers
+            $res = $om->read('resiway\User', $user_id, ['count_answers']);
+            if($res > 0 && isset($res[$user_id])) {
+                $om->write('resiway\User', $user_id, [ 'count_answers'=> $res[$user_id]['count_answers']+1 ]);
+            }
+            
             // read created answer as returned value
             $res = $om->read('resiexchange\Answer', $answer_id, ['creator', 'created', 'content', 'content_excerpt', 'score']);
             if($res > 0) {
                 $result = array(
                             'id'                => $answer_id,
-                            'creator'           => ResiAPI::loadUser($user_id), 
+                            'creator'           => ResiAPI::loadUserPublic($user_id), 
                             'created'           => ResiAPI::dateISO($res[$answer_id]['created']), 
                             'content'           => $res[$answer_id]['content'], 
                             'content_excerpt'   => $res[$answer_id]['content_excerpt'],                             

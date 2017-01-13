@@ -37,6 +37,8 @@ $params = QNLib::announce(
                         'limit'		=> array(
                                             'description'   => 'The maximum number of results.',
                                             'type'          => 'integer',
+                                            'min'           => 5,
+                                            'max'           => 100,
                                             'default'       => 25
                                             ),
                         'total'		=> array(
@@ -77,7 +79,7 @@ try {
     
     if(!empty($questions_ids)) {
         // retrieve questions
-        $res = $om->read('resiexchange\Question', $questions_ids, ['creator', 'created', 'title', 'content_excerpt', 'count_views', 'count_votes', 'count_answers', 'tags_ids']);
+        $res = $om->read('resiexchange\Question', $questions_ids, ['creator', 'created', 'title', 'content_excerpt', 'count_views', 'count_votes', 'count_answers', 'categories_ids']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
         $authors_ids = [];
@@ -86,7 +88,7 @@ try {
         foreach($res as $question_id => $question_data) {
             // remember creators ids for each question
             $authors_ids = array_merge($authors_ids, (array) $question_data['creator']); 
-            $tags_ids = array_merge($tags_ids, (array) $question_data['tags_ids']);         
+            $tags_ids = array_merge($tags_ids, (array) $question_data['categories_ids']);         
             
             $questions[$question_id] = array(
                                         'id'            => $question_id,
@@ -114,7 +116,7 @@ try {
 
         foreach($res as $question_id => $question_data) {
             $questions[$question_id]['tags'] = [];
-            foreach($question_data['tags_ids'] as $tag_id) {
+            foreach($question_data['categories_ids'] as $tag_id) {
                 $tag_data = $questions_tags[$tag_id];
                 $questions[$question_id]['tags'][] = array(
                                             'id'            => $tag_id,

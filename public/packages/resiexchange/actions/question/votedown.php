@@ -72,7 +72,7 @@ try {
                 if(ResiAPI::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {
                     throw new Exception("action_already_performed", QN_ERROR_NOT_ALLOWED);  
                 }        
-            }           
+            },
             // user cannot perform given action more than daily maximum
             function ($om, $user_id, $action_id, $object_class, $object_id) {
                 $res = $om->search('resiway\ActionLog', [

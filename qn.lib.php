@@ -296,14 +296,14 @@ namespace config {
 			$missing_params = array_diff($allowed_params, array_intersect($allowed_params, array_keys($_REQUEST)));
 
 			// 3) build result array and set default values for optional missing parameters
-			foreach($announcement['params'] as $param => $description) {
+			foreach($announcement['params'] as $param => $config) {
 				if(in_array($param, $missing_params) || empty($_REQUEST[$param])) {
-					if(!isset($announcement['params'][$param]['default'])) $_REQUEST[$param] = null;
-					else $_REQUEST[$param] = $announcement['params'][$param]['default'];
+					if(!isset($config['default'])) $_REQUEST[$param] = null;
+					else $_REQUEST[$param] = $config['default'];
 				}
-				// prevent some js/php misunderstanding
+				// handle optional attributes, if any, and prevent some js/php misunderstanding
 				if(in_array($_REQUEST[$param], array('NULL', 'null'))) $_REQUEST[$param] = NULL;
-				switch($announcement['params'][$param]['type']) {
+				switch($config['type']) {
 					case 'bool':
                     case 'boolean':
 						if(in_array($_REQUEST[$param], array('TRUE', 'true', '1', 1))) $_REQUEST[$param] = true;						
@@ -315,6 +315,17 @@ namespace config {
 							else $_REQUEST[$param] = explode(',', str_replace(array("'", '"'), '', $_REQUEST[$param]));
 						}
 						break;
+					case 'int':
+                    case 'integer':
+                        if(isset($config['min'])) {
+                            $min = $config['min'];
+                            if($_REQUEST[$param] < $min) $_REQUEST[$param] = $min;
+                        }
+                        if(isset($config['max'])) {
+                            $max = $config['max'];
+                            if($_REQUEST[$param] > $max) $_REQUEST[$param] = $max;
+                        }
+                        break;                        
 				}
 				$result[$param] = $_REQUEST[$param];
 			}

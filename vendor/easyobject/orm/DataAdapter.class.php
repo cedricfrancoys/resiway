@@ -67,7 +67,10 @@ class DataAdapter {
                     }
                     return $value;												
             };
-            $adapter['text']['ui']['orm'] =	function($value) {
+            $adapter['text']['ui']['orm'] =	function($value) {                    
+                    return htmlspecialchars($value); 
+                    
+                    /* alternate way, by using HtmlPurifier
                     // convert unbreakable spaces to whitespaces
                     $value = str_replace(" ", ' ', $value);
                     // add spaces to closing tags that imply line-return (block nodes)
@@ -76,10 +79,10 @@ class DataAdapter {
                     $config = HTMLPurifier_Config::createDefault();
                     $config->set('Core.Encoding', 'UTF-8');  // use UTF-8
                     $config->set('HTML.Allowed', '');        // disallow all tags
-
                     $purifier = new HTMLPurifier($config);
-                    // remove HTML tags and strip multiple whitespaces
-                    return preg_replace('/\s+/', ' ', $purifier->purify($value));
+                    // remove HTML tags and strip multiple horizontal whitespaces (preserve carriage returns)
+                    return preg_replace('/\h+/', ' ', $purifier->purify($value));
+                    */
             };
             $adapter['short_text']['ui']['orm'] = $adapter['text']['ui']['orm'];
             $adapter['string']['ui']['orm'] = $adapter['text']['ui']['orm'];

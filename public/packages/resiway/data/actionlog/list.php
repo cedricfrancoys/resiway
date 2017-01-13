@@ -37,7 +37,9 @@ $params = QNLib::announce(
                         'limit'		=> array(
                                             'description'   => 'The maximum number of results.',
                                             'type'          => 'integer',
-                                            'default'       => 25
+                                            'min'           => 5,
+                                            'max'           => 100,
+                                            'default'       => 25                                            
                                             ),
                         'total'		=> array(
                                             'description'   => 'Total of record (if known).',
@@ -78,18 +80,19 @@ try {
     
     if(!empty($logs_ids)) {
         // retrieve logs
-        $res = $om->read('resiway\ActionLog', $logs_ids, ['id', 'created', 'user_id', 'object_name', 'action_id', 'action_id.name', 'reputation_increment', 'object_class', 'object_id']);
+        $res = $om->read('resiway\ActionLog', $logs_ids, ['id', 'created', 'user_id', 'author_id', 'object_name', 'action_id', 'action_id.name', 'user_increment', 'author_increment', 'object_class', 'object_id']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
-        $authors_ids = [];
         $logs = [];
         foreach($res as $log_id => $log_data) {                
             $logs[$log_id] = array(
                                         'id'                    => $log_id,
                                         'description'           => $log_data['action_id.name'],
                                         'user_id'               => $log_data['user_id'],  
+                                        'author_id'             => $log_data['author_id'],                                          
                                         'created'               => ResiAPI::dateISO($log_data['created']),
-                                        'reputation_increment'  => $log_data['reputation_increment'],
+                                        'user_increment'        => $log_data['user_increment'],
+                                        'author_increment'      => $log_data['author_increment'],                                        
                                         'object_name'           => $log_data['object_name'],                                        
                                         'object_class'          => $log_data['object_class'],
                                         'object_id'             => $log_data['object_id']

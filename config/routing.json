@@ -1,3 +1,4 @@
 {
-    "/blah":"index.php?show=resilib"
+    "/blah":"index.php?show=resilib",
+    "/resiexchange.fr":"?show=resiway_main&lang=fr"
 }

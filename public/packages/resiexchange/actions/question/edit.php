@@ -94,7 +94,7 @@ try {
                                 'creator'           => $user_id,     
                                 'title'             => $params['title'],
                                 'content'           => $params['content'],
-                                'tags_ids'          => $params['tags_ids']                            
+                                'categories_ids'    => $params['tags_ids']                            
                               ]);
 
                 if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
@@ -104,6 +104,11 @@ try {
                 $title_slug = slugify($params['title']);
                 $url_id = $om->create('core\UrlResolver', ['human_readable_url'=> "/question/{$object_id}/{$title_slug}", 'complete_url'=> "/index.html#/question/{$question_id}"]);    
                 $om->write($object_class, $object_id, ['url_id'=> $url_id]);
+                // update user count_questions
+                $res = $om->read('resiway\User', $user_id, ['count_questions']);
+                if($res > 0 && isset($res[$user_id])) {
+                    $om->write('resiway\User', $user_id, [ 'count_questions'=> $res[$user_id]['count_questions']+1 ]);
+                }
             }
             else {
                 /*
@@ -115,23 +120,23 @@ try {
                                 'modifier'          => $user_id, 
                                 'title'             => $params['title'],
                                 'content'           => $params['content'],
-                                'tags_ids'          => $params['tags_ids']
+                                'categories_ids'    => $params['tags_ids']
                            ]);
             }
             
             // read created question as returned value
 // todo : check wich fields are necessary (method to load a question ?)            
-            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'content', 'content_excerpt', 'score', 'tags_ids']);
+            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'content', 'content_excerpt', 'score', 'categories_ids']);
             if($res > 0) {
                 $result = array(
                                 'id'                => $object_id,
-                                'creator'           => ResiAPI::loadUser($user_id), 
+                                'creator'           => ResiAPI::loadUserPublic($user_id), 
                                 'created'           => ResiAPI::dateISO($res[$object_id]['created']), 
                                 'title'             => $res[$object_id]['title'],                             
                                 'content'           => $res[$object_id]['content'],
                                 'content_excerpt'   => $res[$object_id]['content_excerpt'],                                 
                                 'score'             => $res[$object_id]['score'],
-                                'tags_ids'          => $res[$object_id]['tags_ids'],
+                                'tags_ids'          => $res[$object_id]['categories_ids'],
                                 'comments'          => [],                                
                                 'history'           => []
                           );

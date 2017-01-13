@@ -28,7 +28,10 @@ list($object_class, $object_id) = ['resiway\User', $params['id']];
 list($result, $error_message_ids) = [true, []];
 
 
-
+/**
+*
+* this script should not be requested for views involving users listing
+*/
 try {
     
     $om = &ObjectManager::getInstance();
@@ -36,28 +39,28 @@ try {
     $user_id = ResiAPI::userId();
     if($user_id < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
     
-    $object_fields = ResiAPI::userPublicFields();
-    
+    // retrieve given user    
     // user and admins have acess to all fields
     if($user_id == $object_id
     || $user_id == 1) {
-        $object_fields = array_merge($object_fields, ResiAPI::userPrivateFields());
+        $user = ResiAPI::loadUserPrivate($object_id);
+    }
+    else {
+        $user = ResiAPI::loadUserPublic($object_id);
     }
     
-    // retrieve given user
-    $res = $om->read($object_class, $object_id, $object_fields);
-    if($res < 0 || !isset($res[$object_id])) throw new Exception("user_unknown", QN_ERROR_INVALID_PARAM);
+    if($user < 0) throw new Exception("user_unknown", QN_ERROR_UNKNOWN_OBJECT);
     
     // retrieve notifications
-    $res[$object_id]['notifications'] = [];
-    if(isset($res[$object_id]['notifications_ids'])) {
-        $notifications = $om->read('resiway\UserNotification', $res[$object_id]['notifications_ids']);
+    $user['notifications'] = [];
+    if(isset($user['notifications_ids'])) {
+        $notifications = $om->read('resiway\UserNotification', $user['notifications_ids']);
         if($notifications > 0) {
-            $res[$object_id]['notifications'] = array_values($notifications);
+            $user['notifications'] = array_values($notifications);
         }
     }
     
-    $result = $res[$object_id];
+    $result = $user;
 }
 catch(Exception $e) {
     $result = $e->getCode();

@@ -718,7 +718,8 @@ class ObjectManager {
 	* Checks whether the values of given object fields are valid or not.
 	* Checks if the given array contains valid values for related fields.
 	* This is done using the class validation method.
-	* Returns an associative array containing invalid fields with their associated error_message_id (thus an empty array means no invalid fields).
+	* Returns an associative array containing invalid fields with their associated error_message_id 
+    * (an empty array means all fields are valid)
 
 	* @param string $class object class
 	* @param array $values
@@ -728,19 +729,22 @@ class ObjectManager {
 // todo : check unicity in case the 'unique' attribute is set in field description        
 		$res = array();
 		try {
-			$static_instance = &$this->getStaticInstance($class);			
-			// keep only values which key is matching one of the object's fields (unexisting fields are ignored in write method)
-			$fields = array_intersect_key($values, $static_instance->getColumns());
-			foreach($fields as $field => $value) {
-// todo: check that syntax matches field type (use regexp)
-	 			if(method_exists($static_instance, 'getConstraints')) {
-	  				$constraints = $static_instance->getConstraints();
-	 				if(isset($constraints[$field]) && isset($constraints[$field]['function']) && isset($constraints[$field]['error_message_id'])) {
-						$validation_func = $constraints[$field]['function'];
-						if(is_callable($validation_func) && !call_user_func($validation_func, $value)) $res[$field] = $constraints[$field]['error_message_id'];
-					}
-				}
-			}
+			$static_instance = &$this->getStaticInstance($class);	
+            if(method_exists($static_instance, 'getConstraints')) {
+                $constraints = $static_instance->getConstraints();
+                //(unexisting fields are ignored by write method)
+                foreach($values as $field => $value) {
+// todo: add a default constraint to check that syntax matches field type (use regexp)
+                    if(isset($constraints[$field]) 
+                    && isset($constraints[$field]['function']) ) {
+                        $validation_func = $constraints[$field]['function'];
+                        if(is_callable($validation_func) && !call_user_func($validation_func, $value)) {
+                            if(!isset($constraints[$field]['error_message_id'])) $res[$field] = 'invalid';
+                            else $res[$field] = $constraints[$field]['error_message_id'];
+                        }
+                    }
+                }
+            }
 		}
 		catch(Exception $e) {
 			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);

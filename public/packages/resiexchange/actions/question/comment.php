@@ -55,12 +55,18 @@ try {
 
             if($comment_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
+            // update user count_comments
+            $res = $om->read('resiway\User', $user_id, ['count_comments']);
+            if($res > 0 && isset($res[$user_id])) {
+                $om->write('resiway\User', $user_id, [ 'count_comments'=> $res[$user_id]['count_comments']+1 ]);
+            }
+            
             // read created comment as returned value
             $res = $om->read('resiexchange\QuestionComment', $comment_id, ['creator', 'created', 'content', 'score']);
             if($res > 0) {
                 $result = array(
                             'id'        => $comment_id,
-                            'creator'   => ResiAPI::loadUser($user_id), 
+                            'creator'   => ResiAPI::loadUserPublic($user_id), 
                             'created'   => ResiAPI::dateISO($res[$comment_id]['created']), 
                             'content'   => $res[$comment_id]['content'], 
                             'score'     => $res[$comment_id]['score'],
