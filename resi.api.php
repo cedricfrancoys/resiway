@@ -1,13 +1,28 @@
 <?php
 use easyobject\orm\ObjectManager as ObjectManager;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
+use easyobject\orm\DataAdapter as DataAdapter;
 use html\HTMLPurifier_Config as HTMLPurifier_Config;
 
 // these utilities require inclusion of main configuration file 
 require_once('qn.lib.php');
 
+// override ORM method for date formatting (ISO 8601)
+DataAdapter::setMethod('db', 'orm', 'date', function($value) {
+    $dateTime = DateTime::createFromFormat('Y-m-d', $value);
+    return date("c", $dateTime->getTimestamp());
+});
+/*
+// override ORM method for datetime formatting (ISO 8601)
+DataAdapter::setMethod('db', 'orm', 'datetime', function($value) {
+    $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $value);
+    return date("c", $dateTime->getTimestamp());
+});
+  */
+  
+            
 class ResiAPI {
-
+    
     public static function getHTMLPurifierConfig() {
         // clean HTML input html
         // strict cleaning: remove non-standard tags and attributes    
@@ -23,11 +38,6 @@ class ResiAPI {
         return $config;
     }
     
-    // Converts a SQL formatted date to ISO 8601
-    public static function dateISO($sql_date) {
-        $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $sql_date);
-        return date("c", $dateTime->getTimestamp());
-    }
 
 // todo
     public static function makeLink($object_class, $object_Id) {
@@ -65,28 +75,7 @@ class ResiAPI {
         return $pdm->get('user_id', 0);
     }
     
-    /**
-    * Retrieves given action identifier based on its name.
-    * If action is unknown, returns a negative value (QN_ERROR_INVALID_PARAM)
-    *
-    * @param    string  $action_name    name of the action to resolve
-    * @return   integer 
-    */
-    public static function actionId($action_name) {
-        static $actionsTable = [];
-        
-        if(isset($actionTable[$action_name])) return $actionTable[$action_name];
-        
-        $om = &ObjectManager::getInstance();
-        
-        $res = $om->search('resiway\Action', ['name', '=', $action_name]);
-        if($res < 0 || !count($res)) return QN_ERROR_INVALID_PARAM;
-        $actionTable[$action_name] = $res[0];
-        
-        return $res[0];
-    }
-
-    
+   
     /**
     * Provides an array holding fields names holding public information
     * This array is used n order to determine which data is public.
@@ -94,12 +83,18 @@ class ResiAPI {
     */
     public static function userPublicFields() {
         return ['id', 
+                'created',
                 'verified',
+                'last_login',
                 'display_name',
                 'hash',
                 'about',
+                'language', 
+                'country', 
+                'location',                
                 'reputation',
                 'count_questions', 
+                'count_views', 
                 'count_answers', 
                 'count_comments',              
                 'count_badges_1', 
@@ -112,9 +107,6 @@ class ResiAPI {
         return ['login', 
                 'firstname',
                 'lastname', 
-                'language', 
-                'country', 
-                'location',
                 'publicity_mode',
                 'notifications_ids'
                ];
@@ -148,11 +140,24 @@ class ResiAPI {
         $res = $om->read('resiway\User', $user_id, array_merge(self::userPrivateFields(), self::userPublicFields()) );
         if($res < 0 || !isset($res[$user_id])) return QN_ERROR_UNKNOWN_OBJECT;    
         return $res[$user_id];        
-    }    
-// todo
-/*
-private static function registerReputationUpdate()
-*/
+    }
+    
+    /**
+    * 
+    */
+    public static function repositoryGet($key_mask) {
+        $db = &DBConnection::getInstance(DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_DBMS);
+        $dbgetRecords(['resiway_repository'], ['value'], null, $conditions=NULL);
+        $query = "SELECT `value` FROM `resiway_repository` WHERE `key` like '$key_mask';";
+    }
+
+    public static function repositorySet($key) {
+    }
+
+    public static function repositoryInc($key) {
+    }
+
+    
     
     /**
     * Reflects performed action on user's and object author's reputations

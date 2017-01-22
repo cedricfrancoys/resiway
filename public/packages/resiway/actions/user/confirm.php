@@ -4,6 +4,8 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 use config\QNlib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
 
+require_once('../resi.api.php');
+
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
 
@@ -25,17 +27,14 @@ list($result, $error_message_ids) = [true, []];
 list($code) = [$params['code']];
 
 try {
-    $om = &ObjectManager::getInstance();
-    
     list($login, $password) = explode(';', base64_decode($code));
     
-    $ids = $om->search('resiway\User', [['login', '=', $login], ['password', '=', $password]]);
+    $user_id = ResiAPI::userSign($login, $password);
     
-    if($ids < 0 || !count($ids)) throw new Exception("action_failed", QN_ERROR_UNKNOWN); 
-    
-    $user_id = $ids[0];
+    if($user_id < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);    
     
     // update 'verified' field
+    $om = &ObjectManager::getInstance();    
     $om->write('resiway\User', $user_id, [ 'verified' => 1 ]);
     
 }

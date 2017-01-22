@@ -90,7 +90,7 @@ try {
                                         'description'           => $log_data['action_id.name'],
                                         'user_id'               => $log_data['user_id'],  
                                         'author_id'             => $log_data['author_id'],                                          
-                                        'created'               => ResiAPI::dateISO($log_data['created']),
+                                        'created'               => $log_data['created'],
                                         'user_increment'        => $log_data['user_increment'],
                                         'author_increment'      => $log_data['author_increment'],                                        
                                         'object_name'           => $log_data['object_name'],                                        

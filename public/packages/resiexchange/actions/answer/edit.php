@@ -5,7 +5,6 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use html\HTMLPurifier as HTMLPurifier;
-
 use easyobject\orm\DataAdapter as DataAdapter;
 
 // force silent mode (debug output would corrupt json data)
@@ -68,7 +67,7 @@ try {
                 $result = array(
                                 'id'                => $object_id,
                                 'creator'           => ResiAPI::loadUserPublic($user_id), 
-                                'created'           => ResiAPI::dateISO($res[$object_id]['created']),
+                                'created'           => $res[$object_id]['created'],
                                 'question_id'       => $res[$object_id]['question_id'],                                
                                 'content'           => $res[$object_id]['content'],
                                 'content_excerpt'   => $res[$object_id]['content_excerpt'],                                 

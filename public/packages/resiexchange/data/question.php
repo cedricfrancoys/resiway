@@ -47,16 +47,17 @@ try {
     
     // retrieve question    
     $result = [];
-    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'modifier', 'modified', 'title', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
+    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'modifier', 'modified', 'title', 'title_url', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
     if($res < 0 || !isset($res[$question_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
     $question_data = $res[$question_id];
 
     $result = $question_data;
 
-    
-    // update question's count_views 
-    $om->write('resiexchange\Question', $question_id, [ 'count_views' => $question_data['count_views']+1 ]);
 
+    if($user_id > 0) {
+        // update question's count_views 
+        $om->write('resiexchange\Question', $question_id, [ 'count_views' => $question_data['count_views']+1 ]);
+    }
     
     // retreive author data
     $author_data = ResiAPI::loadUserPublic($question_data['creator']);
@@ -105,7 +106,7 @@ try {
             $comments_authors_ids[] = $comment_data['creator'];
             $comments[$comment_id] = array(
                                         'id'        => $comment_id,
-                                        'created'   => ResiAPI::dateISO($comment_data['created']), 
+                                        'created'   => $comment_data['created'], 
                                         'content'   => $comment_data['content'], 
                                         'score'     => $comment_data['score']
                                     );
@@ -145,7 +146,7 @@ try {
             $answers_comments_ids = array_merge($answers_comments_ids, $answer_data['comments_ids']);
             $answers[$answer_id] = array(
                                     'id'                => $answer_id,
-                                    'created'           => ResiAPI::dateISO($answer_data['created']), 
+                                    'created'           => $answer_data['created'], 
                                     'content'           => $answer_data['content'], 
                                     'content_excerpt'   => $answer_data['content_excerpt'],                                     
                                     'score'             => $answer_data['score'],
@@ -182,7 +183,7 @@ try {
                     $comments_authors_ids[] = $comment_data['creator'];
                     $answers[$answer_id]['comments'][$comment_id] = array(
                                     'id'        => $comment_id,
-                                    'created'   => ResiAPI::dateISO($comment_data['created']), 
+                                    'created'   => $comment_data['created'], 
                                     'content'   => $comment_data['content'], 
                                     'score'     => $comment_data['score'],
                                     'history'   => []);                       

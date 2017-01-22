@@ -1,0 +1,12 @@
+<script type="text/ng-template" id="popoverCustom.html">
+<div style="min-height: 20px;">
+    <button type="button" 
+            class="close" 
+            style="margin-left: 30px;" 
+            ng-click="popover.close()">
+        <span aria-hidden="true">&times;</span>
+        <span class="sr-only">Close</span>
+    </button>      
+    <div style="">{{popover.content() | translate}}</div>
+</div>
+</script>

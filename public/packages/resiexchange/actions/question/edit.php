@@ -5,7 +5,6 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use html\HTMLPurifier as HTMLPurifier;
-
 use easyobject\orm\DataAdapter as DataAdapter;
 
 // force silent mode (debug output would corrupt json data)
@@ -50,26 +49,12 @@ list($action_name, $object_class, $object_id, $title, $content, $tags_ids) = [
     $params['tags_ids']
 ];
 
-// override ORM method for cleaning HTML
+// override ORM method for cleaning HTML (for field 'content')
 DataAdapter::setMethod('ui', 'orm', 'html', function($value) {
     $purifier = new HTMLPurifier(ResiAPI::getHTMLPurifierConfig());    
     return $purifier->purify($value);
 });
 
-
-function slugify($value) {
-    // remove accentuated chars
-    $value = htmlentities($value, ENT_QUOTES, 'UTF-8');
-    $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
-    $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
-    // remove all non-space-alphanum-dash chars
-    $value = preg_replace('/[^\s-a-z0-9]/i', '', $value);
-    // replace spaces with dashes
-    $value = preg_replace('/[\s-]+/', '-', $value);           
-    // trim the end of the string
-    $value = trim($value, '.-_');
-    return strtolower($value);
-}
 
 // handle new question submission 
 // which has a distinct reputation requirement
@@ -99,11 +84,6 @@ try {
 
                 if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
-                // if everything went well, create a new absolute URL for this question
-                // format: /question/{id}/{title}
-                $title_slug = slugify($params['title']);
-                $url_id = $om->create('core\UrlResolver', ['human_readable_url'=> "/question/{$object_id}/{$title_slug}", 'complete_url'=> "/index.html#/question/{$question_id}"]);    
-                $om->write($object_class, $object_id, ['url_id'=> $url_id]);
                 // update user count_questions
                 $res = $om->read('resiway\User', $user_id, ['count_questions']);
                 if($res > 0 && isset($res[$user_id])) {
@@ -131,7 +111,7 @@ try {
                 $result = array(
                                 'id'                => $object_id,
                                 'creator'           => ResiAPI::loadUserPublic($user_id), 
-                                'created'           => ResiAPI::dateISO($res[$object_id]['created']), 
+                                'created'           => $res[$object_id]['created'], 
                                 'title'             => $res[$object_id]['title'],                             
                                 'content'           => $res[$object_id]['content'],
                                 'content_excerpt'   => $res[$object_id]['content_excerpt'],                                 

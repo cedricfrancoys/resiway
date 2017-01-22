@@ -34,7 +34,7 @@ class DataAdapter {
 		if( !isset($GLOBALS['DataAdapter_config']) ) {
             $adapter = array();
         
-            $adapter['date']['db']['orm'] =	function($value) {
+            $adapter['date']['orm']['ui'] =	function($value) {
                     if($value == '0000-00-00') $value = '';
                     else {
                         $dateFormatter = new DateFormatter($value, DATE_SQL);
@@ -43,7 +43,7 @@ class DataAdapter {
                     }
                     return $value;
             };
-            $adapter['date']['orm']['db'] =	function($value) {
+            $adapter['date']['ui']['orm'] =	function($value) {
                     if(empty($value)) $value = '0000-00-00';
                     else {
                         // DATE_FORMAT constant is defined in config.inc.php
@@ -68,21 +68,7 @@ class DataAdapter {
                     return $value;												
             };
             $adapter['text']['ui']['orm'] =	function($value) {                    
-                    return htmlspecialchars($value); 
-                    
-                    /* alternate way, by using HtmlPurifier
-                    // convert unbreakable spaces to whitespaces
-                    $value = str_replace(" ", ' ', $value);
-                    // add spaces to closing tags that imply line-return (block nodes)
-                    $value = preg_replace(['/<br \/>/', '/<hr \/>/', '/<\/h[1-6]>/', '/<\/p>/', '/<\/ul>/', '/<\/ol>/', '/<\/li>/', '/<\/td>/', '/<\/tr>/', '/<\/table>/'], ' \1', $value);
-                    // remove all HTML (convert to text)
-                    $config = HTMLPurifier_Config::createDefault();
-                    $config->set('Core.Encoding', 'UTF-8');  // use UTF-8
-                    $config->set('HTML.Allowed', '');        // disallow all tags
-                    $purifier = new HTMLPurifier($config);
-                    // remove HTML tags and strip multiple horizontal whitespaces (preserve carriage returns)
-                    return preg_replace('/\h+/', ' ', $purifier->purify($value));
-                    */
+                    return htmlspecialchars($value);                   
             };
             $adapter['short_text']['ui']['orm'] = $adapter['text']['ui']['orm'];
             $adapter['string']['ui']['orm'] = $adapter['text']['ui']['orm'];
@@ -93,7 +79,7 @@ class DataAdapter {
                     $purifier = new HTMLPurifier($config);    
                     return $purifier->purify($value);
             };            
-            $adapter['binary']['ui']['orm'] = function($value) {
+            $adapter['file']['ui']['orm'] = function($value) {
                     // note : value is expected to be an array holding data from the $_FILES array and having the following keys set:
                     // ['name'], ['type], ['size'], ['tmp_name'], ['error']
                     $res = '';
@@ -103,28 +89,29 @@ class DataAdapter {
                     if(isset($value['error']) && $value['error'] == 2 || isset($value['size']) && $value['size'] > UPLOAD_MAX_FILE_SIZE) {
                         throw new Exception("file exceed maximum allowed size (".floor(UPLOAD_MAX_FILE_SIZE/1024)." ko)", NOT_ALLOWED);
                     }
-                    if(BINARY_STORAGE_MODE == 'DB') {
+                    if(FILE_STORAGE_MODE == 'DB') {
                         // store file content in database
                         $res = file_get_contents($value['tmp_name'], FILE_BINARY, null, -1, UPLOAD_MAX_FILE_SIZE);
                     }
-                    else if(BINARY_STORAGE_MODE == 'FS') {
+                    else if(FILE_STORAGE_MODE == 'FS') {
                         // 1) move temporary file
-                        $storage_location = BINARY_STORAGE_DIR.'/'.FSManipulator::getSanitizedName($value['name']);
+                        $filename = FSManipulator::getSanitizedName($value['name']);
+                        $storage_location = FILE_STORAGE_DIR.'/'.$filename;
                         // note : if a file by that name already exists it will be overwritten
                         move_uploaded_file($value['tmp_name'], $storage_location);
                         // 2) store file location in database
-                        $res = $storage_location;
+                        $res = $filename;
                     }
                     return $res;
             };
-            $adapter['binary']['db']['orm'] = function($value) {
+            $adapter['file']['db']['orm'] = function($value) {
                     $res = '';
-
-                    if(BINARY_STORAGE_MODE == 'DB') {
+                    if(FILE_STORAGE_MODE == 'DB') {
                         $res = $value;
                     }
-                    else if(BINARY_STORAGE_MODE == 'FS') {
-                        if(file_exists($value)) $res = base64_encode(file_get_contents($value));
+                    else if(FILE_STORAGE_MODE == 'FS') {
+                        $filename = $value;                        
+                        if(file_exists(FILE_STORAGE_DIR.'/'.$filename)) $res = base64_encode(file_get_contents(FILE_STORAGE_DIR.'/'.$filename));
                     }
                     else throw new Exception("binary data has not been received or cannot be retrieved", UNKNOWN_ERROR);
                     

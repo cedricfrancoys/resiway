@@ -31,131 +31,99 @@ include_once('../qn.lib.php');
 // disable output
 set_silent(false);
 
-session_start() or die(__FILE__.', line '.__LINE__.", unable to start session.");
 
+/**
+* handle requests that do not match any script from the public filesystem
+* the purpose of this script is to find a route matching the requested URL
+*/
 
-// Here are the server environment vars we use and some examples of typical values
-// $_SERVER['SCRIPT_NAME']		ex.: /easyobject/url_resolve.php
-// $_SERVER['REQUEST_URI']		ex.: /easyobject/en/presentation/project, /easyobject/en/presentation/index.php?show=icway_site&page_id=6&lang=en
-// $_SERVER['HTTP_REFERER']		ex.: http://localhost/easyobject/en/presentation/project
-
-
-// get the base directory of the current script (easyObject directory being considered as root for URL redirection)
+// get the base directory of the current script
 $base = substr($_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['SCRIPT_NAME'], '/')+1);
-// note: in our example, $base should now contain '/easyobject/'
 
-/**
-* Get a clean version of the request URI
-*/
+// retrieve original URI
 $request_uri = $_SERVER['REQUEST_URI'];
-// remove everything after question mark, if any
+
+// get a clean version of the request URI 
+// removing everything after question mark, if any
 if(($pos = strpos($request_uri, '?')) !== false) $request_uri = substr($request_uri, 0, $pos);
-// remove 'index.php', if explicit
-$request_uri = str_replace('/index.php', '/', $request_uri);
+// removing everything after hash, if any
+if(($pos = strpos($request_uri, '#')) !== false) $request_uri = substr($request_uri, 0, $pos);
 
-/**
-* Check for redirection
-*/
-// if the main entry point (index.php) is requested (inside some virtual subfolder), then we redirect to the root
-// example: 
-// '/easyobject/presentation/index.php?show=icway_site&page_id=6&lang=fr'
-// must redirect to 
-// '/easyobject/index.php?show=icway_site&page_id=6&lang=fr'
-// therefore '/easyobject/presentation/' must redirect to '/easyobject/'
-if(substr($request_uri, -1) == '/') {
-	$request_uri = str_replace($request_uri, $base, $_SERVER['REQUEST_URI']);
-	header('HTTP/1.0 200 OK');
-	header('Status: 200 OK');
-	header("Location: ".$request_uri);
-	exit();
-}
+// look for a match among defined routes
+$params = [];
+$uri = str_replace($base, '/', $_SERVER['REQUEST_URI']);
 
-/**
-* Check for content type
-*/
-// if the resource being requested differs from a script (name containing a dot and thus suggesting a file, like 'style.css' or 'ui.js'),
-// then we try to find out its location (assuming referer's url might involve virtual folders)
-$parts = explode('.', $request_uri);
-if(count($parts) > 1) {
-	// get everything after the last dot
-	$extension = strtolower($parts[count($parts)-1]);
-	// if resource is among accepted extensions
-	if(in_array($extension, array('htm', 'html', 'css', 'js', 'png', 'gif', 'jpg', 'jpeg'))) {
-	
-		// use HTTP_REFERER if set
-		if(isset($_SERVER['HTTP_REFERER'])) {
-			// get path from referer's URL (current URL must have that part in common)
-			$referer_url = config\QNlib::get_script_path($_SERVER['HTTP_REFERER']).'/';
-		}
-		else {
-			// otherwise, try to locate 'packages' folder in current URL (this should cover most cases)
-			$url = config\QNlib::get_url();
-// todo : redirect to 404
-			if(($pos = strpos($url, 'packages')) === false) die(); // unable to resolve URL
-			$referer_url = substr($url, 0, $pos);
-		}
-		// keep only the part following referer's url
-		$request_uri = substr(config\QNlib::get_url(), strlen($referer_url));
-		header('HTTP/1.0 200 OK');
-		header('Status: 200 OK');
-		header("Location: ".$base.$request_uri);
-		exit();
-	}
-}
+$uri_parts = explode('/', ltrim($uri, '/'));
+$found_url = null;
 
-/**
-* Get related UrlResolver object
-*/
-// if we reached this part, it means we are looking for a script pointed by an object of class 'core\UrlResolver'
+try {    
+    // load routes definition
+    if( ($json = file_get_contents('../config/routing.json')) === false) throw new Exception();    
+    if( ($routes = json_decode($json)) == null) throw new Exception();
+    // check routes and stop on first match
 
-$not_found = true;
-$additional_params = array();
-$request_uri = str_replace($base, '/', $_SERVER['REQUEST_URI']);
-    
-if(ROUTING_METHOD == 'ORM') {
-    // first, look for exact match
-    $ids = search('core\UrlResolver', array(array(array('human_readable_url', 'like', $request_uri))));
-
-    // if no match, look for a resolver having same URL base location
-    if(count($ids) <= 0) {
-        if(($pos = strrpos($request_uri, '?')) !== false) $request_uri = substr($request_uri, 0, $pos);
-        $ids = search('core\UrlResolver', array(array(array('human_readable_url', 'like', $request_uri))));
-        $additional_params = config\QNlib::extract_params($_SERVER['REQUEST_URI']);
-    }
-    if(count($ids) > 0) {
-        $not_found = false;
-        // get the complete URL (we should get only one result)
-        $values = read('core\UrlResolver', $ids, array('complete_url', 'human_readable_url'));
-        $complete_url = $values[$ids[0]]['complete_url'];
-    }
-}
-else if(ROUTING_METHOD == 'JSON') {
-    $json = file_get_contents('../config/routing.json');
-    $routes = json_decode($json);
     foreach($routes as $route => $url) {
-        if($route == $request_uri) {
-            $complete_url = $url;
-            $not_found = false;
-            break;
+
+        $route_parts = explode('/', ltrim($route, '/'));
+        // reset params
+        $params = [];
+
+        for($i = 0, $j = count($route_parts); $i < $j; ++$i) {
+            $route_part = $route_parts[$i];
+            $is_param = false;
+            $is_mandatory = false;         
+            if($route_part{0} == ':') {
+                $is_param = true;
+                $is_mandatory = !(substr($route_part, -1) == '?');
+            }
+            if($is_param) {
+                if(isset($uri_parts[$i])) {
+                    if($is_mandatory) $params[substr($route_part, 1)] = $uri_parts[$i];
+                    else $params[substr($route_part, 1, -1)] = $uri_parts[$i];
+                }
+                else {
+                    if($i == $j-1 && !$is_mandatory) $params[substr($route_part, 1, -1)] = '';
+                    else continue 2;
+                }
+            }
+            else if(!isset($uri_parts[$i]) || $route_part != $uri_parts[$i]) {
+                continue 2;
+            }
         }
+        // we have a match
+        $found_url = $url;
+        break;
     }
+
+} catch(Exception $e) {
+    // unable to resolve given URI
+    // todo : give some feedback about the error
 }
 
-// page not found
-if($not_found) {
+if(!$found_url) {
 	// set the header to HTTP 404 and exit
-	header('HTTP/1.0 404 Not Found');
+	header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
 	header('Status: 404 Not Found');
-	include_once('packages/core/html/page_not_found.html');
+	include_once('packages/core/html/page_not_found.html');    
 }
 // URL match found 
-else {
-	$additional_params = array_merge($additional_params, config\QNlib::extract_params($complete_url));
-	// set the global var '$_REQUEST' (if a param is already set, its value is overwritten)
-	foreach($additional_params as $key => $value) $_REQUEST[$key] = $value;
-	// set the header to HTTP 200 and relay processing to index.php
-	header('HTTP/1.0 200 OK');
-	header('Status: 200 OK');
-	// continue as usual
-	include_once('index.php');
+else {    
+    // merge resolved params with URL params, if any
+    $params = array_merge($params, config\QNlib::extract_params($found_url));
+    // set the header to HTTP 200 and relay processing to index.php
+    header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
+    header('Status: 200 OK');
+    // if found URL is another location    
+    if($found_url[0] == '/') {
+        // insert resolved params to pointed location, if any
+        foreach($params as $param => $value) {
+            $found_url = str_replace(':'.$param, $value, $found_url);
+        }
+        header('Location: '.$found_url);
+    }
+    else {
+        // inject resolved params to global '$_REQUEST' (if a param is already set, its value is overwritten)    
+        foreach($params as $key => $value) $_REQUEST[$key] = $value;        
+        include_once('index.php');
+    }
 }

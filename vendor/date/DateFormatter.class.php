@@ -1,4 +1,6 @@
 <?php
+namespace date;
+use \DateTime as DateTime;
 
 /*
 Note :

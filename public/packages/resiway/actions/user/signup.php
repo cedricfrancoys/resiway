@@ -38,8 +38,8 @@ try {
     $pdm = &PersistentDataManager::getInstance();
 
     // check login format validity
-    $user_class = $om->getStatic('resiway\User');
-    $constraints = $user_class::getConstraints();    
+    $userClass = &$om->getStatic('resiway\User');
+    $constraints = $userClass::getConstraints();    
     if(!$constraints['login']['function']($login)) throw new Exception("invalid_login", QN_ERROR_INVALID_PARAM);   
     if(!$constraints['firstname']['function']($firstname)) throw new Exception("invalid_firstname", QN_ERROR_INVALID_PARAM);       
     
@@ -59,18 +59,20 @@ try {
     $user_id = $om->create('resiway\User', ['login'=>$login, 'password'=>$password, 'firstname' => $firstname]);
     if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
     
-    $root_url = QNlib::get_url(true, false);    
-    $confirm_url = $root_url."#/user/confirm/".base64_encode($login.";".$password);
+    $code = base64_encode($login.";".$password);
+    $confirm_url = QNlib::get_url(true, false)."#/user/confirm/{$code}";
 // todo : send confirmation email    
-/*
-    echo $confirm_url;
-*/
+    
     // update session data
     $pdm->set('user_id', $user_id);
     
     // retrieve newly created user
-    $res = $om->read('resiway\User', $user_id, ResiAPI::userPublicFields());  
+    $res = $om->read('resiway\User', $user_id, ResiAPI::userPublicFields());
+    // todo: remove - sending code is for testing purpose
+    $res[$user_id]['code'] = $code;
+    
     $result = $res[$user_id];
+// todo : register action resiway_user_signup    
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

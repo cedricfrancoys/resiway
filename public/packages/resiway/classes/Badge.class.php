@@ -9,9 +9,8 @@ class Badge extends \easyobject\orm\Object {
 
     public static function getColumns() {
         return array(
-// todo : those fields should be multilang
-            'name'			    => array('type' => 'string'),
-            'description'       => array('type' => 'string'),
+            'name'			    => array('type' => 'string', 'multilang' => true),
+            'description'       => array('type' => 'string', 'multilang' => true),
             
             /* category of badge : 1, 2 or 3 - for gold, silver, gold / badge_1, badge_2, badge_3 */
             'type'              => array('type' => 'integer'),

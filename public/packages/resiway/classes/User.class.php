@@ -7,9 +7,11 @@ class User extends \easyobject\orm\Object {
     public static function getColumns() {
         return array(
             /* all objects must define a 'name' column (default is id) */
-            'name'				=> array('type' => 'alias', 'alias' => 'display_name'),
+            'name'				 => array('type' => 'alias', 'alias' => 'display_name'),
             
-            'verified'          => array('type' => 'boolean'),
+            'verified'           => array('type' => 'boolean'),
+
+            'last_login'         => array('type' => 'datetime'),
             
             /* valid email of the user */
             'login'			    => array('type' => 'string', 'unique' => true),
@@ -49,7 +51,10 @@ class User extends \easyobject\orm\Object {
             'about'			    => array('type' => 'text'),
             
             'reputation'		=> array('type' => 'integer'),
-
+            
+            /* pfofile views */
+            'count_views'       => array('type' => 'integer'),
+            
             'count_questions'   => array('type' => 'integer'),
             'count_answers'     => array('type' => 'integer'),
             'count_comments'    => array('type' => 'integer'),    
@@ -90,7 +95,8 @@ class User extends \easyobject\orm\Object {
         return array(
              'verified'             => function() { return false; },             
              'reputation'           => function() { return 1; },
-             'publicity_mode'       => function() { return 1; },
+             'publicity_mode'       => function() { return 1; },             
+             'count_profile_views'  => function() { return 0; },
              'count_questions'      => function() { return 0; },
              'count_answers'        => function() { return 0; },
              'count_comments'       => function() { return 0; },             

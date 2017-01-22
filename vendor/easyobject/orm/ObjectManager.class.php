@@ -48,8 +48,8 @@ class ObjectManager {
 	private $db;
 
     public static $virtual_types = array('alias');
-	public static $simple_types	 = array('boolean', 'integer', 'float', 'string', 'short_text', 'text', 'html', 'date', 'time', 'datetime', 'timestamp', 'selection', 'binary', 'many2one');
-	public static $complex_types = array('one2many', 'many2many', /* 'related', */ 'function');
+	public static $simple_types	 = array('boolean', 'integer', 'float', 'string', 'short_text', 'text', 'html', 'date', 'time', 'datetime', 'timestamp', 'selection', 'file', 'binary', 'many2one');
+	public static $complex_types = array('one2many', 'many2many', 'function');
 
 	public static $valid_attributes = array(
 			'boolean'		=> array('type', 'onchange'),
@@ -63,12 +63,11 @@ class ObjectManager {
 			'time'			=> array('type', 'onchange'),
 			'datetime'		=> array('type', 'onchange'),
 			'timestamp'		=> array('type', 'onchange'),
-//			'selection'		=> array('type', 'onchange', 'selection'),
+			'file'  		=> array('type', 'onchange', 'multilang'),           
 			'binary'		=> array('type', 'onchange', 'multilang'),
 			'many2one'		=> array('type', 'foreign_object', 'onchange', 'multilang'),
 			'one2many'		=> array('type', 'foreign_object', 'foreign_field', 'onchange', 'order', 'sort'),
 			'many2many'		=> array('type', 'foreign_object', 'foreign_field', 'rel_table', 'rel_local_key', 'rel_foreign_key', 'onchange'),
-//			'related'		=> array('type', 'foreign_object', 'result_type', 'path', 'onchange', 'store'),
 			'function'		=> array('type', 'result_type', 'function', 'onchange', 'store', 'multilang')
 	);
 
@@ -84,12 +83,11 @@ class ObjectManager {
 			'time'			=> array('type'),
 			'datetime'		=> array('type'),
 			'timestamp'		=> array('type'),
-//			'selection'		=> array('type', 'selection'),
 			'binary'		=> array('type'),
+			'file'		    => array('type'),            
 			'many2one'		=> array('type', 'foreign_object'),
 			'one2many'		=> array('type', 'foreign_object', 'foreign_field'),
 			'many2many'		=> array('type', 'foreign_object', 'foreign_field', 'rel_table', 'rel_local_key', 'rel_foreign_key'),
-//			'related'		=> array('type', 'foreign_object', 'result_type', 'path'),
 			'function'		=> array('type', 'result_type', 'function')
 	);
 
@@ -327,7 +325,8 @@ class ObjectManager {
 						$oid = $row['object_id'];
 						$field = $row['object_field'];
 						// do some pre-treatment if necessary (this step is symetrical to the one in store method)
-						$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $row['value']);												
+// todo : by default, we should do nothing, to maintain performance - and allow user to pickup a method among some pre-defined default conversions
+						$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $row['value']);
 						// update the internal buffer with fetched value
 						$om->cache[$class][$oid][$field][$lang] = $value;
 					}
@@ -582,7 +581,7 @@ class ObjectManager {
 				try {
 					foreach($ids as $oid) {
 						$fields_values = array();
-						foreach($fields as $field) $fields_values[$field] = $om->cache[$class][$oid][$field][$lang];
+						foreach($fields as $field) $fields_values[$field] = DataAdapter::adapt('orm', 'db', $schema[$field]['type'], $om->cache[$class][$oid][$field][$lang]);
 						$om->db->setRecords($om->getObjectTableName($class), array($oid), $fields_values);
 					}
 				}
@@ -767,16 +766,19 @@ todo : to validate
 		try {
             // this has been moved to qn.api.php
 			// if(!AccessController::hasRight($uid, $class, 0, R_CREATE)) throw new Exception("user '$uid' does not have permission to create new objects of class '$class'", NOT_ALLOWED);
-			$oid = 0;
+			$object = &$this->getStaticInstance($class);
+            
 			$object_table = $this->getObjectTableName($class);
 			// $creation_array = array('created' => date("Y-m-d H:i:s"), 'creator' => $uid);
-			$creation_array = array('created' => date("Y-m-d H:i:s"), 'state' => 'draft');
+			$creation_array = array_merge( array('created' => date("Y-m-d H:i:s"), 'state' => 'draft'), $object->getValues() );
             
 			// list ids of records having creation date older than DRAFT_VALIDITY
             // $ids = $this->search($uid, $class, array(array(array('state', '=', 'draft'),array('created', '<', date("Y-m-d H:i:s", time()-(3600*24*DRAFT_VALIDITY))))), 'id', 'asc'); 
             $ids = $this->search($class, array(array(array('state', '=', 'draft'),array('created', '<', date("Y-m-d H:i:s", time()-(3600*24*DRAFT_VALIDITY))))), 'id', 'asc');            
-			// use the oldest expired draft, if any
-			if(count($ids)) $oid = $ids[0];
+			// use the oldest expired draft, if any            
+			if(!count($ids)) $oid = 0;
+            else $oid = $ids[0];
+            
 			if($oid  > 0) {
 				// store the id to reuse
 				$creation_array['id'] = $oid;
@@ -791,8 +793,7 @@ todo : to validate
             
             // update new object with given fiels values
             
-			//check $fields arg validity
-			$object = &$this->getStaticInstance($class);
+			// check $fields arg validity			
 			$allowed_fields = $object->getFields();
 
             foreach($fields as $field => $values) {
@@ -1148,11 +1149,13 @@ todo: signature differs from other methods	(returned value)
 				'string'		=> array('like', 'ilike', '=', '<>'),
 				'short_text'	=> array('like', 'ilike','='),
 				'text'			=> array('like', 'ilike','='),
+				'html'			=> array('like', 'ilike','='),                
 				'date'			=> array('=', '<>', '<', '>', '<=', '>=', 'like'),
 				'time'			=> array('=', '<>', '<', '>', '<=', '>='),
 				'datetime'		=> array('=', '<>', '<', '>', '<=', '>='),
 				'timestamp'		=> array('=', '<>', '<', '>', '<=', '>='),
 				'selection'		=> array('in', '=', '<>'),
+				'file'		    => array('like', 'ilike', '='),                
 				'binary'		=> array('like', 'ilike', '='),
 				// for compatibilty reasons, 'contains' is allowed for many2one field
 				// note: 'contains' operator means 'list contains at least one of the following ids'

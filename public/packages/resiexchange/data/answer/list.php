@@ -89,7 +89,7 @@ try {
             $answers[$question_id] = array(
                                         'id'            => $question_id,
                                         'creator'       => $answer_data['creator'],
-                                        'created'       => ResiAPI::dateISO($answer_data['created']),
+                                        'created'       => $answer_data['created'],
                                         'question_id'   => $answer_data['question_id'],
                                         'title'         => $answer_data['title'],                                        
                                         'content'       => $answer_data['content_excerpt'],

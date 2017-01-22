@@ -89,7 +89,7 @@ try {
                 $result = array(
                                 'id'                => $object_id,
                                 'creator'           => ResiAPI::loadUserPublic($user_id), 
-                                'created'           => ResiAPI::dateISO($res[$object_id]['created']), 
+                                'created'           => $res[$object_id]['created'], 
                                 'title'             => $res[$object_id]['title'],                             
                                 'description'       => $res[$object_id]['description'],
                                 'path'              => $res[$object_id]['path'],                                 

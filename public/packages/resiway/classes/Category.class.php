@@ -11,7 +11,7 @@ class Category extends \easyobject\orm\Object {
             
             'title'             => array('type' => 'string', 'multilang' => true, 'onchange' => 'resiway\Category::onchangeTitle'),
             
-            'description'		=> array('type' => 'short_text', 'multilang' => true),
+            'description'		=> array('type' => 'text', 'multilang' => true),
             
             'parent_id'			=> array(
                                     'type'              => 'many2one', 
@@ -46,7 +46,7 @@ class Category extends \easyobject\orm\Object {
                                     'rel_table'		    => 'resiexchange_rel_question_tag', 
                                     'rel_foreign_key'	=> 'question_id', 
                                     'rel_local_key'		=> 'tag_id'
-                                    ),
+                                    )
                                     
                                     
                                     

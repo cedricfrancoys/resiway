@@ -24,4 +24,7 @@ session_regenerate_id(true);
 
 // send json result
 header('Content-type: application/json; charset=UTF-8');
-echo json_encode(array('result' => true, 'error_message_ids' => $error_message_ids), JSON_FORCE_OBJECT);
+echo json_encode([
+        'result'            => true, 
+        'error_message_ids' => $error_message_ids
+     ], JSON_FORCE_OBJECT);

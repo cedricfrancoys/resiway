@@ -1,6 +1,7 @@
 <?php
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 use config\QNlib as QNLib;
+use easyobject\orm\ObjectManager as ObjectManager;
 
 require_once('../resi.api.php');
 
@@ -32,6 +33,10 @@ list($login, $password, $error_message_ids) = [strtolower(trim($params['login'])
 try {
     $result = ResiAPI::userSign($login, $password);
     if($result < 0) throw new Exception("user_unidentified", QN_ERROR_NOT_ALLOWED);
+
+    $om = &ObjectManager::getInstance();    
+    // update 'last_login' field
+    $om->write('resiway\User', $result, [ 'last_login' => date("Y-m-d H:i:s") ]);
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

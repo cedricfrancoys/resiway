@@ -5,7 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use html\HTMLPurifier as HTMLPurifier;
-use html\HTMLPurifier_Config as HTMLPurifier_Config;
+use easyobject\orm\DataAdapter as DataAdapter;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -35,25 +35,11 @@ list($action_name, $object_class, $object_id) = [
     $params['question_id']
 ];
 
-function purify($html) {
-    // clean HTML input html
-    // strict cleaning: remove non-standard tags and attributes    
-    $config = HTMLPurifier_Config::createDefault();
-    $config->set('URI.Base',                'http://www.resiway.gdn/');
-    $config->set('URI.MakeAbsolute',        true);                  // make all URLs absolute using the base URL set above
-    $config->set('AutoFormat.RemoveEmpty',  true);                  // remove empty elements
-    $config->set('HTML.Doctype',            'XHTML 1.0 Strict');    // valid XML output
-    $config->set('CSS.AllowedProperties',   []);                    // remove all CSS
-    // allow only tags and attributes that might be used by some lightweight markup language 
-    $config->set('HTML.AllowedElements',    array('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'a', 'img', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'ul', 'ol', 'li', 'b', 'i', 'code', 'blockquote'));
-    $config->set('HTML.AllowedAttributes',  array('a.href', 'img.src'));
-
-    $purifier = new HTMLPurifier($config);    
-    return $purifier->purify($html);
-}
-
-
-$params['content'] = purify($params['content']);
+// override ORM method for cleaning HTML
+DataAdapter::setMethod('ui', 'orm', 'html', function($value) {
+    $purifier = new HTMLPurifier(ResiAPI::getHTMLPurifierConfig());    
+    return $purifier->purify($value);
+});
 
 
 try {
@@ -89,7 +75,7 @@ try {
                 $result = array(
                             'id'                => $answer_id,
                             'creator'           => ResiAPI::loadUserPublic($user_id), 
-                            'created'           => ResiAPI::dateISO($res[$answer_id]['created']), 
+                            'created'           => $res[$answer_id]['created'], 
                             'content'           => $res[$answer_id]['content'], 
                             'content_excerpt'   => $res[$answer_id]['content_excerpt'],                             
                             'score'             => $res[$answer_id]['score'],

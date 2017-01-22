@@ -1,4 +1,4 @@
 {
-    "/blah":"index.php?show=resilib",
+    "/question/:id":"/resiexchange.fr#/question/:id",
     "/resiexchange.fr":"?show=resiway_main&lang=fr"
 }

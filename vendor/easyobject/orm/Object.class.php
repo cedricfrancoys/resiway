@@ -36,6 +36,8 @@ class Object {
     
     private $fields;
 
+    private $values;
+    
 	/**
 	 * Constructor
 	 *
@@ -58,10 +60,15 @@ class Object {
 	}
 
 	private final function setDefaults() {
+        $this->values = [];
 		if(method_exists($this, 'getDefaults')) {
 			$defaults = $this->getDefaults();
 			// get default values, set fields for default language, and mark fields as modified
-			foreach($defaults as $field => $default_value) if(isset($this->schema[$field]) && is_callable($default_value)) $fields_values[$field] = call_user_func($default_value);
+			foreach($defaults as $field => $default_value) {
+                if(isset($this->schema[$field]) && is_callable($default_value)) {
+                    $this->values[$field] = call_user_func($default_value);
+                }
+            }
     	}
 	}
 
@@ -94,6 +101,14 @@ class Object {
 	*/
 	public final function getFields() {
 		return $this->fields;
+	}	
+
+    /**
+    * returns values of static instance (default values)
+    *
+    */
+	public final function getValues() {
+		return $this->values;
 	}	
     
 	/**

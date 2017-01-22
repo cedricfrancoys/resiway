@@ -67,7 +67,7 @@ try {
                 $result = array(
                             'id'        => $comment_id,
                             'creator'   => ResiAPI::loadUserPublic($user_id), 
-                            'created'   => ResiAPI::dateISO($res[$comment_id]['created']), 
+                            'created'   => $res[$comment_id]['created'], 
                             'content'   => $res[$comment_id]['content'], 
                             'score'     => $res[$comment_id]['score'],
                             'history'   => []

@@ -63,9 +63,9 @@ else {
 
 // B) FILESYSTEM ACCESS
 
-if(BINARY_STORAGE_MODE == 'FS') {
+if(FILE_STORAGE_MODE == 'FS') {
     // array holding folders to be tested
-    $folders = array(BINARY_STORAGE_DIR);
+    $folders = array(FILE_STORAGE_DIR);
     // if ( posix_getuid() == fileowner($file_name) )
     foreach($folders as $folder) {
         if(!file_exists($folder) || !is_writable($folder)) $result[] = "PHP process has no write access on folder $folder";

@@ -101,14 +101,14 @@ namespace {
     *
     * Possible values are: 'DB' (database) and 'FS' (filesystem)
     */
-    define('BINARY_STORAGE_MODE', 'FS');
+    define('FILE_STORAGE_MODE', 'FS');
 
 
     /**
     * Binaries storage directory
     */
     // Note: ensure http service has read/write permissions on this directory
-    define('BINARY_STORAGE_DIR', '../bin');
+    define('FILE_STORAGE_DIR', '../bin');
 
 
     /**

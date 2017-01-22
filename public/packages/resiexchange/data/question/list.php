@@ -94,7 +94,7 @@ try {
                                         'id'            => $question_id,
                                         'title'         => $question_data['title'],                                    
                                         'content'       => $question_data['content_excerpt'],
-                                        'created'       => ResiAPI::dateISO($question_data['created']),
+                                        'created'       => $question_data['created'],
                                         'count_views'   => $question_data['count_views'],
                                         'count_votes'   => $question_data['count_votes'],
                                         'count_answers' => $question_data['count_answers']

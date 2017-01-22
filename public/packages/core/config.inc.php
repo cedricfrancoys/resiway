@@ -21,8 +21,9 @@
 /** 
 * Use the config namespace and its related functions.
 * Constants defined in this file are mandatory but can be modified/re-defined in customs config.inc.php (i.e.: packages/[package_name]/config.inc.php)
-* Note: instead, you could use the global namespace and explicitely call the config\define function
-* Note: parameters defined with config\define() are automatically exported as global constants at the end of main entry point (index.php)
+* Notes: 
+* - instead, you could use the global namespace and explicitely call the config\define function
+* - parameters defined with config\define() are automatically exported as global constants at the end of main entry point (index.php)
 */
 namespace config;
 
@@ -32,7 +33,7 @@ namespace config;
 // maximum authorized size for file upload (in octet)
 // keep in mind that this parameter does not override the PHP 'upload_max_filesize' directive
 // so it can be more restrictive but cannot be higher!
-// 	note: 'upload_max_filesize' is a PHP_INI_PERDIR directive and therefore must be defined in php.ini
+// note: 'upload_max_filesize' is a PHP_INI_PERDIR directive and therefore must be defined in php.ini
 
 define('UPLOAD_MAX_FILE_SIZE', 30000000);		// set upload limit to 30Mo
 

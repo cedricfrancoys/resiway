@@ -1,0 +1,152 @@
+<div class="grid wrapper">
+    <div class="col-1-1">
+        <div class="page-header">
+            <h1>Profil utilisateur</h1>
+        </div>
+    </div>
+</div>    
+<div class="grid wrapper">
+
+    <div class="col-8-12">
+    
+        <div class="user-profile wrapper">
+            <div class="col-1-1 nopad">
+                    <div uib-alert ng-class="'alert-success'" ng-show="showMessage" close="showMessage = false">Modifications réalisées avec succès</div>
+                    <div class="form-group col-1-1 nopad">
+                        <div class="input-group col-1-1">
+                            <span class="input-group-addon" style="width: 100px;"><strong>Login</strong></span>
+                            <input ng-model="ctrl.user.login"
+                                   type="text"
+                                   class="form-control" 
+                                   readonly="readonly" 
+                                   value="" 
+                                   maxlength="128">                            
+                        </div>
+                    </div>
+
+                    
+                    <div class="form-group col-1-1 nopad">
+                        <div class="input-group col-1-1">
+                            <span class="input-group-addon" style="width: 100px;"><strong>Prénom</strong></span>
+                            <input ng-model="ctrl.user.firstname"
+                                   type="text"
+                                   class="form-control" 
+                                   value="" 
+                                   maxlength="128">                        
+                            
+                        </div>
+                        <p class="help-inline"></p>
+                    </div>
+
+                    <div class="form-group col-1-1 nopad">
+                        <div class="input-group col-1-1">
+                            <span class="input-group-addon" style="width: 100px;"><strong>Nom</strong></span>
+                            <input ng-model="ctrl.user.lastname"
+                                   type="text"
+                                   class="form-control" 
+                                   value="" 
+                                   maxlength="128">                        
+                            
+                        </div>
+                        <p class="help-inline"></p>
+                    </div>
+
+                    <div class="form-group col-1-2">
+                        <div class="controls">
+                            <oi-select  
+                                        oi-options="item.text for item in ctrl.modes track by item.id"
+                                        ng-model="ctrl.publicity_mode"                                        
+                                        placeholder="Publicity mode"></oi-select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group col-1-2 nopad">                    
+                        <div class="input-group col-1-1">
+                            <span class="input-group-addon" style="width: 100px;"><strong>Display name</strong></span>
+                            <input ng-model="ctrl.user.display_name"
+                                   type="text"
+                                   class="form-control" 
+                                   readonly="readonly" 
+                                   value="" 
+                                   maxlength="128">                            
+                        </div>
+                    </div>
+                                   
+
+                    <div class="form-group col-1-3">
+                        <label>Langue</label>
+                        <div class="controls">
+                            <oi-select  ng-init="langs = ['fr', 'en','es']"
+                                        oi-options="item for item in langs"
+                                        ng-model="ctrl.user.language"                                        
+                                        placeholder="Langue"></oi-select>
+                            <p class="help-inline"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-group col-1-3">
+                        <label>Country</label>
+                        <div class="controls">
+                            <input ng-model="ctrl.user.country"
+                                   type="text"
+                                   class="form-control" 
+                                   value="" 
+                                   maxlength="128">                        
+                            <p class="help-inline"></p>
+                        </div>
+                    </div>   
+                    
+                    <div class="form-group col-1-3 nopad">
+                        <label>Location</label>
+                        <div class="controls">
+                            <input ng-model="ctrl.user.location"
+                                   type="text"
+                                   class="form-control" 
+                                   value="" 
+                                   maxlength="128">                        
+                            <p class="help-inline"></p>
+                        </div>
+                    </div>   
+                    
+                    <div class="form-group col-1-1 nopad">
+                        <label>About</label>
+                        <div class="controls">
+
+                            <div class="wrapper">
+                                <textarea class="content form-control"
+                                          style="height: 200px;"
+                                          placeholder="a short description of yourself"
+                                          ng-model="ctrl.user.about">
+                                </textarea>
+                            </div>
+          
+                        </div>
+                    </div>
+                                
+                    <div class="form-actions col-1-1">            
+
+                        <button class="btn btn-default" tabindex="30" onclick="history.go(-1)">Cancel</button>
+
+                        <button id="user-post"
+                                class="user-profile-submit btn btn-primary" 
+                                ng-click="ctrl.userPost($event)"
+                                uib-popover-template="'popoverCustom.html'" 
+                                popover-trigger="'toggle-popover'" 
+                                popover-placement="right">
+                            Mettre à jour</button>                          
+                    </div>
+
+                
+            </div>
+
+        </div>
+            
+    </div>
+    <div class="col-4-12">
+        <div class="panel panel-default">
+            <div class="container">
+                <a class="btn btn-primary" href="#/user/password"><i class="fa fa-user-secret" aria-hidden="true"></i> change password</a>
+            </div>
+        </div>
+    </div>
+</div>
