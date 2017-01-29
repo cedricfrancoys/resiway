@@ -27,7 +27,7 @@ list($result, $error_message_ids) = [true, []];
 list($code) = [$params['code']];
 
 try {
-    list($login, $password) = explode(';', base64_decode($code));
+    list($login, $password) = ResiAPI::credentialsDecode($code);
     
     $user_id = ResiAPI::userSign($login, $password);
     
@@ -37,6 +37,12 @@ try {
     $om = &ObjectManager::getInstance();    
     $om->write('resiway\User', $user_id, [ 'verified' => 1 ]);
     
+    // update badges
+    $notifications = ResiAPI::updateBadges(
+        'resiway_user_confirm',
+        'resiway\User',
+        $user_id
+    );      
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

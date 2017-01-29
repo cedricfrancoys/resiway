@@ -16,6 +16,81 @@ angular.module('resiway')
         */
         $routeProvider
         /**
+        * Help related routes
+        */
+        // display all categories with first 5 topics in each
+        .when('/help/categories', {
+            templateUrl : templatePath+'helpCategories.html',
+            controller  : 'helpCategoriesController as ctrl',
+            resolve     : {
+                categories: ['routeHelpCategoriesProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })
+        .when('/help/category/edit/:id', {
+            templateUrl : templatePath+'helpCategoryEdit.html',
+            controller  : 'helpCategoryEditController as ctrl',
+            resolve     : {
+                // request object data
+                category: ['routeHelpCategoryProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })        
+        // display a single category with all topics
+        .when('/help/category/:id/:title?', {
+            templateUrl : templatePath+'helpCategory.html',
+            controller  : 'helpCategoryController as ctrl',
+            resolve     : {
+                // request object data
+                category: ['routeHelpCategoryProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })
+        .when('/help/topic/edit/:id', {
+            templateUrl : templatePath+'helpTopicEdit.html',
+            controller  : 'helpTopicEditController as ctrl',
+            resolve     : {
+                // request object data
+                topic: ['routeHelpTopicProvider', function (provider) {
+                    return provider.load();
+                }],
+                // list of categories is required as well for selecting parent category
+                categories: ['routeHelpCategoriesProvider', function (provider) {
+                    return provider.load();
+                }]
+            } 
+        })           
+        // display a topic with breadcrumb
+        .when('/help/topic/:id/:title?', {
+            templateUrl : templatePath+'helpTopic.html',
+            controller  : 'helpTopicController as ctrl',
+            resolve     : {
+                topic: ['routeHelpTopicProvider', function (provider) {
+                    return provider.load();
+                }],
+                // list of categories is required as well for displahing TOC
+                categories: ['routeHelpCategoriesProvider', function (provider) {
+                    return provider.load();
+                }]                
+            }
+        })
+        /**
+        * Badges related routes
+        */
+        
+        .when('/badges', {
+            templateUrl : templatePath+'badges.html',
+            controller  : 'badgesController as ctrl',
+            resolve     : {
+                badges: ['routeBadgesProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })        
+        /**
         * Category related routes
         */
         .when('/categories', {
@@ -27,7 +102,6 @@ angular.module('resiway')
                 }]
             }
         })
-       
         .when('/category/edit/:id', {
             templateUrl : templatePath+'categoryEdit.html',
             controller  : 'categoryEditController as ctrl',
@@ -106,7 +180,7 @@ angular.module('resiway')
                 }]
             }        
         })
-        .when('/user/profile/:id', {
+        .when('/user/profile/:id/:name?', {
             templateUrl : templatePath+'userProfile.html',
             controller  : 'userProfileController as ctrl',
             resolve     : {
@@ -115,7 +189,7 @@ angular.module('resiway')
                 }]
             }             
         })
-        .when('/user/password', {
+        .when('/user/password/:code?', {
             templateUrl : templatePath+'userPassword.html',
             controller  : 'userPasswordController as ctrl'          
         })        

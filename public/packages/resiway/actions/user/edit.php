@@ -111,7 +111,7 @@ try {
             function ($om, $user_id, $action_id, $object_class, $object_id) 
             use ($params) {
                 $errors = $om->validate($object_class, $params);
-                if(count($errors)) throw new Exception("invalid_".array_keys($errors)[0], QN_ERROR_INVALID_PARAM);
+                if(count($errors)) throw new Exception("user_invalid_".array_keys($errors)[0], QN_ERROR_INVALID_PARAM);
             }
         ]
     );

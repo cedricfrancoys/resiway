@@ -6,7 +6,7 @@
       
         <uib-tab index="0" >
             <uib-tab-heading>
-                <i class="fa fa-user"></i> Profil
+                <i class="fa fa-user"></i> {{'USER_PROFILE_TAB_PROFILE' | translate}}
             </uib-tab-heading>
             <div class="user-profile col-1-1 nopad" style="padding-top: 10px;"> 
                 <div class="col-3-12">
@@ -14,7 +14,7 @@
                         <div class="user-picture"><img ng-src="http://cdn.libravatar.org/avatar/{{ctrl.user.hash}}?s=150&d=identicon" /></div>
                         <div class="user-details">
                             <div>
-                                <div class="reputation">{{ctrl.user.reputation | humanizeCount}} <label>reputation</label></div>
+                                <div class="reputation">{{ctrl.user.reputation | humanizeCount}} <label>{{'USER_PROFILE_REPUTATION' | translate}}</label></div>
                                 <div class="badges">
                                     <span class="user-badge badge1">
                                         <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
@@ -42,24 +42,24 @@
                         <div class="row">
                             <div class="stat col-3">
                                 <span class="number">{{ctrl.user.count_questions | humanizeCount}}</span>
-                                questions
+                                {{'USER_PROFILE_STATS_QUESTIONS' | translate}}
                             </div>                    
                             <div class="stat col-3">
                                 <span class="number">{{ctrl.user.count_answers | humanizeCount}}</span>
-                                answers
+                                {{'USER_PROFILE_STATS_ANSWERS' | translate}}
                             </div>
                             <div class="stat col-3">
                                 <span class="number">{{rctrl.user.count_comments | humanizeCount}}</span>
-                                comments
+                                {{'USER_PROFILE_STATS_COMMENTS' | translate}}
                             </div>
                         </div>    
                     </div>
                     <div class="user-facts">
                         <ul>
                             <li><i class="fa fa-map-marker" aria-hidden="true"></i> {{ctrl.user.location}}, {{ctrl.user.country}}</li>
-                            <li><i class="fa fa-history" aria-hidden="true"></i> member for {{ctrl.user.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo:true}}</li>
-                            <li><i class="fa fa-eye" aria-hidden="true"></i> {{ctrl.user.count_views | humanizeCount}} profile views</li>
-                            <li><i class="fa fa-clock-o" aria-hidden="true"></i> last seen {{ctrl.user.last_login | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</li>
+                            <li><i class="fa fa-history" aria-hidden="true"></i> {{'USER_PROFILE_MEMBER_FOR' | translate}} {{ctrl.user.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo:true}}</li>
+                            <li><i class="fa fa-eye" aria-hidden="true"></i> {{ctrl.user.count_views | humanizeCount}} {{'USER_PROFILE_PROFILE_VIEWS' | translate}}</li>
+                            <li style="text-transform: lowercase"><i class="fa fa-clock-o" aria-hidden="true"></i> {{'USER_PROFILE_LAST_SEEN' | translate}} {{ctrl.user.last_login | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</li>
                         </ul>
                     </div>
                 </div>
@@ -68,7 +68,7 @@
         
         <uib-tab index="1" select="ctrl.load(ctrl.updates)">
           <uib-tab-heading>
-            <i class="fa fa-bookmark"></i> Reputation
+            <i class="fa fa-bookmark"></i> {{'USER_PROFILE_TAB_REPUTATION'|translate}}
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.updates.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
@@ -104,7 +104,7 @@
 
         <uib-tab index="2" select="ctrl.load(ctrl.questions)">
             <uib-tab-heading>
-                <i class="fa fa-comment-o"></i> Questions
+                <i class="fa fa-comment-o"></i> {{'USER_PROFILE_TAB_QUESTIONS' | translate}}
             </uib-tab-heading>
             <div class="loader" ng-show="ctrl.questions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
@@ -136,7 +136,7 @@
         
         <uib-tab index="3" select="ctrl.load(ctrl.answers)">
           <uib-tab-heading>
-            <i class="fa fa-comments-o"></i> Answers
+            <i class="fa fa-comments-o"></i> {{'USER_PROFILE_TAB_ANSWERS' | translate}}
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.answers.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
@@ -167,7 +167,7 @@
         
         <uib-tab index="4" select="ctrl.load(ctrl.favorites)">
           <uib-tab-heading>
-            <i class="fa fa-star"></i> Favorites
+            <i class="fa fa-star"></i> {{'USER_PROFILE_TAB_FAVORITES' | translate}}
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.favorites.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
@@ -197,7 +197,7 @@
         
         <uib-tab index="5" select="ctrl.load(ctrl.actions)">
           <uib-tab-heading>
-            <i class="fa fa-history"></i> Activity
+            <i class="fa fa-history"></i> {{'USER_PROFILE_TAB_ACTIVITY' | translate}}
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.actions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         

@@ -89,6 +89,9 @@ try {
                 if($res > 0 && isset($res[$user_id])) {
                     $om->write('resiway\User', $user_id, [ 'count_questions'=> $res[$user_id]['count_questions']+1 ]);
                 }
+                
+                // update global counter
+                ResiAPI::repositoryInc('resiexchange.count_questions');
             }
             else {
                 /*
@@ -130,11 +133,11 @@ try {
             use ($params) {
                 if(strlen($params['title']) < RESIEXCHANGE_QUESTION_TITLE_LENGTH_MIN
                 || strlen($params['title']) > RESIEXCHANGE_QUESTION_TITLE_LENGTH_MAX) {
-                    throw new Exception("title_length_invalid", QN_ERROR_INVALID_PARAM); 
+                    throw new Exception("question_title_length_invalid", QN_ERROR_INVALID_PARAM); 
                 }
                 if(strlen($params['content']) < RESIEXCHANGE_QUESTION_CONTENT_LENGTH_MIN
                 || strlen($params['content']) > RESIEXCHANGE_QUESTION_CONTENT_LENGTH_MAX) {
-                    throw new Exception("content_length_invalid", QN_ERROR_INVALID_PARAM); 
+                    throw new Exception("question_content_length_invalid", QN_ERROR_INVALID_PARAM); 
                 }
                 $count_tags = 0;
                 foreach($params['tags_ids'] as $tag_id) {
@@ -142,7 +145,7 @@ try {
                 }
                 if($count_tags < RESIEXCHANGE_QUESTION_CATEGORIES_COUNT_MIN
                 || $count_tags > RESIEXCHANGE_QUESTION_CATEGORIES_COUNT_MAX) {
-                    throw new Exception("tags_count_invalid", QN_ERROR_INVALID_PARAM); 
+                    throw new Exception("question_tags_count_invalid", QN_ERROR_INVALID_PARAM); 
                 }
                 
             },

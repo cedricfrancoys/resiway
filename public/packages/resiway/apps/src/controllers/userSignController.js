@@ -33,6 +33,7 @@ angular.module('resiway')
         $scope.remember = false;
         $scope.username = '';
         $scope.password = '';
+        $scope.firstname = '';
         $scope.email = '';    
         $scope.signInAlerts = [];
         $scope.signUpAlerts = [];    
@@ -70,18 +71,17 @@ angular.module('resiway')
                 if($scope.username.length == 0) {
                     $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your email as identifier.' });                
                 }
-                if($scope.password.length == 0) {
+                else if($scope.password.length == 0) {
                     $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your password.' });                
                 }
             }
             else {
                 // form is complete
+                ctrl.closeSignInAlerts();                
                 authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
-
                 // attempt to log the user in
                 authenticationService.authenticate().then(
                 function successHandler(data) {
-                    ctrl.closeSignInAlerts();
                     // if some action is pending, return to URL where it occured
                     if($rootScope.pendingAction
                     && typeof $rootScope.pendingAction.next_path != 'undefined') {
@@ -100,19 +100,19 @@ angular.module('resiway')
         
         ctrl.signUp = function() {
             if($scope.username.length == 0 || $scope.firstname.length == 0) {
-                if($scope.username.length == 0) {
-                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
-                }
                 if($scope.firstname.length == 0) {
                     $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
+                }                
+                else if($scope.username.length == 0) {
+                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
                 }
             }
             else {
+                ctrl.closeSignUpAlerts();                
                 authenticationService.register($scope.username, $scope.firstname).then(
                 function successHandler(data) {
                     authenticationService.authenticate().then(
                     function successHandler(data) {
-                        ctrl.closeSignUpAlerts();
                         // if some action is pending, return to URL where it occured
                         if($rootScope.pendingAction
                         && typeof $rootScope.pendingAction.next_path != 'undefined') {
@@ -122,14 +122,15 @@ angular.module('resiway')
                             $location.path($rootScope.previousPath);
                         }
                     },
-                    function errorHandler() {
+                    function errorHandler(data) {
                         authenticationService.clearCredentials();
-                        $scope.signUpAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
+                        $scope.signUpAlerts = [{ type: 'danger', msg: 'Sorry, an unexpected error occured.' }];
                     });  
                 },
                 function errorHandler(data) {
+                    var error_id = data.error_message_ids[0];     
                     // server fault, email already registered, ...
-                    $scope.signUpAlerts = [{ type: 'danger', msg: 'Email address invalid or already registered.' }];
+                    $scope.signUpAlerts = [{ type: 'danger', msg: error_id }];
                 });             
 
             }
@@ -140,6 +141,7 @@ angular.module('resiway')
                 $scope.recoverAlerts.push({ type: 'warning', msg: 'Please, provide your email.' });
             }
             else {
+                ctrl.closeRecoverAlerts();
                 $http.get('index.php?do=resiway_user_passwordrecover&email='+$scope.email)
                 .then(
                 function successCallback(response) {

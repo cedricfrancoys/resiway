@@ -106,11 +106,11 @@ try {
             use ($params) {
                 if(strlen($params['title']) < RESIWAY_CATEGORY_TITLE_LENGTH_MIN
                 || strlen($params['title']) > RESIWAY_CATEGORY_TITLE_LENGTH_MAX) {
-                    throw new Exception("title_length_invalid", QN_ERROR_INVALID_PARAM); 
+                    throw new Exception("category_title_length_invalid", QN_ERROR_INVALID_PARAM); 
                 }
                 if(strlen($params['description']) < RESIWAY_CATEGORY_DESCRIPTION_LENGTH_MIN
                 || strlen($params['description']) > RESIWAY_CATEGORY_DESCRIPTION_LENGTH_MAX) {
-                    throw new Exception("desfription_length_invalid", QN_ERROR_INVALID_PARAM); 
+                    throw new Exception("category_description_length_invalid", QN_ERROR_INVALID_PARAM); 
                 }                
             },
             // user cannot perform given action more than daily maximum

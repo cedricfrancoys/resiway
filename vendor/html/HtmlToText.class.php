@@ -20,7 +20,7 @@
 *                                                                       *
 * Author(s): Cedric Francoys <cedricfrancoys@gmail.com>                 *
 *                                                                       *
-* Last modified: 11/02/06                                               *
+* Last modified: 11/01/2017                                               *
 *                                                                       *
 *************************************************************************/
 namespace html;

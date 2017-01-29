@@ -13,13 +13,8 @@ set_silent(true);
 // announce script and fetch parameters values
 $params = QNLib::announce(	
 	array(	
-    'description'	=>	"Returns a list of objects matching given criteria.",
+    'description'	=>	"Returns actions matching given criteria.",
     'params' 		=>	array(
-                        'object_class'	=> array(
-                                            'description' => 'Class of the objects to look for.',
-                                            'type' => 'string',
-                                            'required' => true
-                                            ),    
                         'domain'		=> array(
                                             'description' => 'The domain holds the criteria that results have to match (serie of conjunctions)',
                                             'type' => 'array',
@@ -50,6 +45,11 @@ $params = QNLib::announce(
                                             'type' => 'string',
                                             'default' => null
                                             ),
+                        'mode'		    => array(
+                                            'description' => 'Allows to limit result to deleted objects (when value is \'recycle\')',
+                                            'type' => 'string',
+                                            'default' => null
+                                            ),
                         'lang'			=> array(
                                             'description '=> 'Specific language for multilang field.',
                                             'type' => 'string',
@@ -60,9 +60,9 @@ $params = QNLib::announce(
 );
 
 
-list($object_class, $start, $domain) = [$params['object_class'], ($params['page']-1) * $params['rp'], $params['domain']];
+list($object_class, $start, $domain) = ['resiway\Action', ($params['page']-1) * $params['rp'], $params['domain']];
 
-list($result, $error_message_ids) = [[], []];
+list($result, $error_message_ids) = [ResiAPI::userId(), []];
 
 try {
     $om = &ObjectManager::getInstance();
@@ -89,7 +89,13 @@ try {
     if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
     $result = [];
-    $result['list'] = $res;
+    $result['list'] = [];
+    foreach($res as $action_id => $action_data) {
+        $action = $action_data['name'];
+        $result['list'][$action] = [];
+        $result['list'][$action]['reputation'] = $action_data['required_reputation'];
+    }
+
     $result['page'] = $params['page'];
     $result['total'] = ceil($records_count/$params['rp']);
     $result['records'] = $records_count;
@@ -101,4 +107,7 @@ catch(Exception $e) {
 
 // send json result
 header('Content-type: application/json; charset=UTF-8');
-echo json_encode(array('result' => $result, 'error_message_ids' => $error_message_ids), JSON_FORCE_OBJECT);
+echo json_encode(array(
+            'result' => $result, 
+            'error_message_ids' => $error_message_ids
+            ), JSON_PRETTY_PRINT);

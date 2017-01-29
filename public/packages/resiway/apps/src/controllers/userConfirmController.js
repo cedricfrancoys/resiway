@@ -21,7 +21,7 @@ angular.module('resiway')
         $scope.confirm = '';    
         $scope.alerts = [];
 
-        
+         // @init
         $http.get('index.php?do=resiway_user_confirm&code='+ctrl.code)
         .then(
         function successCallback(response) {
@@ -29,7 +29,7 @@ angular.module('resiway')
             if(typeof response.data.result != 'undefined'
             && response.data.result === true) {
                 ctrl.verified = data.result;
-                // we should now be able to authenticate 
+                // we should now be able to authenticate (session is initiated)
                 authenticationService.authenticate();                
             }
         },

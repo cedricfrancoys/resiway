@@ -76,7 +76,7 @@ try {
                 $userClass = &$om->getStatic('resiway\User');
                 $constraints = $userClass::getConstraints();
                 if(!$constraints['password']['function']($params['confirm'])) {
-                    throw new Exception("invalid_password", QN_ERROR_INVALID_PARAM);                    
+                    throw new Exception("user_invalid_password", QN_ERROR_INVALID_PARAM);                    
                 }                
             }            
         ]

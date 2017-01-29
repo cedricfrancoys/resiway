@@ -56,7 +56,6 @@ class Question extends \easyobject\orm\Object {
             /* resulting score based on up and down votes */
             'score'			        => array('type' => 'integer'),
 
-            'url_id'			    => array('type' => 'many2one', 'foreign_object' => 'core\UrlResolver'),
 
             /* identifiers of the tags to which the question belongs */
             'categories_ids'	    => array(

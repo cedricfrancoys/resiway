@@ -14,7 +14,12 @@ angular.module('resiway')
         var ctrl = this;   
 
         // @view
-        $scope.categories = categories; 
+        $scope.categories = angular.extend({
+                                id: 0,
+                                title: '',
+                                description: ''
+                            }, 
+                            categories); 
         
         // @model
         $scope.category = category;
@@ -28,9 +33,7 @@ angular.module('resiway')
         
         // @events
         $scope.$watch('category.parent', function() {
-            console.log($scope.category.parent);
-            $scope.category.parent_id = $scope.category.parent.id;
-            console.log($scope.category.parent_id);        
+            $scope.category.parent_id = $scope.category.parent.id;   
         });
 
         // @methods
@@ -41,7 +44,7 @@ angular.module('resiway')
                 action: 'resiway_category_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                    category_id: (angular.isUndefined($scope.category.id)?0:$scope.category.id),
+                    category_id: $scope.category.id,
                     title: $scope.category.title,
                     description: $scope.category.description,
                     parent_id: $scope.category.parent_id
@@ -57,6 +60,9 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'category_'+msg;
+                        }                        
                         feedbackService.popover(selector, msg);
                     }
                     else {

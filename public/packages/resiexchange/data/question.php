@@ -217,7 +217,7 @@ try {
         // asign resulting array to returned value
         $result['answers'] = array_values($answers);
         
-    }        
+    }
     
 }
 catch(Exception $e) {

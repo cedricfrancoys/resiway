@@ -1,24 +1,24 @@
 <div class="grid wrapper login-pane">
-    <div class="col-4-12" ng-show="ctrl.mode=='' || ctrl.mode=='in'" ng-cloak>
+    <div class="col-4-12" ng-show="ctrl.mode=='in'" ng-cloak>
         <div>
             <div class="panel-heading">
-                <div class="panel-title"><i class="fa fa-sign-in" aria-hidden="true"></i> Sign In</div>
-                <div style="padding-top: 10px;">Identifiez-vous pour valider vos actions.</div>                
+                <div class="panel-title"><i class="fa fa-sign-in" aria-hidden="true"></i> {{'USER_SIGN_SIGNIN' | translate}}</div>
+                <div class="panel-description">Identifiez-vous pour valider vos actions.</div>                
             </div>
-            <div style="padding-top:20px" class="panel-body" >
+            <div class="panel-body" >
                 <form id="loginform" class="form-horizontal" role="form">       
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
-                        <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="email">                                        
+                        <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
                     </div>
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                        <input ng-model="password" id="user-password" type="password" class="form-control" name="password" placeholder="password">
+                        <input ng-model="password" id="user-password" type="password" class="form-control" name="password" placeholder="{{'USER_EDIT_PLACEHOLDER_PASSWORD' | translate}}">
                     </div>
                     <div class="input-group">
                       <div class="checkbox">
                         <label>
-                          <input ng-model="remember" id="login-remember" type="checkbox" name="remember" value="1"> Remember me
+                          <input ng-model="remember" id="login-remember" type="checkbox" name="remember" value="1"> {{ 'USER_SIGN_REMEMBER_ME' | translate}}
                         </label>
                       </div>
                     </div>
@@ -28,11 +28,11 @@
                                   id="btn-login" 
                                   style="width: 100%;" 
                                   class="btn btn-primary col-sm-12" 
-                                  ng-click="ctrl.signIn()">Login</button>
+                                  ng-click="ctrl.signIn()">Connexion</button>
                         </div>
                     </div>                   
                 </form>
-                <div uib-alert ng-repeat="alert in signInAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignInAlert($index)">{{alert.msg}}</div>                
+                <div uib-alert ng-repeat="alert in signInAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignInAlert($index)">{{alert.msg | translate}}</div>                
             </div>                     
         </div>
     </div>        
@@ -40,20 +40,20 @@
     <div class="col-4-12" ng-show="ctrl.mode=='' || ctrl.mode=='up'" ng-cloak>
         <div>
             <div class="panel-heading">
-                <div class="panel-title"><i class="fa fa-user-plus" aria-hidden="true"></i> Sign Up</div>                
-                <div style="padding-top: 10px;">Inscrivez-vous pour participer à ResiWay</div>                   
+                <div class="panel-title"><i class="fa fa-user-plus" aria-hidden="true"></i> {{'USER_SIGN_SIGNUP' | translate}}</div>                
+                <div class="panel-description">Inscrivez-vous en <b>1 clic</b> pour participer à ResiWay</div>                   
             </div>
-            <div style="padding-top:20px" class="panel-body" >
-                <div uib-alert ng-repeat="alert in signUpAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignUpAlert($index)">{{alert.msg}}</div>
+            <div class="panel-body" >
+                <div uib-alert ng-repeat="alert in signUpAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignUpAlert($index)">{{alert.msg | translate}}</div>
                 
                 <form id="loginform" class="form-horizontal" role="form">       
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
-                        <input ng-model="firstname" id="user-firstname" type="text" class="form-control" name="firstname" value="" placeholder="first name">                                        
+                        <input ng-model="firstname" id="user-firstname" type="text" class="form-control" name="firstname" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_FIRSTNAME' | translate}}">                                        
                     </div>
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></span>
-                        <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="email">                                        
+                        <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
                     </div>
                     <div class="input-group" style="visibility: hidden;">
                       <div class="checkbox">
@@ -68,7 +68,7 @@
                              id="btn-login"
                              style="width: 100%;" 
                              class="btn btn-primary col-sm-12" 
-                             ng-click="ctrl.signUp()">Register</button>
+                             ng-click="ctrl.signUp()">S'inscrire</button>
                         </div>
                     </div>
                    
@@ -79,11 +79,11 @@
     <div class="col-4-12" ng-show="ctrl.mode=='recover'" ng-cloak>
         <div>
             <div class="panel-heading">
-                <div class="panel-title"><i class="fa fa-unlock-alt" aria-hidden="true"></i> Forgotten password ?</div>
+                <div class="panel-title"><i class="fa fa-unlock-alt" aria-hidden="true"></i> Mot de passe oublié ?</div>
             </div>
-            <div style="padding-top:20px" class="panel-body">
+            <div class="panel-body">
                 <div ng-hide="ctrl.recovery_sent">
-                    <div uib-alert ng-repeat="alert in recoverAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeRecoverAlert($index)">{{alert.msg}}</div>
+                    <div uib-alert ng-repeat="alert in recoverAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeRecoverAlert($index)">{{alert.msg | translate}}</div>
                     
                     <form id="loginform" class="form-horizontal" role="form">       
 
@@ -120,22 +120,50 @@
                 </div>
             </div>                     
         </div>        
-    </div>    
+    </div>
     <div class="col-4-12 nopad">
-        <div class="panel-heading">
-            <div class="panel-title">Nouvel utilisateur ?</div>                
-        </div>
-        <div class="panel-body" >
-            <a id="btn-login" href="#/user/sign/up"  class="btn btn-success btn-xs">Créez un compte</a>
-            pour participer à <b>ResiWay</b>.
-        </div>
-        <div class="panel-heading">
-            <div class="panel-title">Mot de passe oublié ?</div>       
-        </div>
-        <div class="panel-body" >
-            <a id="btn-login" href="#/user/sign/recover" class="btn btn-warning btn-xs">Récupérez</a> votre mot de passe en un clin d'oeil.
-        </div>
+        <div ng-show="ctrl.mode=='' || ctrl.mode=='up'">
+            <div class="panel-heading">
+                <div class="panel-title"><b>Rési</b>Way est une plateforme libre</div>                
+                <div class="panel-description">qui respecte vos données</div>
+            </div>
+            <div class="panel-body" >
+                <ul style="text-indent: 0px;margin: 0;padding: 0;list-style: none;">
+                    <li>Votre email reste confidentiel</li> 
+                    <li>Pas de publicité</li>
+                    <li>Pas de spam</li>
+                </ul>
+            </div>
+        </div>    
 
+    </div>
+    <div class="col-4-12 nopad">
+        <div ng-show="ctrl.mode=='' || ctrl.mode=='up'">
+            <div class="panel-heading">
+                <div class="panel-title">Déjà inscrit ?</div>                
+            </div>
+            <div class="panel-body" >
+                <a id="btn-login" href="#/user/sign/in"  class="btn btn-success btn-xs">Connectez-vous</a>
+                pour valider vos actions.
+            </div>
+        </div>    
+        <div ng-show="ctrl.mode=='in'">
+            <div class="panel-heading">
+                <div class="panel-title">Nouvel utilisateur ?</div>                
+            </div>
+            <div class="panel-body" >
+                <a id="btn-login" href="#/user/sign/up"  class="btn btn-success btn-xs">Créez un compte</a>
+                pour participer à <b>ResiWay</b>.
+            </div>
+        </div>
+        <div ng-show="ctrl.mode=='' || ctrl.mode=='in' || ctrl.mode=='up'">
+            <div class="panel-heading">
+                <div class="panel-title">Mot de passe oublié ?</div>       
+            </div>
+            <div class="panel-body" >
+                <a id="btn-login" href="#/user/sign/recover" class="btn btn-warning btn-xs">Récupérez</a> votre mot de passe en un clin d'oeil.
+            </div>
+        </div>
         
     </div>
 </div>

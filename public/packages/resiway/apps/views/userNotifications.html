@@ -1,7 +1,7 @@
 <div class="grid wrapper">
     <div class="col-1-1">
         <div class="page-header">
-            <h1>Notifications</h1>
+            <h1>{{'USER_NOTIFICATIONS_NOTIFICATIONS' | translate}}</h1>
         </div>
     </div>
 </div>
@@ -12,9 +12,9 @@
         <table class="table table-striped">
             <thead class="thead-default">
                 <tr>
-                    <th width="25%">date</th>
-                    <th width="25%">title</th>
-                    <th width="50%">description</th>
+                    <th width="25%">{{'USER_NOTIFICATIONS_DATE' | translate}}</th>
+                    <th width="25%">{{'USER_NOTIFICATIONS_TITLE' | translate}}</th>
+                    <th width="50%">{{'USER_NOTIFICATIONS_DESCRIPTION' | translate}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -31,7 +31,7 @@
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="left">
                             <span aria-hidden="true">&times;</span>
-                            <span class="sr-only">Close</span>
+                            <span class="sr-only">{{'USER_NOTIFICATIONS_DISMISS' | translate}}</span>
                         </button>     
                     {{notification.content}}</td>            
                 </tr>

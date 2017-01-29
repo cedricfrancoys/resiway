@@ -37,8 +37,20 @@ class ResiAPI {
         $config->set('HTML.AllowedAttributes',  array('a.href', 'img.src'));
         return $config;
     }
-    
 
+    
+    public static function credentialsDecode($code) {
+        // convert base64url to base64
+        $code = str_replace(['-', '_'], ['+','/'], $code);
+        return explode(';', base64_decode($code));
+    }
+    
+    public static function credentialsEncode($login, $password) {
+        $code = base64_encode($login.";".$password);
+        // convert base64 to url safe-encoded
+        return str_replace(['+','/'],['-', '_'], $code);
+    }
+    
 // todo
     public static function makeLink($object_class, $object_Id) {
         $link = '';
@@ -75,7 +87,28 @@ class ResiAPI {
         return $pdm->get('user_id', 0);
     }
     
-   
+    /**
+    * Retrieves given action identifier based on its name.
+    * If action is unknown, returns a negative value (QN_ERROR_INVALID_PARAM)
+    *
+    * @param    string  $action_name    name of the action to resolve
+    * @return   integer 
+    */
+    public static function actionId($action_name) {
+        static $actionsTable = [];
+        
+        if(isset($actionTable[$action_name])) return $actionTable[$action_name];
+        
+        $om = &ObjectManager::getInstance();
+        
+        $res = $om->search('resiway\Action', ['name', '=', $action_name]);
+        if($res < 0 || !count($res)) return QN_ERROR_INVALID_PARAM;
+        $actionTable[$action_name] = $res[0];
+        
+        return $res[0];
+    }
+
+    
     /**
     * Provides an array holding fields names holding public information
     * This array is used n order to determine which data is public.
@@ -140,23 +173,36 @@ class ResiAPI {
         $res = $om->read('resiway\User', $user_id, array_merge(self::userPrivateFields(), self::userPublicFields()) );
         if($res < 0 || !isset($res[$user_id])) return QN_ERROR_UNKNOWN_OBJECT;    
         return $res[$user_id];        
-    }
-    
+    }    
+
     /**
-    * 
+    * returns an associative array holding keys-values of the records having key matching given mask
     */
     public static function repositoryGet($key_mask) {
-        $db = &DBConnection::getInstance(DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_DBMS);
-        $dbgetRecords(['resiway_repository'], ['value'], null, $conditions=NULL);
-        $query = "SELECT `value` FROM `resiway_repository` WHERE `key` like '$key_mask';";
+        $result = [];
+        $om = &ObjectManager::getInstance(); 
+        $db = $om->getDBHandler();
+        $res = $db->sendQuery("SELECT `key`, `value` FROM `resiway_repository` WHERE `key` like '$key_mask';");
+        while ($row = $db->fetchArray($res)) {
+            $result[$row['key']] = $row['value'];
+        }
+        return $result;
     }
 
-    public static function repositorySet($key) {
+    public static function repositorySet($key, $value) {
+        $om = &ObjectManager::getInstance(); 
+        $db = $om->getDBHandler();      
+        $db->sendQuery("UPDATE `resiway_repository` SET `value` = '$value' WHERE `key` like '$key_mask';");        
     }
 
-    public static function repositoryInc($key) {
+    /*
+    * increments by one the value of the records having key matching given mask
+    */
+    public static function repositoryInc($key_mask) {
+        $om = &ObjectManager::getInstance(); 
+        $db = $om->getDBHandler();       
+        $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`+1 WHERE `key` like '$key_mask';");
     }
-
     
     
     /**
@@ -382,6 +428,8 @@ class ResiAPI {
     /**
     * Updates badges status for user and object author.
     * Note: once a badge has been awarded it will never be withrawn.
+    * This method expects resiway_user_badge table to be synched with resiway_badge : 
+    * which means that if badge list is updated, we need to generate missing entries in resiway_user_badge table for all users
     *
     * @param    string   $action_name   name of the action being performed
     * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
@@ -440,10 +488,11 @@ class ResiAPI {
         foreach($res as $user_badge_id => $user_badge) {
             $uid = $user_badge['user_id'];
             $bid = $user_badge['badge_id'];
+// todo : make this multilang and manage email sending according to user settings            
             $notification_id = $om->create('resiway\UserNotification', [  
                 'user_id'   => $uid, 
                 'title'     => "new badge awarded", 
-                'content'   => "Congratulations ! You've just been awarded badge {$user_badge['badge_id.name']}"
+                'content'   => "Congratulations ! You've just been awarded badge '{$user_badge['badge_id.name']}'"
             ]);
             if($notification_id > 0) {
                 $notifictions[] = ['id' => $notification_id, 'title' => "new badge awarded"];

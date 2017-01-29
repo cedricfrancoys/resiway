@@ -99,12 +99,12 @@ class DBManipulatorMySQL extends DBManipulator {
 		return $result;
 	}
 
-	public static function fetchRow(&$array) {
-		return mysqli_fetch_row($array);
+	public static function fetchRow(&$result) {
+		return mysqli_fetch_row($result);
 	}
 
-	public static function fetchArray(&$array) {
-		return mysqli_fetch_array($array, MYSQL_ASSOC);
+	public static function fetchArray(&$result) {
+		return mysqli_fetch_array($result, MYSQL_ASSOC);
 	}
 
 	/**
@@ -132,7 +132,7 @@ class DBManipulatorMySQL extends DBManipulator {
             else {
                 $value = (string) $value;                
                 // value is a field name
-                if($value{0} == '`') $result = DBManipulatorMySQL::escapeFieldName($value);
+                if(strlen($value) && $value{0} == '`') $result = DBManipulatorMySQL::escapeFieldName($value);
                  // value represents NULL SQL value
                 else if($value == 'null' || $value == 'NULL') $result = 'NULL';
                 // value is any other kind of string

@@ -39,6 +39,9 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'answer_'+msg;
+                        }                             
                         feedbackService.popover(selector, msg);
                     }
                     else {
@@ -48,6 +51,21 @@ angular.module('resiway')
                 }        
             });
         };     
+    }
+]);
+angular.module('resiway')
+
+.controller('badgesController', [
+    'badges', 
+    '$scope',
+    function(badges, $scope) {
+        console.log('badges controller');
+
+        var ctrl = this;
+
+        // @data model
+        $scope.badges = badges;
+    
     }
 ]);
 angular.module('resiway')
@@ -81,7 +99,12 @@ angular.module('resiway')
         var ctrl = this;   
 
         // @view
-        $scope.categories = categories; 
+        $scope.categories = angular.extend({
+                                id: 0,
+                                title: '',
+                                description: ''
+                            }, 
+                            categories); 
         
         // @model
         $scope.category = category;
@@ -95,9 +118,7 @@ angular.module('resiway')
         
         // @events
         $scope.$watch('category.parent', function() {
-            console.log($scope.category.parent);
-            $scope.category.parent_id = $scope.category.parent.id;
-            console.log($scope.category.parent_id);        
+            $scope.category.parent_id = $scope.category.parent.id;   
         });
 
         // @methods
@@ -108,7 +129,7 @@ angular.module('resiway')
                 action: 'resiway_category_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                    category_id: (angular.isUndefined($scope.category.id)?0:$scope.category.id),
+                    category_id: $scope.category.id,
                     title: $scope.category.title,
                     description: $scope.category.description,
                     parent_id: $scope.category.parent_id
@@ -124,6 +145,9 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'category_'+msg;
+                        }                        
                         feedbackService.popover(selector, msg);
                     }
                     else {
@@ -133,6 +157,186 @@ angular.module('resiway')
             });
         };  
            
+    }
+]);
+angular.module('resiway')
+
+.controller('helpCategoriesController', [
+    'categories', 
+    '$scope',
+    function(categories, $scope) {
+        console.log('helpCategories controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.categories = categories;
+    
+    }
+]);
+angular.module('resiway')
+
+.controller('helpCategoryController', [
+    'category', 
+    '$scope',
+    function(category, $scope) {
+        console.log('helpCategory controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.category = category;
+    
+    }
+]);
+angular.module('resiway')
+
+.controller('helpCategoryEditController', [
+    'category', 
+    '$scope',
+    '$location',
+    'feedbackService',
+    'actionService',
+    function(category, $scope, $location, feedbackService, actionService) {
+        console.log('helpCategoryEdit controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.category = angular.extend({
+                            title: '', 
+                            description: ''
+                        }, 
+                        category);
+
+        // @methods
+        $scope.categoryPost = function($event) {
+            var selector = feedbackService.selector($event.target);
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resiexchange_helpcategory_edit',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                    category_id: ctrl.category.id,
+                    title: ctrl.category.title,
+                    description: ctrl.category.description
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var category_id = data.result.id;
+                        $location.path('/help/category/'+category_id);
+                    }
+                }        
+            });
+        };          
+        
+    }
+]);
+angular.module('resiway')
+
+.controller('helpTopicController', [
+    'topic', 
+    'categories',     
+    '$scope',
+    function(topic, categories, $scope) {
+        console.log('helpTopic controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.topic = topic;
+        ctrl.categories = categories;
+    
+    }
+]);
+angular.module('resiway')
+
+.controller('helpTopicEditController', [
+    'topic',
+    'categories', 
+    '$scope',
+    '$location',
+    '$sce',
+    'feedbackService',
+    'actionService',
+    function(topic, categories, $scope, $location, $sce, feedbackService, actionService) {
+        console.log('hepTopicEdit controller');
+
+        var ctrl = this;
+
+                // content is inside a textarea and do not need sanitize check
+        topic.content = $sce.valueOf(topic.content);
+        
+        // @data model
+        ctrl.topic = angular.extend({
+                        id: 0,
+                        title: '',
+                        content: '',
+                        category_id: 0
+                     }, 
+                     topic);
+       
+        ctrl.categories = categories;
+
+        $scope.category = null;
+        
+        // set initial parent 
+        angular.forEach(ctrl.categories, function(category, index) {
+            if(category.id == ctrl.topic.category_id) {
+                $scope.category = category; 
+            }
+        });       
+        
+        // @events
+        $scope.$watch('category', function() {
+            ctrl.topic.category_id = $scope.category.id;   
+        });
+        
+        // @methods
+        $scope.topicPost = function($event) {
+            var selector = feedbackService.selector($event.target);
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resiexchange_helptopic_edit',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                    topic_id: ctrl.topic.id,
+                    title: ctrl.topic.title,
+                    content: ctrl.topic.content,
+                    category_id: ctrl.topic.category_id
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var topic_id = data.result.id;
+                        $location.path('/help/topic/'+topic_id);
+                    }
+                }        
+            });
+        };          
     }
 ]);
 angular.module('resiway')
@@ -167,7 +371,7 @@ angular.module('resiway')
                 ariaLabelledBy: 'modal-title',
                 ariaDescribedBy: 'modal-body',
                 templateUrl: 'modalCustom.html',
-                controller: function ($uibModalInstance, items) {
+                controller: ['$uibModalInstance', function ($uibModalInstance, items) {
                     var ctrl = this;
                     ctrl.title_id = title_id;
                     ctrl.header_id = header_id;
@@ -179,7 +383,7 @@ angular.module('resiway')
                     ctrl.cancel = function () {
                         $uibModalInstance.dismiss();
                     };
-                },
+                }],
                 controllerAs: 'ctrl', 
                 size: 'md',
                 appendTo: angular.element(document.querySelector(".modal-wrapper")),
@@ -742,8 +946,17 @@ angular.module('resiway')
         $scope.categories = categories; 
         
         // @model
-        $scope.question = question;
+        // content is inside a textarea and do not need sanitize check
+        question.content = $sce.valueOf(question.content);
         
+        $scope.question = angular.merge({
+                            id: 0,
+                            title: '',
+                            content: '',
+                            tags_ids: [{}]
+                          }, 
+                          question);
+                  
         /**
         * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
         */
@@ -770,7 +983,7 @@ angular.module('resiway')
                 action: 'resiexchange_question_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                    question_id: (angular.isUndefined($scope.question.id)?0:$scope.question.id),
+                    question_id: $scope.question.id,
                     title: $scope.question.title,
                     content: $scope.question.content,
                     tags_ids: $scope.question.tags_ids
@@ -786,6 +999,10 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        // in case a field is missing, adapt the generic 'missing_*' message
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'question_'+msg;
+                        }
                         feedbackService.popover(selector, msg);
                     }
                     else {
@@ -919,7 +1136,7 @@ angular.module('resiway')
         $scope.confirm = '';    
         $scope.alerts = [];
 
-        
+         // @init
         $http.get('index.php?do=resiway_user_confirm&code='+ctrl.code)
         .then(
         function successCallback(response) {
@@ -927,7 +1144,7 @@ angular.module('resiway')
             if(typeof response.data.result != 'undefined'
             && response.data.result === true) {
                 ctrl.verified = data.result;
-                // we should now be able to authenticate 
+                // we should now be able to authenticate (session is initiated)
                 authenticationService.authenticate();                
             }
         },
@@ -1111,8 +1328,10 @@ angular.module('resiway')
 */
 .controller('userPasswordController', [
     '$scope',
+    '$routeParams',
     '$http',
-    function($scope, $http) {
+    'authenticationService',
+    function($scope, $routeParams, $http, authenticationService) {
         console.log('userPassword controller');
         
         var ctrl = this;
@@ -1122,11 +1341,34 @@ angular.module('resiway')
         $scope.confirm = '';    
         $scope.alerts = [];
         // alerts format : { type: 'danger|warning|success', msg: 'Alert message.' }
-        
+
+        ctrl.code = $routeParams.code;        
         ctrl.password_updated = false;   
         ctrl.closeAlerts = function() {
             $scope.alerts = [];
         };
+
+        // @init        
+        if(typeof ctrl.code != 'undefined') {
+            var decoded = String(ctrl.code).base64_decode();
+            if(decoded.indexOf(';') > 0) {
+                var params = decoded.split(';');
+                $http.get('index.php?do=resiway_user_signin&login='+params[0]+'&password='+params[1])
+                .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof response.data.result != 'undefined'
+                    && response.data.result > 0) {
+                        ctrl.verified = data.result;
+                        // we should now be able to authenticate (session is initiated)
+                        authenticationService.authenticate();
+                    }
+                },
+                function errorCallback() {
+                    // something went wrong server-side
+                });
+            }
+        }
         
         ctrl.passwordReset = function() {
             $scope.alerts = [];            
@@ -1279,6 +1521,7 @@ angular.module('resiway')
         $scope.remember = false;
         $scope.username = '';
         $scope.password = '';
+        $scope.firstname = '';
         $scope.email = '';    
         $scope.signInAlerts = [];
         $scope.signUpAlerts = [];    
@@ -1316,18 +1559,17 @@ angular.module('resiway')
                 if($scope.username.length == 0) {
                     $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your email as identifier.' });                
                 }
-                if($scope.password.length == 0) {
+                else if($scope.password.length == 0) {
                     $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your password.' });                
                 }
             }
             else {
                 // form is complete
+                ctrl.closeSignInAlerts();                
                 authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
-
                 // attempt to log the user in
                 authenticationService.authenticate().then(
                 function successHandler(data) {
-                    ctrl.closeSignInAlerts();
                     // if some action is pending, return to URL where it occured
                     if($rootScope.pendingAction
                     && typeof $rootScope.pendingAction.next_path != 'undefined') {
@@ -1346,19 +1588,19 @@ angular.module('resiway')
         
         ctrl.signUp = function() {
             if($scope.username.length == 0 || $scope.firstname.length == 0) {
-                if($scope.username.length == 0) {
-                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
-                }
                 if($scope.firstname.length == 0) {
                     $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
+                }                
+                else if($scope.username.length == 0) {
+                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
                 }
             }
             else {
+                ctrl.closeSignUpAlerts();                
                 authenticationService.register($scope.username, $scope.firstname).then(
                 function successHandler(data) {
                     authenticationService.authenticate().then(
                     function successHandler(data) {
-                        ctrl.closeSignUpAlerts();
                         // if some action is pending, return to URL where it occured
                         if($rootScope.pendingAction
                         && typeof $rootScope.pendingAction.next_path != 'undefined') {
@@ -1368,14 +1610,15 @@ angular.module('resiway')
                             $location.path($rootScope.previousPath);
                         }
                     },
-                    function errorHandler() {
+                    function errorHandler(data) {
                         authenticationService.clearCredentials();
-                        $scope.signUpAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
+                        $scope.signUpAlerts = [{ type: 'danger', msg: 'Sorry, an unexpected error occured.' }];
                     });  
                 },
                 function errorHandler(data) {
+                    var error_id = data.error_message_ids[0];     
                     // server fault, email already registered, ...
-                    $scope.signUpAlerts = [{ type: 'danger', msg: 'Email address invalid or already registered.' }];
+                    $scope.signUpAlerts = [{ type: 'danger', msg: error_id }];
                 });             
 
             }
@@ -1386,6 +1629,7 @@ angular.module('resiway')
                 $scope.recoverAlerts.push({ type: 'warning', msg: 'Please, provide your email.' });
             }
             else {
+                ctrl.closeRecoverAlerts();
                 $http.get('index.php?do=resiway_user_passwordrecover&email='+$scope.email)
                 .then(
                 function successCallback(response) {

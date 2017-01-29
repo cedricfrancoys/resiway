@@ -15,21 +15,30 @@ class UserBadge extends \easyobject\orm\Object {
             'badge_id'			=> array('type' => 'many2one', 'foreign_object' => 'resiway\Badge'),
             
             /*
-            flag that indicates if the badge has been awarded to the user
-            (Once it has been awarded a badge cannot be withdrawn, even if conditions are not met anymore.)
+            flag indicating if the badge has been awarded to the user
+            (Once awarded, a badge cannot be withdrawn, even if conditions are not met anymore.)
             */
             'awarded'			=> array('type' => 'boolean'),
             
+            // percentages of achivement (float value from 0 to 1)
             'status'		    => array('type' => 'function', 'result_type' => 'float', 'store' => true, 'function' => 'resiway\UserBadge::getStatus'),
         );
     }
-  
+
+    public static function getDefaults() {
+        return array(
+             'awarded'          => function() { return false; }
+        );
+    }
+    
     public static function getStatus($om, $ids, $lang) {
         $res = [];
+        // ensure Badge class is loaded
+        $om->getStatic('resiway\Badge');
         // get selected UserBadge objects
         $objects = $om->read(__CLASS__, $ids, ['badge_id.name', 'user_id']);
         foreach($objects as $oid => $object) {
-            $res[$oid] = Badge::computeBadge($object['badge_id.name'], $object['user_id']);
+            $res[$oid] = Badge::computeBadge($om, $object['badge_id.name'], $object['user_id']);
         }
         return $res;
     }

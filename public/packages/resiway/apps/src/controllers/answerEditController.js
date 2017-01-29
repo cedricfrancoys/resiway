@@ -39,6 +39,9 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'answer_'+msg;
+                        }                             
                         feedbackService.popover(selector, msg);
                     }
                     else {

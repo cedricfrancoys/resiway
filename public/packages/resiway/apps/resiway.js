@@ -1,4 +1,134 @@
 'use strict';
+/**
+* Converts to lower case and strips accents
+* this method is used in myListFilter, a custom filter for dsiplaying categories list
+* using the oi-select angular plugin
+*
+* note : this is not valid for non-latin charsets !
+*/
+String.prototype.toASCII = function () {
+    var str = this.toLocaleLowerCase();
+    var result = '';
+    var convert = {
+        192:'A', 193:'A', 194:'A', 195:'A', 196:'A', 197:'A',
+        224:'a', 225:'a', 226:'a', 227:'a', 228:'a', 229:'a',
+        200:'E', 201:'E', 202:'E', 203:'E',
+        232:'e', 233:'e', 234:'e', 235:'e',
+        204:'I', 205:'I', 206:'I', 207:'I',
+        236:'i', 237:'i', 238:'i', 239:'i',
+        210:'O', 211:'O', 212:'O', 213:'O', 214:'O', 216:'O',
+        240:'o', 242:'o', 243:'o', 244:'o', 245:'o', 246:'o',
+        217:'U', 218:'U', 219:'U', 220:'U',
+        249:'u', 250:'u', 251:'u', 252:'u'
+    };
+    for (var i = 0, code; i < str.length; i++) {
+        code = str.charCodeAt(i);
+        if(code < 128) {
+            result = result + str.charAt(i);
+        }
+        else {
+            if(typeof convert[code] != 'undefined') {
+                result = result + convert[code];   
+            }
+        }
+    }
+    return result;
+};
+
+
+/**
+* Encode / Decode a string to base64url
+*
+*
+*/
+(function() {
+    var BASE64_PADDING = '=';
+
+    var BASE64_BINTABLE = [
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
+      52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1,  0, -1, -1,
+      -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+      15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
+      -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+      41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1
+    ];    
+    
+    var BASE64_CHARTABLE =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_'.split('');
+
+
+    String.prototype.base64_decode = function () {
+        var result = '';
+        var object = this;
+        var leftbits = 0; // number of bits decoded, but yet to be appended
+        var leftdata = 0; // bits decoded, but yet to be appended
+
+        // Convert one by one.
+        for (var i = 0; i < object.length; i += 1) {
+            var code = object.charCodeAt(i);
+            var value = BASE64_BINTABLE[code & 0x7F];
+            // Skip LF(NL) || CR
+            if (0x0A == code || 0x0D == code) continue;
+            // Fail on illegal characters
+            if (-1 === value) return null;
+            // Collect data into leftdata, update bitcount
+            leftdata = (leftdata << 6) | value;
+            leftbits += 6;
+            // If we have 8 or more bits, append 8 bits to the result
+            if (leftbits >= 8) {
+                leftbits -= 8;
+                // Append if not padding.
+                if (BASE64_PADDING !== object.charAt(i)) {
+                  result += String.fromCharCode((leftdata >> leftbits) & 0xFF);
+                }
+                leftdata &= (1 << leftbits) - 1;
+            }
+        }
+        // If there are any bits left, the base64 string was corrupted
+        if (leftbits) return null;
+        return result;
+    };
+
+
+    String.prototype.base64_encode = function () {
+        var result = '', index, length, rest;
+        var object = this;
+        
+        if(object.length < 3) return null;
+        // Convert every three bytes to 4 ASCII characters.
+        for (index = 0, length = object.length - 2; index < length; index += 3) {
+            var char1 = object.charCodeAt(index), char2 = object.charCodeAt(index+1), char3 = object.charCodeAt(index+2);
+            result += BASE64_CHARTABLE[char1 >> 2];
+            result += BASE64_CHARTABLE[((char1 & 0x03) << 4) + (char2 >> 4)];
+            result += BASE64_CHARTABLE[((char2 & 0x0F) << 2) + (char3 >> 6)];
+            result += BASE64_CHARTABLE[char3 & 0x3F];
+        }
+
+        rest = object.length % 3;
+
+        // Convert the remaining 1 or 2 bytes, padding out to 4 characters.
+        if (0 !== rest) {
+            index = object.length - rest;
+            result += BASE64_CHARTABLE[object[index + 0] >> 2];
+            var char1 = object.charCodeAt(index), char2 = object.charCodeAt(index+1);
+            if (2 === rest) {
+                result += BASE64_CHARTABLE[((char1 & 0x03) << 4) + (char2 >> 4)];
+                result += BASE64_CHARTABLE[(char2 & 0x0F) << 2];
+                result += BASE64_PADDING;
+            } 
+            else {
+                result += BASE64_CHARTABLE[(char1 & 0x03) << 4];
+                result += BASE64_PADDING + BASE64_PADDING;
+            }
+        }
+
+        return result;
+    };
+    
+})();
+'use strict';
 
 
 // todo : upload files
@@ -527,6 +657,57 @@ angular.module('resiway')
     };
 }])
 
+.service('routeHelpTopicProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
+    this.load = function() {
+        return routeObjectProvider.provide('resiexchange_help_topic')
+        .then(function(result) {     
+            // mark html as safe
+            result.content = $sce.trustAsHtml(result.content);  
+            return result;
+        });
+    };    
+}])
+
+.service('routeHelpCategoryProvider', ['routeObjectProvider', function(routeObjectProvider) {
+    this.load = function() {
+        return routeObjectProvider.provide('resiexchange_help_category');
+    };
+}])
+
+.service('routeHelpCategoriesProvider', ['routeObjectProvider', '$http', function(routeObjectProvider, $http) {
+    this.load = function() {
+        return $http.get('index.php?get=resiexchange_help_category_list&order=title')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
+.service('routeBadgesProvider', ['routeObjectProvider', '$http', function(routeObjectProvider, $http) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_badge_list&order=name')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
 /**
 *
 */
@@ -650,7 +831,21 @@ angular.module('resiway')
         };
 
         this.register = function(login, firstname) {
-            return $http.get('index.php?do=resiway_user_signup&login='+login+'&firstname='+firstname);        
+            var deferred = $q.defer();
+            $http.get('index.php?do=resiway_user_signup&login='+login+'&firstname='+firstname)
+            .then(
+            function successCallback(response) {
+                if(response.data.result < 0) {
+                    return deferred.reject(response.data);
+                }
+                return deferred.resolve(response.data.result);
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return deferred.reject({'result': -1});
+            }            
+            );
+            return deferred.promise;
         };
         
         // @public
@@ -677,9 +872,9 @@ angular.module('resiway')
                         $rootScope.user = data;
                         deferred.resolve(data);
                     },
-                    function() {
+                    function(data) {
                         // something went wrong server-side
-                        deferred.reject(); 
+                        deferred.reject(data); 
                     });                    
                 },
                 // user is not identified yet
@@ -693,16 +888,16 @@ angular.module('resiway')
                                 $rootScope.user = data;
                                 deferred.resolve(data);
                             },
-                            function errorHandler() {
+                            function errorHandler(data) {
                                 // something went wrong server-side
-                                deferred.reject();                                
+                                deferred.reject(data);                                
                             }
                         );                            
                     },
                     function(data) {
                         // given values were not accepted 
                         // or something went wrong server-side
-                        deferred.reject();  
+                        deferred.reject(data);  
                     });
                 });
             }
@@ -876,6 +1071,81 @@ angular.module('resiway')
         */
         $routeProvider
         /**
+        * Help related routes
+        */
+        // display all categories with first 5 topics in each
+        .when('/help/categories', {
+            templateUrl : templatePath+'helpCategories.html',
+            controller  : 'helpCategoriesController as ctrl',
+            resolve     : {
+                categories: ['routeHelpCategoriesProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })
+        .when('/help/category/edit/:id', {
+            templateUrl : templatePath+'helpCategoryEdit.html',
+            controller  : 'helpCategoryEditController as ctrl',
+            resolve     : {
+                // request object data
+                category: ['routeHelpCategoryProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })        
+        // display a single category with all topics
+        .when('/help/category/:id/:title?', {
+            templateUrl : templatePath+'helpCategory.html',
+            controller  : 'helpCategoryController as ctrl',
+            resolve     : {
+                // request object data
+                category: ['routeHelpCategoryProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })
+        .when('/help/topic/edit/:id', {
+            templateUrl : templatePath+'helpTopicEdit.html',
+            controller  : 'helpTopicEditController as ctrl',
+            resolve     : {
+                // request object data
+                topic: ['routeHelpTopicProvider', function (provider) {
+                    return provider.load();
+                }],
+                // list of categories is required as well for selecting parent category
+                categories: ['routeHelpCategoriesProvider', function (provider) {
+                    return provider.load();
+                }]
+            } 
+        })           
+        // display a topic with breadcrumb
+        .when('/help/topic/:id/:title?', {
+            templateUrl : templatePath+'helpTopic.html',
+            controller  : 'helpTopicController as ctrl',
+            resolve     : {
+                topic: ['routeHelpTopicProvider', function (provider) {
+                    return provider.load();
+                }],
+                // list of categories is required as well for displahing TOC
+                categories: ['routeHelpCategoriesProvider', function (provider) {
+                    return provider.load();
+                }]                
+            }
+        })
+        /**
+        * Badges related routes
+        */
+        
+        .when('/badges', {
+            templateUrl : templatePath+'badges.html',
+            controller  : 'badgesController as ctrl',
+            resolve     : {
+                badges: ['routeBadgesProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })        
+        /**
         * Category related routes
         */
         .when('/categories', {
@@ -887,7 +1157,6 @@ angular.module('resiway')
                 }]
             }
         })
-       
         .when('/category/edit/:id', {
             templateUrl : templatePath+'categoryEdit.html',
             controller  : 'categoryEditController as ctrl',
@@ -966,7 +1235,7 @@ angular.module('resiway')
                 }]
             }        
         })
-        .when('/user/profile/:id', {
+        .when('/user/profile/:id/:name?', {
             templateUrl : templatePath+'userProfile.html',
             controller  : 'userProfileController as ctrl',
             resolve     : {
@@ -975,7 +1244,7 @@ angular.module('resiway')
                 }]
             }             
         })
-        .when('/user/password', {
+        .when('/user/password/:code?', {
             templateUrl : templatePath+'userPassword.html',
             controller  : 'userPasswordController as ctrl'          
         })        
@@ -1051,54 +1320,19 @@ angular.module('resiway')
 }])
 
 .filter('customListFilter', ['oiSelectEscape', function(oiSelectEscape) {
-    /**
-    * Converts to lower case and strips accents
-    * this method is used in myListFilter, a custom filter for dsiplaying categories list
-    * using the oi-select angular plugin
-    *
-    * note : this is not valid for non-latin charsets !
-    */
-    String.prototype.toLowerASCII = function () {
-        var str = this.toLocaleLowerCase();
-        var result = '';
-        var convert = {
-            192:'a', 193:'a', 194:'a', 195:'a', 196:'a', 197:'a',
-            224:'a', 225:'a', 226:'a', 227:'a', 228:'a', 229:'a',
-            200:'e', 201:'e', 202:'e', 203:'e',
-            232:'e', 233:'e', 234:'e', 235:'e',
-            204:'i', 205:'i', 206:'i', 207:'i',
-            236:'i', 237:'i', 238:'i', 239:'i',
-            210:'o', 211:'o', 212:'o', 213:'o', 214:'o', 216:'o',
-            240:'o', 242:'o', 243:'o', 244:'o', 245:'o', 246:'o',
-            217:'u', 218:'u', 219:'u', 220:'u',      
-            249:'u', 250:'u', 251:'u', 252:'u'
-        };
-        for (var i = 0, code; i < str.length; i++) {
-            code = str.charCodeAt(i);
-            if(code < 128) {
-                result = result + str.charAt(i);
-            }
-            else {
-                if(typeof convert[code] != 'undefined') {
-                    result = result + convert[code];   
-                }
-            }
-        }
-        return result;
-    }
     
     function ascSort(input, query, getLabel, options) {
         var i, j, isFound, output, output1 = [], output2 = [], output3 = [], output4 = [];
 
         if (query) {
-            query = oiSelectEscape(query).toLowerASCII();
+            query = oiSelectEscape(query).toASCII().toLowerCase();
             for (i = 0, isFound = false; i < input.length; i++) {
-                isFound = getLabel(input[i]).toLowerASCII().match(new RegExp(query));
+                isFound = getLabel(input[i]).toASCII().toLowerCase().match(new RegExp(query));
 
                 if (!isFound && options && (options.length || options.fields)) {
                     for (j = 0; j < options.length; j++) {
                         if (isFound) break;
-                        isFound = String(input[i][options[j]]).toLowerASCII().match(new RegExp(query));
+                        isFound = String(input[i][options[j]]).toASCII().toLowerCase().match(new RegExp(query));
                     }
                 }
                 if (isFound) {
@@ -1106,7 +1340,7 @@ angular.module('resiway')
                 }
             }
             for (i = 0; i < output1.length; i++) {
-                if (getLabel(output1[i]).toLowerASCII().match(new RegExp('^' + query))) {
+                if (getLabel(output1[i]).toASCII().toLowerCase().match(new RegExp('^' + query))) {
                     output2.push(output1[i]);
                 } 
                 else {
@@ -1175,6 +1409,9 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'answer_'+msg;
+                        }                             
                         feedbackService.popover(selector, msg);
                     }
                     else {
@@ -1184,6 +1421,21 @@ angular.module('resiway')
                 }        
             });
         };     
+    }
+]);
+angular.module('resiway')
+
+.controller('badgesController', [
+    'badges', 
+    '$scope',
+    function(badges, $scope) {
+        console.log('badges controller');
+
+        var ctrl = this;
+
+        // @data model
+        $scope.badges = badges;
+    
     }
 ]);
 angular.module('resiway')
@@ -1217,7 +1469,12 @@ angular.module('resiway')
         var ctrl = this;   
 
         // @view
-        $scope.categories = categories; 
+        $scope.categories = angular.extend({
+                                id: 0,
+                                title: '',
+                                description: ''
+                            }, 
+                            categories); 
         
         // @model
         $scope.category = category;
@@ -1231,9 +1488,7 @@ angular.module('resiway')
         
         // @events
         $scope.$watch('category.parent', function() {
-            console.log($scope.category.parent);
-            $scope.category.parent_id = $scope.category.parent.id;
-            console.log($scope.category.parent_id);        
+            $scope.category.parent_id = $scope.category.parent.id;   
         });
 
         // @methods
@@ -1244,7 +1499,7 @@ angular.module('resiway')
                 action: 'resiway_category_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                    category_id: (angular.isUndefined($scope.category.id)?0:$scope.category.id),
+                    category_id: $scope.category.id,
                     title: $scope.category.title,
                     description: $scope.category.description,
                     parent_id: $scope.category.parent_id
@@ -1260,6 +1515,9 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'category_'+msg;
+                        }                        
                         feedbackService.popover(selector, msg);
                     }
                     else {
@@ -1269,6 +1527,186 @@ angular.module('resiway')
             });
         };  
            
+    }
+]);
+angular.module('resiway')
+
+.controller('helpCategoriesController', [
+    'categories', 
+    '$scope',
+    function(categories, $scope) {
+        console.log('helpCategories controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.categories = categories;
+    
+    }
+]);
+angular.module('resiway')
+
+.controller('helpCategoryController', [
+    'category', 
+    '$scope',
+    function(category, $scope) {
+        console.log('helpCategory controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.category = category;
+    
+    }
+]);
+angular.module('resiway')
+
+.controller('helpCategoryEditController', [
+    'category', 
+    '$scope',
+    '$location',
+    'feedbackService',
+    'actionService',
+    function(category, $scope, $location, feedbackService, actionService) {
+        console.log('helpCategoryEdit controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.category = angular.extend({
+                            title: '', 
+                            description: ''
+                        }, 
+                        category);
+
+        // @methods
+        $scope.categoryPost = function($event) {
+            var selector = feedbackService.selector($event.target);
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resiexchange_helpcategory_edit',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                    category_id: ctrl.category.id,
+                    title: ctrl.category.title,
+                    description: ctrl.category.description
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var category_id = data.result.id;
+                        $location.path('/help/category/'+category_id);
+                    }
+                }        
+            });
+        };          
+        
+    }
+]);
+angular.module('resiway')
+
+.controller('helpTopicController', [
+    'topic', 
+    'categories',     
+    '$scope',
+    function(topic, categories, $scope) {
+        console.log('helpTopic controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.topic = topic;
+        ctrl.categories = categories;
+    
+    }
+]);
+angular.module('resiway')
+
+.controller('helpTopicEditController', [
+    'topic',
+    'categories', 
+    '$scope',
+    '$location',
+    '$sce',
+    'feedbackService',
+    'actionService',
+    function(topic, categories, $scope, $location, $sce, feedbackService, actionService) {
+        console.log('hepTopicEdit controller');
+
+        var ctrl = this;
+
+                // content is inside a textarea and do not need sanitize check
+        topic.content = $sce.valueOf(topic.content);
+        
+        // @data model
+        ctrl.topic = angular.extend({
+                        id: 0,
+                        title: '',
+                        content: '',
+                        category_id: 0
+                     }, 
+                     topic);
+       
+        ctrl.categories = categories;
+
+        $scope.category = null;
+        
+        // set initial parent 
+        angular.forEach(ctrl.categories, function(category, index) {
+            if(category.id == ctrl.topic.category_id) {
+                $scope.category = category; 
+            }
+        });       
+        
+        // @events
+        $scope.$watch('category', function() {
+            ctrl.topic.category_id = $scope.category.id;   
+        });
+        
+        // @methods
+        $scope.topicPost = function($event) {
+            var selector = feedbackService.selector($event.target);
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resiexchange_helptopic_edit',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                    topic_id: ctrl.topic.id,
+                    title: ctrl.topic.title,
+                    content: ctrl.topic.content,
+                    category_id: ctrl.topic.category_id
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var topic_id = data.result.id;
+                        $location.path('/help/topic/'+topic_id);
+                    }
+                }        
+            });
+        };          
     }
 ]);
 angular.module('resiway')
@@ -1303,7 +1741,7 @@ angular.module('resiway')
                 ariaLabelledBy: 'modal-title',
                 ariaDescribedBy: 'modal-body',
                 templateUrl: 'modalCustom.html',
-                controller: function ($uibModalInstance, items) {
+                controller: ['$uibModalInstance', function ($uibModalInstance, items) {
                     var ctrl = this;
                     ctrl.title_id = title_id;
                     ctrl.header_id = header_id;
@@ -1315,7 +1753,7 @@ angular.module('resiway')
                     ctrl.cancel = function () {
                         $uibModalInstance.dismiss();
                     };
-                },
+                }],
                 controllerAs: 'ctrl', 
                 size: 'md',
                 appendTo: angular.element(document.querySelector(".modal-wrapper")),
@@ -1878,8 +2316,17 @@ angular.module('resiway')
         $scope.categories = categories; 
         
         // @model
-        $scope.question = question;
+        // content is inside a textarea and do not need sanitize check
+        question.content = $sce.valueOf(question.content);
         
+        $scope.question = angular.merge({
+                            id: 0,
+                            title: '',
+                            content: '',
+                            tags_ids: [{}]
+                          }, 
+                          question);
+                  
         /**
         * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
         */
@@ -1906,7 +2353,7 @@ angular.module('resiway')
                 action: 'resiexchange_question_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                    question_id: (angular.isUndefined($scope.question.id)?0:$scope.question.id),
+                    question_id: $scope.question.id,
                     title: $scope.question.title,
                     content: $scope.question.content,
                     tags_ids: $scope.question.tags_ids
@@ -1922,6 +2369,10 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        // in case a field is missing, adapt the generic 'missing_*' message
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'question_'+msg;
+                        }
                         feedbackService.popover(selector, msg);
                     }
                     else {
@@ -2055,7 +2506,7 @@ angular.module('resiway')
         $scope.confirm = '';    
         $scope.alerts = [];
 
-        
+         // @init
         $http.get('index.php?do=resiway_user_confirm&code='+ctrl.code)
         .then(
         function successCallback(response) {
@@ -2063,7 +2514,7 @@ angular.module('resiway')
             if(typeof response.data.result != 'undefined'
             && response.data.result === true) {
                 ctrl.verified = data.result;
-                // we should now be able to authenticate 
+                // we should now be able to authenticate (session is initiated)
                 authenticationService.authenticate();                
             }
         },
@@ -2247,8 +2698,10 @@ angular.module('resiway')
 */
 .controller('userPasswordController', [
     '$scope',
+    '$routeParams',
     '$http',
-    function($scope, $http) {
+    'authenticationService',
+    function($scope, $routeParams, $http, authenticationService) {
         console.log('userPassword controller');
         
         var ctrl = this;
@@ -2258,11 +2711,34 @@ angular.module('resiway')
         $scope.confirm = '';    
         $scope.alerts = [];
         // alerts format : { type: 'danger|warning|success', msg: 'Alert message.' }
-        
+
+        ctrl.code = $routeParams.code;        
         ctrl.password_updated = false;   
         ctrl.closeAlerts = function() {
             $scope.alerts = [];
         };
+
+        // @init        
+        if(typeof ctrl.code != 'undefined') {
+            var decoded = String(ctrl.code).base64_decode();
+            if(decoded.indexOf(';') > 0) {
+                var params = decoded.split(';');
+                $http.get('index.php?do=resiway_user_signin&login='+params[0]+'&password='+params[1])
+                .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof response.data.result != 'undefined'
+                    && response.data.result > 0) {
+                        ctrl.verified = data.result;
+                        // we should now be able to authenticate (session is initiated)
+                        authenticationService.authenticate();
+                    }
+                },
+                function errorCallback() {
+                    // something went wrong server-side
+                });
+            }
+        }
         
         ctrl.passwordReset = function() {
             $scope.alerts = [];            
@@ -2415,6 +2891,7 @@ angular.module('resiway')
         $scope.remember = false;
         $scope.username = '';
         $scope.password = '';
+        $scope.firstname = '';
         $scope.email = '';    
         $scope.signInAlerts = [];
         $scope.signUpAlerts = [];    
@@ -2452,18 +2929,17 @@ angular.module('resiway')
                 if($scope.username.length == 0) {
                     $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your email as identifier.' });                
                 }
-                if($scope.password.length == 0) {
+                else if($scope.password.length == 0) {
                     $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your password.' });                
                 }
             }
             else {
                 // form is complete
+                ctrl.closeSignInAlerts();                
                 authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
-
                 // attempt to log the user in
                 authenticationService.authenticate().then(
                 function successHandler(data) {
-                    ctrl.closeSignInAlerts();
                     // if some action is pending, return to URL where it occured
                     if($rootScope.pendingAction
                     && typeof $rootScope.pendingAction.next_path != 'undefined') {
@@ -2482,19 +2958,19 @@ angular.module('resiway')
         
         ctrl.signUp = function() {
             if($scope.username.length == 0 || $scope.firstname.length == 0) {
-                if($scope.username.length == 0) {
-                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
-                }
                 if($scope.firstname.length == 0) {
                     $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
+                }                
+                else if($scope.username.length == 0) {
+                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
                 }
             }
             else {
+                ctrl.closeSignUpAlerts();                
                 authenticationService.register($scope.username, $scope.firstname).then(
                 function successHandler(data) {
                     authenticationService.authenticate().then(
                     function successHandler(data) {
-                        ctrl.closeSignUpAlerts();
                         // if some action is pending, return to URL where it occured
                         if($rootScope.pendingAction
                         && typeof $rootScope.pendingAction.next_path != 'undefined') {
@@ -2504,14 +2980,15 @@ angular.module('resiway')
                             $location.path($rootScope.previousPath);
                         }
                     },
-                    function errorHandler() {
+                    function errorHandler(data) {
                         authenticationService.clearCredentials();
-                        $scope.signUpAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
+                        $scope.signUpAlerts = [{ type: 'danger', msg: 'Sorry, an unexpected error occured.' }];
                     });  
                 },
                 function errorHandler(data) {
+                    var error_id = data.error_message_ids[0];     
                     // server fault, email already registered, ...
-                    $scope.signUpAlerts = [{ type: 'danger', msg: 'Email address invalid or already registered.' }];
+                    $scope.signUpAlerts = [{ type: 'danger', msg: error_id }];
                 });             
 
             }
@@ -2522,6 +2999,7 @@ angular.module('resiway')
                 $scope.recoverAlerts.push({ type: 'warning', msg: 'Please, provide your email.' });
             }
             else {
+                ctrl.closeRecoverAlerts();
                 $http.get('index.php?do=resiway_user_passwordrecover&email='+$scope.email)
                 .then(
                 function successCallback(response) {

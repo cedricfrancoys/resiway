@@ -119,6 +119,57 @@ angular.module('resiway')
     };
 }])
 
+.service('routeHelpTopicProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
+    this.load = function() {
+        return routeObjectProvider.provide('resiexchange_help_topic')
+        .then(function(result) {     
+            // mark html as safe
+            result.content = $sce.trustAsHtml(result.content);  
+            return result;
+        });
+    };    
+}])
+
+.service('routeHelpCategoryProvider', ['routeObjectProvider', function(routeObjectProvider) {
+    this.load = function() {
+        return routeObjectProvider.provide('resiexchange_help_category');
+    };
+}])
+
+.service('routeHelpCategoriesProvider', ['routeObjectProvider', '$http', function(routeObjectProvider, $http) {
+    this.load = function() {
+        return $http.get('index.php?get=resiexchange_help_category_list&order=title')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
+.service('routeBadgesProvider', ['routeObjectProvider', '$http', function(routeObjectProvider, $http) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_badge_list&order=name')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
 /**
 *
 */
@@ -242,7 +293,21 @@ angular.module('resiway')
         };
 
         this.register = function(login, firstname) {
-            return $http.get('index.php?do=resiway_user_signup&login='+login+'&firstname='+firstname);        
+            var deferred = $q.defer();
+            $http.get('index.php?do=resiway_user_signup&login='+login+'&firstname='+firstname)
+            .then(
+            function successCallback(response) {
+                if(response.data.result < 0) {
+                    return deferred.reject(response.data);
+                }
+                return deferred.resolve(response.data.result);
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return deferred.reject({'result': -1});
+            }            
+            );
+            return deferred.promise;
         };
         
         // @public
@@ -269,9 +334,9 @@ angular.module('resiway')
                         $rootScope.user = data;
                         deferred.resolve(data);
                     },
-                    function() {
+                    function(data) {
                         // something went wrong server-side
-                        deferred.reject(); 
+                        deferred.reject(data); 
                     });                    
                 },
                 // user is not identified yet
@@ -285,16 +350,16 @@ angular.module('resiway')
                                 $rootScope.user = data;
                                 deferred.resolve(data);
                             },
-                            function errorHandler() {
+                            function errorHandler(data) {
                                 // something went wrong server-side
-                                deferred.reject();                                
+                                deferred.reject(data);                                
                             }
                         );                            
                     },
                     function(data) {
                         // given values were not accepted 
                         // or something went wrong server-side
-                        deferred.reject();  
+                        deferred.reject(data);  
                     });
                 });
             }

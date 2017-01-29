@@ -38,15 +38,27 @@ input[type="text"] {
     font-size: 30px;
 }
 
+/* bootstrap customizations */
 .navbar-collapse.in {
     overflow-y: hidden;
 }
 
+.panel-description {
+    padding-top: 10px;
+}
 
+.underline {
+    border-bottom: 1px solid #e4e6e8;
+}
+
+.upperline {
+    border-top: 1px solid #e4e6e8;
+}
 
 .container {
     padding-top: 10px;
     padding-bottom: 10px;
+    width: inherit;
 }
 
 .wrapper {
@@ -118,5 +130,3 @@ input[type="text"] {
 #footer p {
     text-align: center;
 }
-
-

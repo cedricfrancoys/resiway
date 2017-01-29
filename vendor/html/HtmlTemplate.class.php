@@ -1,5 +1,5 @@
 <?php
-
+namespace html;
 /**
 *	This class implements an html parser that replaces 'var' tags with content stored in associated array (renderer).
 *
@@ -19,7 +19,7 @@ class HtmlTemplate {
 	* @param array $attributes	tag attributes
 	*/
 	protected function decorator($attributes) {
-		if(isset($this->renderer[$attributes['id']])) return $this->renderer[$attributes['id']]($this->params);
+		if(isset($attributes['id']) && isset($this->renderer[$attributes['id']])) return $this->renderer[$attributes['id']]($this->params, $attributes);
 		return '';
 	}
 	
@@ -58,9 +58,9 @@ class HtmlTemplate {
 		for($i = 0, $j = count($matches[1]); $i < $j; ++$i) {
 			// 1) get tag attributes
 			$attributes = array();
-			$args = explode(' ', ltrim($matches[1][$i][0]));
+			$args = explode('" ', ltrim($matches[1][$i][0]));
 			foreach($args as $arg) {
-				if(!strlen($arg)) continue;
+				if(!strlen($arg) || !strpos($arg, '=')) continue;
 				list($attribute, $value) = explode('=', $arg);
 				$attributes[$attribute] = str_replace(array("'", '"'), '', $value);
 			}
@@ -68,7 +68,7 @@ class HtmlTemplate {
 			$pos = $matches[0][$i][1];
 			$len = strlen($matches[0][$i][0]);
 			// replace tag with content and build resulting html
-			$html .= substr($this->template, $previous_pos, ($pos-$previous_pos)).$this->decorator($attributes);
+			$html .= trim(substr($this->template, $previous_pos, ($pos-$previous_pos)).$this->decorator($attributes));
 			$previous_pos = $pos + $len;
 		}
 		// add trailer

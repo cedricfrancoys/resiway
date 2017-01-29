@@ -68,6 +68,9 @@ try {
             if($res > 0 && isset($res[$user_id])) {
                 $om->write('resiway\User', $user_id, [ 'count_answers'=> $res[$user_id]['count_answers']+1 ]);
             }
+
+            // update global counter
+            ResiAPI::repositoryInc('resiexchange.count_answers');
             
             // read created answer as returned value
             $res = $om->read('resiexchange\Answer', $answer_id, ['creator', 'created', 'content', 'content_excerpt', 'score']);

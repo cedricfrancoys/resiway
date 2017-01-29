@@ -18,10 +18,10 @@ class ActionLog extends \easyobject\orm\Object {
             'author_id'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
 
             /* value by which user reputation is updated, if any */ 
-            'user_increment'  => array('type' => 'integer'),
+            'user_increment'        => array('type' => 'integer'),
 
             /* value by which author reputation is updated, if any */ 
-            'author_increment'  => array('type' => 'integer'),
+            'author_increment'      => array('type' => 'integer'),
             
             /* class of the object the action applies to */ 
             'object_class'		    => array('type' => 'string'),

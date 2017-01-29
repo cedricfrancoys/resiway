@@ -32,7 +32,7 @@ namespace {
     /**
     * Current version of Qinoa
     */
-    define('VERSION', '0.9.3');
+    define('VERSION', '0.9.4');
         
 	/**
 	* Error codes
@@ -174,5 +174,15 @@ namespace config {
     define('DB_USER',		'root');        // this should be changed for security reasons
     define('DB_PASSWORD',	'');			// this should be changed for security reasons
     define('DB_NAME', 		'easyobject');	// specify the name of the DB that you have created or you plan to use
-    define('DB_CHARSET',	'UTF8');		// unless you are really sure of what you're doing, leave this constant to 'UTF8' 
+    define('DB_CHARSET',	'UTF8');		// unless you are really sure of what you're doing, leave this constant to 'UTF8'
+    
+    
+    define('MAIL_SMTP_HOST', 'ssl.ovh.net');
+    define('MAIL_SMTP_PORT', '465');
+    define('MAIL_USERNAME', 'info@resiway.org');
+    define('MAIL_PASSWORD', '');    
+    define('MAIL_SMTP_HOST', 'ssl.ovh.net');
+    define('MAIL_SMTP_PORT', '465');
+    define('MAIL_USERNAME', 'info@resiway.org');
+    define('MAIL_PASSWORD', '');    
 }

@@ -60,6 +60,9 @@ try {
             if($res > 0 && isset($res[$user_id])) {
                 $om->write('resiway\User', $user_id, [ 'count_comments'=> $res[$user_id]['count_comments']+1 ]);
             }
+
+            // update global counter
+            ResiAPI::repositoryInc('resiexchange.count_comments');
             
             // read created comment as returned value
             $res = $om->read('resiexchange\QuestionComment', $comment_id, ['creator', 'created', 'content', 'score']);

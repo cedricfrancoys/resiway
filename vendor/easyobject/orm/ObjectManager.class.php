@@ -102,7 +102,7 @@ class ObjectManager {
 	}
     
     
-    private function getDBHandler() {
+    public function getDBHandler() {
         if(!$this->db) {
             if(!defined('DB_HOST') || !defined('DB_PORT') || !defined('DB_NAME') || !defined('DB_USER') || !defined('DB_PASSWORD') || !defined('DB_DBMS')) {
                 // fatal error

@@ -68,7 +68,7 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
         <script src="packages/resiway/apps/i18n/moment-locale/<?php echo $params['lang'] ?>.js"></script>   
         <?php endif; ?>
         
-        <script src="packages/resiway/apps/resiway.min.js"></script>
+        <script src="packages/resiway/apps/resiway.js"></script>
         
         <link rel="stylesheet" type="text/css" href="packages/resiway/apps/assets/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="packages/resiway/apps/assets/css/font-awesome.min.css" />

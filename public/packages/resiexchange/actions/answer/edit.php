@@ -85,7 +85,7 @@ try {
             use ($params) {
                 if(strlen($params['content']) < RESIEXCHANGE_ANSWER_CONTENT_LENGTH_MIN
                 || strlen($params['content']) > RESIEXCHANGE_ANSWER_CONTENT_LENGTH_MAX) {
-                    throw new Exception("content_length_invalid", QN_ERROR_INVALID_PARAM); 
+                    throw new Exception("answer_content_length_invalid", QN_ERROR_INVALID_PARAM); 
                 }              
             },
             // user cannot perform given action more than daily maximum

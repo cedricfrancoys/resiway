@@ -111,14 +111,14 @@ class User extends \easyobject\orm\Object {
             'login'			    => array(
                                     /* login must be a valid email address */
 // todo : check taht this regexp still covers all domain names                                    
-                                    'error_message_id' => 'invalid_login',
+                                    'error_message_id' => 'user_invalid_login',
                                     'function' => function ($login) {
                                             return (bool) (preg_match('/^([_a-z0-9-]+)(\.[_a-z0-9-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,8})$/i', $login, $matches));
                                     }
                                 ),
             'password'		    => array(
                                     /* password must be a 32 bytes string in hexadecimal notation (MD5 hash) */
-                                    'error_message_id' => 'invalid_password',
+                                    'error_message_id' => 'user_invalid_password',
                                     'function' => function ($password) {
                                             return (bool) (preg_match('/^[a-z0-9]{32}$/i', $password, $matches));
                                     }
@@ -126,7 +126,7 @@ class User extends \easyobject\orm\Object {
                                 
             'firstname'			=> array(
                                     /* firstname must contain only letters or dashes */
-                                    'error_message_id' => 'invalid_firstname',
+                                    'error_message_id' => 'user_invalid_firstname',
                                     'function' => function ($firstname) {
                                             $value = htmlentities($firstname, ENT_QUOTES, 'UTF-8');
                                             $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
@@ -136,7 +136,7 @@ class User extends \easyobject\orm\Object {
                                 ),
             'lastname'			=> array(
                                     /* lastname must contain only letters or spaces */
-                                    'error_message_id' => 'invalid_lastname',
+                                    'error_message_id' => 'user_invalid_lastname',
                                     'function' => function ($lastname) {
                                             $value = htmlentities($lastname, ENT_QUOTES, 'UTF-8');
                                             $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
@@ -147,14 +147,14 @@ class User extends \easyobject\orm\Object {
             
             'language'		    => array(
                                     /* language must be a valid ISO 639-1 code */
-                                    'error_message_id' => 'invalid_language',
+                                    'error_message_id' => 'user_invalid_language',
                                     'function' => function ($language) {
                                             return (bool) (preg_match('/^[a-z]{2}$/', $language, $matches));
                                     }
                                 ),
             'country'		    => array(
                                     /* country must be a valid ISO 3166 code */
-                                    'error_message_id' => 'invalid_country',
+                                    'error_message_id' => 'user_invalid_country',
                                     'function' => function ($country) {
                                             return (bool) (preg_match('/^[A-Z]{2}$/', $country, $matches));
                                     }

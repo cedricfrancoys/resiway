@@ -30,7 +30,7 @@ angular.module('resiway')
                 ariaLabelledBy: 'modal-title',
                 ariaDescribedBy: 'modal-body',
                 templateUrl: 'modalCustom.html',
-                controller: function ($uibModalInstance, items) {
+                controller: ['$uibModalInstance', function ($uibModalInstance, items) {
                     var ctrl = this;
                     ctrl.title_id = title_id;
                     ctrl.header_id = header_id;
@@ -42,7 +42,7 @@ angular.module('resiway')
                     ctrl.cancel = function () {
                         $uibModalInstance.dismiss();
                     };
-                },
+                }],
                 controllerAs: 'ctrl', 
                 size: 'md',
                 appendTo: angular.element(document.querySelector(".modal-wrapper")),

@@ -22,8 +22,17 @@ angular.module('resiway')
         $scope.categories = categories; 
         
         // @model
-        $scope.question = question;
+        // content is inside a textarea and do not need sanitize check
+        question.content = $sce.valueOf(question.content);
         
+        $scope.question = angular.merge({
+                            id: 0,
+                            title: '',
+                            content: '',
+                            tags_ids: [{}]
+                          }, 
+                          question);
+                  
         /**
         * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
         */
@@ -50,7 +59,7 @@ angular.module('resiway')
                 action: 'resiexchange_question_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                    question_id: (angular.isUndefined($scope.question.id)?0:$scope.question.id),
+                    question_id: $scope.question.id,
                     title: $scope.question.title,
                     content: $scope.question.content,
                     tags_ids: $scope.question.tags_ids
@@ -66,6 +75,10 @@ angular.module('resiway')
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
                         var msg = error_id;
+                        // in case a field is missing, adapt the generic 'missing_*' message
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'question_'+msg;
+                        }
                         feedbackService.popover(selector, msg);
                     }
                     else {

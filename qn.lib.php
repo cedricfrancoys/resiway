@@ -281,12 +281,15 @@ namespace config {
 			foreach($announcement['params'] as $param => $description)
 				if(isset($description['required']) && $description['required']) $mandatory_params[] = $param;
 			// if at least one mandatory param is missing
-			if(	count(array_intersect($mandatory_params, array_keys($_REQUEST))) != count($mandatory_params) 
-				|| 
-				isset($_REQUEST['announce'])
-			) {
+            $missing_params = array_diff($mandatory_params, array_keys($_REQUEST));
+			// if(	count(array_intersect($mandatory_params, array_keys($_REQUEST))) != count($mandatory_params) 
+            if( count($missing_params) || isset($_REQUEST['announce']) ) {
 				// output json data telling what is expected
-				echo json_encode(array('result'=>MISSING_PARAM,'announcement'=>$announcement), JSON_FORCE_OBJECT);
+				echo json_encode(array(
+                                    'result'=>MISSING_PARAM,
+                                    'announcement'=>$announcement, 
+                                    'error_message_ids' => ['missing_'.array_values($missing_params)[0]]
+                                 ), JSON_FORCE_OBJECT);
 				// terminate script
 				exit();
 			}

@@ -8,15 +8,12 @@ class Action extends \easyobject\orm\Object {
             /* short human readable identifier for the action */
             'name'				    => array('type' => 'string'),
 
-            /* short text describing the action */
-            'description'		    => array('type' => 'short_text', 'multilang' => true),
+            /* short explanation about what the action consists of */
+            'description'		    => array('type' => 'text', 'multilang' => true),
             
             /* class of the objects the action applies to */ 
             'object_class'		    => array('type' => 'string'),
-            
-            /* short explanation about what the action consists of */
-            'description'			=> array('type' => 'text'),
-            
+                       
             /* minimum reputation required for a user to be allowed to perform the action */
             'required_reputation' 	=> array('type' => 'integer'),
             

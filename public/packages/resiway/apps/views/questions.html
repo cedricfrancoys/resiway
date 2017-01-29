@@ -1,7 +1,7 @@
 <div class="grid wrapper">
     <div class="col-8-12">
         <div class="subheader">
-            <h1 id="h-top-questions">Top Questions</h1>
+            <h1 id="h-questions">{{ 'QUESTIONS_QUESTIONS' | translate}}</h1>
             
             <div id="sort-dropdown">
                 <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
@@ -39,17 +39,17 @@
 
         <div ng-repeat="question in ctrl.questions" class="question narrow col-1-1">
             <div class="counters" >
-                <div class="votes" title="{{question.count_votes}} votes">
+                <div class="votes" title="{{question.count_votes}} {{'QUESTIONS_VOTES' | translate}}">
                     <div class="mini-counts">
                         <i class="fa fa-check-circle" aria-hidden="true"></i> {{question.count_votes | humanizeCount}}
                     </div> 
                 </div>
-                <div class="status unanswered" title="{{question.count_answers}} answers">
+                <div class="status unanswered" title="{{question.count_answers}} {{'QUESTIONS_ANSWERS' | translate}}">
                     <div class="mini-counts">
                         <i class="fa fa-comments" aria-hidden="true"></i> {{question.count_answers | humanizeCount}}
                     </div>
                 </div>
-                <div class="views" title="{{question.count_views}} views">
+                <div class="views" title="{{question.count_views}} {{'QUESTIONS_VIEWS' | translate}}">
                     <div class="mini-counts">
                         <i class="fa fa-eye" aria-hidden="true"></i> {{question.count_views | humanizeCount}}
                     </div>
@@ -101,8 +101,9 @@
     <div class="col-4-12">
         <div class="panel panel-default">
             <div class="container">
-            number of questions<br />
-            number of users<br />
+            {{'QUESTIONS_STATS_QUESTIONS' | translate}}<br />  
+            {{'QUESTIONS_STATS_ANSWERS' | translate}}<br />            
+            {{'QUESTIONS_STATS_COMMENTS' | translate}}<br />
             </div>
         </div>
     </div>

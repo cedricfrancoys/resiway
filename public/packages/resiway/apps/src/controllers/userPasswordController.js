@@ -7,8 +7,10 @@ angular.module('resiway')
 */
 .controller('userPasswordController', [
     '$scope',
+    '$routeParams',
     '$http',
-    function($scope, $http) {
+    'authenticationService',
+    function($scope, $routeParams, $http, authenticationService) {
         console.log('userPassword controller');
         
         var ctrl = this;
@@ -18,11 +20,34 @@ angular.module('resiway')
         $scope.confirm = '';    
         $scope.alerts = [];
         // alerts format : { type: 'danger|warning|success', msg: 'Alert message.' }
-        
+
+        ctrl.code = $routeParams.code;        
         ctrl.password_updated = false;   
         ctrl.closeAlerts = function() {
             $scope.alerts = [];
         };
+
+        // @init        
+        if(typeof ctrl.code != 'undefined') {
+            var decoded = String(ctrl.code).base64_decode();
+            if(decoded.indexOf(';') > 0) {
+                var params = decoded.split(';');
+                $http.get('index.php?do=resiway_user_signin&login='+params[0]+'&password='+params[1])
+                .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof response.data.result != 'undefined'
+                    && response.data.result > 0) {
+                        ctrl.verified = data.result;
+                        // we should now be able to authenticate (session is initiated)
+                        authenticationService.authenticate();
+                    }
+                },
+                function errorCallback() {
+                    // something went wrong server-side
+                });
+            }
+        }
         
         ctrl.passwordReset = function() {
             $scope.alerts = [];            

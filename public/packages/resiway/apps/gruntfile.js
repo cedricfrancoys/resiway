@@ -29,6 +29,7 @@ module.exports = function(grunt) {
 			},            
 			resiway_all: {
 				src: [
+                        'src/resiway.utils.js',                 
                         'src/resiway.module.js', 
                         'src/resiway.services.js', 
                         'src/resiway.routes.js', 
@@ -59,7 +60,7 @@ module.exports = function(grunt) {
 
 			resiway_all: {
                 files: {
-                    'resiway.min.js': ['src/resiway.module.js', 'src/resiway.services.js', 'src/resiway.routes.js', 'src/resiway.filters.js', 'src/resiway.controllers.js']
+                    'resiway.min.js': ['resiway.js']
                 }
 			}
           

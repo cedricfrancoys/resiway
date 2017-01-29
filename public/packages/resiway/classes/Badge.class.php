@@ -1,6 +1,5 @@
 <?php
 namespace resiway;
-use easyobject\orm\ObjectManager as ObjectManager;
 
 /**
 *
@@ -15,6 +14,7 @@ class Badge extends \easyobject\orm\Object {
             /* category of badge : 1, 2 or 3 - for gold, silver, gold / badge_1, badge_2, badge_3 */
             'type'              => array('type' => 'integer'),
 
+            /* list of actions that might trigger badge attribution */
             'actions_ids'	    => array(
                                     'type' 			    => 'many2many', 
                                     'foreign_object'	=> 'resiway\Action', 
@@ -23,7 +23,8 @@ class Badge extends \easyobject\orm\Object {
                                     'rel_foreign_key'	=> 'action_id', 
                                     'rel_local_key'		=> 'badge_id'
                                    ),
-            'users_ids'	    => array(
+            /* list of users having earned the badge */
+            'users_ids'	        => array(
                                     'type' 			    => 'many2many', 
                                     'foreign_object'	=> 'resiway\Badge', 
                                     'foreign_field'		=> 'badges_ids', 
@@ -38,17 +39,17 @@ class Badge extends \easyobject\orm\Object {
     
     /*
     This method defines how badges are granted.
-    Badges names in the DB must match those listed below.
+    Badges names in the DB table 'resiway_badge' must match those listed below.
+    returned values are percentages of achivement (from 0 to 1)
     */
-    public static function computeBadge($badge, $uid) {
-        $om = &ObjectManager::getInstance();
+    public static function computeBadge($om, $badge, $uid) {
         switch($badge) {
 
         case 'curious':
 
             return (float) 1;
         
-        case 'verified_human':
+        case 'verified human':
             $users = $om->read('resiway\User', $uid, ['verified']);
             return (float) $users[$uid]['verified'];        
             
@@ -65,6 +66,7 @@ class Badge extends \easyobject\orm\Object {
             
             
         }
+        
         return (float) 0;
     }
 
