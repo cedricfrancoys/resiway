@@ -73,14 +73,15 @@ try {
                             
     $body = $template->getHtml();
 
-    $transport = Swift_SmtpTransport::newInstance(RESIWAY_MAIL_SMTP_HOST, RESIWAY_MAIL_SMTP_PORT, "ssl")
-                ->setUsername(RESIWAY_MAIL_USERNAME)
-                ->setPassword(RESIWAY_MAIL_PASSWORD);
+    $transport = Swift_SmtpTransport::newInstance(MAIL_SMTP_HOST, MAIL_SMTP_PORT, "ssl")
+                ->setUsername(MAIL_USERNAME)
+                ->setPassword(MAIL_PASSWORD);
                 
     $message = Swift_Message::newInstance($subject)
-                ->setFrom(array(RESIWAY_MAIL_USERNAME => 'ResiWay'))
+                ->setFrom(array(MAIL_USERNAME => 'ResiWay'))
                 ->setTo(array($to))
-                ->setBody($body);
+                ->setBody($body)
+                ->setContentType("text/html");
                 
     $mailer = Swift_Mailer::newInstance($transport);
     

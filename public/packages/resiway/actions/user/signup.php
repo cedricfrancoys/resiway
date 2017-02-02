@@ -6,9 +6,6 @@ use config\QNlib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
 use html\HtmlTemplate as HtmlTemplate;
-use mail\Swift_SmtpTransport as Swift_SmtpTransport;
-use mail\Swift_Mailer as Swift_Mailer;
-use mail\Swift_Message as Swift_Message;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -41,6 +38,8 @@ $params = QNLib::announce(
 list($result, $error_message_ids) = [true, []];
 
 list($login, $firstname, $language) = [strtolower(trim($params['login'])), $params['firstname'], $params['lang']];
+
+$messages_folder = '../spool/queue';
 
 try {
     $om = &ObjectManager::getInstance();
@@ -88,8 +87,7 @@ try {
 
     
     // subject of the email should be defined in the template, as a <var> tag holding a 'title' attribute
-    $subject = '';    
-    $to = $user_data['login'];
+    $subject = '';
     // read template according to user prefered language
     $file = "packages/resiway/i18n/{$user_data['language']}/mail_user_confirm.html";
     if(!($html = @file_get_contents($file, FILE_TEXT))) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
@@ -109,24 +107,25 @@ try {
                                                     }
                                 ], 
                                 $user_data);
-                            
-    $body = $template->getHtml();   
-
-    $transport = Swift_SmtpTransport::newInstance(RESIWAY_MAIL_SMTP_HOST, RESIWAY_MAIL_SMTP_PORT, "ssl")
-                ->setUsername(RESIWAY_MAIL_USERNAME)
-                ->setPassword(RESIWAY_MAIL_PASSWORD);
-                
-    $message = Swift_Message::newInstance($subject)
-                ->setFrom(array(RESIWAY_MAIL_USERNAME => 'ResiWay'))
-                ->setTo(array($to))
-                ->setBody($body);
-                
-    $mailer = Swift_Mailer::newInstance($transport);
+    // parse template as html
+    $body = $template->getHtml();
     
-    $result = $mailer->send($message);
-
+    /**
+    * message files format is: 11 digits (user unique identifier) with 3 digits extension in case of multiple files
+    */
+    $temp = sprintf("%011d", $user_id);
+    $filename = $temp;
+    $i = 0;
+    while(file_exists("$messages_folder/{$filename}")) {
+        $filename = sprintf("%s.%03d", $temp, ++$i);
+    }
+    // data consists of parsed template and subject
+    $json = json_encode(array("subject" => $subject, "body" => $body), JSON_PRETTY_PRINT);
+    file_put_contents("$messages_folder/$filename", $json);
     
-// todo : register action resiway_user_signup    
+    // log user registration
+    $action_id = ResiAPI::actionId('resiway_user_signup');
+    ResiAPI::registerAction($user_id, $action_id, 'resiway\User', $user_id);
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

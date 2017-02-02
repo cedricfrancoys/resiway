@@ -147,7 +147,7 @@ class ResiAPI {
     
     /**
     *
-    * to maintain a low load-time, this method should be used only when single user is requested 
+    * to maintain a low load-time, this method should be used only when a single user object is requested 
     */
     public static function loadUserPublic($user_id) {
         // check params consistency
@@ -162,7 +162,7 @@ class ResiAPI {
 
     /**
     *
-    * to maintain a low load-time, this method should be used only when single user is requested 
+    * to maintain a low load-time, this method should be used only when a single user object is requested 
     */
     public static function loadUserPrivate($user_id) {
         // check params consistency

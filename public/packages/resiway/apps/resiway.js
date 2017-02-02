@@ -2971,6 +2971,8 @@ angular.module('resiway')
                 function successHandler(data) {
                     authenticationService.authenticate().then(
                     function successHandler(data) {
+                        // actively request emails
+                        $http.get('index.php?do=resiway_user_pull');
                         // if some action is pending, return to URL where it occured
                         if($rootScope.pendingAction
                         && typeof $rootScope.pendingAction.next_path != 'undefined') {

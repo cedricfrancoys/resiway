@@ -289,7 +289,7 @@ namespace config {
                                     'result'=>MISSING_PARAM,
                                     'announcement'=>$announcement, 
                                     'error_message_ids' => ['missing_'.array_values($missing_params)[0]]
-                                 ), JSON_FORCE_OBJECT);
+                                 ), JSON_FORCE_OBJECT|JSON_PRETTY_PRINT);
 				// terminate script
 				exit();
 			}

@@ -141,7 +141,12 @@ namespace {
     * Default Package
     */
     // Package we'll try to access if nothing is specified in the url (typically while accessing root folder)
-    define('DEFAULT_PACKAGE', 'core');    
+    define('DEFAULT_PACKAGE', 'core');
+ 
+    define('MAIL_SMTP_HOST', 'ssl0.ovh.net');
+    define('MAIL_SMTP_PORT', '465');
+    define('MAIL_USERNAME', 'info@resiway.org');
+    define('MAIL_PASSWORD', 'resiway0123');      
 }
 namespace config {
     /** 
@@ -177,12 +182,5 @@ namespace config {
     define('DB_CHARSET',	'UTF8');		// unless you are really sure of what you're doing, leave this constant to 'UTF8'
     
     
-    define('MAIL_SMTP_HOST', 'ssl.ovh.net');
-    define('MAIL_SMTP_PORT', '465');
-    define('MAIL_USERNAME', 'info@resiway.org');
-    define('MAIL_PASSWORD', '');    
-    define('MAIL_SMTP_HOST', 'ssl.ovh.net');
-    define('MAIL_SMTP_PORT', '465');
-    define('MAIL_USERNAME', 'info@resiway.org');
-    define('MAIL_PASSWORD', '');    
+  
 }
