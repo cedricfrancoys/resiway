@@ -1,0 +1,40 @@
+<div class="grid wrapper">
+    <div class="col-1-1">
+    
+        
+		<nav role="navigation" class="navbar navbar-default visible-xs" style="width: 100%; margin-right: 0;">
+            <div class="navbar-header" ng-init="isNavCollapsed = true">
+                <button type="button" class="navbar-toggle" ng-click="isNavCollapsed = !isNavCollapsed">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">ResiExchange</a>			
+            </div>
+            <div class="collapse navbar-collapse" uib-collapse="isNavCollapsed">
+                <ul class="nav navbar-nav">
+                    <li><a href="#/question/edit/0">Poser une question</a></li>
+                    <li><a href="#/questions">Questions</a></li>
+                    <li><a href="#/categories">Catégories</a></li>
+                    <li><a href="#/badges">Badges</a></li>
+                    <li><a href="#/help">Aide</a></li>
+                </ul>            
+            </div>		
+		</nav>
+	
+    
+        <div class="breadcrumb visible-lg visible-md visible-sm">
+            <div class="btn-group">
+                <a href="#/question/edit/0" class="btn btn-success">Poser une question</a>
+            </div>
+            <div class="btn-group pull-right">
+                <a href="#/questions" class="btn btn-info">Questions</a>
+                <a href="#/categories" class="btn btn-info">Catégories</a>
+                <a href="#/badges" class="btn btn-info">Badges</a>                
+                <a href="#/help/categories" class="btn btn-warning">Aide</a>
+            </div>
+        </div>
+
+    </div>
+</div>

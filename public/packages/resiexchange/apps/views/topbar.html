@@ -1,0 +1,77 @@
+
+<div id="topBar" class="topbar" ng-controller="topBarCtrl as ctrl" >        
+
+    <div class="grid wrapper">
+        <div class="platform-dialog" ng-show="ctrl.platformDropdown" ng-cloak>
+            <div class="head">AUTRES APPLICATIONS</div>
+            <ul>
+                <li>
+                    <div class="platform-icon resiway"></div>
+                    <div class="descr"><a href="#">Présentation et gestion des outils collaboratifs</a></div>
+                </li>
+                <li>
+                    <div class="platform-icon resiexchange"></div>
+                    <div class="descr">Questions &amp; Réponses sur les thèmes de l'autonomie, la transition et la permaculture</div>
+                </li>
+                <li>
+                    <div class="platform-icon resilib"></div>
+                    <div class="descr">Bibliothèque de retours d'expériences pour la réappropriation des savoirs-faires</div>
+                </li>
+                <li>
+                    <div class="platform-icon resinet"></div>
+                    <div class="descr">Réseau social de support mutuel et de présentaiton d'initiatives pour l'autonomie, la transition et la permaculture.</div>
+                </li>
+                <li>
+                    <div class="platform-icon resipedia"></div>
+                    <div class="descr">Wiki rassemblant les informations de toutes les plateformes</div>
+                </li>
+            </ul>
+        </div>        
+        <div class="notify-dialog panel" ng-show="ctrl.notifyDropdown">
+            <div class="head">NOTIFICATIONS</div>
+            <ul>
+                <li ng-repeat="(notification_index, notification) in user.notifications">
+                    <div class="title"><a href="#/user/notifications/{{user.id}}">{{notification.title}}</a></div>
+                    <div class="descr">{{notification.content}}</div>
+                </li>
+            </ul>
+            <div class="foot"><a href="#/user/notifications/{{user.id}}"><i class="fa fa-plus" aria-hidden="true"></i> Voir toutes les notifications</a></div>
+        </div>
+        
+        <div class="user-dialog panel" ng-show="ctrl.userDropdown">
+            <ul>
+                <li class="btn">
+                    <a href="#user/profile/{{user.id}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
+                </li>
+                <li class="btn">
+                   <a href="#user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> Paramètres</a>
+                </li>
+                <li class="btn">
+                   <a href ng-click="signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion</a>
+                </li>
+            </ul>
+        </div>
+        
+        <div class="col-1-1">
+            <div class="platform-items">
+                <div class="platform-btn resiexchange" ng-class="{open: ctrl.platformDropdown}" ng-click="togglePlatformDropdown()">
+                    <div class="app-icon"></div>
+                    <i class="fa fa-caret-down" aria-hidden="true"></i>          
+                </div>            
+                <div id="notify-btn" class="notify-btn ng-hide" ng-class="{open: ctrl.notifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user.id">
+                    <i class="fa fa-inbox" aria-hidden="true"></i>
+                    <span ng-show="user.notifications.length" class="unread-count">{{user.notifications.length}}</span>
+                </div>
+            </div>
+            <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">
+                    <a href="#/user/sign/in"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
+                    <a href="#/user/sign/up"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
+            </div>
+            <div id="user-btn" class="user-btn ng-hide" ng-class="{open: ctrl.userDropdown}" ng-click="toggleUserDropdown()" ng-show="user.id">
+                {{ user.display_name }}
+                <i class="fa fa-caret-down" aria-hidden="true"></i>          
+            </div>            
+        </div>
+
+    </div>
+</div>
