@@ -147,6 +147,19 @@ namespace {
     define('MAIL_SMTP_PORT', '465');
     define('MAIL_USERNAME', 'info@resiway.org');
     define('MAIL_PASSWORD', 'resiway0123');      
+
+    /**
+    * Database parameters
+    * note: most utilities need these parameters. 
+    */
+    define('DB_DBMS',		'MYSQL');		// only MySQL is supported so far
+    define('DB_HOST',		'localhost');   // the full qualified domain name (ex.: www.example.com)
+    define('DB_PORT',		'3306');		// this is the default port for MySQL
+    define('DB_USER',		'root');        // this should be changed for security reasons
+    define('DB_PASSWORD',	'');			// this should be changed for security reasons
+    define('DB_NAME', 		'easyobject');	// specify the name of the DB that you have created or you plan to use
+    define('DB_CHARSET',	'UTF8');		// unless you are really sure of what you're doing, leave this constant to 'UTF8'
+    
 }
 namespace config {
     /** 
@@ -165,22 +178,4 @@ namespace config {
     */
     // array of classes involved in right management and SPAM protection mechanism
     define ("PUBLIC_OBJECTS", serialize (array ('icway\Comment')));
-
-
-    /**
-    * Database parameters
-    * note: most utilities need these parameters. 
-    * Remember that when using them, package-specific parameters might not be loaded.
-    * Overriding these is allowed but need to be done with caution.
-    */
-    define('DB_DBMS',		'MYSQL');		// only MySQL is supported so far
-    define('DB_HOST',		'localhost');   // the full qualified domain name (ex.: www.example.com)
-    define('DB_PORT',		'3306');		// this is the default port for MySQL
-    define('DB_USER',		'root');        // this should be changed for security reasons
-    define('DB_PASSWORD',	'');			// this should be changed for security reasons
-    define('DB_NAME', 		'easyobject');	// specify the name of the DB that you have created or you plan to use
-    define('DB_CHARSET',	'UTF8');		// unless you are really sure of what you're doing, leave this constant to 'UTF8'
-    
-    
-  
 }

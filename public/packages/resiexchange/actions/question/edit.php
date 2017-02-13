@@ -108,7 +108,6 @@ try {
             }
             
             // read created question as returned value
-// todo : check wich fields are necessary (method to load a question ?)            
             $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'content', 'content_excerpt', 'score', 'categories_ids']);
             if($res > 0) {
                 $result = array(

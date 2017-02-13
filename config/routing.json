@@ -1,5 +1,6 @@
 {
     "/question/:id":"/resiexchange.fr#/question/:id",
     "/user/confirm/:code":"/resiexchange.fr#/user/confirm/:code",
-    "/resiexchange.fr":"?show=resiway_main&lang=fr"
+    "/resiexchange.fr":"?show=resiexchange_main&lang=fr",
+    "/api/categories":"?get=resiway_category_list"
 }

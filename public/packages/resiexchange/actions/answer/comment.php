@@ -55,6 +55,15 @@ try {
 
             if($comment_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
+            // update user count_comments
+            $res = $om->read('resiway\User', $user_id, ['count_comments']);
+            if($res > 0 && isset($res[$user_id])) {
+                $om->write('resiway\User', $user_id, [ 'count_comments'=> $res[$user_id]['count_comments']+1 ]);
+            }
+
+            // update global counter
+            ResiAPI::repositoryInc('resiexchange.count_comments');
+            
             // read created comment as returned value
             $res = $om->read('resiexchange\AnswerComment', $comment_id, ['creator', 'created', 'content', 'score']);
             if($res > 0) {

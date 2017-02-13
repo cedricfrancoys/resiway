@@ -79,13 +79,12 @@ class Answer extends \easyobject\orm\Object {
         $om->write('resiexchange\Answer', $oids, ['content_excerpt' => null], $lang);        
     }
     
-    // Returns excerpt of the content of max 200 chars cutting on a word-basis   
-    // todo: define excerpt length in config file
+    // Returns excerpt of the content of max 200 chars cutting on a word-basis
     public static function getContentExcerpt($om, $oids, $lang) {
         $result = [];
         $res = $om->read('resiexchange\Answer', $oids, ['content']);
         foreach($res as $oid => $odata) {
-            $result[$oid] = self::excerpt($odata['content'], 200);
+            $result[$oid] = self::excerpt($odata['content'], RESIEXCHANGE_ANSWER_CONTENT_EXCERPT_LENGTH_MAX);
         }
         return $result;        
     }

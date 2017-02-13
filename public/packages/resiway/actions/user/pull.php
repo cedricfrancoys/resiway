@@ -21,7 +21,7 @@ $params = QNLib::announce([
 
 
 list($result, $error_message_ids) = [true, []];
-$messages_folder = '../spool/queue';
+$messages_folder = '../spool';
 
 try {
     

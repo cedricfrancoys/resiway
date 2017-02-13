@@ -56,9 +56,9 @@ class ResiAPI {
         $link = '';
         switch($object_class) {
             case 'resiway\User': return '#/user/'.$object_id;
-            case 'resiway\Category':
+            case 'resiway\Category': return '#/category/'.$object_id;
             case 'resiway\Badge':            
-            case 'resiexchange\Question':
+            case 'resiexchange\Question': return '#/question/'.$object_id;
             case 'resiexchange\Answer':
             case 'resiexchange\QuestionComment':
             case 'resiexchange\AnswerComment':                        
@@ -97,15 +97,13 @@ class ResiAPI {
     public static function actionId($action_name) {
         static $actionsTable = [];
         
-        if(isset($actionTable[$action_name])) return $actionTable[$action_name];
-        
-        $om = &ObjectManager::getInstance();
-        
-        $res = $om->search('resiway\Action', ['name', '=', $action_name]);
-        if($res < 0 || !count($res)) return QN_ERROR_INVALID_PARAM;
-        $actionTable[$action_name] = $res[0];
-        
-        return $res[0];
+        if(!isset($actionTable[$action_name])) {        
+            $om = &ObjectManager::getInstance();            
+            $res = $om->search('resiway\Action', ['name', '=', $action_name]);
+            if($res < 0 || !count($res)) return QN_ERROR_INVALID_PARAM;
+            $actionTable[$action_name] = $res[0];
+        }
+        return $actionTable[$action_name];
     }
 
     
@@ -204,6 +202,16 @@ class ResiAPI {
         $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`+1 WHERE `key` like '$key_mask';");
     }
     
+
+    public static function notifyUser($user_id, $title, $content) {
+        $om = &ObjectManager::getInstance();
+        // in case we decide to send emails, here is the place to add something to user queue
+        return $om->create('resiway\UserNotification', [  
+            'user_id'   => $uid, 
+            'title'     => $title, 
+            'content'   => $content
+        ]);        
+    }
     
     /**
     * Reflects performed action on user's and object author's reputations
@@ -359,8 +367,23 @@ class ResiAPI {
                         'object_class'          => $object_class, 
                         'object_id'             => $object_id,
                         'user_increment'        => $impact['user']['increment'],
-                        'author_increment'      => $impact['author']['increment']                        
+                        'author_increment'      => $impact['author']['increment']
                        ]);
+        // notify users if there is any reputation change 
+        if($impact['user']['increment'] != 0) {
+            self::notifyUser($uid, 
+                            "reputation updated", 
+                            sprintf("%d points", $impact['user']['increment'])
+                            );
+            
+        }
+        if($impact['author']['increment'] != 0) {
+            self::notifyUser($uid, 
+                            "reputation updated", 
+                            sprintf("%d points", $impact['author']['increment'])
+                            );
+            
+        }
     }
     
     /**
@@ -438,7 +461,7 @@ class ResiAPI {
     * @return   boolean  returns true on succes, false if something went wrong
     */     
     public static function updateBadges($action_name, $object_class, $object_id) {
-        $notifictions = [];
+        $notifications = [];
                 
         $om = &ObjectManager::getInstance();
 
@@ -452,21 +475,21 @@ class ResiAPI {
         
         // retrieve action data
         $res = $om->read('resiway\Action', $action_id, ['badges_ids']);
-        if($res < 0 || !isset($res[$action_id])) return $notifictions;    
+        if($res < 0 || !isset($res[$action_id])) return $notifications;    
         $action_data = $res[$action_id];
 
         // retrieve author 
         $res = $om->read($object_class, $object_id, ['creator']);
-        if(!is_array($res) || !isset($res[$object_id])) return $notifictions;
+        if(!is_array($res) || !isset($res[$object_id])) return $notifications;
         $author_id = $res[$object_id]['creator'];
         
         // get badges impacted by current action
         $users_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', 'in', array($user_id, $author_id)]]);
-        if($users_badges_ids < 0 || !count($users_badges_ids)) return $notifictions;
+        if($users_badges_ids < 0 || !count($users_badges_ids)) return $notifications;
 
         // remove badges already awarded from result list
         $res = $om->read('resiway\UserBadge', $users_badges_ids);
-        if($res < 0) return $notifictions; 
+        if($res < 0) return $notifications; 
         foreach($users_badges_ids as $key => $user_badge_id) {
             if($res[$user_badge_id]['awarded']) unset($users_badges_ids[$key]);
         }
@@ -474,7 +497,7 @@ class ResiAPI {
         // force re-computing values of impacted badges
         $om->write('resiway\UserBadge', $users_badges_ids, array('status' => null));
         $res = $om->read('resiway\UserBadge', $users_badges_ids, ['user_id', 'badge_id', 'status', 'badge_id.name']);
-        if($res < 0) return $notifictions; 
+        if($res < 0) return $notifications; 
         
         // check for newly awarded badges
         foreach($res as $user_badge_id => $user_badge) {
@@ -489,20 +512,20 @@ class ResiAPI {
             $uid = $user_badge['user_id'];
             $bid = $user_badge['badge_id'];
 // todo : make this multilang and manage email sending according to user settings            
-            $notification_id = $om->create('resiway\UserNotification', [  
-                'user_id'   => $uid, 
-                'title'     => "new badge awarded", 
-                'content'   => "Congratulations ! You've just been awarded badge '{$user_badge['badge_id.name']}'"
-            ]);
+            $notification_id = self::notifyUser($uid, 
+                                                "new badge awarded", 
+                                                "Congratulations ! You've just been awarded badge '{$user_badge['badge_id.name']}'"
+                                                );
             if($notification_id > 0) {
-                $notifictions[] = ['id' => $notification_id, 'title' => "new badge awarded"];
+                $notifications[] = ['id' => $notification_id, 'title' => "new badge awarded"];
             }                       
         }   
 
-        return $notifictions;
+        return $notifications;
     }
 
 
+    
     /**
     *
     * This method throws an error if some rule is broken or if something goes wrong

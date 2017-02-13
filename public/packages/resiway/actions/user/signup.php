@@ -39,7 +39,7 @@ list($result, $error_message_ids) = [true, []];
 
 list($login, $firstname, $language) = [strtolower(trim($params['login'])), $params['firstname'], $params['lang']];
 
-$messages_folder = '../spool/queue';
+$messages_folder = '../spool';
 
 try {
     $om = &ObjectManager::getInstance();

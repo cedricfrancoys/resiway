@@ -113,6 +113,12 @@ input[type="text"] {
 }
 
 
+.number {
+    display: block;
+    color: #0C0D0E;
+    font-weight: 700;
+    font-size: 17px;
+}
 
 
 /* footer */
