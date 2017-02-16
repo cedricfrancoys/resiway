@@ -1,5 +1,7 @@
 <?php
 
+define('DEFAULT_APP', 'main');
+
 // maximum number of categories a user is allowed to post daily
 define('RESIWAY_CATEGORIES_DAILY_MAX', 10);
 

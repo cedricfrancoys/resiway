@@ -1,6 +1,8 @@
 <?php
 namespace config;
 
+define('DEFAULT_APP', 'main');
+
 /*
 * Contrainsts for user activity.
 * These limitations should be way beyond a normal human activity...

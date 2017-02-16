@@ -72,7 +72,7 @@ try {
             $route_part = $route_parts[$i];
             $is_param = false;
             $is_mandatory = false;         
-            if($route_part{0} == ':') {
+            if(strlen($route_part) && $route_part{0} == ':') {
                 $is_param = true;
                 $is_mandatory = !(substr($route_part, -1) == '?');
             }
