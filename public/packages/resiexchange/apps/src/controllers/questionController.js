@@ -1,4 +1,4 @@
-angular.module('resiway')
+angular.module('resiexchange')
 
 /**
  * Question controller
@@ -306,9 +306,9 @@ angular.module('resiway')
         };
         
         $scope.questionDelete = function ($event) {
+            var selector = feedbackService.selector($event.target);
             ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title).then(
                 function () {
-                    var selector = feedbackService.selector($event.target);                  
                     actionService.perform({
                         // valid name of the action to perform server-side
                         action: 'resiexchange_question_delete',
@@ -512,7 +512,7 @@ angular.module('resiway')
         };
 
         $scope.answerCommentFlag = function ($event, answer_index, index) {
-            var selector = feedbackService.selector($event.target);           
+            var selector = feedbackService.selector($event.target);
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answercomment_flag',
@@ -541,9 +541,9 @@ angular.module('resiway')
         };
 
         $scope.answerDelete = function ($event, index) {
+            var selector = feedbackService.selector($event.target);            
             ctrl.open('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt).then(
                 function () {
-                    var selector = feedbackService.selector($event.target);                  
                     actionService.perform({
                         // valid name of the action to perform server-side
                         action: 'resiexchange_answer_delete',

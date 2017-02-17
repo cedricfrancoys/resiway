@@ -33,7 +33,7 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
 
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $params['lang']; ?>" ng-app="resiway" id="top" ng-controller="rootController as rootCtrl">
+<html lang="<?php echo $params['lang']; ?>" ng-app="resiexchange" id="top" ng-controller="rootController as rootCtrl">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">

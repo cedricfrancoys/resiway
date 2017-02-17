@@ -1,4 +1,4 @@
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('answerEditController', [
     'answer', 

@@ -1,4 +1,4 @@
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('answerEditController', [
     'answer', 
@@ -53,7 +53,7 @@ angular.module('resiway')
         };     
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('badgesController', [
     'badges', 
@@ -68,7 +68,7 @@ angular.module('resiway')
     
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('categoriesController', [
     'categories', 
@@ -83,7 +83,7 @@ angular.module('resiway')
     
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('categoryEditController', [
     'category', 
@@ -159,7 +159,7 @@ angular.module('resiway')
            
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('helpCategoriesController', [
     'categories', 
@@ -174,7 +174,7 @@ angular.module('resiway')
     
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('helpCategoryController', [
     'category', 
@@ -189,7 +189,7 @@ angular.module('resiway')
     
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('helpCategoryEditController', [
     'category', 
@@ -244,7 +244,7 @@ angular.module('resiway')
         
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('helpTopicController', [
     'topic', 
@@ -261,7 +261,7 @@ angular.module('resiway')
     
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('helpTopicEditController', [
     'topic',
@@ -339,7 +339,7 @@ angular.module('resiway')
         };          
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 /**
  * Question controller
@@ -647,9 +647,9 @@ angular.module('resiway')
         };
         
         $scope.questionDelete = function ($event) {
+            var selector = feedbackService.selector($event.target);
             ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title).then(
                 function () {
-                    var selector = feedbackService.selector($event.target);                  
                     actionService.perform({
                         // valid name of the action to perform server-side
                         action: 'resiexchange_question_delete',
@@ -853,7 +853,7 @@ angular.module('resiway')
         };
 
         $scope.answerCommentFlag = function ($event, answer_index, index) {
-            var selector = feedbackService.selector($event.target);           
+            var selector = feedbackService.selector($event.target);
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answercomment_flag',
@@ -882,9 +882,9 @@ angular.module('resiway')
         };
 
         $scope.answerDelete = function ($event, index) {
+            var selector = feedbackService.selector($event.target);            
             ctrl.open('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt).then(
                 function () {
-                    var selector = feedbackService.selector($event.target);                  
                     actionService.perform({
                         // valid name of the action to perform server-side
                         action: 'resiexchange_answer_delete',
@@ -922,7 +922,7 @@ angular.module('resiway')
         
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 /**
 * Display given question for edition
 *
@@ -1015,7 +1015,7 @@ angular.module('resiway')
            
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('questionsController', [
     'questions', 
@@ -1046,7 +1046,7 @@ angular.module('resiway')
         
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 /**
 * Top Bar Controller
@@ -1129,7 +1129,7 @@ angular.module('resiway')
         };
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('userConfirmController', [
     '$scope',
@@ -1199,7 +1199,7 @@ angular.module('resiway')
         
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 /**
 * Display given user public profile for edition
 *
@@ -1294,7 +1294,7 @@ angular.module('resiway')
         });
     };  
 }]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('userNotificationsController', [ 
     '$scope', 
@@ -1335,7 +1335,7 @@ angular.module('resiway')
         });        
     };
 }]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 /**
 * 
@@ -1417,7 +1417,7 @@ angular.module('resiway')
 
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 .controller('userProfileController', [
     'user', 
@@ -1502,7 +1502,7 @@ angular.module('resiway')
         });   
     }
 ]);
-angular.module('resiway')
+angular.module('resiexchange')
 
 /**
 * 

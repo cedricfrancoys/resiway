@@ -1,4 +1,4 @@
-angular.module('resiway')
+angular.module('resiexchange')
 /**
 * Display given user public profile for edition
 *

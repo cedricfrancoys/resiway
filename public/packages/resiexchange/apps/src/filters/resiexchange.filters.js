@@ -1,4 +1,4 @@
-angular.module('resiway')
+angular.module('resiexchange')
 
 .filter("nl2br", function() {
  return function(data) {

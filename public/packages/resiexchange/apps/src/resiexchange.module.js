@@ -7,13 +7,13 @@
 // todo : utility to convert SQL date to ISO
 
 // Instanciate resiway module
-var resiway = angular.module('resiway', [
+var resiway = angular.module('resiexchange', [
     // dependencies
     'ngRoute', 
     'ngSanitize',
     'ngCookies', 
     'ngAnimate', 
-    'ui.bootstrap',    
+    'ui.bootstrap',
     'oi.select',    
     'textAngular',
     'pascalprecht.translate',

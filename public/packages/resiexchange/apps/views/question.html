@@ -79,8 +79,8 @@
                                 <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_ACTIONS_EDIT' | translate}}
                             </a>&nbsp;                            
                             <a href                                         
-                               title="{{'QUESTION_ACTIONS_FLAG_TOOLTIP' | translate}}"
                                id="question-flag"
+                               title="{{'QUESTION_ACTIONS_FLAG_TOOLTIP' | translate}}"
                                ng-class="{on: question.history['resiexchange_question_flag']}"                                           
                                ng-click="questionFlag($event)"
                                uib-popover-template="'popoverCustom.html'" 
@@ -89,7 +89,8 @@
                                 <i class="fa fa-flag" aria-hidden="true"></i> {{'QUESTION_ACTIONS_FLAG' | translate}}
                             </a>&nbsp;                            
                             <a href 
-                               title="{{'QUESTION_ACTIONS_DELETE_TOOLTIP' | translate}}"                            
+                               id="question-delete"
+                               title="{{'QUESTION_ACTIONS_DELETE_TOOLTIP' | translate}}"
                                ng-show="user.id==question.creator.id"
                                class="delete-post-link" 
                                ng-click="questionDelete($event)"
@@ -316,8 +317,8 @@
                                     <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_EDIT' | translate}}
                                 </a>&nbsp;                               
                                 <a href                                         
-                                   title="{{'QUESTION_ANSWER_ACTIONS_FLAG_TOOLTIP' | translate}}"
                                    id="answer-{{answer.id}}-flag"
+                                   title="{{'QUESTION_ANSWER_ACTIONS_FLAG_TOOLTIP' | translate}}"
                                    ng-class="{on: answer.history['resiexchange_answer_flag']}"                                           
                                    ng-click="answerFlag($event, answer_index)"
                                    uib-popover-template="'popoverCustom.html'" 
@@ -326,8 +327,8 @@
                                     <i class="fa fa-flag" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_FLAG' | translate}}
                                 </a>&nbsp;                                 
                                 <a href
-                                   class="delete-post-link "
                                    id="answer-{{answer.id}}-delete"
+                                   class="delete-post-link "
                                    ng-show="user.id==answer.creator.id"
                                    ng-click="answerDelete($event, answer_index)"
                                    uib-popover-template="'popoverCustom.html'" 
@@ -404,8 +405,8 @@
                                 <div class="comment-actions" >
                                     <div class="comment-voteup" >
                                         <a href
-                                           title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
                                            id="answer-{{answer.id}}-comment-{{comment.id}}-voteup"
+                                           title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
                                            class="fa fa-caret-up"
                                            ng-class="{on: comment.history['resiexchange_answercomment_voteup']}"                                           
                                            ng-click="answerCommentVoteUp($event, answer_index, comment_index)"
@@ -417,8 +418,8 @@
                                     </div>
                                     <div class="comment-flag">
                                         <a href                                         
-                                           title="{{'QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
                                            id="answer-{{answer.id}}-comment-{{comment.id}}-flag"
+                                           title="{{'QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
                                            class="fa fa-flag" 
                                            ng-class="{on: comment.history['resiexchange_answercomment_flag']}"                                           
                                            ng-click="answerCommentFlag($event, answer_index, comment_index)"

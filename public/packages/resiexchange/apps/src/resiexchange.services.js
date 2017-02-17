@@ -1,5 +1,5 @@
 
-angular.module('resiway')
+angular.module('resiexchange')
 
 .service('routeObjectProvider', [
     '$http', 
