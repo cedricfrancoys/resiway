@@ -35,6 +35,9 @@ qinoa.GridCells = {
 		}
 		return $widget;
 	},
+	'boolean': function ($this, conf) {
+		return qinoa.GridCells.string($this, conf);
+	},    
 	'integer': function ($this, conf) {
 		return qinoa.GridCells.string($this, conf);
 	},
