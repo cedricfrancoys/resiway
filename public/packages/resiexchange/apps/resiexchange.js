@@ -1045,9 +1045,11 @@ angular.module('resiexchange')
     
     function selectorFromElement(domElement) {
         var element = angular.element(domElement);
+        var body = angular.element(document.body);
         while(typeof element.attr('id') == 'undefined'
            || typeof element.attr('uib-popover-template') == 'undefined') {
             element = element.parent();
+            if(element == body) break;            
         }
         return '#' + element.attr('id');          
     }
