@@ -44,14 +44,16 @@ try {
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 1
-                      ]);                   
+                      ]);
+            ResiAPI::repositoryDec('resiexchange.count_questions');
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 0
-                      ]);    
+                      ]);
+            ResiAPI::repositoryInc('resiexchange.count_questions');                      
             return false;
         },
         [                                                           // $limitations

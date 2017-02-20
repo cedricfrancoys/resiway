@@ -201,6 +201,15 @@ class ResiAPI {
         $db = $om->getDBHandler();       
         $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`+1 WHERE `key` like '$key_mask';");
     }
+
+    /*
+    * decrements by one the value of the records having key matching given mask
+    */
+    public static function repositoryDec($key_mask) {
+        $om = &ObjectManager::getInstance(); 
+        $db = $om->getDBHandler();       
+        $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`-1 WHERE `key` like '$key_mask';");
+    }
     
 
     public static function notifyUser($user_id, $title, $content) {
