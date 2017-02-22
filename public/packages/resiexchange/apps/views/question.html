@@ -100,27 +100,38 @@
                                 <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ACTIONS_DELETE' | translate}}
                             </a>                            
                         </div>
-                        <!--                            
-                        <div class="signature">
+                        <div class="signature" ng-if="question.modifier != 0">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <a href="http://stackoverflow.com/posts/218384/revisions" title="show all edits to this post">edited <span title="2016-05-26 16:15:01Z" class="relativetime">May 26 at 16:15</span></a>
+                                    <span class="relativetime">{{question.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="http://stackoverflow.com/users/2193767/thelostmind"><div class="avatar-wrapper"><img src="./Stack Overflow - Question example_files/seST2.gif" alt="" width="32" height="32"></div></a>
+                                    <a href="#/users/{{question.modifier.id}}">
+                                        <div class="avatar-wrapper">
+                                            <img ng-src="http://cdn.libravatar.org/avatar/{{question.modifier.hash}}?s=32&d=identicon" alt="" width="32" height="32">
+                                        </div>
+                                    </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="http://stackoverflow.com/users/2193767/thelostmind">TheLostMind</a><span class="mod-flair" title="moderator">♦</span>
+                                    <a href="#/users/{{question.modifier.id}}">{{question.modifier.display_name}}</a>
                                     <div>
-                                        <span class="reputation-score" title="reputation score 27,171" dir="ltr">27.2k</span>
-                                        <span class="badges" title="6 gold badges"><span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span><span class="badgecount">6</span></span>
-                                        <span class="badges" title="39 silver badges"><span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span><span class="badgecount">39</span></span>
-                                        <span class="badges" title="72 bronze badges"><span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span><span class="badgecount">72</span></span>
+                                        <span class="reputation-score" title="reputation score " dir="ltr">{{question.modifier.reputation}}</span>
+                                        <span class="badges" title="gold badges">
+                                            <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ question.modifier.count_badges_1 }}</span>
+                                        </span>
+                                        <span class="badges" title="silver badges">
+                                            <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ question.modifier.count_badges_2 }}</span>
+                                        </span>
+                                        <span class="badges" title="bronze badges">
+                                            <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ question.modifier.count_badges_3 }}</span>
+                                        </span>
                                     </div>
                                 </div>
-                            </div>    
+                            </div>
                         </div>
-                        -->
                         <div class="signature owner">
                             <div class="user-info">
                                 <div class="user-action-time">
