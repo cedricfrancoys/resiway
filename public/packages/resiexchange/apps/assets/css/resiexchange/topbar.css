@@ -347,3 +347,9 @@
     background-position: 0 -21px;
     background-size: 88px auto;
 }
+.topbar .platform-dialog .platform-icon.ekopedia {
+    width: 88px;
+    background: url('../img/ekopedia.png') no-repeat;   
+    background-position: 0 -21px;
+    background-size: 88px auto;
+}
