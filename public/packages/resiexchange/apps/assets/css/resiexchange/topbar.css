@@ -108,6 +108,10 @@
     width: 125px;
 }
 
+.topbar .platform-btn.ekopedia {
+    width: 120px;
+}
+
 .topbar .platform-btn.resiexchange {
     width: 158px;
 }
@@ -209,6 +213,13 @@
 .topbar .platform-btn.resipedia .app-icon {
     width: 88px;
     background: url('../img/resipedia.png') no-repeat;   
+    background-position: 0 9px;
+    background-size: 88px auto;
+}
+
+.topbar .platform-btn.ekopedia .app-icon {
+    width: 88px;
+    background: url('../img/ekopedia.png') no-repeat;   
     background-position: 0 9px;
     background-size: 88px auto;
 }
