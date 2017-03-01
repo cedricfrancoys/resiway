@@ -41,7 +41,7 @@ try {
         false,                                                      // $toggle
         'resiexchange_question_votedown',                           // $concurrent_action        
         function ($om, $user_id, $object_class, $object_id) {       // $do 
-            // vote the anwer up
+            // vote the question up
             $object = $om->read($object_class, $object_id, ['count_votes', 'score'])[$object_id];       
             $om->write($object_class, $object_id, [
                 'count_votes' => $object['count_votes']+1, 

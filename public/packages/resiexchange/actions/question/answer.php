@@ -49,7 +49,7 @@ try {
         $action_name,                                             // $action_name
         $object_class,                                            // $object_class
         $object_id,                                               // $object_id
-        [],                                                       // $object_fields
+        ['count_answers'],                                        // $object_fields
         false,                                                    // $toggle
         null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
@@ -69,6 +69,12 @@ try {
                 $om->write('resiway\User', $user_id, [ 'count_answers'=> $res[$user_id]['count_answers']+1 ]);
             }
 
+            // update question count_answers
+            $object = $om->read($object_class, $object_id, ['count_answers'])[$object_id];       
+            $om->write($object_class, $object_id, [
+                'count_answers' => $object['count_answers']+1
+            ]);
+            
             // update global counter
             ResiAPI::repositoryInc('resiexchange.count_answers');
             
