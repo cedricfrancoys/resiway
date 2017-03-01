@@ -126,8 +126,14 @@ try {
                                             'description'   => $tag_data['description']
                                         );            
             }
-        }    
-            
+        }
+        
+        // retrieve actions performed by the user on this question
+        $questions_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Question', array_keys($questions));
+        foreach($res as $question_id => $question_data) {
+            $questions[$question_id]['history'] = $questions_history[$question_id];        
+        }
+                    
         $result = array_values($questions);
     }
 }
