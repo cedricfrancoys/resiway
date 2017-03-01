@@ -27,7 +27,7 @@ $params = QNLib::announce([
         'content'	    => array(
                             'description'   => 'Content of the submitted question.',
                             'type'          => 'string', 
-                            'required'      => true
+                            'default'       => ''
                             ),
         'tags_ids'      => array(
                             'description'   => 'List of tags assigned to the question.',
