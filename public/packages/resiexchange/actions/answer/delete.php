@@ -52,7 +52,12 @@ try {
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 1
-                      ]);            
+                      ]);
+            // update related question count_answers
+            $object = $om->read($related_object_class, $related_object_id, ['count_answers'])[$related_object_id];       
+            $om->write($related_object_class, $related_object_id, [
+                'count_answers' => $object['count_answers']-1
+            ]);                      
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
@@ -68,6 +73,11 @@ try {
             $om->write($object_class, $object_id, [
                         'deleted' => 0
                       ]);    
+            // update related question count_answers
+            $object = $om->read($related_object_class, $related_object_id, ['count_answers'])[$related_object_id];       
+            $om->write($related_object_class, $related_object_id, [
+                'count_answers' => $object['count_answers']+1
+            ]);                         
             return false;
         },
         [                                                           // $limitations
