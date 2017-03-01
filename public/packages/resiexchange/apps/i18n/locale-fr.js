@@ -45,7 +45,7 @@ var translations = {
     "QUESTION_ANSWER_ACTIONS_EDIT": "Éditer",  
     "QUESTION_ANSWER_ACTIONS_FLAG": "Signaler",
     "QUESTION_ANSWER_ACTIONS_FLAG_TOOLTIP": "Flag this post for serious problems or moderator attention",
-    "QUESTION_ANSWER_ACTIONS_DELETE": "",
+    "QUESTION_ANSWER_ACTIONS_DELETE": "Supprimer",
     "QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP": "Delete this post if you are really sure you no longer want it",
 
     "QUESTION_USER_ANSWER": "Votre Réponse",
