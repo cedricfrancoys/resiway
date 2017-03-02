@@ -127,13 +127,14 @@ try {
                                         );            
             }
         }
-        
-        // retrieve actions performed by the user on this question
-        $questions_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Question', array_keys($questions));
-        foreach($res as $question_id => $question_data) {
-            $questions[$question_id]['history'] = $questions_history[$question_id];        
-        }
-                    
+        $user_id = ResiAPI::userId();
+        if($user_id > 0) {
+            // retrieve actions performed by the user on each question
+            $questions_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Question', array_keys($questions));            
+            foreach($res as $question_id => $question_data) {
+                $questions[$question_id]['history'] = $questions_history[$question_id];        
+            }
+        }            
         $result = array_values($questions);
     }
 }

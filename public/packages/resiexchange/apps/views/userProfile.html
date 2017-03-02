@@ -79,7 +79,8 @@
                 <div ng-repeat="action in ctrl.updates.items" class="post-summary col-1-1">               
                     <div class="col-9-12 nopad">                                                        
                             <div class="col-5-12" style="overflow: hidden">
-                            <span class="mini-counts btn btn-success btn-xs">{{((action.user_increment >= 0)?'+':'')+action.user_increment}}</span>
+                            <span ng-if="ctrl.user.id == action.user_id" class="mini-counts btn btn-success btn-xs">{{((action.user_increment >= 0)?'+':'')+action.user_increment}}</span>
+                            <span ng-if="ctrl.user.id == action.author_id" class="mini-counts btn btn-success btn-xs">{{((action.author_increment >= 0)?'+':'')+action.author_increment}}</span>
                             {{action.description}}
                             </div> 
                             <div class="col-7-12" style="overflow: hidden">
