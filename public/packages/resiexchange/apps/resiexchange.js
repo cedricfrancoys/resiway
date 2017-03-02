@@ -1309,15 +1309,14 @@ angular.module('resiexchange')
     return function(label, query, item) {
         var html;
         var label = item.title.toString();
-        var html_path = '<span style="color: grey; font-style: italic; font-size: 80%;">('+ item.path.toString() +')</span>';
+        var path  = item.path.toString();
         if (query.length > 0 || angular.isNumber(query)) {
             query = oiSelectEscape(query);
-            html = label.replace(new RegExp(query, 'gi'), '<strong>$&</strong>')+ ' ' + html_path;
+            html = label.replace(new RegExp(query, 'gi'), '<strong>$&</strong>') + ' <span style="color: grey; font-style: italic; font-size: 80%;">('+ path.replace(new RegExp(query, 'gi'), '<strong>$&</strong>') + ')</span>';
         }
         else {
-            html = label + ' ' + html_path;
+            html = label + ' ' + '<span style="color: grey; font-style: italic; font-size: 80%;">('+ path +')</span>';
         }
-
         return $sce.trustAsHtml(html);
     };
 }])
