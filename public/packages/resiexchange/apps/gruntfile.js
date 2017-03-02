@@ -42,8 +42,12 @@ module.exports = function(grunt) {
 		},
 
 		cssmin: { 
+			bootstrap_css: {
+				src: 'assets/css/bootstrap/bootstrap.css',
+				dest: 'assets/css/bootstrap.min.css'		
+			},
 
-			css: {
+			resiexchange_css: {
 				src: 'assets/css/resiexchange.css',
 				dest: 'assets/css/resiexchange.min.css'		
 			}
