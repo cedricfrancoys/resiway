@@ -1308,13 +1308,14 @@ angular.module('resiexchange')
 .filter('customDropdownFilter', ['$sce', 'oiSelectEscape', function($sce, oiSelectEscape) {
     return function(label, query, item) {
         var html;
-        var label = item.title.toString() + ' <span style="color: grey; font-style: italic; font-size: 80%;">('+ item.path.toString() +')</span>';
+        var label = item.title.toString();
+        var html_path = '<span style="color: grey; font-style: italic; font-size: 80%;">('+ item.path.toString() +')</span>';
         if (query.length > 0 || angular.isNumber(query)) {
             query = oiSelectEscape(query);
-            html = label.replace(new RegExp(query, 'gi'), '<strong>$&</strong>');
+            html = label.replace(new RegExp(query, 'gi'), '<strong>$&</strong>')+ ' ' + html_path;
         }
         else {
-            html = label;
+            html = label + ' ' + html_path;
         }
 
         return $sce.trustAsHtml(html);
