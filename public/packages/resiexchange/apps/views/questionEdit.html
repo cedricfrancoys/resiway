@@ -29,7 +29,7 @@
                         <label for="input01" class="control-label">Balises</label>
                         <div class="controls">
                             <oi-select
-                                        oi-options="item.path group by item.parent_path for item in categories track by item.id"
+                                        oi-options="item.path group by item.parent_path for item in categories"
                                         ng-model="question.tags"
                                         multiple
                                         multiple-limit="8"
@@ -86,7 +86,7 @@
     </div>
     <div class="col-4-12">
         <div class="panel panel-default">           
-            <div class="container btn-success">
+            <div class="container bg-success text-white">
                 <h4 style="margin-bottom: 18px;">Comment poser une question ?</h4>
                 <strong>Est-ce bien une question qui a trait à l'autonomie, la transition, la permaculture, la résilience ?</strong>
                 <br><br>

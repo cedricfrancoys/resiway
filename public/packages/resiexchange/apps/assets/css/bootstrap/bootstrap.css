@@ -1115,6 +1115,32 @@ figure {
 img {
     vertical-align: middle
 }
+
+.bd-callout {
+    padding: 1.25rem;
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+    border: 1px solid #eee;
+    border-left-width: .25rem;
+    border-radius: .25rem;
+}
+.bd-callout+.bd-callout {
+    margin-top: -.25rem;
+}
+.bd-callout-info {
+    border-left-color: #5bc0de;
+}
+.bd-callout-warning {
+    border-left-color: #f0ad4e;
+}
+.bd-callout-primary {
+    border-left-color: #0275d8;
+}
+.bd-callout-success {
+    border-left-color: #5cb85c;
+}    
+    
+
 .carousel-inner>.item>a>img,
 .carousel-inner>.item>img,
 .img-responsive,
