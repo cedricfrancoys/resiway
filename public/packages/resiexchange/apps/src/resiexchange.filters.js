@@ -39,7 +39,7 @@ angular.module('resiexchange')
             html = label.replace(new RegExp(query, 'gi'), '<strong>$&</strong>');
         }
         else {
-            html = item.title + ' ('+ item.path +')';
+            html = item.title + ' <span style="color: grey; font-style: italic;">('+ item.path +')</span>';
         }
 
         return $sce.trustAsHtml(html);
