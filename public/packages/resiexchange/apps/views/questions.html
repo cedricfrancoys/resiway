@@ -40,8 +40,7 @@
         <div ng-repeat="question in ctrl.questions" class="question narrow col-1-1">
             <div class="counters" >
                 <div class="votes" title="{{question.count_votes}} {{'QUESTIONS_VOTES' | translate}}">
-                    <div class="mini-counts">
-                    <div ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">                    
+                    <div class="mini-counts">                
                         <i class="fa fa-check-circle" ng-class="{'text-success': question.history['resiexchange_question_voteup']  || question.history['resiexchange_question_votedown']}"aria-hidden="true"></i> {{question.count_votes | humanizeCount}}
                     </div> 
                 </div>
