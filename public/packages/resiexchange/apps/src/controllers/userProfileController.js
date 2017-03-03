@@ -41,19 +41,21 @@ angular.module('resiexchange')
             });
         };
         
-        ctrl.avatar.gravatar = 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40';
-        ctrl.avatar.identicon = 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40';
-        ctrl.avatar.google = '';
+        ctrl.avatar = {
+            gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40',
+            identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40',
+            google: ''
+        };
         
         ctrl.getGoogleURL = function() {
-            return $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
+            $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
             .then(
                 function successCallback(response) {
                     var url = response.data['entry']['gphoto$thumbnail']['$t'];
-                    return url.replace("/s64-c/", "/")+'?sz=40';
+                    ctrl.avatar.google = url.replace("/s64-c/", "/")+'?sz=40';
                 },
                 function errorCallback(response) {
-                    return '';
+
                 }
             ); 
         };
