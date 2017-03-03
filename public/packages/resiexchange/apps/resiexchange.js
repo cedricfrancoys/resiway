@@ -2637,7 +2637,7 @@ angular.module('resiexchange')
         }                
     });
 
-    $http.get('http://picasaweb.google.com/data/entry/api/user/'+user.login+'?alt=json'+user.id)
+    $http.get('http://picasaweb.google.com/data/entry/api/user/'+user.login+'?alt=json')
     .then(
         function successCallback(response) {
             var url = response.data['entry']['gphoto$thumbnail']['$t'];
