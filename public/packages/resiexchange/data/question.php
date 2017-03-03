@@ -47,7 +47,7 @@ try {
     
     // retrieve question    
     $result = [];
-    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'modifier', 'modified', 'title', 'title_url', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
+    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'editor', 'edited', 'title', 'title_url', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
     if($res < 0 || !isset($res[$question_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
     $question_data = $res[$question_id];
 
@@ -60,10 +60,10 @@ try {
     $result['creator'] = $author_data;
 
     // retrieve eiditor data
-    if($question_data['modifier'] > 0) {
-        $editor_data = ResiAPI::loadUserPublic($question_data['modifier']);
+    if($question_data['editor'] > 0) {
+        $editor_data = ResiAPI::loadUserPublic($question_data['editor']);
         if($editor_data < 0) throw new Exception("question_editor_unknown", QN_ERROR_UNKNOWN_OBJECT);        
-        $result['modifier'] = $editor_data;
+        $result['editor'] = $editor_data;
     }    
       
     // retrieve actions performed by the user on this question
@@ -137,7 +137,7 @@ try {
     // retreive answers
     // output JSON type has to be Array
     $result['answers'] = [];
-    $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'modifier', 'modified', 'content', 'content_excerpt', 'score', 'comments_ids']);    
+    $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score', 'comments_ids']);    
     if($res > 0) {
         // memorize answers authors identifiers for later load
         $answers_authors_ids = [];
