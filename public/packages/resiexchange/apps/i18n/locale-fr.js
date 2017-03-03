@@ -82,7 +82,8 @@ var translations = {
     "USER_PROFILE_TAB_ANSWERS": "Réponses",
     "USER_PROFILE_TAB_FAVORITES": "Favoris",
     "USER_PROFILE_TAB_ACTIVITY": "Activité",    
-    
+
+    "USER_PROFILE_EDIT": "Éditer mon profil",
     "USER_PROFILE_REPUTATION": "réputation",
     "USER_PROFILE_STATS_QUESTIONS": "questions",
     "USER_PROFILE_STATS_ANSWERS": "réponses",
@@ -155,6 +156,7 @@ var translations = {
     "confirm_no_match": "Le mot de passe et la confirmation sont différents",
     "user_invalid_login": "Le format de l'adresse email est invalide",
     "user_invalid_firstname": "Le prénom contient des caractères non autorisés",
+    "user_invalid_lastname": "Le nom de famille contient des caractères non autorisés",    
     "user_invalid_password": "Le mot de passe n'a pas le bon format",
     "user_invalid_country": "Le format du code pays n'est pas reconnu",
     "user_invalid_language": "Le format du code langue n'est pas reconnu",

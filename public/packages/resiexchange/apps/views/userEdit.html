@@ -87,11 +87,10 @@
                     <div class="form-group col-1-3">
                         <label>Country</label>
                         <div class="controls">
-                            <input ng-model="ctrl.user.country"
-                                   type="text"
-                                   class="form-control" 
-                                   value="" 
-                                   maxlength="128">                        
+                            <oi-select  ng-init="countries = ['BE', 'CA', 'CH', 'DE', 'ES', 'FR', 'GB', 'GR', 'IT', 'LU', 'NE', 'PT']"
+                                        oi-options="item for item in countries"
+                                        ng-model="ctrl.user.country"                                        
+                                        placeholder="Pays"></oi-select>                        
                             <p class="help-inline"></p>
                         </div>
                     </div>   

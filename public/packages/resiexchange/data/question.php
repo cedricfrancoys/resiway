@@ -47,7 +47,7 @@ try {
     
     // retrieve question    
     $result = [];
-    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'editor', 'edited', 'title', 'title_url', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
+    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
     if($res < 0 || !isset($res[$question_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
     $question_data = $res[$question_id];
 

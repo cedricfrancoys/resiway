@@ -27,10 +27,10 @@ var fr = moment.defineLocale('fr', {
         LLLL : 'dddd D MMMM YYYY HH:mm'
     },
     calendar : {
-        sameDay: '[Aujourd\'hui à] LT',
-        nextDay: '[Demain à] LT',
+        sameDay: '[aujourd\'hui à] LT',
+        nextDay: '[demain à] LT',
         nextWeek: 'dddd [à] LT',
-        lastDay: '[Hier à] LT',
+        lastDay: '[hier à] LT',
         lastWeek: 'dddd [dernier à] LT',
         sameElse: 'LLL'
     },

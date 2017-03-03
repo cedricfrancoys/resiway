@@ -1030,6 +1030,7 @@ angular.module('resiexchange')
         *
         */
         selector: function(domElement) {
+            closePopover();
             return selectorFromElement(domElement);
         }
         

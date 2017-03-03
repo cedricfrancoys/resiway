@@ -138,6 +138,7 @@ class User extends \easyobject\orm\Object {
                                     /* lastname must contain only letters or spaces */
                                     'error_message_id' => 'user_invalid_lastname',
                                     'function' => function ($lastname) {
+                                            if(!strlen($lastname)) return true;
                                             $value = htmlentities($lastname, ENT_QUOTES, 'UTF-8');
                                             $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
                                             $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');                                          

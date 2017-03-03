@@ -91,8 +91,8 @@
                             <a href 
                                id="question-delete"
                                title="{{'QUESTION_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                               class="delete-post-link"                                
                                ng-show="user.id==question.creator.id"
-                               class="delete-post-link" 
                                ng-click="questionDelete($event)"
                                uib-popover-template="'popoverCustom.html'"
                                popover-trigger="'toggle-popover'"
@@ -339,13 +339,13 @@
                                 </a>&nbsp;                                 
                                 <a href
                                    id="answer-{{answer.id}}-delete"
+                                   title="{{'QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP' | translate}}"
                                    class="delete-post-link "
                                    ng-show="user.id==answer.creator.id"
                                    ng-click="answerDelete($event, answer_index)"
                                    uib-popover-template="'popoverCustom.html'" 
                                    popover-trigger="'toggle-popover'" 
-                                   popover-placement="right"                                    
-                                   title="{{'QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP' | translate}}">
+                                   popover-placement="right">
                                     <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_DELETE' | translate}}
                                 </a>                                 
                             </div>
@@ -379,7 +379,7 @@
                                     <div class="user-avatar">
                                         <a href="#/user/profile/{{answer.creator.id}}">
                                             <div class="avatar-wrapper">
-                                                <img ng-src="http://cdn.libravatar.org/avatar/{{question.creator.hash}}?s=32&d=identicon" alt="" width="32" height="32">
+                                                <img ng-src="http://cdn.libravatar.org/avatar/{{answer.creator.hash}}?s=32&d=identicon" alt="" width="32" height="32">
                                             </div>                                        
                                         </a>                                        
                                     </div>
