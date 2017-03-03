@@ -40,18 +40,18 @@
                                     modifier ma photo <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="avatar-button">
-                                        <li role="menuitem"><img ng-src="ctrl.googleURL()" width="40" height="40"><a href="#">Google</a></li>
+                                        <li role="menuitem"><img ng-src="{{ctrl.googleURL()}}" width="40" height="40"><a href="#">Google</a></li>
                                         <li class="divider"></li>
-                                        <li role="menuitem"><img ng-src="ctrl.gravatarURL()" width="40" height="40"><a href="#">Gravatar</a></li>
+                                        <li role="menuitem"><img ng-src="{{ctrl.gravatarURL()}}" width="40" height="40"><a href="#">Gravatar</a></li>
                                         <li class="divider"></li>
-                                        <li role="menuitem"><img ng-src="ctrl.identiconURL()" width="40" height="40"><a href="#">Identicon</a></li>
+                                        <li role="menuitem"><img ng-src="{{ctrl.identiconURL()}}" width="40" height="40"><a href="#">Identicon</a></li>
                                     </ul>
                                 </div>                                
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-5-12">
+                <div class="col-5-12" style="min-height: 500px;">
                     <h2>{{ctrl.user.display_name}}</h2>
                     <div ng-bind-html="ctrl.user.about | nl2br"></div>
                 </div>            
