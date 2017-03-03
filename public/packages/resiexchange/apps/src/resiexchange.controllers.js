@@ -1257,11 +1257,11 @@ angular.module('resiexchange')
         }                
     });
 
-    $http.get('http://picasaweb.google.com/data/entry/api/user/'+user.login+'?alt=json')
+    $http.get('http://picasaweb.google.com/data/entry/api/user/avcd'+user.login+'?alt=json')
     .then(
         function successCallback(response) {
             var url = response.data['entry']['gphoto$thumbnail']['$t'];
-            url.replace("s64-c", "s<size>-c");
+            url = url.replace("s64-c", "s<size>-c");
             alert(url);
         },
         function errorCallback(response) {
