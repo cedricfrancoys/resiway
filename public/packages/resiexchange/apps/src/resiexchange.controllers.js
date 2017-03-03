@@ -1463,7 +1463,7 @@ angular.module('resiexchange')
         
         ctrl.avatar = {
             gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40',
-            identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40',
+            identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40&d=identicon',
             google: ''
         };
         
