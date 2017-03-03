@@ -157,6 +157,7 @@ class User extends \easyobject\orm\Object {
                                     /* country must be a valid ISO 3166 code */
                                     'error_message_id' => 'user_invalid_country',
                                     'function' => function ($country) {
+                                            if(!strlen($country)) return true;
                                             return (bool) (preg_match('/^[A-Z]{2}$/', $country, $matches));
                                     }
                                 ),                                                                
