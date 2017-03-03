@@ -86,17 +86,54 @@
             
     </div>
     <div class="col-4-12">
-        <div class="panel panel-default">           
-            <div class="container bg-success text-white">
-                <h4 style="margin-bottom: 18px;">Comment poser une question ?</h4>
-                <strong>Est-ce bien une question qui a trait à l'autonomie, la transition, la permaculture, la résilience ?</strong>
-                <br><br>
-                Est-il possible de <strong>répondre</strong> à la question et pas seulement d'en débattre ?
-                <br><br>
-                <strong>Soyez précis</strong>. Donnez des détails. Partagez vos recherches.<br>
-                <div style="text-align: right; margin-top: 30px;"><a style="color: black;" href="#/help/topic/2/comment-poser-une-bonne-question" target="_blank">Conseils pour poser une bonne question »</a></div>
-            </div>            
-            
+        <div ng-if="question.id" class="panel panel-default">
+            <div class="container">
+                <div class="module question-stats">
+			        <table id="qinfo">
+			            <tbody>
+                        <tr>
+			                <td>
+			                    <p class="label-key">{{'QUESTION_STATS_ASKED' | translate}}</p>
+			                </td>
+			                <td style="padding-left: 10px">
+			                    <p class="label-key"><b>{{question.created}}</b></p>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td>
+			                    <p class="label-key">{{'QUESTION_STATS_VIEWED' | translate}}</p>
+			                </td>
+
+			                <td style="padding-left: 10px">
+			                    <p class="label-key">
+			                        <b>{{question.count_views}} {{'QUESTION_STATS_TIMES' | translate}}</b>
+			                    </p>
+			                </td>
+			            </tr>
+			            <tr>
+                            <td>
+                                <p class="label-key">{{'QUESTION_STATS_ACTIVE' | translate}}</p>
+                            </td>
+                            <td style="padding-left: 10px">
+                                <p class="label-key">
+                                    <b>{{question.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                                </p>
+                            </td>
+			            </tr>
+                        </tbody>
+                    </table>
+			    </div>
+            </div>
         </div>
+
+        <div class="bd-callout bd-callout-info">
+            <h4 style="margin-bottom: 18px;">Comment poser une question ?</h4>
+            <strong>Est-ce bien une question qui a trait à l'autonomie, la transition, la permaculture, la résilience ?</strong>
+            <br><br>
+            Est-il possible de <strong>répondre</strong> à la question et pas seulement d'en débattre ?
+            <br><br>
+            <strong>Soyez précis</strong>. Donnez des détails. Partagez vos recherches.<br>
+            <div style="text-align: right; margin-top: 30px;"><a href="#/help/topic/2/comment-poser-une-bonne-question" target="_blank">Conseils pour poser une bonne question »</a></div>
+        </div>            
     </div>
 </div>

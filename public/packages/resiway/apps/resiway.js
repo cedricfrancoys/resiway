@@ -1748,6 +1748,7 @@ angular.module('resiway')
                     ctrl.body = content;
                     
                     ctrl.ok = function () {
+                        console.log('ok received');
                         $uibModalInstance.close();
                     };
                     ctrl.cancel = function () {
@@ -2019,6 +2020,7 @@ angular.module('resiway')
         $scope.questionDelete = function ($event) {
             ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title).then(
                 function () {
+                    console.log('response received');
                     var selector = feedbackService.selector($event.target);                  
                     actionService.perform({
                         // valid name of the action to perform server-side

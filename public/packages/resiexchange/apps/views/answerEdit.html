@@ -54,34 +54,36 @@
     <div class="col-4-12">
         <div class="panel panel-default">
             <div class="container">
-                <div class="module question-stats">
+                <div class="module answer-stats">
 			        <table id="qinfo">
 			            <tbody>
                         <tr>
 			                <td>
-			                    <p class="label-key">asked</p>
+			                    <p class="label-key">{{'ANSWER_STATS_ANSWERED' | translate}}</p>
 			                </td>
 			                <td style="padding-left: 10px">
-			                    <p class="label-key"><b>{{question.created}}</b></p>
+			                    <p class="label-key"><b>{{answer.created}}</b></p>
 			                </td>
 			            </tr>
 			            <tr>
 			                <td>
-			                    <p class="label-key">viewed</p>
+			                    <p class="label-key">{{'ANSWER_STATS_VIEWED' | translate}}</p>
 			                </td>
 
 			                <td style="padding-left: 10px">
 			                    <p class="label-key">
-			                        <b>{{question.count_views}} times</b>
+			                        <b>{{answer.count_views}} {{'ANSWER_STATS_TIMES' | translate}}</b>
 			                    </p>
 			                </td>
 			            </tr>
 			            <tr>
                             <td>
-                                <p class="label-key">active</p>
+                                <p class="label-key">{{'ANSWER_STATS_ACTIVE' | translate}}</p>
                             </td>
                             <td style="padding-left: 10px">
-                                <p class="label-key"><b><a href="?lastactivity" class="lastactivity-link">today</a></b></p>
+                                <p class="label-key">
+                                    <b>{{answer.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                                </p>
                             </td>
 			            </tr>
                         </tbody>

@@ -18,6 +18,9 @@ angular.module('resiexchange')
             total: -1,
             currentPage: 1,
         };
+        
+        // acknowledge user profile view (so far, user data have been loaded but nothing indicated a profile view)
+        $http.get('index.php?do=resiway_user_profileview&id='+user.id);
 
         ctrl.load = function(config) {
             // reset objects list (triggers loader display)

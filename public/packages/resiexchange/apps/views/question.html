@@ -106,14 +106,14 @@
                                     <span class="relativetime">{{question.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#/users/{{question.modifier.id}}">
+                                    <a href="#/user/profile/{{question.modifier.id}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="http://cdn.libravatar.org/avatar/{{question.modifier.hash}}?s=32&d=identicon" alt="" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#/users/{{question.modifier.id}}">{{question.modifier.display_name}}</a>
+                                    <a href="#/user/profile/{{question.modifier.id}}">{{question.modifier.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="reputation score " dir="ltr">{{question.modifier.reputation}}</span>
                                         <span class="badges" title="gold badges">
@@ -138,14 +138,14 @@
                                     <span class="relativetime">{{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#/users/{{question.creator.id}}">
+                                    <a href="#/user/profile/{{question.creator.id}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="http://cdn.libravatar.org/avatar/{{question.creator.hash}}?s=32&d=identicon" alt="" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#/users/{{question.creator.id}}">{{question.creator.display_name}}</a>
+                                    <a href="#/user/profile/{{question.creator.id}}">{{question.creator.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="reputation score " dir="ltr">{{question.creator.reputation}}</span>
                                         <span class="badges" title="gold badges">
@@ -207,7 +207,7 @@
                             <div class="comment-body">
                                 <span class="comment-copy">{{comment.content}}</span>
                                 –&nbsp;
-                                <a class="comment-user" href="#/users/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
                                 <span class="comment-date" dir="ltr">
                                     <a class="comment-link" href="#/question/{{question.id}}#comment-{{comment.id}}">
                                         <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
@@ -377,14 +377,14 @@
                                         <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                     </div>
                                     <div class="user-avatar">
-                                        <a href="#/users/{{answer.creator.id}}">
+                                        <a href="#/user/profile/{{answer.creator.id}}">
                                             <div class="avatar-wrapper">
                                                 <img ng-src="http://cdn.libravatar.org/avatar/{{question.creator.hash}}?s=32&d=identicon" alt="" width="32" height="32">
                                             </div>                                        
                                         </a>                                        
                                     </div>
                                     <div class="user-details">
-                                        <a href="#/users/{{answer.creator.id}}">{{answer.creator.display_name}}</a>
+                                        <a href="#/user/profile/{{answer.creator.id}}">{{answer.creator.display_name}}</a>
                                         <div>
                                             <span class="reputation-score" title="reputation score " dir="ltr">{{answer.creator.reputation}}</span>
                                             <span class="badges" title="gold badges">
@@ -451,7 +451,7 @@
                                 <div class="comment-body">
                                     <span class="comment-copy">{{comment.content}}</span>
                                     –&nbsp;
-                                    <a class="comment-user" href="#/users/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                    <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
                                     <span class="comment-date" dir="ltr">
                                         <a class="comment-link" href="#/question/{{question.id}}#comment-{{answer.id}}-{{comment.id}}">
                                             <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>

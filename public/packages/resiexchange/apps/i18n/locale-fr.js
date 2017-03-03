@@ -69,6 +69,11 @@ var translations = {
     "ANSWER_EDIT_SUBMIT": "Enregistrer les modifications",  
     "ANSWER_EDIT_CANCEL": "Annuler",
 
+    "ANSWER_STATS_ANSWERED": "postée",
+    "ANSWER_STATS_VIEWED": "vue",
+    "ANSWER_STATS_ACTIVE": "active",  
+    "ANSWER_STATS_TIMES": "fois",
+    
     // Users
     "USER_PROFILE_TAB_PROFILE": "Profil",    
     "USER_PROFILE_TAB_REPUTATION": "Réputation",
@@ -83,7 +88,7 @@ var translations = {
     "USER_PROFILE_STATS_COMMENTS": "commentaires",        
     "USER_PROFILE_MEMBER_FOR": "membre depuis",
     "USER_PROFILE_PROFILE_VIEWS": "vues du profil",
-    "USER_PROFILE_LAST_SEEN": "Dernière activité",
+    "USER_PROFILE_LAST_SEEN": "Dernière connexion",
     
     "USER_EDIT_PLACEHOLDER_EMAIL": "email",
     "USER_EDIT_PLACEHOLDER_FIRSTNAME": "prénom",

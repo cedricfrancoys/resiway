@@ -51,7 +51,7 @@
                 </div>
                 <div class="views" title="{{question.count_views}} {{'QUESTIONS_VIEWS' | translate}}">
                     <div class="mini-counts">
-                        <i class="fa fa-eye" aria-hidden="true"></i> {{question.count_views | humanizeCount}}
+                        <i class="fa fa-eye" ng-class="{'text-success': question.history['resiexchange_question_view']}" aria-hidden="true"></i> {{question.count_views | humanizeCount}}
                     </div>
                 </div>
             </div>

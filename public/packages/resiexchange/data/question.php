@@ -53,11 +53,6 @@ try {
 
     $result = $question_data;
 
-
-    if($user_id > 0) {
-        // update question's count_views 
-        $om->write('resiexchange\Question', $question_id, [ 'count_views' => $question_data['count_views']+1 ]);
-    }
     
     // retreive author data
     $author_data = ResiAPI::loadUserPublic($question_data['creator']);
@@ -75,6 +70,14 @@ try {
     $question_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Question', $question_id);
     $result['history'] = $question_history[$question_id];
 
+    
+    if($user_id > 0 && !isset($result['history']['resiexchange_question_view'])) {
+        // update question's count_views 
+        $om->write('resiexchange\Question', $question_id, [ 'count_views' => $question_data['count_views']+1 ]);
+        // add question view to user history
+        ResiAPI::registerAction($user_id, ResiAPI::actionId('resiexchange_question_view'), 'resiexchange\Question', $question_id);  
+    }
+    
     // retrieve tags
     $result['tags'] = [];
     $res = $om->read('resiway\Category', $question_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        

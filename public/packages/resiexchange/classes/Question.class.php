@@ -13,6 +13,9 @@ class Question extends \easyobject\orm\Object {
             
             /* language into which the question is asked */
             'lang'                  => array('type' => 'string'),
+
+            /* channel of the current question ('default', 'meta', 'help', ...) */
+            'channel_id'            => array('type' => 'many2one', 'foreign_object'=> 'resiexchange\Channel'),
             
             /* subject of the question */
             'title'				    => array('type' => 'string', 'onchange' => 'resiexchange\Question::onchangeTitle'),
@@ -96,7 +99,8 @@ class Question extends \easyobject\orm\Object {
     
     public static function getDefaults() {
         return array(
-             'lang'             => function() { return 'fr'; },             
+             'channel'          => function() { return 1; },
+             'lang'             => function() { return 'fr'; },
              'count_views'      => function() { return 0; },
              'count_votes'      => function() { return 0; },
              'count_answers'    => function() { return 0; },
