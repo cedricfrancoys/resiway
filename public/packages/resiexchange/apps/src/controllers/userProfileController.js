@@ -39,7 +39,29 @@ angular.module('resiexchange')
             function errorCallback() {
                 // something went wrong server-side
             });
-        };   
+        };
+        
+        ctrl.googleURL = function() {
+            return $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
+            .then(
+                function successCallback(response) {
+                    var url = response.data['entry']['gphoto$thumbnail']['$t'];
+                    return url.replace("/s64-c/", "/")+'?sz=40';
+                },
+                function errorCallback(response) {
+                    return '';
+                }
+            ); 
+        };
+
+        ctrl.gravatarURL = function() {
+            
+            return 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40';
+        };
+
+        ctrl.identiconURL = function() {
+            return 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40'
+        };
         
         angular.merge(ctrl, {
             updates: {

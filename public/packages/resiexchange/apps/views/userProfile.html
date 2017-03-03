@@ -40,9 +40,11 @@
                                     modifier ma photo <span class="caret"></span>
                                     </button>
                                     <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="avatar-button">
-                                        <li role="menuitem"><a href="#">Action</a></li>
-                                        <li role="menuitem"><a href="#">Another action</a></li>
-                                        <li role="menuitem"><a href="#">Something else here</a></li>
+                                        <li role="menuitem"><img ng-src="ctrl.googleURL()" width="40" height="40"><a href="#">Google</a></li>
+                                        <li class="divider"></li>
+                                        <li role="menuitem"><img ng-src="ctrl.gravatarURL()" width="40" height="40"><a href="#">Gravatar</a></li>
+                                        <li class="divider"></li>
+                                        <li role="menuitem"><img ng-src="ctrl.identiconURL()" width="40" height="40"><a href="#">Identicon</a></li>
                                     </ul>
                                 </div>                                
                             </div>

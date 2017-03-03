@@ -54,19 +54,7 @@ angular.module('resiexchange')
             ctrl.user.display_name = ctrl.user.firstname;
             break;
         }                
-    });
-
-    $http.get('http://picasaweb.google.com/data/entry/api/user/'+user.login+'?alt=json')
-    .then(
-        function successCallback(response) {
-            var url = response.data['entry']['gphoto$thumbnail']['$t'];
-            url = url.replace("/s64-c/", "/");
-            console.log(url);
-        },
-        function errorCallback(response) {
-
-        }
-    );    
+    });  
     
     ctrl.userPost = function($event) {
         var selector = feedback.selector(angular.element($event.target));                   
