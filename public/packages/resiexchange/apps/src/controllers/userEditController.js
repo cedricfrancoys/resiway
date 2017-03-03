@@ -8,9 +8,10 @@ angular.module('resiexchange')
     '$scope',
     '$window',
     '$filter',
+    '$http',
     'feedbackService',
     'actionService',
-    function(user, $scope, $window, $filter, feedback, action) {
+    function(user, $scope, $window, $filter, $http, feedback, action) {
     console.log('userEdit controller');    
     
     var ctrl = this;
