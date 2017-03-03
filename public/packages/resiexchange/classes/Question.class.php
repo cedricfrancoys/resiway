@@ -10,6 +10,15 @@ class Question extends \easyobject\orm\Object {
         return array(
             /* all objects must define a 'name' column (default is id) */
             'name'				    => array('type' => 'alias', 'alias' => 'title'),
+
+            /* identifier of the last user to edit the question.
+            (we need this field to make a distinction with ORM writes using special field 'modifier' */
+            'editor'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
+
+            /* last time question was edited.
+            (we need this field to make a distinction with ORM writes using special field 'modified' */
+            'edited'				=> array('type' => 'datetime'),
+            
             
             /* language into which the question is asked */
             'lang'                  => array('type' => 'string'),
@@ -101,6 +110,7 @@ class Question extends \easyobject\orm\Object {
         return array(
              'channel'          => function() { return 1; },
              'lang'             => function() { return 'fr'; },
+             'editor'           => function() { return 0; },             
              'count_views'      => function() { return 0; },
              'count_votes'      => function() { return 0; },
              'count_answers'    => function() { return 0; },

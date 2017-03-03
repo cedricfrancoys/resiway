@@ -57,7 +57,8 @@ try {
         use ($params) {    
         
             $om->write($object_class, $object_id, [
-                            'modifier'          => $user_id, 
+                            'editor'            => $user_id, 
+                            'edited'            => date("Y-m-d H:i:s"),
                             'content'           => $params['content']
                        ]);
             

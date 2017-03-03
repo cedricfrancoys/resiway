@@ -11,6 +11,14 @@ class Answer extends \easyobject\orm\Object {
             /* all objects must define a 'name' column (default is id) */
             'name'				    => array('type' => 'alias', 'alias' => 'title'),
 
+            /* identifier of the last user to edit the answer.
+            (we need this field to make a distinction with ORM writes using special field 'modifier' */
+            'editor'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
+
+            /* last time answer was edited.
+            (we need this field to make a distinction with ORM writes using special field 'modified' */
+            'edited'				=> array('type' => 'datetime'),
+            
             /* subject of the question */
             'title'				    => array(
                                         'type'              => 'function',
@@ -53,6 +61,7 @@ class Answer extends \easyobject\orm\Object {
 
     public static function getDefaults() {
         return array(
+             'editor'           => function() { return 0; },              
              'count_votes'      => function() { return 0; },
              'score'            => function() { return 0; },             
              'count_flags'      => function() { return 0; },                          

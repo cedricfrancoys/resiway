@@ -100,7 +100,8 @@ try {
                  '-': relation to be removed
                 */
                 $om->write($object_class, $object_id, [
-                                'modifier'          => $user_id, 
+                                'editor'            => $user_id, 
+                                'edited'            => date("Y-m-d H:i:s"),
                                 'title'             => $params['title'],
                                 'content'           => $params['content'],
                                 'categories_ids'    => $params['tags_ids']

@@ -100,33 +100,33 @@
                                 <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ACTIONS_DELETE' | translate}}
                             </a>                            
                         </div>
-                        <div class="signature" ng-if="question.modifier != 0">
+                        <div class="signature" ng-if="question.editor != 0">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{question.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime">{{'QUESTION_STATS_EDITED' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#/user/profile/{{question.modifier.id}}">
+                                    <a href="#/user/profile/{{question.editor.id}}">
                                         <div class="avatar-wrapper">
-                                            <img ng-src="http://cdn.libravatar.org/avatar/{{question.modifier.hash}}?s=32&d=identicon" alt="" width="32" height="32">
+                                            <img ng-src="http://cdn.libravatar.org/avatar/{{question.editor.hash}}?s=32&d=identicon" alt="" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#/user/profile/{{question.modifier.id}}">{{question.modifier.display_name}}</a>
+                                    <a href="#/user/profile/{{question.editor.id}}">{{question.editor.display_name}}</a>
                                     <div>
-                                        <span class="reputation-score" title="reputation score " dir="ltr">{{question.modifier.reputation}}</span>
+                                        <span class="reputation-score" title="reputation score " dir="ltr">{{question.editor.reputation}}</span>
                                         <span class="badges" title="gold badges">
                                             <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
-                                            <span class="badgecount">{{ question.modifier.count_badges_1 }}</span>
+                                            <span class="badgecount">{{ question.editor.count_badges_1 }}</span>
                                         </span>
                                         <span class="badges" title="silver badges">
                                             <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
-                                            <span class="badgecount">{{ question.modifier.count_badges_2 }}</span>
+                                            <span class="badgecount">{{ question.editor.count_badges_2 }}</span>
                                         </span>
                                         <span class="badges" title="bronze badges">
                                             <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
-                                            <span class="badgecount">{{ question.modifier.count_badges_3 }}</span>
+                                            <span class="badgecount">{{ question.editor.count_badges_3 }}</span>
                                         </span>
                                     </div>
                                 </div>
@@ -135,7 +135,7 @@
                         <div class="signature owner">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime">{{'QUESTION_STATS_ASKED' | translate}} {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="#/user/profile/{{question.creator.id}}">
@@ -374,7 +374,7 @@
                                 <div class="user-info">
                                     <div class="user-action-time">
 
-                                        <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
+                                        <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{'ANSWER_STATS_ANSWERED' | translate}}{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                     </div>
                                     <div class="user-avatar">
                                         <a href="#/user/profile/{{answer.creator.id}}">
