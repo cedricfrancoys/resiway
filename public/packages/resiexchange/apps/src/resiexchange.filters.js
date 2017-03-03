@@ -7,6 +7,13 @@ angular.module('resiexchange')
  };
 })
 
+.filter('size', function () {
+  return function (input, size) {
+    input = input || '';
+    return input.replace(new RegExp('<size>', 'gi'), size);
+  };
+})
+
 .filter("humanizeCount", function() {
     return function(value) {
         if(typeof value == 'undefined' 
