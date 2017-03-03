@@ -1256,6 +1256,18 @@ angular.module('resiexchange')
         }                
     });
 
+    $http.get('http://picasaweb.google.com/data/entry/api/user/'+user.login+'?alt=json'+user.id)
+    .then(
+        function successCallback(response) {
+            var url = response.data['entry']['gphoto$thumbnail']['$t'];
+            url.replace("s64-c", "s<size>-c");
+            alert(url);
+        },
+        function errorCallback(response) {
+
+        }
+    );    
+    
     ctrl.userPost = function($event) {
         var selector = feedback.selector(angular.element($event.target));                   
         action.perform({
