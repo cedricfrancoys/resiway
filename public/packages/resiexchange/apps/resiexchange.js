@@ -2841,7 +2841,11 @@ angular.module('resiexchange')
             });
         };
         
-        ctrl.googleURL = function() {
+        ctrl.avatar.gravatar = 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40';
+        ctrl.avatar.identicon = 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40';
+        ctrl.avatar.google = '';
+        
+        ctrl.getGoogleURL = function() {
             return $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
             .then(
                 function successCallback(response) {
@@ -2854,15 +2858,6 @@ angular.module('resiexchange')
             ); 
         };
 
-        ctrl.gravatarURL = function() {
-            
-            return 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40';
-        };
-
-        ctrl.identiconURL = function() {
-            return 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40'
-        };
-        
         angular.merge(ctrl, {
             updates: {
                 items: -1,
