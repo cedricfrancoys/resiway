@@ -29,9 +29,22 @@
                                         <span class="badge-count">{{ctrl.user.count_badges_3}}</span>
                                     </span>                                    
                                 </div>
+                                <!--
                                 <div ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
                                     <a uib-dropdown class="btn btn-primary btn-block btn-sm" href="#/help/topic/4/comment-modifier-ma-photo-de-profil" target="_blank">modifier ma photo</a>
                                 </div>
+                                -->
+                                
+                                <div class="btn-group" uib-dropdown ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
+                                    <button id="avatar-button" type="button" class="btn btn-primary" uib-dropdown-toggle >
+                                    modifier ma photo <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="avatar-button">
+                                        <li role="menuitem"><a href="#">Action</a></li>
+                                        <li role="menuitem"><a href="#">Another action</a></li>
+                                        <li role="menuitem"><a href="#">Something else here</a></li>
+                                    </ul>
+                                </div>                                
                             </div>
                         </div>
                     </div>
