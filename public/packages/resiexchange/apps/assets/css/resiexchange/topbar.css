@@ -88,12 +88,14 @@
     right: 0;
     vertical-align: top;
     height: 34px;
-    width: 135px;
+    width: 145px;
     line-height: 34px;
     color: lightgrey;
     padding-left: 10px;
     cursor: pointer;
     user-select: none;
+    overflow: hidden;
+    white-space: nowrap;    
 }
 
 .topbar .platform-btn.resilib {

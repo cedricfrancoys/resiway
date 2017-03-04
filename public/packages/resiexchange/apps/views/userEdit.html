@@ -32,6 +32,13 @@
                                             </li>
                                             <li class="divider"></li>
                                             <li role="menuitem">
+                                            <a href ng-click="ctrl.user.avatar_url = ctrl.avatars.libravatar">
+                                                <img ng-src="{{rootCtrl.avatarURL(ctrl.avatars.libravatar, '40')}}" width="40" height="40">
+                                                Libravatar
+                                            </a>
+                                            </li>                                            
+                                            <li class="divider"></li>
+                                            <li role="menuitem">
                                             <a href ng-click="ctrl.user.avatar_url = ctrl.avatars.gravatar">
                                                 <img ng-src="{{rootCtrl.avatarURL(ctrl.avatars.gravatar, '40')}}" width="40" height="40">
                                                 Gravatar
