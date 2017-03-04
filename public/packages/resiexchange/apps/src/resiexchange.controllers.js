@@ -1252,7 +1252,7 @@ angular.module('resiexchange')
     .then(
         function successCallback(response) {
             var url = response.data['entry']['gphoto$thumbnail']['$t'];
-            ctrl.avatar.google = url.replace("/s64-c/", "/")+'?sz=@size';
+            ctrl.avatars.google = url.replace("/s64-c/", "/")+'?sz=@size';
         },
         function errorCallback(response) {
 
