@@ -1,5 +1,6 @@
 {
-    "/question/:id":"/resiexchange.fr#/question/:id",
+    "/resiexchange":"/resiexchange.fr",
+    "/question/:id":"/resiexchange.fr#/question/:id",    
     "/user/confirm/:code":"/resiexchange.fr#/user/confirm/:code",
     "/resiexchange.fr":"?show=resiexchange_main&lang=fr&channel=1",
     "/meta.resiexchange.fr":"?show=resiexchange_main&lang=fr&channel=3",    
