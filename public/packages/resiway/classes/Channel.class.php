@@ -1,5 +1,5 @@
 <?php
-namespace resiexchange;
+namespace resiway;
 
 
 class Channel extends \easyobject\orm\Object {
@@ -11,7 +11,14 @@ class Channel extends \easyobject\orm\Object {
             
             /* text describing the channel */
             'description'			=> array('type' => 'text', 'multilang' => true),
-            
+
+            /* identifiers of the categories in this channel */ 
+            'categories_ids'          => array(
+                                        'type'		    => 'one2many', 
+                                        'foreign_object'=> 'resiway\Category',
+                                        'foreign_field'	=> 'channel_id'
+                                        ),
+                                        
             /* identifiers of the questions in this channel */ 
             'questions_ids'          => array(
                                         'type'		    => 'one2many', 

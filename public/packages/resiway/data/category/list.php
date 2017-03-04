@@ -5,6 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
+use easyobject\orm\PersistentDataManager as PersistentDataManager;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -13,7 +14,12 @@ set_silent(true);
 $params = QNLib::announce(	
 	array(	
     'description'	=>	"Provide all existing categories",
-    'params' 		=>	array(                                    
+    'params' 		=>	array(
+                        'domain'		=> array(
+                                            'description'   => 'Criterias that results have to match (serie of conjunctions)',
+                                            'type'          => 'array',
+                                            'default'       => []
+                                            ),    
                         'order'	        => array(
                                             'description' => 'Field on which sort the categories.',
                                             'type' => 'string', 
@@ -29,9 +35,14 @@ list($result, $error_message_ids) = [true, []];
 try {
     
     $om = &ObjectManager::getInstance();
-  
+
+    // if a channel has been specified in current session, adapt domain to restrict results
+    $pdm = &PersistentDataManager::getInstance();
+    $channel = $pdm->get('channel', 1);
+    if($channel != 1) $params['domain'][] = ['channel_id','=',$channel];
+    
     // retrieve given user
-    $tags_ids = $om->search('resiway\Category', [], $params['order']);
+    $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order']);
     if($tags_ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
     
     $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_path']);

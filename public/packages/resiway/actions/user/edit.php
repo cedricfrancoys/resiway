@@ -28,32 +28,37 @@ $params = QNLib::announce([
                             'type'          => 'string',
                             'default'       => ''
                             ),                            
-        'publicity_mode'	=> array(
-                            'description'   => 'Description of the submitted category.',
+        'publicity_mode'=> array(
+                            'description'   => 'Description of how user name has to be displayed.',
                             'type'          => 'integer', 
                             'default'       => 1
                             ),
-        'language'	=> array(
-                            'description'   => 'User prefered language.',
+        'language'	    => array(
+                            'description'   => 'User preferred language.',
                             'type'          => 'string', 
                             'default'       => 'fr'
                             ),
-        'country'	=> array(
+        'country'	    => array(
                             'description'   => 'Description of the submitted category.',
                             'type'          => 'string',
                             'default'       => ''
                             ),
 
-        'location'	=> array(
+        'location'	    => array(
                             'description'   => 'Description of the submitted category.',
                             'type'          => 'string',
                             'default'       => ''
                             ),
-        'about'     => array(
+        'about'         => array(
                             'description'   => 'User short self description.',
                             'type'          => 'string',
                             'default'       => ''
-                            )                           
+                            ),
+        'avatar_url'    => array(
+                            'description'   => 'URL of user avatar.',
+                            'type'          => 'string',
+                            'required'      => true
+                            )                                 
     ]
 ]);
 
@@ -74,7 +79,7 @@ try {
         $object_id,                                               // $object_id
         [                                                         // $object_fields  
         'verified', 
-        'firstname', 'lastname', 'about',
+        'firstname', 'lastname', 'about', 'avatar_url',
         'publicity_mode', 'language', 'country', 'location'
         ],                                                       
         false,                                                    // $toggle
@@ -88,7 +93,8 @@ try {
                             'language'          => $params['language'],
                             'country'           => $params['country'],
                             'location'          => $params['location'],
-                            'about'             => $params['about']
+                            'about'             => $params['about'],
+                            'avatar_url'        => $params['avatar_url']                            
                        ]);
             
             // read updated user as returned value

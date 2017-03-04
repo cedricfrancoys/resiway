@@ -416,7 +416,12 @@ var resiway = angular.module('resiexchange', [
             case 'resiway\\Category': return '#/category/'+object_id;
             }
         };
-        
+
+        rootCtrl.avatarURL = function(url, size) {
+            var str = new String(url);
+            return str.replace("@size", size);
+        };
+            
         rootCtrl.humanReadable = {
             
             date: function(value) {
@@ -2590,29 +2595,55 @@ angular.module('resiexchange')
     '$window',
     '$filter',
     '$http',
+    '$translate',
     'feedbackService',
     'actionService',
-    function(user, $scope, $window, $filter, $http, feedback, action) {
+    function(user, $scope, $window, $filter, $http, $translate, feedback, action) {
     console.log('userEdit controller');    
     
     var ctrl = this;
 
     ctrl.user = user;    
     ctrl.publicity_mode = {id: 1, text: 'Fullname'};
-
-// todo: translate    
+    
     ctrl.modes = [ 
         {id: 1, text: 'Fullname'}, 
         {id: 2, text: 'Firstname + Lastname inital'}, 
         {id: 3, text: 'Firstname only'}
     ];
-    
-    // @init
-    angular.forEach(ctrl.modes, function(mode) {
-        if(mode.id == ctrl.user.publicity_mode) {
-            ctrl.publicity_mode = {id: mode.id, text: mode.text};                
-        }
+    $translate(['USER_EDIT_PUBLICITY_MODE_FULLNAME','USER_EDIT_PUBLICITY_MODE_FIRSTNAME_L','USER_EDIT_PUBLICITY_MODE_FIRSTNAME'])
+    .then(function (translations) {
+        ctrl.modes[0].text = translations['USER_EDIT_PUBLICITY_MODE_FULLNAME'];
+        ctrl.modes[1].text = translations['USER_EDIT_PUBLICITY_MODE_FIRSTNAME_L'];
+        ctrl.modes[2].text = translations['USER_EDIT_PUBLICITY_MODE_FIRSTNAME'];        
+    })
+    .then(function() {
+        angular.forEach(ctrl.modes, function(mode) {
+            if(mode.id == ctrl.user.publicity_mode) {
+                ctrl.publicity_mode = {id: mode.id, text: mode.text};                
+            }
+        });        
     });
+    
+    ctrl.avatars = {
+        gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
+        identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
+        google: ''
+    };
+        
+    // @init
+    // retrieve GMail avatar, if any
+    $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
+    .then(
+        function successCallback(response) {
+            var url = response.data['entry']['gphoto$thumbnail']['$t'];
+            ctrl.avatar.google = url.replace("/s64-c/", "/")+'?sz=@size';
+        },
+        function errorCallback(response) {
+
+        }
+    );     
+
     
     $scope.$watchGroup([
             function(){return ctrl.publicity_mode;},
@@ -2651,7 +2682,8 @@ angular.module('resiexchange')
                 language: ctrl.user.language,
                 country: ctrl.user.country,
                 location: ctrl.user.location,
-                about: ctrl.user.about   
+                about: ctrl.user.about,
+                avatar_url: ctrl.user.avatar_url
             },
             // scope in wich callback function will apply 
             scope: $scope,
@@ -2814,14 +2846,18 @@ angular.module('resiexchange')
         ctrl.answers = -1;
         ctrl.favorites = -1;    
 
+        
         var defaults = {
             total: -1,
             currentPage: 1,
         };
         
+        
+        // @init
         // acknowledge user profile view (so far, user data have been loaded but nothing indicated a profile view)
         $http.get('index.php?do=resiway_user_profileview&id='+user.id);
 
+        
         ctrl.load = function(config) {
             // reset objects list (triggers loader display)
             config.items = -1;          
@@ -2841,25 +2877,6 @@ angular.module('resiexchange')
             });
         };
         
-        ctrl.avatar = {
-            gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40',
-            identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40&d=identicon',
-            google: ''
-        };
-        
-        ctrl.getGoogleURL = function() {
-            $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
-            .then(
-                function successCallback(response) {
-                    var url = response.data['entry']['gphoto$thumbnail']['$t'];
-                    ctrl.avatar.google = url.replace("/s64-c/", "/")+'?sz=40';
-                },
-                function errorCallback(response) {
-
-                }
-            ); 
-        };
-
         angular.merge(ctrl, {
             updates: {
                 items: -1,
@@ -2937,7 +2954,7 @@ angular.module('resiexchange')
 
 
         // @model             
-        $scope.remember = false;
+        $scope.remember = true;
         $scope.username = '';
         $scope.password = '';
         $scope.firstname = '';

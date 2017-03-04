@@ -119,6 +119,7 @@ class ResiAPI {
                 'last_login',
                 'display_name',
                 'hash',
+                'avatar_url',
                 'about',
                 'language', 
                 'country', 

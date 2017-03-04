@@ -14,14 +14,18 @@ angular.module('resiexchange')
         ctrl.answers = -1;
         ctrl.favorites = -1;    
 
+        
         var defaults = {
             total: -1,
             currentPage: 1,
         };
         
+        
+        // @init
         // acknowledge user profile view (so far, user data have been loaded but nothing indicated a profile view)
         $http.get('index.php?do=resiway_user_profileview&id='+user.id);
 
+        
         ctrl.load = function(config) {
             // reset objects list (triggers loader display)
             config.items = -1;          
@@ -41,25 +45,6 @@ angular.module('resiexchange')
             });
         };
         
-        ctrl.avatar = {
-            gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=40',
-            identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?s=40&d=identicon',
-            google: ''
-        };
-        
-        ctrl.getGoogleURL = function() {
-            $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
-            .then(
-                function successCallback(response) {
-                    var url = response.data['entry']['gphoto$thumbnail']['$t'];
-                    ctrl.avatar.google = url.replace("/s64-c/", "/")+'?sz=40';
-                },
-                function errorCallback(response) {
-
-                }
-            ); 
-        };
-
         angular.merge(ctrl, {
             updates: {
                 items: -1,

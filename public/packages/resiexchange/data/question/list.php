@@ -5,9 +5,16 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
+use easyobject\orm\PersistentDataManager as PersistentDataManager;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
+
+/*
+ @actions   this is a data provider: no change is made to the stored data
+ @rights    everyone has read access on these data
+ @returns   list of questions matching given criteria
+*/
 
 // announce script and fetch parameters values
 $params = QNLib::announce(	
@@ -50,11 +57,7 @@ $params = QNLib::announce(
 	)
 );
 
-/*
- @actions   this is a data provider: no change is made to the stored data
- @rights    everyone has read access on these data
- @returns   list of questions matching given criteria
-*/
+
 
 
 list($result, $error_message_ids, $total) = [[], [], $params['total']];
@@ -64,6 +67,11 @@ try {
     $om = &ObjectManager::getInstance();
 
     // 0) retrieve matching questions identifiers
+
+    // if a channel has been specified in current session, adapt domain to restrict results
+    $pdm = &PersistentDataManager::getInstance();
+    $channel = $pdm->get('channel', 1);
+    if($channel != 1) $params['domain'][] = ['channel_id','=',$channel];
     
     // total is not knwon yet
     if($params['total'] < 0) {        

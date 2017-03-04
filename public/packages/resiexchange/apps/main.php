@@ -18,14 +18,20 @@ $params = QNLib::announce(
                                     'description'   => 'Language in which UI has to be displayed.',
                                     'type'          => 'string',
                                     'default'       => 'fr'
-                                    )
+                                    ),
+                        'channel'	=> array(
+                                    'description'   => 'Channel from which to request data.',
+                                    'type'          => 'integer',
+                                    'default'       => 1
+                                    )                                    
                         )
     )
 );
 
 $pdm = &PersistentDataManager::getInstance();
-// assign specified language to current session
-$pdm->set('lang', $params['lang']);    
+// assign specified language and channel to current session
+$pdm->set('lang', $params['lang']);
+$pdm->set('channel', $params['channel']);
         
 if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
     ResiAPI::userSign(json_decode($_COOKIE['username']), json_decode($_COOKIE['password']));

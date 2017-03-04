@@ -30,7 +30,7 @@ angular.module('resiexchange')
 
 
         // @model             
-        $scope.remember = false;
+        $scope.remember = true;
         $scope.username = '';
         $scope.password = '';
         $scope.firstname = '';

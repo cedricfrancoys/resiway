@@ -18,13 +18,12 @@ class Question extends \easyobject\orm\Object {
             /* last time question was edited.
             (we need this field to make a distinction with ORM writes using special field 'modified' */
             'edited'				=> array('type' => 'datetime'),
-            
-            
+                        
             /* language into which the question is asked */
             'lang'                  => array('type' => 'string'),
 
             /* channel of the current question ('default', 'meta', 'help', ...) */
-            'channel_id'            => array('type' => 'many2one', 'foreign_object'=> 'resiexchange\Channel'),
+            'channel_id'            => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
             
             /* subject of the question */
             'title'				    => array('type' => 'string', 'onchange' => 'resiexchange\Question::onchangeTitle'),
@@ -108,7 +107,7 @@ class Question extends \easyobject\orm\Object {
     
     public static function getDefaults() {
         return array(
-             'channel'          => function() { return 1; },
+             'channel_id'       => function() { return 1; },
              'lang'             => function() { return 'fr'; },
              'editor'           => function() { return 0; },             
              'count_views'      => function() { return 0; },

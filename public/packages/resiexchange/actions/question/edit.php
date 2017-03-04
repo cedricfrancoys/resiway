@@ -6,6 +6,7 @@ require_once('../resi.api.php');
 use config\QNLib as QNLib;
 use html\HTMLPurifier as HTMLPurifier;
 use easyobject\orm\DataAdapter as DataAdapter;
+use easyobject\orm\PersistentDataManager as PersistentDataManager;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -74,12 +75,15 @@ try {
         use ($params) {    
         
             if($object_id == 0) {
+                $pdm = &PersistentDataManager::getInstance();                
+                
                 // create a new question + write given value
                 $object_id = $om->create('resiexchange\Question', [ 
                                 'creator'           => $user_id,     
                                 'title'             => $params['title'],
                                 'content'           => $params['content'],
-                                'categories_ids'    => $params['tags_ids']                            
+                                'categories_ids'    => $params['tags_ids'],
+                                'channel_id'        => $pdm->get('channel', 1)
                               ]);
 
                 if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);

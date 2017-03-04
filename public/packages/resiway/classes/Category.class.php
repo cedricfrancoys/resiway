@@ -8,6 +8,9 @@ class Category extends \easyobject\orm\Object {
         return array(
             /* all objects must define a 'name' column (default is id) */
             'name'				=> array('type' => 'alias', 'alias' => 'title'),
+
+            /* channel of the current question ('default', 'meta', 'help', ...) */
+            'channel_id'        => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
             
             'title'             => array('type' => 'string', 'multilang' => true, 'onchange' => 'resiway\Category::onchangeTitle'),
             
@@ -51,6 +54,12 @@ class Category extends \easyobject\orm\Object {
                                     
                                     
                                    
+        );
+    }
+    
+    public static function getDefaults() {
+        return array(
+             'channel_id'          => function() { return 1; }
         );
     }
     

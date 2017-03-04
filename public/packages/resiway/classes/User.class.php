@@ -28,6 +28,10 @@ class User extends \easyobject\orm\Object {
                                     'store'         => true,
                                     'function'      => 'resiway\User::getHash'                                    
                                     ),
+                                    
+            /* URL to display user avatar (holding string '<size>' to be replaced with display size) */
+            'avatar_url'        => array('type' => 'string'),
+                                    
             /*
              Possible values:
              1 : Full name (ex.: Cédric Françoys) [default]

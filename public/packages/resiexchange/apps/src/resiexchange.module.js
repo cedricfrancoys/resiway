@@ -286,7 +286,12 @@ var resiway = angular.module('resiexchange', [
             case 'resiway\\Category': return '#/category/'+object_id;
             }
         };
-        
+
+        rootCtrl.avatarURL = function(url, size) {
+            var str = new String(url);
+            return str.replace("@size", size);
+        };
+            
         rootCtrl.humanReadable = {
             
             date: function(value) {
