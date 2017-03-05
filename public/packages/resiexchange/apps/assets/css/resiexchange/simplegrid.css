@@ -22,6 +22,7 @@ body {
 }
 
 .grid {
+    position: relative;
 	width: 100%;
 	max-width: 1140px;
 	min-width: 755px;

@@ -1606,7 +1606,7 @@ angular.module('resiexchange')
             $scope.recoverAlerts.splice(index, 1);
         };
             
-        ctrl.signIn = function () {       
+        ctrl.signIn = function () {
             if($scope.username.length == 0 || $scope.password.length == 0) {
                 if($scope.username.length == 0) {
                     $scope.signInAlerts.push({ type: 'warning', msg: 'Please, provide your email as identifier.' });                
@@ -1616,12 +1616,14 @@ angular.module('resiexchange')
                 }
             }
             else {
+                ctrl.running = true;                
                 // form is complete
                 ctrl.closeSignInAlerts();                
                 authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
                 // attempt to log the user in
                 authenticationService.authenticate().then(
                 function successHandler(data) {
+                    ctrl.running = false;
                     // if some action is pending, return to URL where it occured
                     if($rootScope.pendingAction
                     && typeof $rootScope.pendingAction.next_path != 'undefined') {
@@ -1632,6 +1634,7 @@ angular.module('resiexchange')
                     }
                 },
                 function errorHandler() {
+                    ctrl.running = false;
                     authenticationService.clearCredentials();
                     $scope.signInAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
                 });        
@@ -1639,7 +1642,6 @@ angular.module('resiexchange')
         };
         
         ctrl.signUp = function() {
-            ctrl.running = true;
             if($scope.username.length == 0 || $scope.firstname.length == 0) {
                 if($scope.firstname.length == 0) {
                     $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
@@ -1649,6 +1651,7 @@ angular.module('resiexchange')
                 }
             }
             else {
+                ctrl.running = true;
                 ctrl.closeSignUpAlerts();                
                 authenticationService.register($scope.username, $scope.firstname).then(
                 function successHandler(data) {
@@ -1686,10 +1689,12 @@ angular.module('resiexchange')
                 $scope.recoverAlerts.push({ type: 'warning', msg: 'Please, provide your email.' });
             }
             else {
+                ctrl.running = true;
                 ctrl.closeRecoverAlerts();
                 $http.get('index.php?do=resiway_user_passwordrecover&email='+$scope.email)
                 .then(
                 function successCallback(response) {
+                    ctrl.running = false;
                     var data = response.data;
                     if(typeof response.data.result != 'undefined'
                     && response.data.result === true) {
@@ -1697,6 +1702,7 @@ angular.module('resiexchange')
                     }
                 },
                 function errorCallback() {
+                    ctrl.running = false;
                     var error_id = data.error_message_ids[0];     
                     // server fault, user not verified, ...
                     $scope.recoverAlerts = [{ type: 'danger', msg: error_id }];

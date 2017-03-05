@@ -504,7 +504,7 @@
             
         </div>
         
-        <div class="user-answer" ng-hide="user.id && question.history['resiexchange_question_answer']">
+        <div id="your-answer" class="user-answer" ng-hide="user.id && question.history['resiexchange_question_answer']">
             <div class="subheader">
                 <h2>{{ 'QUESTION_USER_ANSWER' | translate}}</h2>
             </div>
@@ -571,5 +571,16 @@
 			    </div>
             </div>
         </div>
+    </div>
+    <div class="col-4-12 answer-help">
+        <div class="bd-callout bd-callout-info">
+            <h4 style="margin-bottom: 18px;">Comment répondre ?</h4>
+            Assurez-vous bien de <strong>répondre à la question</strong>. Donnez des détail et partagez vos recherches.
+            <br><br>
+            Éviter de demander de l'aide ou des clarifications, ou de réagir aux réponses précédentes.
+            <br><br>
+            Si vous avez une vision différente de l'auteur de la question, étayez votre point de vue en renseignant des références ou votre expérience personnelle.<br>
+            <div style="text-align: right; margin-top: 30px;"><a href="#/help/topic/1/comment-ecrire-une-bonne-reponse" target="_blank">Conseils pour écrire une bonne réponse »</a></div>
+        </div>       
     </div>
 </div>

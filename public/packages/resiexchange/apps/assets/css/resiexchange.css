@@ -450,6 +450,13 @@ input[type="text"] {
     margin-bottom: 5px;
 }
 
+@media (min-width: 768px) {
+    .answer-help {
+        position: absolute; 
+        right: 0; 
+        bottom: 50px;        
+    }
+}
 
 .comments {
     width: 100%;
@@ -853,6 +860,7 @@ body {
 }
 
 .grid {
+    position: relative;
 	width: 100%;
 	max-width: 1140px;
 	min-width: 755px;
