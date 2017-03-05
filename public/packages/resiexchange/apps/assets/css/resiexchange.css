@@ -403,7 +403,7 @@ input[type="text"] {
 }
 
 .badges .badge1 {
-    color: gold;
+    color: orange;
 
 }
 
@@ -412,7 +412,7 @@ input[type="text"] {
 }
 
 .badges .badge3 {
-    color: orange;
+    color: gold;
 }
 
 
@@ -1744,8 +1744,8 @@ body {
 }
 
 .user-profile .user-badge.badge1  {
-    background: #fff8e2;
-    border-color: #ece3c8
+    background: #f9ebe1;
+    border-color: #f1decc;
 }
 
 .user-profile .user-badge.badge2  {
@@ -1754,8 +1754,8 @@ body {
 }            
 
 .user-profile .user-badge.badge3  {
-    background: #f9ebe1;
-    border-color: #f1decc
+    background: #fff8e2;
+    border-color: #ece3c8; 
 }
 
 .user-profile .user-badge .badge-count {
