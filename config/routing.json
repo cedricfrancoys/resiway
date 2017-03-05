@@ -1,4 +1,5 @@
 {
+    "/participate":"?get=resiway.org_participate",
     "/resiexchange":"/resiexchange.fr",
     "/question/:id":"/resiexchange.fr#/question/:id",    
     "/user/confirm/:code":"/resiexchange.fr#/user/confirm/:code",
