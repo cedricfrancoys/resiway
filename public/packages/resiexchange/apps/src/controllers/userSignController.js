@@ -154,7 +154,9 @@ angular.module('resiexchange')
                     }
                 },
                 function errorCallback() {
-                    // something went wrong server-side
+                    var error_id = data.error_message_ids[0];     
+                    // server fault, user not verified, ...
+                    $scope.recoverAlerts = [{ type: 'danger', msg: error_id }];
                 });                  
             }
         };    
