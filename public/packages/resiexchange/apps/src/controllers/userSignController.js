@@ -99,6 +99,7 @@ angular.module('resiexchange')
         };
         
         ctrl.signUp = function() {
+            ctrl.running = true;
             if($scope.username.length == 0 || $scope.firstname.length == 0) {
                 if($scope.firstname.length == 0) {
                     $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
@@ -111,6 +112,7 @@ angular.module('resiexchange')
                 ctrl.closeSignUpAlerts();                
                 authenticationService.register($scope.username, $scope.firstname).then(
                 function successHandler(data) {
+                    ctrl.running = false;
                     authenticationService.authenticate().then(
                     function successHandler(data) {
                         // actively request emails
@@ -130,6 +132,7 @@ angular.module('resiexchange')
                     });  
                 },
                 function errorHandler(data) {
+                    ctrl.running = false;
                     var error_id = data.error_message_ids[0];     
                     // server fault, email already registered, ...
                     $scope.signUpAlerts = [{ type: 'danger', msg: error_id }];
