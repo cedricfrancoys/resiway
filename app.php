@@ -90,8 +90,6 @@ $accepted_requests = array(
 						'show'	=> array('type' => 'application',	'dir' => 'apps')		// output rendering information (html/js)
 					);
 
-// load core config (default values for mandatory parameters)
-include_once('packages/core/config.inc.php');
 
 // check current request for package specification
 foreach($accepted_requests as $request_key => $request_conf) {
@@ -113,7 +111,9 @@ if(config\defined('DEFAULT_PACKAGE')) {
 
 // if no request is specified, set DEFAULT_PACKAGE/DEFAULT_APP as requested script
 if(count(array_intersect_key($accepted_requests, $_REQUEST)) == 0) {
-	if(config\defined('DEFAULT_PACKAGE') && config\defined('DEFAULT_APP')) $_REQUEST['show'] = config\config('DEFAULT_PACKAGE').'_'.config\config('DEFAULT_APP');
+	if(config\defined('DEFAULT_PACKAGE') && config\defined('DEFAULT_APP')) {
+        $_REQUEST['show'] = config\config('DEFAULT_PACKAGE').'_'.config\config('DEFAULT_APP');
+    }
 }
 
 // try to include requested script

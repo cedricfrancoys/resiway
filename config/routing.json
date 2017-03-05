@@ -4,5 +4,6 @@
     "/user/confirm/:code":"/resiexchange.fr#/user/confirm/:code",
     "/resiexchange.fr":"?show=resiexchange_main&lang=fr&channel=1",
     "/meta.resiexchange.fr":"?show=resiexchange_main&lang=fr&channel=3",    
-    "/api/categories":"?get=resiway_category_list&api=1.0"
+    "/api/categories":"?get=resiway_category_list&api=1.0",
+    "/api/questions":"?get=resiexchange_question_list&api=1.0"
 }

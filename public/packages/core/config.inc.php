@@ -82,10 +82,10 @@ define('NUMERIC_DECIMAL_PRECISION', 2);
 /**
 * Email sending
 */
-define('SMTP_HOST',				'smtp.gmail.com');
-define('SMTP_ACCOUNT_USERNAME',	'example');
-define('SMTP_ACCOUNT_PASSWORD',	'password');
-define('SMTP_ACCOUNT_EMAIL',	'example@gmail.com');
+define('EMAIL_SMTP_HOST',				'smtp.gmail.com');
+define('EMAIL_SMTP_ACCOUNT_USERNAME',	'example');
+define('EMAIL_SMTP_ACCOUNT_PASSWORD',	'password');
+define('EMAIL_SMTP_ACCOUNT_EMAIL',	'example@gmail.com');
 
 
 /**

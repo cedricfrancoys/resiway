@@ -73,12 +73,12 @@ try {
                             
     $body = $template->getHtml();
 
-    $transport = Swift_SmtpTransport::newInstance(MAIL_SMTP_HOST, MAIL_SMTP_PORT, "ssl")
-                ->setUsername(MAIL_USERNAME)
-                ->setPassword(MAIL_PASSWORD);
+    $transport = Swift_SmtpTransport::newInstance(EMAIL_SMTP_HOST, EMAIL_SMTP_PORT, "ssl")
+                ->setUsername(EMAIL_SMTP_ACCOUNT_USERNAME)
+                ->setPassword(EMAIL_SMTP_ACCOUNT_PASSWORD);
                 
     $message = Swift_Message::newInstance($subject)
-                ->setFrom(array(MAIL_USERNAME => 'ResiWay'))
+                ->setFrom(array(EMAIL_SMTP_ACCOUNT_USERNAME => 'ResiWay'))
                 ->setTo(array($to))
                 ->setBody($body)
                 ->setContentType("text/html");

@@ -40,12 +40,12 @@ try {
 
                 if(!isset($params['subject']) || !isset($params['body'])) continue;
                 
-                $transport = Swift_SmtpTransport::newInstance(MAIL_SMTP_HOST, MAIL_SMTP_PORT, "ssl")
-                            ->setUsername(MAIL_USERNAME)
-                            ->setPassword(MAIL_PASSWORD);
+                $transport = Swift_SmtpTransport::newInstance(EMAIL_SMTP_HOST, EMAIL_SMTP_PORT, "ssl")
+                            ->setUsername(EMAIL_SMTP_ACCOUNT_USERNAME)
+                            ->setPassword(EMAIL_SMTP_ACCOUNT_PASSWORD);
 
                 $message = Swift_Message::newInstance($params['subject'])
-                            ->setFrom(array(MAIL_USERNAME => 'ResiWay'))
+                            ->setFrom(array(EMAIL_SMTP_ACCOUNT_USERNAME => 'ResiWay'))
                             ->setTo(array($user_data['login']))
                             // some webmail require a text/plain part as default content
                             ->setBody($params['body'])
