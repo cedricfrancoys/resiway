@@ -217,7 +217,7 @@ class ResiAPI {
         $om = &ObjectManager::getInstance();
         // in case we decide to send emails, here is the place to add something to user queue
         return $om->create('resiway\UserNotification', [  
-            'user_id'   => $uid, 
+            'user_id'   => $user_id, 
             'title'     => $title, 
             'content'   => $content
         ]);        
