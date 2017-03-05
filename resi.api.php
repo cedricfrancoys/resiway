@@ -506,7 +506,7 @@ class ResiAPI {
         
         // force re-computing values of impacted badges
         $om->write('resiway\UserBadge', $users_badges_ids, array('status' => null));
-        $res = $om->read('resiway\UserBadge', $users_badges_ids, ['user_id', 'badge_id', 'status', 'badge_id.name']);
+        $res = $om->read('resiway\UserBadge', $users_badges_ids, ['user_id', 'badge_id', 'status', 'badge_id.type', 'badge_id.name']);
         if($res < 0) return $notifications; 
         
         // check for newly awarded badges
@@ -517,8 +517,11 @@ class ResiAPI {
         
         // mark all newly awarded badges at once
         $om->write('resiway\UserBadge', array_keys($res), array('awarded' => '1'));
+        // keep track of user badges-counts update
+        $bagdes_increment = array(1 => 0, 2 => 0, 3 => 0);
         // do some treatment to inform user that a new badge has been awarded to him
         foreach($res as $user_badge_id => $user_badge) {
+            ++$bagdes_increment[ $user_badge['badge_id.type'] ];
             $uid = $user_badge['user_id'];
             $bid = $user_badge['badge_id'];
 // todo : make this multilang and manage email sending according to user settings            
@@ -529,7 +532,18 @@ class ResiAPI {
             if($notification_id > 0) {
                 $notifications[] = ['id' => $notification_id, 'title' => "new badge awarded"];
             }                       
-        }   
+        }
+        // update user badges-counts, if any
+        if(count($res)) {            
+            $res = $om->read('resiway\User', $user_id, ['count_badges_1','count_badges_2','count_badges_3']);
+            if($res > 0 && isset($res[$user_id])) {
+                $om->write('resiway\User', $user_id, [ 
+                                                        'count_badges_1'=> $res[$user_id]['count_badges_1']+$bagdes_increment[1],
+                                                        'count_badges_2'=> $res[$user_id]['count_badges_2']+$bagdes_increment[2],
+                                                        'count_badges_3'=> $res[$user_id]['count_badges_3']+$bagdes_increment[3] 
+                                                     ]);
+            }
+        }        
 
         return $notifications;
     }

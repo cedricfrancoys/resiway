@@ -11,7 +11,7 @@ class Badge extends \easyobject\orm\Object {
             'name'			    => array('type' => 'string', 'multilang' => true),
             'description'       => array('type' => 'string', 'multilang' => true),
             
-            /* category of badge : 1, 2 or 3 - for gold, silver, gold / badge_1, badge_2, badge_3 */
+            /* category of badge : 1, 2 or 3 - for bronze, silver, gold / badge_1, badge_2, badge_3 */
             'type'              => array('type' => 'integer'),
 
             /* list of actions that might trigger badge attribution */
