@@ -1133,10 +1133,11 @@ angular.module('resiexchange')
 
 .controller('userConfirmController', [
     '$scope',
+    '$rootScope',
     '$routeParams',
     '$http',
     'authenticationService',
-    function($scope, $routeParams, $http, authenticationService) {
+    function($scope, $rootScope, $routeParams, $http, authenticationService) {
         console.log('userConfirm controller');
 
         var ctrl = this;
@@ -1160,6 +1161,9 @@ angular.module('resiexchange')
             if(typeof response.data.result != 'undefined'
             && response.data.result === true) {
                 ctrl.verified = data.result;
+                if(typeof data.notifications != 'undefined' && data.notifications.length > 0) {                
+                    $rootScope.user.notifications = $rootScope.user.notifications.concat(data.notifications);
+                }
                 // we should now be able to authenticate (session is initiated)
                 authenticationService.authenticate();                
             }
