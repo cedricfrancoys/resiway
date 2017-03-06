@@ -94,7 +94,7 @@ foreach($classes_list as $class) {
 			$type = $types_associations[$description['type']];
 			if($field == 'id') $result[] = "`{$field}` {$type} NOT NULL AUTO_INCREMENT,";
 			elseif(in_array($field, array('creator','modifier','published','deleted'))) $result[] = "`{$field}` {$type} NOT NULL DEFAULT '0',";
-			else $result[] = "`{$field}` {$type} NOT NULL,";
+			else $result[] = "`{$field}` {$type},";
 		}
 		else if($description['type'] == 'function' && isset($description['store']) && $description['store']) {
 			$type = $types_associations[$description['result_type']];

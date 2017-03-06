@@ -7,7 +7,7 @@ use config\QNLib as QNLib;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
 
 // force silent mode (debug output would corrupt json data)
-set_silent(true);
+set_silent(false);
 
 // announce script and fetch parameters values
 $params = QNLib::announce([
