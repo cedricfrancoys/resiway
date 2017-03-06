@@ -87,12 +87,13 @@ try {
             }
             
             // read created category as returned value
-            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'description', 'parent_id', 'path', 'parent_path']);
+            $res = $om->read($object_class, $object_id, ['creator', 'created', 'channel_id', 'title', 'description', 'parent_id', 'path', 'parent_path']);
             if($res > 0) {
                 $result = array(
                                 'id'                => $object_id,
                                 'creator'           => ResiAPI::loadUserPublic($user_id), 
                                 'created'           => $res[$object_id]['created'], 
+                                'channel_id'        => $res[$object_id]['channel_id'],                                 
                                 'title'             => $res[$object_id]['title'],                             
                                 'description'       => $res[$object_id]['description'],
                                 'path'              => $res[$object_id]['path'],                                 
