@@ -38,8 +38,7 @@ try {
 
     // if a channel has been specified in current session, adapt domain to restrict results
     $pdm = &PersistentDataManager::getInstance();
-    $channel = $pdm->get('channel', 1);
-    $params['domain'][] = ['channel_id','=',$channel];
+    $params['domain'][] = ['channel_id','=', $pdm->get('channel', 1)];
     
     // retrieve given user
     $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order']);

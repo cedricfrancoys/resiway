@@ -67,7 +67,11 @@ input[type="text"] {
     overflow: hidden;
 }    
 
-
+.list-noindent {
+    padding-left: 0;
+    /* list-style-position: inside; */
+    margin-left: 1em;
+}    
 
 /* page */
 
