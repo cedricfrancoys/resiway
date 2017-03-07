@@ -1,4 +1,23 @@
 <?php
+/* resi.api.php - library holding global functions for controllers of the resiway platform.
+
+    This file is part of the resiway program <http://www.github.com/cedricfrancoys/resiway>
+    Copyright (C) ResiWay.org, 2017
+    Some Right Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3, or (at your option)
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, see <http://www.gnu.org/licenses/>
+*/
 use easyobject\orm\ObjectManager as ObjectManager;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
 use easyobject\orm\DataAdapter as DataAdapter;
@@ -37,7 +56,19 @@ class ResiAPI {
         $config->set('HTML.AllowedAttributes',  array('a.href', 'img.src'));
         return $config;
     }
-
+    
+    /**
+    * Retrieves resiway-app current revision identifier.
+    *
+    * @return   string
+    */
+    public static function currentRevision() {
+        $file = trim(explode(' ', file_get_contents('../.git/HEAD'))[1]);
+        $hash = substr(file_get_contents("../.git/$file"), 0, 7);
+        $time = filemtime ('../.git/index');
+        $date = date("Y.m.d", $time);
+        return "$date.$hash";
+    }
     
     public static function credentialsDecode($code) {
         // convert base64url to base64
@@ -51,7 +82,7 @@ class ResiAPI {
         return str_replace(['+','/'],['-', '_'], $code);
     }
     
-// todo
+// todo: complete
     public static function makeLink($object_class, $object_Id) {
         $link = '';
         switch($object_class) {

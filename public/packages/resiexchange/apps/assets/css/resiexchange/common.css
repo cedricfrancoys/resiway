@@ -67,11 +67,15 @@ input[type="text"] {
     overflow: hidden;
 }    
 
+/* styles bootstrap-like that might be defined in further bootstrap versions */
 .list-noindent {
     padding-left: 0;
     /* list-style-position: inside; */
     margin-left: 1em;
 }    
+.text-big {
+    font-size: 125%;
+}
 
 /* page */
 
@@ -139,4 +143,7 @@ input[type="text"] {
 
 #footer p {
     text-align: center;
+}
+#footer a:hover {
+    color: inherit !important;
 }

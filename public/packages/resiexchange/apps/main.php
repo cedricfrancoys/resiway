@@ -1,4 +1,11 @@
 <?php
+/* main.php - default app for resiexchange platform.
+
+    This file is part of the resiway program <http://www.github.com/cedricfrancoys/resiway>
+    Copyright (C) ResiWay.org, 2017
+    Some Right Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
+*/
+
 // Dispatcher (index.php) is in charge of setting the context and should include easyObject library
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 use config\QNLib as QNLib;
@@ -113,6 +120,8 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
                 <div class="container col-1-1">
                     <!-- footer -->
                     <?php echo file_get_contents("packages/resiexchange/apps/views/footer.html"); ?>
+                    <span class="small">ResiWay.org is run by <a href="https://www.github.com/cedricfrancoys/resiway">resiway</a> open source software released under <a href="http://www.gnu.org/licenses/">GNU GPL 3 license</a></span><br />
+                    <span class="small">rev <?php echo ResiAPI::currentRevision(); ?></span>                    
                 </div>
             </div>
         </div>    
