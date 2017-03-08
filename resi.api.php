@@ -46,7 +46,7 @@ class ResiAPI {
         // clean HTML input html
         // strict cleaning: remove non-standard tags and attributes    
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('URI.Base',                'http://www.resiway.gdn/');
+        $config->set('URI.Base',                'http://www.resiway.org/');
         $config->set('URI.MakeAbsolute',        true);                  // make all URLs absolute using the base URL set above
         $config->set('AutoFormat.RemoveEmpty',  true);                  // remove empty elements
         $config->set('HTML.Doctype',            'XHTML 1.0 Strict');    // valid XML output

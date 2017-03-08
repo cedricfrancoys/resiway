@@ -171,7 +171,7 @@ angular.module('resiexchange')
         /**
         * User related routes
         */
-        .when('/user/edit-current', {
+        .when('/user/current/edit', {
             templateUrl : templatePath+'userEdit.html',
             controller  : ['$location', 'authenticationService', function($location, authenticationService) {
                 authenticationService.userId().then(
