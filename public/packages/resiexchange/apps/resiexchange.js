@@ -1321,8 +1321,8 @@ angular.module('resiexchange')
 .filter('customDropdownFilter', ['$sce', 'oiSelectEscape', function($sce, oiSelectEscape) {
     return function(label, query, item) {
         var html;
-        var label = item.title.toString();
-        var path  = item.path.toString();
+        var label = new String(item.title);
+        var path  = new String(item.path);
         if (query.length > 0 || angular.isNumber(query)) {
             query = oiSelectEscape(query);
             html = label.replace(new RegExp(query, 'gi'), '<strong>$&</strong>') + ' <span style="color: grey; font-style: italic; font-size: 80%;">('+ path.replace(new RegExp(query, 'gi'), '<strong>$&</strong>') + ')</span>';
