@@ -15,9 +15,11 @@ angular.module('resiexchange')
 
         // @view
         $scope.categories = angular.extend({
-                                id: 0,
-                                title: '',
-                                description: ''
+                                "id": 0,
+                                "title": '',
+                                "description": '',
+                                "path": '',
+                                "parent-path": ''
                             }, 
                             categories); 
         

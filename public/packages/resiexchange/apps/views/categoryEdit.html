@@ -28,8 +28,9 @@
                     <div class="control-group">
                         <label for="input01" class="control-label">{{'CATEGORY_EDIT_FIELDS_PARENT' | translate}}</label>
                         <div class="controls">
+                        <!-- alternate display (but sorting before grouping): oi-options="item.path group by item.parent_path for item in categories" -->
                             <oi-select
-                                        oi-options="item.path group by item.parent_path for item in categories"
+                                        oi-options="item.path for item in categories"
                                         ng-model="category.parent"
                                         oi-select-options="{
                                             searchFilter: 'customSearchFilter',
