@@ -119,6 +119,23 @@ angular.module('resiexchange')
     };
 }])
 
+.service('routeUserCurrentProvider', ['routeObjectProvider', '$rootScope', function(routeObjectProvider, $rootScope) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_user&id='+$rootScope.user.id)
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return {};
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
 .service('routeHelpTopicProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
     this.load = function() {
         return routeObjectProvider.provide('resiexchange_help_topic')

@@ -180,6 +180,15 @@ angular.module('resiexchange')
                 }]
             }        
         })
+        .when('/user/edit/current', {
+            templateUrl : templatePath+'userEdit.html',
+            controller  : 'userEditController as ctrl',
+            resolve     : {
+                user: ['routeUserCurrentProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })        
         .when('/user/profile/:id/:name?', {
             templateUrl : templatePath+'userProfile.html',
             controller  : 'userProfileController as ctrl',
