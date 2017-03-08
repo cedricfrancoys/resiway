@@ -412,14 +412,14 @@ class ResiAPI {
                        ]);
         // notify users if there is any reputation change 
         if($impact['user']['increment'] != 0) {
-            self::notifyUser($uid, 
+            self::notifyUser($user_id, 
                             "reputation updated", 
                             sprintf("%d points", $impact['user']['increment'])
                             );
             
         }
         if($impact['author']['increment'] != 0) {
-            self::notifyUser($uid, 
+            self::notifyUser($user_id, 
                             "reputation updated", 
                             sprintf("%d points", $impact['author']['increment'])
                             );

@@ -69,7 +69,7 @@ class DataAdapter {
             };
             $adapter['text']['ui']['orm'] =	function($value) {                    
                     // return htmlspecialchars($value);
-                    return $valeu;
+                    return $value;
             };
             $adapter['short_text']['ui']['orm'] = $adapter['text']['ui']['orm'];
             $adapter['string']['ui']['orm'] = $adapter['text']['ui']['orm'];
