@@ -729,7 +729,6 @@ angular.module('resiexchange')
         $auth.username = '';
         $auth.password = '';
         
-        // @private
         this.userId = function() {
             var deferred = $q.defer();
             // attempt to log the user in
@@ -749,7 +748,6 @@ angular.module('resiexchange')
             return deferred.promise;            
         };
             
-        // @private
         this.userData = function(user_id) {
             var deferred = $q.defer();
             // attempt to retrieve user data
@@ -778,7 +776,6 @@ angular.module('resiexchange')
         *  in the sign controller
         *  in the register controller
         *
-        * @public
         */
         this.setCredentials = function (username, password, store) {
             $auth.username = username;
@@ -790,7 +787,6 @@ angular.module('resiexchange')
             }             
         };
         
-        // @public
         this.clearCredentials = function () {
             $auth.username = '';
             $auth.password = '';        
@@ -800,7 +796,6 @@ angular.module('resiexchange')
         };    
         
 
-        // @private
         this.signin = function() {
             var deferred = $q.defer();
             if(typeof $auth.username == 'undefined'
@@ -853,7 +848,6 @@ angular.module('resiexchange')
             return deferred.promise;
         };
         
-        // @public
         // this method works in best-effort to ensure user identification
         // tries to recover if a session is already set server-side
         // otherwise it uses current credentials to log user in and read related data
@@ -1234,7 +1228,7 @@ angular.module('resiexchange')
         /**
         * User related routes
         */
-        .when('/user/edit-current', {
+        .when('/user/current/edit', {
             templateUrl : templatePath+'userEdit.html',
             controller  : ['$location', 'authenticationService', function($location, authenticationService) {
                 authenticationService.userId().then(
