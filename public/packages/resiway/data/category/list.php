@@ -44,7 +44,7 @@ try {
     $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order']);
     if($tags_ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
     
-    $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_path']);
+    $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path']);
     if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
         
     $result = array_values($res);

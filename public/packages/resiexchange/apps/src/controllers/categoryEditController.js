@@ -12,24 +12,15 @@ angular.module('resiexchange')
         console.log('categoryEdit controller');
         
         var ctrl = this;   
-
-        // @view
-        $scope.categories = angular.extend({
-                                "id": 0,
-                                "title": '',
-                                "description": '',
-                                "path": '',
-                                "parent-path": ''
-                            }, 
-                            categories); 
-        
+       
         // @model
         $scope.category = category;
-
+        $scope.categories = categories;
+        
         // set initial parent 
-        angular.forEach($scope.categories, function(category, index) {
-            if(category.id == $scope.category.parent_id) {
-                $scope.category.parent = category; 
+        angular.forEach(categories, function(cat, index) {
+            if(cat.id == $scope.category.parent_id) {
+                $scope.category.parent = cat; 
             }
         });       
         
