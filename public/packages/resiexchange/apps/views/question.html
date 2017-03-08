@@ -108,7 +108,7 @@
                                 <div class="user-avatar">
                                     <a href="#/user/profile/{{question.editor.id}}">
                                         <div class="avatar-wrapper">
-                                            <img ng-src="{{rootCtrl.avatarURL(question.editor.avatar_url, 32)}}" alt="" width="32" height="32">
+                                            <img ng-src="{{rootCtrl.avatarURL(question.editor.avatar_url, 32)}}" title="{{question.editor.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
@@ -140,7 +140,7 @@
                                 <div class="user-avatar">
                                     <a href="#/user/profile/{{question.creator.id}}">
                                         <div class="avatar-wrapper">
-                                            <img ng-src="{{rootCtrl.avatarURL(question.creator.avatar_url, 32)}}" alt="" width="32" height="32">
+                                            <img ng-src="{{rootCtrl.avatarURL(question.creator.avatar_url, 32)}}" title="{{question.creator.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
@@ -379,7 +379,7 @@
                                     <div class="user-avatar">
                                         <a href="#/user/profile/{{answer.creator.id}}">
                                             <div class="avatar-wrapper">
-                                                <img ng-src="{{rootCtrl.avatarURL(answer.creator.avatar_url, 32)}}" alt="" width="32" height="32">
+                                                <img ng-src="{{rootCtrl.avatarURL(answer.creator.avatar_url, 32)}}" title="{{answer.creator.display_name}}" width="32" height="32">
                                             </div>                                        
                                         </a>                                        
                                     </div>

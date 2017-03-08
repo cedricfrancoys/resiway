@@ -37,7 +37,7 @@
             </ul>
         </div>        
         <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
-            <div class="head">NOTIFICATIONS</div>
+            <div class="head">Notifications</div>
             <ul>
                 <li ng-repeat="(notification_index, notification) in user.notifications">
                     <div class="title"><a href="#/user/notifications/{{user.id}}">{{notification.title}}</a></div>
@@ -91,6 +91,9 @@
                     <a href="#/user/sign/up"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
             </div>
             <div id="user-btn" class="user-btn ng-hide" ng-class="{open: ctrl.userDropdown}" ng-click="toggleUserDropdown()" ng-show="user.id">
+                <span class="user-avatar pull-left">
+                  <img ng-src="{{rootCtrl.avatarURL(user.avatar_url, 30)}}" class="center-block" title="{{user.display_name}}" alt="{{user.display_name}}">
+                </span>
                 {{ user.display_name }}
                 <i class="fa fa-caret-down" aria-hidden="true"></i>          
             </div>            
