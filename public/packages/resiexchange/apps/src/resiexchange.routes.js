@@ -171,6 +171,15 @@ angular.module('resiexchange')
         /**
         * User related routes
         */
+        .when('/user/edit-current', {
+            templateUrl : templatePath+'userEdit.html',
+            controller  : ['$location', 'authenticationService', function($location, authenticationService) {
+                authenticationService.userId().then(
+                function(user_id) {
+                    $location.path('/user/edit/'+user_id);
+                });                
+            }]  
+        })         
         .when('/user/edit/:id', {
             templateUrl : templatePath+'userEdit.html',
             controller  : 'userEditController as ctrl',
@@ -179,16 +188,7 @@ angular.module('resiexchange')
                     return provider.load();
                 }]
             }        
-        })
-        .when('/user/edit/current', {
-            templateUrl : templatePath+'userEdit.html',
-            controller  : 'userEditController as ctrl',
-            resolve     : {
-                user: ['routeUserCurrentProvider', function (provider) {
-                    return provider.load();
-                }]
-            }        
-        })        
+        })       
         .when('/user/profile/:id/:name?', {
             templateUrl : templatePath+'userProfile.html',
             controller  : 'userProfileController as ctrl',
