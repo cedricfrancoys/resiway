@@ -114,7 +114,10 @@ try {
 
         foreach($res as $question_id => $question_data) {
             $author_id = $question_data['creator'];
-            $questions[$question_id]['creator'] = $questions_authors[$author_id];
+            if(isset($questions_authors[$author_id])) {
+                $questions[$question_id]['creator'] = $questions_authors[$author_id];
+            }
+            else unset($res[$question_id]);
         }
        
         // retrieve tags

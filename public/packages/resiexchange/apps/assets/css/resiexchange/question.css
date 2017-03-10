@@ -21,7 +21,7 @@
 }
 
 .vote .voteup, .vote .votedown, .vote .star {
-    font-size: 45px;
+    font-size: 30px;
 }
 
 .vote .voteup a:hover, .vote .votedown a:hover, .vote .star a:hover {
@@ -39,6 +39,7 @@
 
 .vote .star {
     font-size: 25px;
+    margin-top: 20px !important;
 }
 
 .vote .vote-count {

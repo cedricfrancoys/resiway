@@ -86,10 +86,10 @@ class ResiAPI {
     public static function makeLink($object_class, $object_Id) {
         $link = '';
         switch($object_class) {
-            case 'resiway\User': return '#/user/'.$object_id;
-            case 'resiway\Category': return '#/category/'.$object_id;
+            case 'resiway\User':                    return '#/user/'.$object_id;
+            case 'resiway\Category':                return '#/category/'.$object_id;
             case 'resiway\Badge':            
-            case 'resiexchange\Question': return '#/question/'.$object_id;
+            case 'resiexchange\Question':           return '#/question/'.$object_id;
             case 'resiexchange\Answer':
             case 'resiexchange\QuestionComment':
             case 'resiexchange\AnswerComment':                        
@@ -246,6 +246,9 @@ class ResiAPI {
 
     public static function notifyUser($user_id, $title, $content) {
         $om = &ObjectManager::getInstance();
+// todo : here is the right place to send an email if necessary        
+// store message in spool
+// todo : script run by cron to send emails every ? minutes
         // in case we decide to send emails, here is the place to add something to user queue
         return $om->create('resiway\UserNotification', [  
             'user_id'   => $user_id, 
@@ -661,7 +664,10 @@ class ResiAPI {
             }
             else {
                 self::registerAction($user_id, $action_id, $object_class, $object_id);        
-                $result = $do($om, $user_id, $object_class, $object_id);            
+                $result = $do($om, $user_id, $object_class, $object_id);
+// todo : notify author about changes
+// une action a été réalisée sur une de vos contributions : 
+// [action_name] : 'user.display_name' répondu / commenté votre question
             }
         }
         

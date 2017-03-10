@@ -52,7 +52,9 @@ var translations = {
     "QUESTION_USER_ANSWER_SUBMIT": "Répondre",  
 
     "QUESTION_STATS_ASKED": "posée",
-    "QUESTION_STATS_EDITED": "éditée",    
+    "QUESTION_STATS_ASKED_ON": "posée le",    
+    "QUESTION_STATS_EDITED": "éditée",
+    "QUESTION_STATS_EDITED_ON": "éditée le",
     "QUESTION_STATS_VIEWED": "vue",
     "QUESTION_STATS_ACTIVE": "active",  
     "QUESTION_STATS_TIMES": "fois",

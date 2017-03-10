@@ -18,7 +18,7 @@
                     <a href
                        id="question-voteup"
                        title="{{'QUESTION_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
-                       class="fa fa-caret-up" 
+                       class="fa fa-thumbs-o-up" 
                        ng-click="questionVoteUp($event)" 
                        uib-popover-template="'popoverCustom.html'" 
                        popover-trigger="'toggle-popover'" 
@@ -34,7 +34,7 @@
                     <a href
                        id="question-votedown"
                        title="{{'QUESTION_ACTIONS_VOTEDOWN_TOOLTIP' | translate}}"
-                       class="fa fa-caret-down" 
+                       class="fa fa-thumbs-o-down" 
                        ng-click="questionVoteDown($event)" 
                        uib-popover-template="'popoverCustom.html'" 
                        popover-trigger="'toggle-popover'" 
@@ -103,7 +103,7 @@
                         <div class="signature" ng-if="question.editor != 0">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'QUESTION_STATS_EDITED' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime">{{'QUESTION_STATS_EDITED_ON' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="#/user/profile/{{question.editor.id}}">
@@ -135,7 +135,7 @@
                         <div class="signature owner">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'QUESTION_STATS_ASKED' | translate}} {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime">{{'QUESTION_STATS_ASKED_ON' | translate}} {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="#/user/profile/{{question.creator.id}}">
