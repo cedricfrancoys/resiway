@@ -35,7 +35,7 @@ try {
         // try to send each matching file
         foreach($files as $filename) {
             try {
-                if( !($json = @file_get_contents("$filename", FILE_TEXT)) ) continue;
+                if( !($json = @file_get_contents($filename, FILE_TEXT)) ) continue;
                 $params = json_decode($json, true);
 
                 if(!isset($params['subject']) || !isset($params['body'])) continue;
@@ -56,7 +56,7 @@ try {
 
                 $mailer->send($message);
                 // remove file once processed                
-                unlink("$filename");
+                unlink($filename);
             }
             catch(Exception $e) {
                 // todo : log errors (unreadable files)

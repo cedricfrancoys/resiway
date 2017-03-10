@@ -120,7 +120,6 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
                 <div class="container col-1-1">
                     <!-- footer -->
                     <?php echo file_get_contents("packages/resiexchange/apps/views/footer.html"); ?>
-                    <span class="small">ResiWay.org is run by <a href="https://www.github.com/cedricfrancoys/resiway">resiway</a> open source software released under <a href="http://www.gnu.org/licenses/">GNU GPL 3 license</a></span><br />
                     <span class="small">rev <?php echo ResiAPI::currentRevision(); ?></span>                    
                 </div>
             </div>

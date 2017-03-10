@@ -720,11 +720,10 @@ angular.module('resiexchange')
     '$rootScope', 
     '$http', 
     '$q', 
-    '$cookieStore',
-    function($rootScope, $http, $q, $cookieStore) {
+    '$cookies',
+    function($rootScope, $http, $q, $cookies) {
         var $auth = this;
         
-
         // @init
         $auth.username = '';
         $auth.password = '';
@@ -782,8 +781,10 @@ angular.module('resiexchange')
             $auth.password = password;
             // store crendentials in the cookie
             if(store) {
-                $cookieStore.put('username', username);
-                $cookieStore.put('password', password);
+                var now = new Date();
+                var exp = new Date(now.getFullYear()+1, now.getMonth(), now.getDate());
+                $cookies.put('username', username, {expires: exp});
+                $cookies.put('password', password, {expires: exp});
             }             
         };
         
@@ -791,8 +792,8 @@ angular.module('resiexchange')
             $auth.username = '';
             $auth.password = '';        
             $rootScope.user = {id: 0};
-            $cookieStore.remove('username');
-            $cookieStore.remove('password'); 
+            $cookies.remove('username');
+            $cookies.remove('password'); 
         };    
         
 

@@ -21,6 +21,8 @@ class Category extends \easyobject\orm\Object {
                                     'foreign_object'    => 'resiway\Category', 
                                     'onchange'          => 'resiway\Category::onchangeTitle'),
                                     
+            'count_questions'   => array('type' => 'integer'),
+            
             'path'				=> array(
                                     'type'              => 'function', 
                                     'store'             => true,
