@@ -93,6 +93,14 @@ try {
                 if($res > 0 && isset($res[$user_id])) {
                     $om->write('resiway\User', $user_id, [ 'count_questions'=> $res[$user_id]['count_questions']+1 ]);
                 }
+
+                // update categories count_questions
+                $res = $om->read('resiway\Category', $params['tags_ids'], ['count_questions']);
+                if($res > 0) {
+                    foreach($res as $cat_id => $cat_data) {
+                        $om->write('resiway\Category', $cat_id, [ 'count_questions'=> $cat_data['count_questions']+1 ]);
+                    }                    
+                }
                 
                 // update global counter
                 ResiAPI::repositoryInc('resiexchange.count_questions');
@@ -110,6 +118,16 @@ try {
                                 'content'           => $params['content'],
                                 'categories_ids'    => $params['tags_ids']
                            ]);
+
+                // update categories count_questions
+                $categories_ids = array_map(function($i) { return abs(intval($i)); }, $params['tags_ids']);                
+                $res = $om->read('resiway\Category', $categories_ids, ['count_questions']);
+                if($res > 0) {
+                    foreach($categories_ids as $index => $category_id) {
+                        $sign = ($params['tags_ids'][$index] > 0) - ($params['tags_ids'][$index] < 0);
+                        $om->write('resiway\Category', $category_id, [ 'count_questions'=> $res[$category_id]['count_questions']+$sign ]);
+                    }                    
+                }
             }
             
             // read created question as returned value

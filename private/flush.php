@@ -1,5 +1,8 @@
 <?php
+/**
 
+ force spool to send all pending emails
+*/
 use easyobject\orm\ObjectManager as ObjectManager;
 use mail\Swift_SmtpTransport as Swift_SmtpTransport;
 use mail\Swift_Mailer as Swift_Mailer;

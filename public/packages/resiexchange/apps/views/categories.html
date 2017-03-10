@@ -27,6 +27,7 @@
                 <div style="height: 32px;"><strong>{{category.title}}</strong></div>
                 <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div>
                 <!-- <div style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;">{{category.description}}</div> -->
+                <div style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;" ng-show="category.count_questions > 0">{{category.count_questions | humanizeCount}}</div>
             </div>
             <div style="position: absolute; right: 35px; top: 8px;">
                 <a href="#/category/edit/{{category.id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
