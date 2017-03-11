@@ -622,7 +622,7 @@ angular.module('resiexchange')
                     $rootScope.search.total = 0;
                     return [];
                 }
-                $rootScope.search.total = 1000000000;
+                $rootScope.search.total = data.total;
                 return data.result;
             },
             function errorCallback(response) {
