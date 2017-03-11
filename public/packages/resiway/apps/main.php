@@ -53,7 +53,7 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta name="description" content="">    
         <link rel="icon" href="assets/favicon.ico" />
-        <title>ResiExchange</title>
+        <title>ResiWay</title>
 
         <script src="packages/resiexchange/apps/assets/js/moment.min.js"></script>
         <script src="packages/resiexchange/apps/assets/js/md5.js"></script>

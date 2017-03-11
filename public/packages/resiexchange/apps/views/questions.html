@@ -2,7 +2,7 @@
     <div class="col-8-12">
     <!-- sort dropdown -->
         <div class="subheader">
-            <h1 id="h-questions">{{search.total | humanizeCount:true}} {{ 'QUESTIONS_QUESTIONS' | translate}}</h1>
+            <h1 id="h-questions">{{ 'QUESTIONS_QUESTIONS' | translate}}</h1>
             
             <div id="sort-dropdown">
                 <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
@@ -103,7 +103,7 @@
         <div class="panel panel-default">
             <div class="container">
                 <div class="container">
-                    <span class="number">{{search.total}}</span>
+                    <span class="number">{{search.total | humanizeCount:true}}</span>
                     {{'QUESTIONS_STATS_QUESTIONS' | translate}}
                 </div>
             </div>
