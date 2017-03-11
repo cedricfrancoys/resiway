@@ -13,10 +13,10 @@
 
                   <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                     <li class="dropdown-header">Questions...</li>
-                    <li><a href ng-click="search.criteria.order='count_answers'; search.criteria.sort='asc'; doSearch();">les moins répondues</a></li>
-                    <li><a href ng-click="search.criteria.order='count_views'; search.criteria.sort='desc'; doSearch();">les plus vues</a></li>
-                    <li><a href ng-click="search.criteria.order='modified'; search.criteria.sort='desc'; doSearch();">les plus récentes</a></li>
-                    <li><a href ng-click="search.criteria.order='score'; search.criteria.sort='desc'; doSearch();">les plus populaires</a></li>
+                    <li><a href ng-click="doSearch({order:'count_answers', sort: 'asc'});">les moins répondues</a></li>
+                    <li><a href ng-click="doSearch({order:'count_views', sort: 'desc'});">les plus vues</a></li>
+                    <li><a href ng-click="doSearch({order:'modified', sort: 'desc'});">les plus récentes</a></li>
+                    <li><a href ng-click="doSearch({order:'score', sort: 'desc'});">les plus populaires</a></li>
                   </ul>
                 </div>
             </div>

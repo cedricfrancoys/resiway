@@ -1024,9 +1024,9 @@ angular.module('resiexchange')
         // @data model
         ctrl.questions = questions;
 
-        $scope.doSearch = function() {
-            // update global criteria
-            // $rootScope.criteria.questions.domain = ['title', 'like', '%'+criteria+'%'];
+        $scope.doSearch = function(criteria) {
+            // update global criteria            
+            angular.extend($rootScope.search.criteria, criteria);
             // go to questions list page
             $route.reload();           
         };

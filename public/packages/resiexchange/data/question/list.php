@@ -66,18 +66,24 @@ try {
     
     $om = &ObjectManager::getInstance();
 
-    // 0) retrieve matching questions identifiers
-
+    
     // if a channel has been specified in current session, adapt domain to restrict results
     $pdm = &PersistentDataManager::getInstance();
     $params['domain'][] = ['channel_id','=', $pdm->get('channel', 1)];
     
     // total is not knwon yet
-    if($params['total'] < 0) {        
-        $ids = $om->search('resiexchange\Question', $params['domain'], $params['order'], $params['sort']);
-        if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
-        $total = count($ids);
-		$questions_ids = array_slice($ids, $params['start'], $params['limit']);
+    if($params['total'] < 0) {
+        if(empty($params['domain'])) {
+            // retrieve questions count from repository
+            $res = ResiAPI::repositoryGet('resiexchange.count_questions');
+            $params['total'] = $res['resiexchange.count_questions'];
+        }
+        else {
+            $ids = $om->search('resiexchange\Question', $params['domain'], $params['order'], $params['sort']);
+            if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
+            $total = count($ids);
+            $questions_ids = array_slice($ids, $params['start'], $params['limit']);
+        }
     }
     else {
         $questions_ids = $om->search('resiexchange\Question', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
