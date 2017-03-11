@@ -412,13 +412,23 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
-.controller('homeController', function() {
+.controller('homeController', ['$http', function($http) {
     var ctrl = this;
 
     console.log('home controller');  
     
-    this.ok = function() {
-        console.log('ok');
-    };    
+    $http.get('index.php?get=resiexchange_stats')
+        .then(
+        function successCallback(response) {
+            var data = response.data;
+            if(typeof response.data.result == 'object') {
+                ctrl.count_questions = data.result['resiexchange.count_questions'];
+                ctrl.count_answers = data.result['resiexchange.count_answers'];
+                ctrl.count_comments = data.result['resiexchange.count_comments'];
+            }
+        },
+        function errorCallback() {
+            // something went wrong server-side
+        }); 
   
-});
+}]);
