@@ -3,8 +3,10 @@ angular.module('resiexchange')
 .controller('questionsController', [
     'questions', 
     '$scope',
+    '$rootScope',
+    '$route',
     '$http',
-    function(questions, $scope, $http) {
+    function(questions, $scope, $rootScope, $route, $http) {
         console.log('questions controller');
 
         var ctrl = this;
@@ -12,7 +14,13 @@ angular.module('resiexchange')
         // @data model
         ctrl.questions = questions;
 
-
+        $scope.doSearch = function() {
+            // update global criteria
+            // $rootScope.criteria.questions.domain = ['title', 'like', '%'+criteria+'%'];
+            // go to questions list page
+            $route.reload();           
+        };
+        
         $http.get('index.php?get=resiexchange_stats')
         .then(
         function successCallback(response) {

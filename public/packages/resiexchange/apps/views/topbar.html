@@ -2,8 +2,11 @@
 <div id="topBar" class="topbar" ng-controller="topBarCtrl as ctrl" >        
 
     <div class="grid wrapper">
+        <!-- 1) dropdown dialogs -->
+        
+        <!-- platform dialog -->
         <div class="platform-dialog" ng-show="ctrl.platformDropdown" ng-cloak>
-            <div class="head">AUTRES APPLICATIONS</div>
+            <div class="head text-uppercase">{{'TOOLBAR_PLATFORM_OTHER_APPS'|translate}}</div>
             <ul>
                 <li>
                     <div class="platform-icon resiway"></div>
@@ -35,9 +38,10 @@
                 </li>
                 
             </ul>
-        </div>        
+        </div>
+        <!-- notifications dialog -->        
         <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
-            <div class="head">Notifications</div>
+            <div class="head">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</div>
             <ul>
                 <li ng-repeat="(notification_index, notification) in user.notifications">
                     <div class="title"><a href="#/user/notifications/{{user.id}}">{{notification.title}}</a></div>
@@ -46,7 +50,7 @@
             </ul>
             <div class="foot"><a href="#/user/notifications/{{user.id}}"><i class="fa fa-plus" aria-hidden="true"></i> Voir toutes les notifications</a></div>
         </div>
-        
+        <!-- help dialog -->
         <div class="help-dialog" ng-show="ctrl.helpDropdown">
             <ul>
                 <li>
@@ -59,7 +63,7 @@
                 </li>
             </ul>
         </div>
-        
+        <!-- user dialog -->
         <div class="user-dialog" ng-show="ctrl.userDropdown">
             <ul>
                 <li>
@@ -71,20 +75,31 @@
             </ul>
         </div>
         
+        <!-- 2) toolbar -->
         <div class="col-1-1">
             <div class="platform-items">
                 <div class="platform-btn resiexchange" ng-class="{open: ctrl.platformDropdown}" ng-click="togglePlatformDropdown()">
                     <div class="app-icon"></div>
                     <i class="fa fa-caret-down" aria-hidden="true"></i>          
                 </div>            
-                <div id="notify-btn" class="notify-btn ng-hide" ng-class="{open: ctrl.notifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user.id">
+                <div id="notify-btn" class="notify-btn ng-hide hidden-xs" ng-class="{open: ctrl.notifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user.id">
                     <i class="fa fa-inbox" aria-hidden="true"></i>
                     <span ng-show="user.notifications.length" class="unread-count">{{user.notifications.length}}</span>
                 </div>
-                <div id="help-btn" class="help-btn" ng-class="{open: ctrl.helpDropdown}" ng-click="toggleHelpDropdown()">
+                <div id="help-btn" class="help-btn hidden-xs" ng-class="{open: ctrl.helpDropdown}" ng-click="toggleHelpDropdown()">
                     Aide 
                     <i class="fa fa-caret-down" aria-hidden="true"></i>          
-                </div>                  
+                </div>
+                <div id="search-input" class="search-input form-group-sm hidden-xs">
+                    <form ng-submit="search(ctrl.criteria)">
+                    <div class="input-group">            
+                        <input class="form-control" name="q" type="text" placeholder="{{'TOOLBAR_SEARCH_PLACEHOLDER'|translate}}" value="" ng-model="ctrl.criteria" autocomplete="off" maxlength="240" >
+                        <div class="input-group-btn">
+                            <button class="btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                    </form>
+                </div>
             </div>
             
             <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">

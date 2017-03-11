@@ -15,15 +15,20 @@ angular.module('resiexchange')
 })
 
 .filter("humanizeCount", function() {
-    return function(value) {
-        if(typeof value == 'undefined' 
-        || typeof parseInt(value) != 'number') return 0;
-        if(value == 0) return 0;
-        var sign = value/Math.abs(value);
-        value = Math.abs(value);
-        var s = ['', 'k', 'M', 'G'];
-        var e = Math.floor(Math.log(value) / Math.log(1000));
-        return (sign*((e <= 0)?value:(value / Math.pow(1000, e)).toFixed(1))) + s[e];
+    return function(value, show_full) {
+        if(show_full) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        else {
+            if(typeof value == 'undefined' 
+            || typeof parseInt(value) != 'number') return 0;
+            if(value == 0) return 0;
+            var sign = value/Math.abs(value);
+            value = Math.abs(value);
+            var s = ['', 'k', 'M', 'G'];
+            var e = Math.floor(Math.log(value) / Math.log(1000));
+            return (sign*((e <= 0)?value:(value / Math.pow(1000, e)).toFixed(1))) + s[e];
+        }
     };
 })
 

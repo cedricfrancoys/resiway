@@ -13,6 +13,10 @@ var translations = {
     "MODAL_ANSWER_DELETE_TITLE": "Supprimer la réponse",
     "MODAL_ANSWER_DELETE_HEADER": "Êtes-vous certain de vouloir supprimer cette réponse ?",
 
+    // Toolbar
+    "TOOLBAR_PLATFORM_OTHER_APPS": "Autres applications",    
+    "TOOLBAR_NOTIFICATIONS_TITLE": "Notifications",
+    "TOOLBAR_SEARCH_PLACEHOLDER": "Rechercher...",    
 
     // Questions  
     "QUESTION_ACTIONS_VOTEUP_TOOLTIP": "This question shows research effort; it is useful and clear",

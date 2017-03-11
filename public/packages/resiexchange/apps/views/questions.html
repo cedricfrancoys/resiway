@@ -1,7 +1,8 @@
 <div class="grid wrapper">
     <div class="col-8-12">
+    <!-- sort dropdown -->
         <div class="subheader">
-            <h1 id="h-questions">{{ 'QUESTIONS_QUESTIONS' | translate}}</h1>
+            <h1 id="h-questions">{{search.total | humanizeCount:true}} {{ 'QUESTIONS_QUESTIONS' | translate}}</h1>
             
             <div id="sort-dropdown">
                 <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
@@ -11,10 +12,11 @@
                 <!-- Simple dropdown -->
 
                   <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
-                    <li class="dropdown-header">Dropdown header</li>
-                    <li ng-repeat="choice in items">
-                      <a href="#">{{choice.txt}}</a>
-                    </li>
+                    <li class="dropdown-header">Questions...</li>
+                    <li><a href ng-click="search.criteria.order='count_answers'; search.criteria.sort='asc'; doSearch();">les moins répondues</a></li>
+                    <li><a href ng-click="search.criteria.order='count_views'; search.criteria.sort='desc'; doSearch();">les plus vues</a></li>
+                    <li><a href ng-click="search.criteria.order='modified'; search.criteria.sort='desc'; doSearch();">les plus récentes</a></li>
+                    <li><a href ng-click="search.criteria.order='score'; search.criteria.sort='desc'; doSearch();">les plus populaires</a></li>
                   </ul>
                 </div>
             </div>
@@ -35,7 +37,6 @@
             </div>
             -->
         </div>
-
 
         <div ng-repeat="question in ctrl.questions" class="question narrow col-1-1">
             <div class="counters" >

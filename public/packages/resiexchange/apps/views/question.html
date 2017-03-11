@@ -374,7 +374,7 @@
                                 <div class="user-info">
                                     <div class="user-action-time">
 
-                                        <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{'ANSWER_STATS_ANSWERED' | translate}}{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
+                                        <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{'ANSWER_STATS_ANSWERED' | translate}} {{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                     </div>
                                     <div class="user-avatar">
                                         <a href="#/user/profile/{{answer.creator.id}}">

@@ -58,13 +58,17 @@ angular.module('resiexchange')
     };
 }])
 
-.service('routeQuestionsProvider', ['$http', function($http) {
+.service('routeQuestionsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
     this.load = function() {
-        return $http.get('index.php?get=resiexchange_question_list&order=title')
+        return $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
         .then(
             function successCallback(response) {
                 var data = response.data;
-                if(typeof data.result != 'object') return [];
+                if(typeof data.result != 'object') {
+                    $rootScope.search.total = 0;
+                    return [];
+                }
+                $rootScope.search.total = data.total;
                 return data.result;
             },
             function errorCallback(response) {

@@ -1013,8 +1013,10 @@ angular.module('resiexchange')
 .controller('questionsController', [
     'questions', 
     '$scope',
+    '$rootScope',
+    '$route',
     '$http',
-    function(questions, $scope, $http) {
+    function(questions, $scope, $rootScope, $route, $http) {
         console.log('questions controller');
 
         var ctrl = this;
@@ -1022,7 +1024,13 @@ angular.module('resiexchange')
         // @data model
         ctrl.questions = questions;
 
-
+        $scope.doSearch = function() {
+            // update global criteria
+            // $rootScope.criteria.questions.domain = ['title', 'like', '%'+criteria+'%'];
+            // go to questions list page
+            $route.reload();           
+        };
+        
         $http.get('index.php?get=resiexchange_stats')
         .then(
         function successCallback(response) {
@@ -1047,11 +1055,14 @@ angular.module('resiexchange')
 * 
 */
 .controller('topBarCtrl', [
-    '$scope', 
+    '$scope',
+    '$rootScope', 
     '$document',
+    '$route',
+    '$location', 
     'actionService',
     'authenticationService',
-    function($scope, $document, action, authentication) {
+    function($scope, $rootScope, $document, $route, $location, action, authentication) {
         console.log('topbar controller');
         
         var ctrl = this;
@@ -1130,6 +1141,15 @@ angular.module('resiexchange')
                 }
             });
         };
+        
+        $scope.search = function(criteria){
+            // update global criteria
+            $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
+            // go to questions list page
+            if($location.path() == '/questions') $route.reload();
+            else $location.path('/questions');
+        };
+        
     }
 ]);
 angular.module('resiexchange')

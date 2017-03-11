@@ -32,7 +32,7 @@
     left: 0;
     vertical-align: top;
     height: 34px;
-    width: 350px;
+    width: 500px;
     line-height: 34px;
 }
 
@@ -73,6 +73,32 @@
     overflow: hidden;
     white-space: nowrap;    
 }
+
+.topbar .search-input {
+    position: relative;
+    float: left;
+    height: 34px;
+    width: 150px;    
+    line-height: 34px;
+    color: lightgrey;
+    padding-left: 10px;
+    padding-top: 2px;    
+}
+
+.topbar .search-input label {
+    position: absolute;
+    left: 10px;
+}
+
+.topbar .search-input.form-group-sm .form-control, .topbar .search-input.form-group-sm .input-group .btn-sm {
+    height: 30px;
+}
+
+.topbar .search-input.form-group-sm .input-group .btn-sm {
+    vertical-align: top;
+}
+
+
 .topbar .login-btn {
     position: absolute;
     right: 0;

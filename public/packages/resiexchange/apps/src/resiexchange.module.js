@@ -163,7 +163,7 @@ var resiway = angular.module('resiexchange', [
     function($window, $timeout, $rootScope, $location, authenticationService, actionService, feedbackService) {
         console.log('run method invoked');
 
-        // bind rootScope with feedbackService service (popover display)
+        // Bind rootScope with feedbackService service (popover display)
         // in orer to have access to feedbackService from templates (popoverCustom.html)
         $rootScope.popover = feedbackService;
         
@@ -185,7 +185,18 @@ var resiway = angular.module('resiexchange', [
         $rootScope.previousPath = '/';
         $rootScope.currentPath  = null;
         
-       
+        // search criteria (filters)
+        $rootScope.search = {
+            criteria: {
+                domain: [],
+                order: 'title',
+                sort: 'desc',
+                start: 0,
+                limit: 25
+            },
+            total: 0
+        };
+        
         /**
         * Object of signed in user (if authenticated)
         * This value is set by the authentification service

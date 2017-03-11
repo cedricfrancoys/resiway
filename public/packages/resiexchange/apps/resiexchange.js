@@ -293,7 +293,7 @@ var resiway = angular.module('resiexchange', [
     function($window, $timeout, $rootScope, $location, authenticationService, actionService, feedbackService) {
         console.log('run method invoked');
 
-        // bind rootScope with feedbackService service (popover display)
+        // Bind rootScope with feedbackService service (popover display)
         // in orer to have access to feedbackService from templates (popoverCustom.html)
         $rootScope.popover = feedbackService;
         
@@ -315,7 +315,18 @@ var resiway = angular.module('resiexchange', [
         $rootScope.previousPath = '/';
         $rootScope.currentPath  = null;
         
-       
+        // search criteria (filters)
+        $rootScope.search = {
+            criteria: {
+                domain: [],
+                order: 'title',
+                sort: 'desc',
+                start: 0,
+                limit: 25
+            },
+            total: 0
+        };
+        
         /**
         * Object of signed in user (if authenticated)
         * This value is set by the authentification service
@@ -601,13 +612,17 @@ angular.module('resiexchange')
     };
 }])
 
-.service('routeQuestionsProvider', ['$http', function($http) {
+.service('routeQuestionsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
     this.load = function() {
-        return $http.get('index.php?get=resiexchange_question_list&order=title')
+        return $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
         .then(
             function successCallback(response) {
                 var data = response.data;
-                if(typeof data.result != 'object') return [];
+                if(typeof data.result != 'object') {
+                    $rootScope.search.total = 0;
+                    return [];
+                }
+                $rootScope.search.total = 1000000000;
                 return data.result;
             },
             function errorCallback(response) {
@@ -1300,15 +1315,20 @@ angular.module('resiexchange')
 })
 
 .filter("humanizeCount", function() {
-    return function(value) {
-        if(typeof value == 'undefined' 
-        || typeof parseInt(value) != 'number') return 0;
-        if(value == 0) return 0;
-        var sign = value/Math.abs(value);
-        value = Math.abs(value);
-        var s = ['', 'k', 'M', 'G'];
-        var e = Math.floor(Math.log(value) / Math.log(1000));
-        return (sign*((e <= 0)?value:(value / Math.pow(1000, e)).toFixed(1))) + s[e];
+    return function(value, show_full) {
+        if(show_full) {
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+        else {
+            if(typeof value == 'undefined' 
+            || typeof parseInt(value) != 'number') return 0;
+            if(value == 0) return 0;
+            var sign = value/Math.abs(value);
+            value = Math.abs(value);
+            var s = ['', 'k', 'M', 'G'];
+            var e = Math.floor(Math.log(value) / Math.log(1000));
+            return (sign*((e <= 0)?value:(value / Math.pow(1000, e)).toFixed(1))) + s[e];
+        }
     };
 })
 
@@ -2402,8 +2422,10 @@ angular.module('resiexchange')
 .controller('questionsController', [
     'questions', 
     '$scope',
+    '$rootScope',
+    '$route',
     '$http',
-    function(questions, $scope, $http) {
+    function(questions, $scope, $rootScope, $route, $http) {
         console.log('questions controller');
 
         var ctrl = this;
@@ -2411,7 +2433,13 @@ angular.module('resiexchange')
         // @data model
         ctrl.questions = questions;
 
-
+        $scope.doSearch = function() {
+            // update global criteria
+            // $rootScope.criteria.questions.domain = ['title', 'like', '%'+criteria+'%'];
+            // go to questions list page
+            $route.reload();           
+        };
+        
         $http.get('index.php?get=resiexchange_stats')
         .then(
         function successCallback(response) {
@@ -2436,11 +2464,14 @@ angular.module('resiexchange')
 * 
 */
 .controller('topBarCtrl', [
-    '$scope', 
+    '$scope',
+    '$rootScope', 
     '$document',
+    '$route',
+    '$location', 
     'actionService',
     'authenticationService',
-    function($scope, $document, action, authentication) {
+    function($scope, $rootScope, $document, $route, $location, action, authentication) {
         console.log('topbar controller');
         
         var ctrl = this;
@@ -2519,6 +2550,15 @@ angular.module('resiexchange')
                 }
             });
         };
+        
+        $scope.search = function(criteria){
+            // update global criteria
+            $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
+            // go to questions list page
+            if($location.path() == '/questions') $route.reload();
+            else $location.path('/questions');
+        };
+        
     }
 ]);
 angular.module('resiexchange')

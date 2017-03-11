@@ -6,11 +6,14 @@ angular.module('resiexchange')
 * 
 */
 .controller('topBarCtrl', [
-    '$scope', 
+    '$scope',
+    '$rootScope', 
     '$document',
+    '$route',
+    '$location', 
     'actionService',
     'authenticationService',
-    function($scope, $document, action, authentication) {
+    function($scope, $rootScope, $document, $route, $location, action, authentication) {
         console.log('topbar controller');
         
         var ctrl = this;
@@ -89,5 +92,14 @@ angular.module('resiexchange')
                 }
             });
         };
+        
+        $scope.search = function(criteria){
+            // update global criteria
+            $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
+            // go to questions list page
+            if($location.path() == '/questions') $route.reload();
+            else $location.path('/questions');
+        };
+        
     }
 ]);
