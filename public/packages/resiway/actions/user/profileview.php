@@ -31,8 +31,7 @@ list($action_name, $object_class, $object_id) = [
     $params['id']
 ];
 
-try {
-   
+try {   
     $result = ResiAPI::performAction(
         $action_name,                                             // $action_name
         $object_class,                                            // $object_class

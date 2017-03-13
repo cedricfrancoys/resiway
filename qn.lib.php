@@ -44,9 +44,11 @@ namespace {
 	*/
 	function set_silent($silent) {
 		$GLOBALS['SILENT_MODE'] = $silent;
+        /*
 		ini_set('display_errors', !$silent);
 		if($silent) error_reporting(0);
 		else error_reporting(E_ALL);
+        */
 	}
 
 	/**

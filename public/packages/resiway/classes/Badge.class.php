@@ -64,7 +64,8 @@ class Badge extends \easyobject\orm\Object {
             }
             return (float) ($filled/$count);
             
-            
+        default:
+            break;
         }
         
         return (float) 0;

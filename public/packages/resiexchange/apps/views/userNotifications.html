@@ -21,7 +21,7 @@
                 <tr ng-repeat="notification in user.notifications">
                     <td>{{notification.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</td>
                     <td>{{notification.title}}</td>
-                    <td>
+                    <td>                        
                         <button id="notification-{{notification.id}}-dismiss"
                                 type="button"
                                 title="dismiss"
@@ -33,7 +33,8 @@
                             <span aria-hidden="true">&times;</span>
                             <span class="sr-only">{{'USER_NOTIFICATIONS_DISMISS' | translate}}</span>
                         </button>     
-                    {{notification.content}}</td>            
+                        <span ng-bind-html="notification.content"></span>
+                    </td>            
                 </tr>
             </tbody>
         </table>

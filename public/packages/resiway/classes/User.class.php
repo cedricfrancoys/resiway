@@ -65,7 +65,13 @@ class User extends \easyobject\orm\Object {
             
             'count_badges_1'    => array('type' => 'integer'),
             'count_badges_2'    => array('type' => 'integer'),
-            'count_badges_3'    => array('type' => 'integer'),            
+            'count_badges_3'    => array('type' => 'integer'),
+            
+            'notify_reputation_update'  => array('type' => 'boolean'),
+            'notify_badge_awarded'      => array('type' => 'boolean'),
+            'notify_question_comment'   => array('type' => 'boolean'),
+            'notify_answer_comment'     => array('type' => 'boolean'),
+            'notify_question_answer'    => array('type' => 'boolean'),            
             
             'notifications_ids'	=> array(
                                     'type'		    => 'one2many', 
@@ -97,16 +103,21 @@ class User extends \easyobject\orm\Object {
     
     public static function getDefaults() {
         return array(
-             'verified'             => function() { return false; },             
-             'reputation'           => function() { return 1; },
-             'publicity_mode'       => function() { return 1; },             
-             'count_profile_views'  => function() { return 0; },
-             'count_questions'      => function() { return 0; },
-             'count_answers'        => function() { return 0; },
-             'count_comments'       => function() { return 0; },             
-             'count_badges_1'       => function() { return 0; },
-             'count_badges_2'       => function() { return 0; },             
-             'count_badges_3'       => function() { return 0; },                          
+             'verified'                  => function() { return false; },             
+             'reputation'                => function() { return 1; },
+             'publicity_mode'            => function() { return 1; },             
+             'count_profile_views'       => function() { return 0; },
+             'count_questions'           => function() { return 0; },
+             'count_answers'             => function() { return 0; },
+             'count_comments'            => function() { return 0; },             
+             'count_badges_1'            => function() { return 0; },
+             'count_badges_2'            => function() { return 0; },             
+             'count_badges_3'            => function() { return 0; },
+             'notify_reputation_update'  => function() { return true; }, 
+             'notify_badge_awarded'      => function() { return true; }, 
+             'notify_question_comment'   => function() { return true; }, 
+             'notify_answer_comment'     => function() { return true; }, 
+             'notify_question_answer'    => function() { return true; },              
         );
     }
     

@@ -37,7 +37,12 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids) = [true, []];
 
-list($login, $firstname, $language) = [strtolower(trim($params['login'])), $params['firstname'], $params['lang']];
+list($action_name, $login, $firstname, $language) = [ 
+    'resiway_user_signup',
+    strtolower(trim($params['login'])),
+    $params['firstname'],
+    $params['lang']
+];
 
 $messages_folder = '../spool';
 
@@ -64,7 +69,7 @@ try {
         $password .= sprintf("%x", rand(0, 15)) ;
     }
     // generate avatar URL using identicon with a random hash
-    $avatar_url = 'http://www.gravatar.com/avatar/'.md5($firstname.rand()).'?d=identicon&s=<size>';
+    $avatar_url = 'http://www.gravatar.com/avatar/'.md5($firstname.rand()).'?d=identicon&s=@size';
     
     $user_id = $om->create('resiway\User', ['login'=>$login, 'password'=>$password, 'firstname' => $firstname, 'language' => $language, 'avatar_url' => $avatar_url]);
     if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
@@ -126,8 +131,7 @@ try {
     file_put_contents("$messages_folder/$filename", $json);
     
     // log user registration
-    $action_id = ResiAPI::actionId('resiway_user_signup');
-    ResiAPI::registerAction($user_id, $action_id, 'resiway\User', $user_id);
+    ResiAPI::registerAction($user_id, $action_name, 'resiway\User', $user_id);
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

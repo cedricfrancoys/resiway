@@ -19,8 +19,25 @@ class HtmlTemplate {
 	* @param array $attributes	tag attributes
 	*/
 	protected function decorator($attributes) {
-		if(isset($attributes['id']) && isset($this->renderer[$attributes['id']])) return $this->renderer[$attributes['id']]($this->params, $attributes);
-		return '';
+        $result = '';
+		if(isset($attributes['id'])) {
+            if(isset($this->renderer[$attributes['id']])) {
+                $result = $this->renderer[$attributes['id']]($this->params, $attributes);
+            }
+            else {
+                // handle 'dot' notation
+                $array = $this->params;
+                $key = $attributes['id'];                
+                while(strpos($key, '.')) {
+                    list($key, $remain) = explode('.', $key, 2);
+                    if(!isset($array[$key])) return '';
+                    $array = $array[$key];
+                    $key = $remain;
+                }
+                $result = $array[$key];
+            }
+        }
+		return $result;
 	}
 	
 	public function __construct($template, $renderer, $params=null) {

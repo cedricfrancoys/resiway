@@ -44,11 +44,10 @@ try {
             // retreive related question id
             $objects = $om->read($object_class, $object_id, ['question_id']);            
             // retrieve related action object                      
-            $related_action_id = ResiAPI::actionId('resiexchange_question_answer');
             $related_object_class = 'resiexchange\Question';
             $related_object_id = $objects[$object_id]['question_id'];
             // undo related action            
-            ResiAPI::unregisterAction($user_id, $related_action_id, $related_object_class, $related_object_id);        
+            ResiAPI::unregisterAction($user_id, 'resiexchange_question_answer', $related_object_class, $related_object_id);        
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 1
@@ -64,11 +63,10 @@ try {
             // retreive related question id
             $objects = $om->read($object_class, $object_id, ['question_id']);            
             // retrieve related action object                      
-            $related_action_id = ResiAPI::actionId('resiexchange_question_answer');
             $related_object_class = 'resiexchange\Question';
             $related_object_id = $objects[$object_id]['question_id'];
             // perform related action
-            ResiAPI::registerAction($user_id, $related_action_id, $related_object_class, $related_object_id);
+            ResiAPI::registerAction($user_id, 'resiexchange_question_answer', $related_object_class, $related_object_id);
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 0

@@ -11,7 +11,7 @@ class UserNotification extends \easyobject\orm\Object {
             
             'title'			 => array('type' => 'string'),    
             
-            'content'		 => array('type' => 'string')
+            'content'		 => array('type' => 'html')
                                    
         );
     } 

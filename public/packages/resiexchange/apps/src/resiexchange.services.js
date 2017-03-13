@@ -250,6 +250,7 @@ angular.module('resiexchange')
         };
         
         this.clearCredentials = function () {
+            console.log('clearing credentials');
             $auth.username = '';
             $auth.password = '';        
             $rootScope.user = {id: 0};

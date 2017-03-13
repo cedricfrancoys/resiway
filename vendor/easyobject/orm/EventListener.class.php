@@ -88,7 +88,7 @@ class EventListener {
         else if(in_array($errno, array(E_WARNING, E_CORE_WARNING, E_COMPILE_WARNING, E_USER_NOTICE, E_DEPRECATED))) {
             file_put_contents(LOG_STORAGE_DIR.'/warning.log', $error, FILE_APPEND);
         }
-        else if(in_array($errno, array(E_ERROR, E_PARSE, E_COMPILE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_USER_WARNING, E_RECOVERABLE_ERROR))) {        
+        else {        
             file_put_contents(LOG_STORAGE_DIR.'/error.log', $error, FILE_APPEND);
         }
         

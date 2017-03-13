@@ -24,9 +24,11 @@ $params = QNLib::announce(
 );
 
 
-$question_id = $params['id'];
-
 list($result, $error_message_ids) = [true, []];
+
+list($question_id) = [
+    $params['id']
+];
 
 try {
     
@@ -75,7 +77,7 @@ try {
         // update question's count_views 
         $om->write('resiexchange\Question', $question_id, [ 'count_views' => $question_data['count_views']+1 ]);
         // add question view to user history
-        ResiAPI::registerAction($user_id, ResiAPI::actionId('resiexchange_question_view'), 'resiexchange\Question', $question_id);  
+        ResiAPI::registerAction($user_id, 'resiexchange_question_view', 'resiexchange\Question', $question_id);  
     }
     
     // retrieve tags

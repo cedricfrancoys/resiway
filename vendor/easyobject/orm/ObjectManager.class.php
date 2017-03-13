@@ -888,10 +888,16 @@ todo: signature differs from other methods	(returned value)
 
 			// second pass : handle onchange events, if any 
 			// note : this must be done afer modifications otherwise object values might be outdated
-			if(count($onchange_fields)) {
-				// call methods associated with onchange events of related fields
-				foreach($onchange_fields as $field)
-					if(is_callable($schema[$field]['onchange'])) call_user_func($schema[$field]['onchange'], $this, $ids, $lang);
+			if(count($onchange_fields)) {				
+                // remember which methods have been invoked (to trigger each only once)
+                $onchange_methods = [];
+                // call methods associated with onchange events of related fields
+				foreach($onchange_fields as $field) {                    
+                    if(!isset($onchange_methods[$schema[$field]['onchange']])) {
+                        if(is_callable($schema[$field]['onchange'])) call_user_func($schema[$field]['onchange'], $this, $ids, $lang);
+                        $onchange_methods[$schema[$field]['onchange']] = true;
+                    }
+                }
 			}
 
 

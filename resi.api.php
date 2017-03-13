@@ -22,6 +22,7 @@ use easyobject\orm\ObjectManager as ObjectManager;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
 use easyobject\orm\DataAdapter as DataAdapter;
 use html\HTMLPurifier_Config as HTMLPurifier_Config;
+use html\HtmlTemplate as HtmlTemplate;
 
 // these utilities require inclusion of main configuration file 
 require_once('qn.lib.php');
@@ -69,7 +70,21 @@ class ResiAPI {
         $date = date("Y.m.d", $time);
         return "$date.$hash";
     }
-    
+
+    // add a message to the spool
+    public static function spool($user_id, $subject, $body) {
+// todo : script run by cron to send emails every ? minutes        
+        // message files format is: 11 digits (user unique identifier) with 3 digits extension in case of multiple files
+        $temp = sprintf("%011d", $user_id);
+        $filename = $temp;
+        $i = 0;
+        while(file_exists(EMAIL_SPOOL_DIR."/{$filename}")) {
+            $filename = sprintf("%s.%03d", $temp, ++$i);
+        }
+        // data consists of parsed template and subject (JSON formatted)
+        return file_put_contents(EMAIL_SPOOL_DIR."/$filename", json_encode(array("subject" => $subject, "body" => $body), JSON_PRETTY_PRINT));
+    }
+        
     public static function credentialsDecode($code) {
         // convert base64url to base64
         $code = str_replace(['-', '_'], ['+','/'], $code);
@@ -83,15 +98,27 @@ class ResiAPI {
     }
     
 // todo: complete
-    public static function makeLink($object_class, $object_Id) {
+    public static function makeLink($object_class, $object_id) {
         $link = '';
         switch($object_class) {
-            case 'resiway\User':                    return '#/user/'.$object_id;
-            case 'resiway\Category':                return '#/category/'.$object_id;
-            case 'resiway\Badge':            
-            case 'resiexchange\Question':           return '#/question/'.$object_id;
+            case 'resiway\User':                    
+                return '#/user/'.$object_id;
+                
+            case 'resiway\Category':                
+                return '#/category/'.$object_id;
+                
+            case 'resiway\Badge':    
+            
+            case 'resiexchange\Question':          
+                return '#/question/'.$object_id;
+                
             case 'resiexchange\Answer':
+                $om = &ObjectManager::getInstance(); 
+                $res = $om->read($object_class, $object_id, ['question_id']);
+                return '#/question/'.$res[$object_id]['question_id'];
+                
             case 'resiexchange\QuestionComment':
+            
             case 'resiexchange\AnswerComment':                        
         }
         return $link;
@@ -171,7 +198,12 @@ class ResiAPI {
                 'firstname',
                 'lastname', 
                 'publicity_mode',
-                'notifications_ids'
+                'notifications_ids',
+                'notify_reputation_update', 
+                'notify_badge_awarded', 
+                'notify_question_comment', 
+                'notify_answer_comment', 
+                'notify_question_answer'               
                ];
     }
     
@@ -244,17 +276,56 @@ class ResiAPI {
     }
     
 
-    public static function notifyUser($user_id, $title, $content) {
+    /*
+    * type      integer     type of notification (reputation_update, badge_awarded, question_answered, question_commented, answer_commented)
+    * title     string      sort title describing the notice
+    * content   string      html to be displayed (whatever the media)
+    */
+    public static function userNotify($user_id, $type, $notification) {
         $om = &ObjectManager::getInstance();
-// todo : here is the right place to send an email if necessary        
-// store message in spool
-// todo : script run by cron to send emails every ? minutes
+        $user_data = self::loadUserPrivate($user_id);
+        // if notification has to be sent by email, store message in spool
+        if(isset($user_data['notify_'.$type]) && $user_data['notify_'.$type]) {
+            self::spool($user_id, $notification['subject'], $notification['body']);  
+        }
         // in case we decide to send emails, here is the place to add something to user queue
         return $om->create('resiway\UserNotification', [  
             'user_id'   => $user_id, 
-            'title'     => $title, 
-            'content'   => $content
+            'title'     => $notification['subject'], 
+            'content'   => $notification['body']
         ]);        
+    }
+    
+    
+    private static function getUserNotification($template_id, $lang, $data) {
+        $om = &ObjectManager::getInstance();
+
+        // subject of the email should be defined in the template, as a <var> tag holding a 'title' attribute
+        $subject = '';
+        // read template according to user prefered language
+        $file = "packages/resiway/i18n/{$lang}/{$template_id}.html";
+        if(!($html = @file_get_contents($file, FILE_TEXT))) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
+        
+        $template = new HtmlTemplate($html, 
+                                    // we put in the renderer values common to all templates
+                                    [
+                                    'subject'		=>	function ($params, $attributes) use (&$subject) {
+                                                            $subject = $attributes['title'];
+                                                            return '';
+                                                        },
+                                    'url_object'	=>	function ($params, $attributes) {
+                                                            $link = self::makeLink($params['object_class'], $params['object_id']);
+                                                            return "<a href=\"http://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
+                                                        },                                                        
+                                    'url_profile'	=>	function ($params, $attributes) {
+                                                            return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                                        }
+                                    ], 
+                                    // remaining data is given in the $data parameter
+                                    $data);
+        // parse template as html
+        $body = $template->getHtml();
+        return array("subject" => $subject, "body" => $body);
     }
     
     /**
@@ -266,7 +337,7 @@ class ResiAPI {
     * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
     * @param    integer  $object_id     identifier of the object on which action is performed
     * @param    integer  $sign          +1 for incrementing reputation, -1 to decrement it
-    * @return   boolean  returns an array holding user an author resulting ids and increments
+    * @return   array    returns an array holding user and author respective ids and increments
     */      
     private static function impactReputation($user_id, $action_id, $object_class, $object_id, $sign=1) {
         $result = ['user' => ['id' => $user_id, 'increment' => 0], 'author' => ['id' => 0, 'increment' => 0]];
@@ -396,40 +467,77 @@ class ResiAPI {
     * @param    integer  $object_id     identifier of the object on which action is performed
     * @return   boolean  returns true if operation succeeds, false otherwise.    
     */
-    public static function registerAction($user_id, $action_id, $object_class, $object_id) {
+    public static function registerAction($user_id, $action_name, $object_class, $object_id) {        
+        // retrieve action identifier
+        $action_id = self::actionId($action_name);
+
         // check params consistency
         if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return;
         
         $impact = self::impactReputation($user_id, $action_id, $object_class, $object_id, 1);
+        $author_id = $impact['author']['id'];
         
         $om = &ObjectManager::getInstance();
         
+        // register action
         $om->create('resiway\ActionLog', [
                         'user_id'               => $user_id,
-                        'author_id'             => $impact['author']['id'],
+                        'author_id'             => $author_id,
                         'action_id'             => $action_id, 
                         'object_class'          => $object_class, 
                         'object_id'             => $object_id,
                         'user_increment'        => $impact['user']['increment'],
                         'author_increment'      => $impact['author']['increment']
                        ]);
+                       
+        // handle notifications
+        $user_data = self::loadUserPrivate($user_id);
+        $author_data = self::loadUserPrivate($author_id);    
+
+        $res = $om->read($object_class, $object_id, ['id', 'name']);
+        $object = $res[$object_id];
+        
+        // build array that will hold the data for the message
+        $data = [
+            'user'          => $user_data,
+            'author'        => $author_data,
+            'object'        => $object,
+            'object_id'     => $object_id,
+            'object_class'  => $object_class            
+        ];        
+                
+        // handle notifiable actions 
+        switch($action_name) {
+        case 'resiexchange_question_answer':
+            $notification = self::getUserNotification('notification_question_answer', $author_data['language'], $data);
+            self::userNotify($author_id, 'question_answer', $notification);
+            break;
+        case 'resiexchange_question_comment':
+            $notification = self::getUserNotification('notification_question_comment', $author_data['language'], $data);
+            self::userNotify($author_id, 'question_comment', $notification);        
+            break;
+        case 'resiexchange_answer_comment':
+            $notification = self::getUserNotification('notification_answer_comment', $author_data['language'], $data);
+            self::userNotify($author_id, 'answer_comment', $notification);        
+            break;
+        }
+        
         // notify users if there is any reputation change 
         if($impact['user']['increment'] != 0) {
-            self::notifyUser($user_id, 
-                            "reputation updated", 
-                            sprintf("%d points", $impact['user']['increment'])
-                            );
-            
+            $data['reputation_increment'] = sprintf("%+d", $impact['user']['increment']);
+            $notification = self::getUserNotification('notification_reputation_update', $user_data['language'], $data);
+            self::userNotify($user_id, 'reputation_update', $notification);            
         }
         if($impact['author']['increment'] != 0) {
-            self::notifyUser($user_id, 
-                            "reputation updated", 
-                            sprintf("%d points", $impact['author']['increment'])
-                            );
-            
-        }
+            $data['user'] = $author_data;
+            $data['reputation_increment'] = sprintf("%+d", $impact['author']['increment']);
+            $notification = self::getUserNotification('notification_reputation_update', $author_data['language'], $data);            
+            self::userNotify($author_id, 'reputation_update', $notification);            
+        }        
+
     }
-    
+
+     
     /**
     * Removes latest record of the given action from the log.
     *
@@ -439,7 +547,10 @@ class ResiAPI {
     * @param    integer  $object_id     identifier of the object on which action is performed
     * @return   boolean  returns true if operation succeeds, false otherwise.
     */
-    public static function unregisterAction($user_id, $action_id, $object_class, $object_id) {
+    public static function unregisterAction($user_id, $action_name, $object_class, $object_id) {
+        // retrieve action identifier
+        $action_id = self::actionId($action_name);
+        
         // check params consistency
         if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return;
         
@@ -558,13 +669,18 @@ class ResiAPI {
             ++$bagdes_increment[ $user_badge['badge_id.type'] ];
             $uid = $user_badge['user_id'];
             $bid = $user_badge['badge_id'];
-// todo : make this multilang and manage email sending according to user settings            
-            $notification_id = self::notifyUser($uid, 
-                                                "new badge awarded", 
-                                                "Congratulations ! You've just been awarded badge '{$user_badge['badge_id.name']}'"
-                                                );
+            $user_data = self::loadUserPrivate($uid);
+            
+            $data = [
+                'user' => $user_data,
+                'object' => ['id' => $bid, 'name' => $user_badge['badge_id.name'] ]
+            ];
+
+            $notification = self::getUserNotification('notification_badge_awarded', $user_data['language'], $data);
+            $notification_id = self::userNotify($uid, 'badge_awarded', $notification);   
+
             if($notification_id > 0) {
-                $notifications[] = ['id' => $notification_id, 'title' => "new badge awarded"];
+                $notifications[] = ['id' => $notification_id, 'title' => "notification_badge_awarded"];
             }                       
         }
         // update user badges-counts, if any
@@ -653,21 +769,18 @@ class ResiAPI {
         // determine which operation has to be performed ($do or $undo)        
         if($toggle
            && self::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {
-            self::unregisterAction($user_id, $action_id, $object_class, $object_id);        
+            self::unregisterAction($user_id, $action_name, $object_class, $object_id);        
             $result = $undo($om, $user_id, $object_class, $object_id);                    
         }
         else {
-            if(isset($concurrent_action_id) 
+            if(isset($concurrent_action) 
                && self::isActionRegistered($user_id, $concurrent_action_id, $object_class, $object_id)) {
-                self::unregisterAction($user_id, $concurrent_action_id, $object_class, $object_id);        
+                self::unregisterAction($user_id, $concurrent_action, $object_class, $object_id);        
                 $result = $undo($om, $user_id, $object_class, $object_id);
             }
             else {
-                self::registerAction($user_id, $action_id, $object_class, $object_id);        
+                self::registerAction($user_id, $action_name, $object_class, $object_id);        
                 $result = $do($om, $user_id, $object_class, $object_id);
-// todo : notify author about changes
-// une action a été réalisée sur une de vos contributions : 
-// [action_name] : 'user.display_name' répondu / commenté votre question
             }
         }
         
