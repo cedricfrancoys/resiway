@@ -63,9 +63,27 @@
 }
 
 
-
 .question {
     position: relative;
+}
+
+.question-stats {
+    disaply: table;
+}
+
+.question-stats .stat-row {
+    display: table-row;
+}
+
+.question-stats .title {
+    line-height: 25px;
+    display: table-cell;
+}
+
+.question-stats .content {
+    display: table-cell;
+    padding-left: 10px;
+    
 }
 
 .answers, .user-answer {
@@ -320,7 +338,7 @@
     display: inline-block;
     float: left;
     padding-left: 3px;
-    width: 15px;
+    width: 25px;
     margin-top: -5px;
 }
 
@@ -330,7 +348,7 @@
 .comments .comment .comment-vote .comment-actions .comment-voteup, 
 .comments .comment .comment-vote .comment-actions .comment-flag {
     display: inline-block;
-    line-height: 12px;
+    line-height: 25px;
     height: 15px;
     width: 16px;
 }

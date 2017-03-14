@@ -41,14 +41,17 @@
         </div>
         <!-- notifications dialog -->        
         <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
-            <div class="head">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</div>
+            <div class="head">
+                <a href="#/user/notifications/{{user.id}}">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
+                <a href class="pull-right">tout marquer comme lu</a>
+            </div>
             <ul>
                 <li ng-repeat="(notification_index, notification) in user.notifications">
                     <div class="title"><a href="#/user/notifications/{{user.id}}">{{notification.title}}</a></div>
-                    <div class="descr">{{notification.content}}</div>
+                    <div class="descr" ng-bind-html="notification.content"></div>
                 </li>
             </ul>
-            <div class="foot"><a href="#/user/notifications/{{user.id}}"><i class="fa fa-plus" aria-hidden="true"></i> Voir toutes les notifications</a></div>
+            <div class="foot"><a href="#/user/notifications/{{user.id}}">+ Voir toutes les notifications</a></div>
         </div>
         <!-- help dialog -->
         <div class="help-dialog" ng-show="ctrl.helpDropdown">
@@ -84,7 +87,7 @@
                 </div>            
                 <div id="notify-btn" class="notify-btn ng-hide hidden-xs" ng-class="{open: ctrl.notifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user.id">
                     <i class="fa fa-inbox" aria-hidden="true"></i>
-                    <span ng-show="user.notifications.length" class="unread-count">{{user.notifications.length}}</span>
+                    <span ng-show="user.notifications.length" class="unread-count bg-info">{{user.notifications.length}}</span>
                 </div>
                 <div id="help-btn" class="help-btn hidden-xs" ng-class="{open: ctrl.helpDropdown}" ng-click="toggleHelpDropdown()">
                     Aide 

@@ -10,6 +10,9 @@ class Badge extends \easyobject\orm\Object {
         return array(
             'name'			    => array('type' => 'string', 'multilang' => true),
             'description'       => array('type' => 'string', 'multilang' => true),
+
+            /* human-readable unique identifier*/
+            'code'			    => array('type' => 'string'),
             
             /* category of badge : 1, 2 or 3 - for bronze, silver, gold / badge_1, badge_2, badge_3 */
             'type'              => array('type' => 'integer'),
@@ -46,10 +49,10 @@ class Badge extends \easyobject\orm\Object {
         switch($badge) {
 
         case 'curious':
-
-            return (float) 1;
+            $res = $om->search('resiexchange\Question', ['creator', '=', $uid]);
+            return (float) (count($res)/1);
         
-        case 'verified human':
+        case 'verified_human':
             $users = $om->read('resiway\User', $uid, ['verified']);
             return (float) $users[$uid]['verified'];        
             

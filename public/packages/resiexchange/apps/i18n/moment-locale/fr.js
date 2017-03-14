@@ -32,7 +32,7 @@ var fr = moment.defineLocale('fr', {
         nextWeek: 'dddd [à] LT',
         lastDay: '[hier à] LT',
         lastWeek: 'dddd [dernier à] LT',
-        sameElse: 'LLL'
+        sameElse: '[le] LLL'
     },
     relativeTime : {
         future : 'dans %s',

@@ -286,7 +286,9 @@ class ResiAPI {
         $user_data = self::loadUserPrivate($user_id);
         // if notification has to be sent by email, store message in spool
         if(isset($user_data['notify_'.$type]) && $user_data['notify_'.$type]) {
-            self::spool($user_id, $notification['subject'], $notification['body']);  
+            // append a notice to all mails sent by resiway
+            $email_notice = self::getUserNotification('mail_notice', $user_data['language'], ['user'=>$user_data['id']]);
+            self::spool($user_id, 'ResiWay - '.$notification['subject'], $notification['body'].$email_notice['body']);  
         }
         // in case we decide to send emails, here is the place to add something to user queue
         return $om->create('resiway\UserNotification', [  
@@ -296,35 +298,40 @@ class ResiAPI {
         ]);        
     }
     
-    
+    /*
+    *
+    * $data is expected to be an array holding a 'user' entry with, at least, a 'id' index
+    */
     private static function getUserNotification($template_id, $lang, $data) {
         $om = &ObjectManager::getInstance();
 
         // subject of the email should be defined in the template, as a <var> tag holding a 'title' attribute
         $subject = '';
+        $body = '';
+        
         // read template according to user prefered language
         $file = "packages/resiway/i18n/{$lang}/{$template_id}.html";
-        if(!($html = @file_get_contents($file, FILE_TEXT))) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
-        
-        $template = new HtmlTemplate($html, 
-                                    // we put in the renderer values common to all templates
-                                    [
-                                    'subject'		=>	function ($params, $attributes) use (&$subject) {
-                                                            $subject = $attributes['title'];
-                                                            return '';
-                                                        },
-                                    'url_object'	=>	function ($params, $attributes) {
-                                                            $link = self::makeLink($params['object_class'], $params['object_id']);
-                                                            return "<a href=\"http://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
-                                                        },                                                        
-                                    'url_profile'	=>	function ($params, $attributes) {
-                                                            return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
-                                                        }
-                                    ], 
-                                    // remaining data is given in the $data parameter
-                                    $data);
-        // parse template as html
-        $body = $template->getHtml();
+        if( ($html = @file_get_contents($file, FILE_TEXT)) ) {
+            $template = new HtmlTemplate($html, 
+                                        // renderer is in charge of resolving vars common to all templates
+                                        [
+                                        'subject'		=>	function ($params, $attributes) use (&$subject) {
+                                                                $subject = $attributes['title'];
+                                                                return '';
+                                                            },
+                                        'url_object'	=>	function ($params, $attributes) {
+                                                                $link = self::makeLink($params['object_class'], $params['object_id']);
+                                                                return "<a href=\"http://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
+                                                            },                                                        
+                                        'url_profile'	=>	function ($params, $attributes) {
+                                                                return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                                            }
+                                        ], 
+                                        // remaining data is given in the $data parameter
+                                        $data);
+            // parse template as html
+            $body = $template->getHtml();
+        }
         return array("subject" => $subject, "body" => $body);
     }
     

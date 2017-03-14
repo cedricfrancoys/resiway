@@ -279,7 +279,7 @@ angular.module('resiexchange')
                     }
                     if(response.data.result < 0) {
                         // given values not accepted
-                        $auth.clearCredentials();
+                        // $auth.clearCredentials();
                         return deferred.reject(response.data);
                     }
                     return deferred.resolve(response.data.result);
@@ -438,7 +438,9 @@ angular.module('resiexchange')
 .service('feedbackService', ['$window', function($window) {
     var popover = {
         content: '',
-        elem: null
+        elem: null,
+        classname: null,
+        id: null
     };
     return {
         /**
@@ -449,11 +451,21 @@ angular.module('resiexchange')
             return popover.content;
         },
         
+        classname: function() {
+            var parent_elem = angular.element(document.querySelector( '#'+popover.id ));
+            parent_elem.parent().parent().parent().addClass(popover.classname);
+            return popover.classname;
+        },
+
+        id: function() {
+            return popover.id;
+        },
+        
         /**
         * Scrolls to target element and
         * if msg is not empty, displays popover 
         */           
-        popover: function (selector, msg) {
+        popover: function (selector, msg, classname) {            
             // popover has been previously assign
             closePopover();
 
@@ -463,6 +475,8 @@ angular.module('resiexchange')
             // save target content and element
             popover.content = msg;
             popover.elem = elem;
+            popover.id = 'popover-'+elem.attr('id');
+            popover.classname = 'popover-' + (classname || 'danger');
 
             // scroll to element, if outside viewport
             var elemYOffset = elem[0].offsetTop;

@@ -36,9 +36,9 @@ class UserBadge extends \easyobject\orm\Object {
         // ensure Badge class is loaded
         $om->getStatic('resiway\Badge');
         // get selected UserBadge objects
-        $objects = $om->read(__CLASS__, $ids, ['badge_id.name', 'user_id']);
+        $objects = $om->read(__CLASS__, $ids, ['badge_id.code', 'user_id']);
         foreach($objects as $oid => $object) {
-            $res[$oid] = Badge::computeBadge($om, $object['badge_id.name'], $object['user_id']);
+            $res[$oid] = Badge::computeBadge($om, $object['badge_id.code'], $object['user_id']);
         }
         return $res;
     }

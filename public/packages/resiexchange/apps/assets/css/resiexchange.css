@@ -77,6 +77,90 @@ input[type="text"] {
     font-size: 125%;
 }
 
+.popover-success {
+    color: #3c763d !important;
+    background-color: #dff0d8!important;
+}
+
+.popover-success.top .arrow:after {
+    border-top-color: #dff0d8!important;
+}
+
+.popover-success.bottom .arrow:after {
+    border-bottom-color: #dff0d8!important;
+}
+
+.popover-success.right .arrow:after {
+    border-right-color: #dff0d8!important;
+}
+
+.popover-success.left .arrow:after {
+    border-left-color: #dff0d8!important;
+}
+
+.popover-info {
+    color: #31708f !important;
+    background-color: #d9edf7!important;
+}
+
+.popover-info.top .arrow:after {
+    border-top-color: #d9edf7!important;
+}
+
+.popover-info.bottom .arrow:after {
+    border-bottom-color: #d9edf7!important;
+}
+
+.popover-info.right .arrow:after {
+    border-right-color: #d9edf7!important;
+}
+
+.popover-info.left .arrow:after {
+    border-left-color: #d9edf7!important;
+}
+
+.popover-warning {
+    color: #8a6d3b !important;
+    background-color: #fcf8e3!important;
+}
+
+.popover-warning.top .arrow:after {
+    border-top-color: #fcf8e3!important;
+}
+
+.popover-warning.bottom .arrow:after {
+    border-bottom-color: #fcf8e3!important;
+}
+
+.popover-warning.right .arrow:after {
+    border-right-color: #fcf8e3!important;
+}
+
+.popover-warning.left .arrow:after {
+    border-left-color: #fcf8e3!important;
+}
+
+.popover-danger {
+    color: #a94442 !important;
+    background-color: #f2dede!important;
+}
+
+.popover-danger.top .arrow:after {
+    border-top-color: #f2dede!important;
+}
+
+.popover-danger.bottom .arrow:after {
+    border-bottom-color: #f2dede!important;
+}
+
+.popover-danger.right .arrow:after {
+    border-right-color: #f2dede!important;
+}
+
+.popover-danger.left .arrow:after {
+    border-left-color: #f2dede!important;
+}
+
 /* page */
 
 .page-header, .subheader {
@@ -261,9 +345,27 @@ input[type="text"] {
 }
 
 
-
 .question {
     position: relative;
+}
+
+.question-stats {
+    disaply: table;
+}
+
+.question-stats .stat-row {
+    display: table-row;
+}
+
+.question-stats .title {
+    line-height: 25px;
+    display: table-cell;
+}
+
+.question-stats .content {
+    display: table-cell;
+    padding-left: 10px;
+    
 }
 
 .answers, .user-answer {
@@ -518,7 +620,7 @@ input[type="text"] {
     display: inline-block;
     float: left;
     padding-left: 3px;
-    width: 15px;
+    width: 25px;
     margin-top: -5px;
 }
 
@@ -528,7 +630,7 @@ input[type="text"] {
 .comments .comment .comment-vote .comment-actions .comment-voteup, 
 .comments .comment .comment-vote .comment-actions .comment-flag {
     display: inline-block;
-    line-height: 12px;
+    line-height: 25px;
     height: 15px;
     width: 16px;
 }

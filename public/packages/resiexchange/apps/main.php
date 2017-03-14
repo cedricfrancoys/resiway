@@ -41,7 +41,8 @@ $pdm->set('lang', $params['lang']);
 $pdm->set('channel', $params['channel']);
         
 if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
-    ResiAPI::userSign(json_decode($_COOKIE['username']), json_decode($_COOKIE['password']));
+    // ResiAPI::userSign(json_decode($_COOKIE['username']), json_decode($_COOKIE['password']));
+    ResiAPI::userSign($_COOKIE['username'], $_COOKIE['password']);
 }
 
 ?>

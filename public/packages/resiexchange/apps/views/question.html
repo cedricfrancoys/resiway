@@ -103,7 +103,7 @@
                         <div class="signature" ng-if="question.editor != 0">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'QUESTION_STATS_EDITED_ON' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime">{{'QUESTION_STATS_EDITED' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="#/user/profile/{{question.editor.id}}">
@@ -115,16 +115,16 @@
                                 <div class="user-details">
                                     <a href="#/user/profile/{{question.editor.id}}">{{question.editor.display_name}}</a>
                                     <div>
-                                        <span class="reputation-score" title="reputation score " dir="ltr">{{question.editor.reputation}}</span>
-                                        <span class="badges" title="gold badges">
+                                        <span class="reputation-score" title="reputation score" dir="ltr">{{question.editor.reputation}}</span>
+                                        <span class="badges" title="gold badges" ng-show="question.editor.count_badges_1 > 0">
                                             <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.editor.count_badges_1 }}</span>
                                         </span>
-                                        <span class="badges" title="silver badges">
+                                        <span class="badges" title="silver badges" ng-show="question.editor.count_badges_2 > 0">
                                             <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.editor.count_badges_2 }}</span>
                                         </span>
-                                        <span class="badges" title="bronze badges">
+                                        <span class="badges" title="bronze badges" ng-show="question.editor.count_badges_3 > 0">
                                             <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.editor.count_badges_3 }}</span>
                                         </span>
@@ -135,7 +135,7 @@
                         <div class="signature owner">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'QUESTION_STATS_ASKED_ON' | translate}} {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime">{{'QUESTION_STATS_ASKED' | translate}} {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="#/user/profile/{{question.creator.id}}">
@@ -147,16 +147,16 @@
                                 <div class="user-details">
                                     <a href="#/user/profile/{{question.creator.id}}">{{question.creator.display_name}}</a>
                                     <div>
-                                        <span class="reputation-score" title="reputation score " dir="ltr">{{question.creator.reputation}}</span>
-                                        <span class="badges" title="gold badges">
+                                        <span class="reputation-score" title="reputation score" dir="ltr">{{question.creator.reputation}}</span>
+                                        <span class="badges" title="gold badges" ng-show="question.creator.count_badges_1 > 0">
                                             <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.creator.count_badges_1 }}</span>
                                         </span>
-                                        <span class="badges" title="silver badges">
+                                        <span class="badges" title="silver badges" ng-show="question.creator.count_badges_2 > 0">
                                             <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.creator.count_badges_2 }}</span>
                                         </span>
-                                        <span class="badges" title="bronze badges">
+                                        <span class="badges" title="bronze badges" ng-show="question.creator.count_badges_3 > 0">
                                             <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.creator.count_badges_3 }}</span>
                                         </span>
@@ -185,11 +185,11 @@
                                     <a href
                                        id="comment-{{comment.id}}-voteup"
                                        title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"                                   
-                                       class="fa fa-caret-up" 
+                                       class="fa fa-thumbs-o-up" 
                                        ng-click="questionCommentVoteUp($event, comment_index)"
                                        uib-popover-template="'popoverCustom.html'" 
                                        popover-trigger="'toggle-popover'" 
-                                       popover-placement="right"                                    
+                                       popover-placement="right"
                                        aria-hidden="true">
                                     </a>
                                 </div>
@@ -285,7 +285,7 @@
                         <a href 
                            id="answer-{{answer.id}}-voteup"
                            title="{{'QUESTION_ANSWER_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
-                           class="fa fa-caret-up"
+                           class="fa fa-thumbs-o-up"
                            ng-click="answerVoteUp($event, answer_index)" 
                            uib-popover-template="'popoverCustom.html'" 
                            popover-trigger="'toggle-popover'" 
@@ -301,7 +301,7 @@
                         <a href
                            id="answer-{{answer.id}}-votedown"
                            title="{{'QUESTION_ANSWER_ACTIONS_VOTEDOWN_TOOLTIP' | translate}}"
-                           class="fa fa-caret-down"
+                           class="fa fa-thumbs-o-down"
                            ng-click="answerVoteDown($event, answer_index)" 
                            uib-popover-template="'popoverCustom.html'" 
                            popover-trigger="'toggle-popover'" 
@@ -422,7 +422,7 @@
                                         <a href
                                            id="answer-{{answer.id}}-comment-{{comment.id}}-voteup"
                                            title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
-                                           class="fa fa-caret-up"
+                                           class="fa fa-fa-thumbs-o-up"
                                            ng-class="{on: comment.history['resiexchange_answercomment_voteup']}"                                           
                                            ng-click="answerCommentVoteUp($event, answer_index, comment_index)"
                                            uib-popover-template="'popoverCustom.html'" 
@@ -535,39 +535,47 @@
         <div class="panel panel-default">
             <div class="container">
                 <div class="module question-stats">
-			        <table id="qinfo">
-			            <tbody>
-                        <tr>
-			                <td>
-			                    <p class="label-key">{{'QUESTION_STATS_ASKED' | translate}}</p>
-			                </td>
-			                <td style="padding-left: 10px">
-			                    <p class="label-key"><b>{{question.created}}</b></p>
-			                </td>
-			            </tr>
-			            <tr>
-			                <td>
-			                    <p class="label-key">{{'QUESTION_STATS_VIEWED' | translate}}</p>
-			                </td>
-
-			                <td style="padding-left: 10px">
-			                    <p class="label-key">
-			                        <b>{{question.count_views}} {{'QUESTION_STATS_TIMES' | translate}}</b>
-			                    </p>
-			                </td>
-			            </tr>
-			            <tr>
-                            <td>
-                                <p class="label-key">{{'QUESTION_STATS_ACTIVE' | translate}}</p>
-                            </td>
-                            <td style="padding-left: 10px">
-                                <p class="label-key">
-                                    <b>{{question.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
-                                </p>
-                            </td>
-			            </tr>
-                        </tbody>
-                    </table>
+                    <div class="stat-row">
+                        <div class="title">
+                            {{'QUESTION_STATS_ASKED' | translate}}
+                        </div>
+                        <div class="content">
+                            <b>{{question.created}}</b>
+                        </div>
+                    </div>
+                    <div class="stat-row">                    
+                        <div class="title">
+                            {{'QUESTION_STATS_VIEWED' | translate}}
+                        </div>
+                        <div class="content">
+                            <b>{{question.count_views}} {{'QUESTION_STATS_TIMES' | translate}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            {{'QUESTION_STATS_ACTIVE' | translate}}
+                        </div>
+                        <div class="content">
+                            <b>{{question.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            Auteur
+                        </div>
+                        <div class="content">
+                            <b>{{question.creator.display_name}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            
+                        </div>
+                        <div class="content">
+                            <p ng-bind-html="question.creator.about"></p>
+                        </div>
+                    </div>                        
+                    
 			    </div>
             </div>
         </div>

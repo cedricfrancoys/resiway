@@ -209,7 +209,6 @@ var resiway = angular.module('resiexchange', [
         $rootScope.$on('$locationChangeStart', function(angularEvent) {
             // mark content as being loaded (show loading spinner)
             $rootScope.viewContentLoading = true;
-            console.log(angularEvent);
         });
 
         // when location has just been changed, remember previous path

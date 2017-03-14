@@ -90,6 +90,6 @@ class HtmlTemplate {
 		}
 		// add trailer
 		$html .= substr($this->template, $previous_pos);
-		return $html;
+		return trim($html);
 	}	
 }
