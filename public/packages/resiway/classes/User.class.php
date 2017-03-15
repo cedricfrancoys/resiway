@@ -52,7 +52,7 @@ class User extends \easyobject\orm\Object {
             'country'			=> array('type' => 'string'),
             'location'			=> array('type' => 'string'),
 
-            'about'			    => array('type' => 'text'),
+            'about'			    => array('type' => 'html'),
             
             'reputation'		=> array('type' => 'integer'),
             
