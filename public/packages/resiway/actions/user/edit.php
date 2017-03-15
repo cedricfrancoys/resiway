@@ -4,7 +4,8 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
-
+use html\HTMLPurifier as HTMLPurifier;
+use easyobject\orm\DataAdapter as DataAdapter;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -70,6 +71,12 @@ list($action_name, $object_class, $object_id) = [
     'resiway\User',
     $params['id']
 ];
+
+// override ORM method for cleaning HTML (for field 'content')
+DataAdapter::setMethod('ui', 'orm', 'html', function($value) {
+    $purifier = new HTMLPurifier(ResiAPI::getHTMLPurifierConfig());    
+    return $purifier->purify($value);
+});
 
 try {
 // try to perform action
