@@ -85,7 +85,7 @@ class HtmlTemplate {
 			$pos = $matches[0][$i][1];
 			$len = strlen($matches[0][$i][0]);
 			// replace tag with content and build resulting html
-			$html .= trim(substr($this->template, $previous_pos, ($pos-$previous_pos)).$this->decorator($attributes));
+			$html .= substr($this->template, $previous_pos, ($pos-$previous_pos)).$this->decorator($attributes);
 			$previous_pos = $pos + $len;
 		}
 		// add trailer

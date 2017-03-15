@@ -452,8 +452,12 @@ angular.module('resiexchange')
         },
         
         classname: function() {
-            var parent_elem = angular.element(document.querySelector( '#'+popover.id ));
-            parent_elem.parent().parent().parent().addClass(popover.classname);
+            // quick workaround to set popover background according to classname (could be done with custom directive)
+            var domElem = document.querySelector('#'+popover.id);
+            if(domElem && typeof(domElem) != 'undefined') {
+                var parent_elem = angular.element(domElem);
+                parent_elem.parent().parent().parent().addClass(popover.classname);
+            }
             return popover.classname;
         },
 

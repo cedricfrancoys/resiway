@@ -387,15 +387,15 @@
                                         <a href="#/user/profile/{{answer.creator.id}}">{{answer.creator.display_name}}</a>
                                         <div>
                                             <span class="reputation-score" title="reputation score " dir="ltr">{{answer.creator.reputation}}</span>
-                                            <span class="badges" title="gold badges">
+                                            <span class="badges" title="gold badges" ng-show="answer.creator.count_badges_1 > 0">
                                                 <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                                 <span class="badgecount">{{ answer.creator.count_badges_1 }}</span>
                                             </span>
-                                            <span class="badges" title="silver badges">
+                                            <span class="badges" title="silver badges" ng-show="answer.creator.count_badges_2 > 0">
                                                 <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                                 <span class="badgecount">{{ answer.creator.count_badges_2 }}</span>
                                             </span>
-                                            <span class="badges" title="bronze badges">
+                                            <span class="badges" title="bronze badges" ng-show="answer.creator.count_badges_3 > 0">
                                                 <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                                 <span class="badgecount">{{ answer.creator.count_badges_3 }}</span>
                                             </span>

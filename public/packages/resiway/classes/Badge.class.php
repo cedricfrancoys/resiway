@@ -57,8 +57,9 @@ class Badge extends \easyobject\orm\Object {
             return (float) $users[$uid]['verified'];        
             
         case 'autobiographer':
-            $required_fields = ['firstname', 'lastname', 'language', 'country', 'location', 'about'];
+            $required_fields = ['login', 'firstname', 'lastname', 'language', 'country', 'location', 'about'];
             $users = $om->read('resiway\User', $uid, $required_fields);
+            if(!isset($users[$uid])) return (float) 0;
             $count = 0;
             $filled = 0;
             foreach($users[$uid] as $field => $value) {

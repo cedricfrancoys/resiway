@@ -14,7 +14,7 @@ class User extends \easyobject\orm\Object {
             'last_login'         => array('type' => 'datetime'),
             
             /* valid email of the user */
-            'login'			    => array('type' => 'string', 'unique' => true),
+            'login'			    => array('type' => 'string'),
             
             'password'			=> array('type' => 'string'),
             
@@ -98,6 +98,12 @@ class User extends \easyobject\orm\Object {
                                     
                                     
                                    
+        );
+    }
+
+    public static function getUnique() {
+        return array(
+            ['login']
         );
     }
     

@@ -77,7 +77,6 @@ $types_associations = array(
 
 $m2m_tables = array();
 
-// todo : handle the 'unique' attribute
 
 foreach($classes_list as $class) {
 	// get the full class name
@@ -86,6 +85,8 @@ foreach($classes_list as $class) {
 	$table_name = get_object_table_name($class_name);	
 	// get the schema
 	$schema = get_object_schema($class_name);
+    // get static instance
+    $object = &get_object_static($class_name);
 	// init result array
 	$result[] = "CREATE TABLE IF NOT EXISTS `{$table_name}` (";
 	
@@ -105,6 +106,15 @@ foreach($classes_list as $class) {
 		}
 	}
 	$result[] = "PRIMARY KEY (`id`)";
+
+    if(method_exists($object, 'getUnique')) {
+        $list = $object::getUnique();
+        foreach($list as $fields) {
+            $result[] = ",\nUNIQUE KEY `{$fields[0]}` (`".implode('`,`', $fields)."`)";
+        }
+    
+    }
+    
 	$result[] = ") DEFAULT CHARSET=utf8;\n";
 }
 

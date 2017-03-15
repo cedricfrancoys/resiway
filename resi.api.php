@@ -287,7 +287,7 @@ class ResiAPI {
         // if notification has to be sent by email, store message in spool
         if(isset($user_data['notify_'.$type]) && $user_data['notify_'.$type]) {
             // append a notice to all mails sent by resiway
-            $email_notice = self::getUserNotification('mail_notice', $user_data['language'], ['user'=>$user_data['id']]);
+            $email_notice = self::getUserNotification('mail_notice', $user_data['language'], ['user'=>$user_data]);
             self::spool($user_id, 'ResiWay - '.$notification['subject'], $notification['body'].$email_notice['body']);  
         }
         // in case we decide to send emails, here is the place to add something to user queue
@@ -645,6 +645,15 @@ class ResiAPI {
         if(!is_array($res) || !isset($res[$object_id])) return $notifications;
         $author_id = $res[$object_id]['creator'];
         
+        
+        // initialize missing badges, if any (this will generate no duplicates since columns ['user_id', 'badge_id'] is set as unique)
+        foreach($action_data['badges_ids'] as $badge_id) {
+            $om->create('resiway\UserBadge', ['user_id' => $user_id, 'badge_id' => $badge_id]);
+            if($author_id) {
+                $om->create('resiway\UserBadge', ['user_id' => $author_id, 'badge_id' => $badge_id]);            
+            }
+        }
+ 
         // get badges impacted by current action
         $users_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', 'in', array($user_id, $author_id)]]);
         if($users_badges_ids < 0 || !count($users_badges_ids)) return $notifications;

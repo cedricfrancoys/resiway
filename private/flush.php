@@ -20,6 +20,8 @@ $messages_folder = '../spool';
 
 list($result, $error_message_ids) = [true, []];
 
+set_silent(false);
+
 try {
     $files = scandir($messages_folder);
 

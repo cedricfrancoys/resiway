@@ -96,7 +96,7 @@ class Object {
 	}
 
     /**
-	* Returns the fields names of the specified types
+	* Returns all fields names 
 	*
 	*/
 	public final function getFields() {

@@ -411,23 +411,31 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
-.controller('homeController', ['$http', function($http) {
+.controller('homeController', ['$http', '$rootScope', '$location', function($http, $rootScope, $location) {
     var ctrl = this;
 
     console.log('home controller');  
     
     $http.get('index.php?get=resiexchange_stats')
-        .then(
-        function successCallback(response) {
-            var data = response.data;
-            if(typeof response.data.result == 'object') {
-                ctrl.count_questions = data.result['resiexchange.count_questions'];
-                ctrl.count_answers = data.result['resiexchange.count_answers'];
-                ctrl.count_comments = data.result['resiexchange.count_comments'];
-            }
-        },
-        function errorCallback() {
-            // something went wrong server-side
-        }); 
-  
+    .then(
+    function successCallback(response) {
+        var data = response.data;
+        if(typeof response.data.result == 'object') {
+            ctrl.count_questions = data.result['resiexchange.count_questions'];
+            ctrl.count_answers = data.result['resiexchange.count_answers'];
+            ctrl.count_comments = data.result['resiexchange.count_comments'];
+        }
+    },
+    function errorCallback() {
+        // something went wrong server-side
+    }); 
+
+    ctrl.search = function(criteria){
+        // update global criteria
+        $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
+        // go to questions list page
+        if($location.path() == '/questions') $route.reload();
+        else $location.path('/questions');
+    };
+    
 }]);

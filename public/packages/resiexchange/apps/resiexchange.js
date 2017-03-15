@@ -541,25 +541,33 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
-.controller('homeController', ['$http', function($http) {
+.controller('homeController', ['$http', '$rootScope', '$location', function($http, $rootScope, $location) {
     var ctrl = this;
 
     console.log('home controller');  
     
     $http.get('index.php?get=resiexchange_stats')
-        .then(
-        function successCallback(response) {
-            var data = response.data;
-            if(typeof response.data.result == 'object') {
-                ctrl.count_questions = data.result['resiexchange.count_questions'];
-                ctrl.count_answers = data.result['resiexchange.count_answers'];
-                ctrl.count_comments = data.result['resiexchange.count_comments'];
-            }
-        },
-        function errorCallback() {
-            // something went wrong server-side
-        }); 
-  
+    .then(
+    function successCallback(response) {
+        var data = response.data;
+        if(typeof response.data.result == 'object') {
+            ctrl.count_questions = data.result['resiexchange.count_questions'];
+            ctrl.count_answers = data.result['resiexchange.count_answers'];
+            ctrl.count_comments = data.result['resiexchange.count_comments'];
+        }
+    },
+    function errorCallback() {
+        // something went wrong server-side
+    }); 
+
+    ctrl.search = function(criteria){
+        // update global criteria
+        $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
+        // go to questions list page
+        if($location.path() == '/questions') $route.reload();
+        else $location.path('/questions');
+    };
+    
 }]);
 
 angular.module('resiexchange')
@@ -1015,8 +1023,12 @@ angular.module('resiexchange')
         },
         
         classname: function() {
-            var parent_elem = angular.element(document.querySelector( '#'+popover.id ));
-            parent_elem.parent().parent().parent().addClass(popover.classname);
+            // quick workaround to set popover background according to classname (could be done with custom directive)
+            var domElem = document.querySelector('#'+popover.id);
+            if(domElem && typeof(domElem) != 'undefined') {
+                var parent_elem = angular.element(domElem);
+                parent_elem.parent().parent().parent().addClass(popover.classname);
+            }
             return popover.classname;
         },
 

@@ -24,6 +24,12 @@ class UserBadge extends \easyobject\orm\Object {
             'status'		    => array('type' => 'function', 'result_type' => 'float', 'store' => true, 'function' => 'resiway\UserBadge::getStatus'),
         );
     }
+    
+    public static function getUnique() {
+        return array( 
+            ['user_id', 'badge_id'] 
+        );
+    }
 
     public static function getDefaults() {
         return array(
