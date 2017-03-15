@@ -315,17 +315,21 @@ class ResiAPI {
             $template = new HtmlTemplate($html, 
                                         // renderer is in charge of resolving vars common to all templates
                                         [
-                                        'subject'		=>	function ($params, $attributes) use (&$subject) {
-                                                                $subject = $attributes['title'];
-                                                                return '';
+                                        'subject'		    =>	function ($params, $attributes) use (&$subject) {
+                                                                    $subject = $attributes['title'];
+                                                                    return '';
                                                             },
-                                        'url_object'	=>	function ($params, $attributes) {
-                                                                $link = self::makeLink($params['object_class'], $params['object_id']);
-                                                                return "<a href=\"http://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
+                                        'url_object'	    =>	function ($params, $attributes) {
+                                                                    $link = self::makeLink($params['object_class'], $params['object_id']);
+                                                                    return "<a href=\"http://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
                                                             },                                                        
-                                        'url_profile'	=>	function ($params, $attributes) {
-                                                                return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                        'url_profile'	    =>	function ($params, $attributes) {
+                                                                    return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/profile/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                                            },
+                                        'url_profile_edit'	=>	function ($params, $attributes) {
+                                                                    return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
                                                             }
+                                                            
                                         ], 
                                         // remaining data is given in the $data parameter
                                         $data);
