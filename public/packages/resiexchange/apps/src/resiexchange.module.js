@@ -188,7 +188,9 @@ var resiway = angular.module('resiexchange', [
         // search criteria (filters)
         $rootScope.search = {
             criteria: {
-                domain: [],
+                q: '',              // query string (against question title)
+                c: 0,               // category (result including subcategories)
+                domain: [],         // todo: remove this
                 order: 'title',
                 sort: 'desc',
                 start: 0,

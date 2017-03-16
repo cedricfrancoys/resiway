@@ -808,6 +808,7 @@ todo : to validate
             
             if(!empty($fields)) {
                 $res_w = $this->write($class, $oid, $fields, $lang);
+                // if write method generated an error, return error code instead of object id
                 if($res_w < 0) $res = $res_w;
             }
 		}
@@ -884,7 +885,6 @@ todo: signature differs from other methods	(returned value)
 			
 			// 5) write selected fields to DB
 			$this->store($class, $ids, array_keys($fields), $lang);
-
 
 			// second pass : handle onchange events, if any 
 			// note : this must be done afer modifications otherwise object values might be outdated

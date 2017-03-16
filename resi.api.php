@@ -644,33 +644,62 @@ class ResiAPI {
         if($res < 0 || !isset($res[$action_id])) return $notifications;    
         $action_data = $res[$action_id];
 
-        // retrieve author 
+        // retrieve author (might be 0 for some objects)
         $res = $om->read($object_class, $object_id, ['creator']);
         if(!is_array($res) || !isset($res[$object_id])) return $notifications;
         $author_id = $res[$object_id]['creator'];
+
         
-        
-        // initialize missing badges, if any (this will generate no duplicates since columns ['user_id', 'badge_id'] is set as unique)
-        foreach($action_data['badges_ids'] as $badge_id) {
-            $om->create('resiway\UserBadge', ['user_id' => $user_id, 'badge_id' => $badge_id]);
-            if($author_id) {
-                $om->create('resiway\UserBadge', ['user_id' => $author_id, 'badge_id' => $badge_id]);            
-            }
+        // get user badges impacted by current action
+        $user_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', '=', $user_id]]);
+        // read status and related badge identifier
+        $res = $om->read('resiway\UserBadge', $user_badges_ids, ['awarded', 'badge_id']);
+        if($res < 0) return $notifications;
+        // remove badges already awarded from result list
+        foreach($user_badges_ids as $key => $user_badge_id) {
+            if($res[$user_badge_id]['awarded']) unset($user_badges_ids[$key]);
         }
- 
+        // get list of badges identifiers returned by read method
+        $badges_ids = array_map(function($a){return $a['badge_id'];}, $res);
+        // check against impacted badges identifiers
+        $missing_user_badges = array_diff($action_data['badges_ids'], $badges_ids);
+        // create missing badges, if any         
+        foreach($missing_user_badges as $badge_id) {
+            $user_badges_ids[] = $om->create('resiway\UserBadge', ['user_id' => $user_id, 'badge_id' => $badge_id]);
+        }
+        
+        // author badges impacted by current action   
+        $author_badges_ids = [];
+        // process author badges, in case there is an author
+        if($author_id) {
+            // get user badges impacted by current action
+            $author_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', '=', $author_id]]);
+            // read status and related badge identifier
+            $res = $om->read('resiway\UserBadge', $author_badges_ids, ['awarded', 'badge_id']);
+            if($res < 0) return $notifications;
+            // remove badges already awarded from result list
+            foreach($author_badges_ids as $key => $user_badge_id) {
+                if($res[$user_badge_id]['awarded']) unset($author_badges_ids[$key]);
+            }
+            // get list of badges identifiers returned by read method
+            $badges_ids = array_map(function($a){return $a['badge_id'];}, $res);
+            // check against impacted badges identifiers
+            $missing_author_badges = array_diff($action_data['badges_ids'], $badges_ids);
+            // create missing badges, if any         
+            foreach($missing_author_badges as $badge_id) {
+                $author_badges_ids[] = $om->create('resiway\UserBadge', ['user_id' => $author_id, 'badge_id' => $badge_id]);
+            }
+        }        
+
+
         // get badges impacted by current action
-        $users_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', 'in', array($user_id, $author_id)]]);
+        // $users_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', 'in', array($user_id, $author_id)]]);
+        $users_badges_ids = array_merge($user_badges_ids, $author_badges_ids);
         if($users_badges_ids < 0 || !count($users_badges_ids)) return $notifications;
 
-        // remove badges already awarded from result list
-        $res = $om->read('resiway\UserBadge', $users_badges_ids);
-        if($res < 0) return $notifications; 
-        foreach($users_badges_ids as $key => $user_badge_id) {
-            if($res[$user_badge_id]['awarded']) unset($users_badges_ids[$key]);
-        }
-        
         // force re-computing values of impacted badges
         $om->write('resiway\UserBadge', $users_badges_ids, array('status' => null));
+        // read new status and other data
         $res = $om->read('resiway\UserBadge', $users_badges_ids, ['user_id', 'badge_id', 'status', 'badge_id.type', 'badge_id.name']);
         if($res < 0) return $notifications; 
         
@@ -700,10 +729,10 @@ class ResiAPI {
             $notification_id = self::userNotify($uid, 'badge_awarded', $notification);   
 
             if($notification_id > 0) {
-                $notifications[] = ['id' => $notification_id, 'title' => "notification_badge_awarded"];
+                $notifications[] = ['id' => $notification_id, 'title' => $notification['subject']];
             }                       
         }
-        // update user badges-counts, if any
+        // update user badges-counts, if required
         if(count($res)) {            
             $res = $om->read('resiway\User', $user_id, ['count_badges_1','count_badges_2','count_badges_3']);
             if($res > 0 && isset($res[$user_id])) {
