@@ -1,5 +1,5 @@
-node_modules/
-config/
-spool/
-bin/
-log/
+/node_modules/
+/config/
+/spool/
+/bin/
+/log/

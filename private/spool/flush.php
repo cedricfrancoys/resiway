@@ -9,7 +9,7 @@ use mail\Swift_Mailer as Swift_Mailer;
 use mail\Swift_Message as Swift_Message;
 
 // run this script as if it were located in the public folder
-chdir('../public');
+chdir('../../public');
 set_time_limit(0);
 
 // this utility script uses qinoa library

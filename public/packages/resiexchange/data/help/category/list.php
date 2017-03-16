@@ -20,7 +20,7 @@ $params = QNLib::announce(
 
 // todo : adapt this to allow searches (sse question_list)
 
-list($object_class, $object_id) = ['resiexchange\HelpCategory', $params['id']];
+list($object_class) = ['resiexchange\HelpCategory'];
 
 list($result, $error_message_ids) = [true, []];
 
