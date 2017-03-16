@@ -1,11 +1,12 @@
 {
     "/participate":"?show=resiway.org_participate",
     "/resiexchange":"/resiexchange.fr",
+    "/resiexchange.fr/:any":"/resiexchange.fr",
     "/resiway":"/resiway.fr",
     "/question/:id":"/resiexchange.fr#/question/:id",    
     "/user/confirm/:code":"/resiexchange.fr#/user/confirm/:code",
     "/user/password/:code":"/resiexchange.fr#/user/password/:code",
-    "/resiexchange.fr/:any":"?show=resiexchange_main&lang=fr&channel=1",
+    "/resiexchange.fr":"?show=resiexchange_main&lang=fr&channel=1",
     "/resiway.fr":"?show=resiway_main&lang=fr&channel=1",    
     "/meta.resiexchange.fr":"?show=resiexchange_main&lang=fr&channel=3",    
     "/api/categories":"?get=resiway_category_list&api=1.0",
