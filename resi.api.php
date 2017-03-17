@@ -659,10 +659,8 @@ class ResiAPI {
         foreach($user_badges_ids as $key => $user_badge_id) {
             if($res[$user_badge_id]['awarded']) unset($user_badges_ids[$key]);
         }
-        // get list of badges identifiers returned by read method
-        $badges_ids = array_map(function($a){return $a['badge_id'];}, $res);
-        // check against impacted badges identifiers
-        $missing_user_badges = array_diff($action_data['badges_ids'], $badges_ids);
+        // check list of badges identifiers returned by read method against impacted badges identifiers
+        $missing_user_badges = array_diff($action_data['badges_ids'], array_map(function($a){return $a['badge_id'];}, $res));
         // create missing badges, if any         
         foreach($missing_user_badges as $badge_id) {
             $user_badges_ids[] = $om->create('resiway\UserBadge', ['user_id' => $user_id, 'badge_id' => $badge_id]);
@@ -681,10 +679,8 @@ class ResiAPI {
             foreach($author_badges_ids as $key => $user_badge_id) {
                 if($res[$user_badge_id]['awarded']) unset($author_badges_ids[$key]);
             }
-            // get list of badges identifiers returned by read method
-            $badges_ids = array_map(function($a){return $a['badge_id'];}, $res);
-            // check against impacted badges identifiers
-            $missing_author_badges = array_diff($action_data['badges_ids'], $badges_ids);
+            // check list of badges identifiers returned by read method against impacted badges identifiers
+            $missing_author_badges = array_diff($action_data['badges_ids'], array_map(function($a){return $a['badge_id'];}, $res));
             // create missing badges, if any         
             foreach($missing_author_badges as $badge_id) {
                 $author_badges_ids[] = $om->create('resiway\UserBadge', ['user_id' => $author_id, 'badge_id' => $badge_id]);
