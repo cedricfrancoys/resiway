@@ -19,7 +19,7 @@ $params = QNLib::announce(
 list($result, $error_message_ids) = [true, []];
 
 try {
-    $result = ResiAPI::repositoryGet('resiexchange.%');    
+    $result = ResiAPI::repositoryGet('%.%');    
 }
 catch(Exception $e) {
     $result = $e->getCode();

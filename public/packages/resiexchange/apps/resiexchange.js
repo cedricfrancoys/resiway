@@ -556,6 +556,7 @@ var resiway = angular.module('resiexchange', [
             ctrl.count_questions = data.result['resiexchange.count_questions'];
             ctrl.count_answers = data.result['resiexchange.count_answers'];
             ctrl.count_comments = data.result['resiexchange.count_comments'];
+            ctrl.count_users = data.result['resiway.count_users'];            
         }
     },
     function errorCallback() {

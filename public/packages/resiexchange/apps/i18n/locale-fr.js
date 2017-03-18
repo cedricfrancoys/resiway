@@ -17,6 +17,7 @@ var translations = {
     "TOOLBAR_PLATFORM_OTHER_APPS": "Autres applications",    
     "TOOLBAR_NOTIFICATIONS_TITLE": "Notifications",
     "TOOLBAR_SEARCH_PLACEHOLDER": "Rechercher...",    
+    "TOOLBAR_SEARCH_AMONG_QUESTION_PLACEHOLDER": "Rechercher parmi les Questions & Réponses",   
 
     // Questions  
     "QUESTION_ACTIONS_VOTEUP_TOOLTIP": "This question shows research effort; it is useful and clear",
@@ -67,9 +68,10 @@ var translations = {
     "QUESTIONS_VOTES": "votes",
     "QUESTIONS_ANSWERS": "réponses",
     "QUESTIONS_VIEWS": "vues",
-    "QUESTIONS_STATS_QUESTIONS": "questions",
+    "QUESTIONS_STATS_QUESTIONS": "questions pour faire soi-même",
     "QUESTIONS_STATS_ANSWERS": "réponses",
     "QUESTIONS_STATS_COMMENTS": "commentaires",
+    "QUESTIONS_STATS_USERS": "participants",
     
     // Answers 
     "ANSWER_EDIT_TITLE": "Editer une réponse",

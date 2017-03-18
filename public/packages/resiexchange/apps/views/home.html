@@ -20,15 +20,25 @@
     <div class="col-4-12">
         <div class="panel panel-default">
             <div class="container">
-                <div class="lead" style="border-bottom: 1px solid grey;">
-                    <div class="sectiontitle">Recherche</div>
+                     
+                <div class="container">
+                    <span class="number">{{ctrl.count_questions}}</span>
+                    {{'QUESTIONS_STATS_QUESTIONS' | translate}}
                 </div>
+                <div class="container">
+                    <span class="number">{{ctrl.count_users}}</span>
+                    {{'QUESTIONS_STATS_USERS' | translate}}
+                </div>
+            </div>
+            
+            <div class="container">
+
 
                 <form ng-submit="ctrl.search(ctrl.criteria)">
                     
                         <div class="input-group">
                     
-                    <input type="text" class="form-control" name="q" placeholder="{{'TOOLBAR_SEARCH_PLACEHOLDER'|translate}}" value="" ng-model="ctrl.criteria" autocomplete="off" maxlength="240">                        
+                    <input type="text" class="form-control" name="q" placeholder="{{'TOOLBAR_SEARCH_AMONG_QUESTION_PLACEHOLDER'|translate}}" value="" ng-model="ctrl.criteria" autocomplete="off" maxlength="240">                        
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-primary custom_nav_search_button">Go</button>
                         </span>
@@ -36,23 +46,7 @@
                 </form>
 
             </div>           
-            <div class="container">
-                <div class="lead" style="border-bottom: 1px solid grey;">
-                    <div class="sectiontitle">Chiffres</div>
-                </div>            
-                <div class="container">
-                    <span class="number">{{ctrl.count_questions}}</span>
-                    {{'QUESTIONS_STATS_QUESTIONS' | translate}}
-                </div>
-                <div class="container">
-                    <span class="number">{{ctrl.count_answers}}</span> 
-                    {{'QUESTIONS_STATS_ANSWERS' | translate}}
-                </div>
-                <div class="container">
-                    <span class="number">{{ctrl.count_comments}}</span>
-                    {{'QUESTIONS_STATS_COMMENTS' | translate}}
-                </div>
-            </div>
+
          
             <div class="container">
                 <div class="lead" style="border-bottom: 1px solid grey;">
