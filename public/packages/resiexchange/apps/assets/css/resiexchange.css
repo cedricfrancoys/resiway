@@ -350,7 +350,8 @@ input[type="text"] {
 }
 
 .question-stats {
-    disaply: table;
+    display: table;
+    padding-bottom: 10px;
 }
 
 .question-stats .stat-row {
@@ -366,6 +367,12 @@ input[type="text"] {
     display: table-cell;
     padding-left: 10px;
     
+}
+
+.question-stats .content.about p {
+    max-width: 280px;
+    max-height: 150px;
+    overflow: hidden;   
 }
 
 .answers, .user-answer {
@@ -1982,4 +1989,18 @@ body {
 
 .user-profile .user-facts ul li {
     margin-top: 11px;
+}
+
+.user-profile fieldset {
+    border: solid 1px #ddd;
+    padding-left: 20px;
+}
+
+.user-profile fieldset legend {
+    width: inherit;
+    border: 0;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+color: #555;    
 }

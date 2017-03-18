@@ -336,6 +336,7 @@ angular.module('resiexchange')
                     },
                     function(data) {
                         // something went wrong server-side
+                        console.log('something went wrong server-side');
                         deferred.reject(data); 
                     });                    
                 },

@@ -88,6 +88,7 @@ var translations = {
     "USER_PROFILE_TAB_ANSWERS": "Réponses",
     "USER_PROFILE_TAB_FAVORITES": "Favoris",
     "USER_PROFILE_TAB_ACTIVITY": "Activité",    
+    "USER_PROFILE_TAB_NOTIFICATIONS": "Notifications",    
 
     "USER_PROFILE_EDIT": "Éditer mon profil",
     "USER_PROFILE_REPUTATION": "réputation",
@@ -117,6 +118,12 @@ var translations = {
     "USER_EDIT_COUNTRY": "Pays",
     "USER_EDIT_LOCATION": "Lieu",
     "USER_EDIT_ABOUT": "À propos de moi",    
+    "NOTIFY_REPUTATION_UPDATE": "ma réputation est mise à jour",
+    "NOTIFY_BADGE_AWARDED": "je gagne un nouveau badge",
+    "NOTIFY_QUESTION_COMMENT": "quelqu'un laisse un commentaire sur une de mes questions",
+    "NOTIFY_ANSWER_COMMENT": "quelqu'un laisse un commentaire sur une de mes réponses",    
+    "NOTIFY_QUESTION_ANSWER": "quelqu'un répond à une de mes questions",
+    
     "USER_EDIT_SUBMIT": "Mettre mon profil à jour",        
     "USER_EDIT_UPDATE_PASSWORD": "Modifier mon mot de passe", 
     "USER_EDIT_UPDATE_AVATAR": "Changer d'avatar",

@@ -318,7 +318,9 @@ var resiway = angular.module('resiexchange', [
         // search criteria (filters)
         $rootScope.search = {
             criteria: {
-                domain: [],
+                q: '',              // query string (against question title)
+                c: 0,               // category (result including subcategories)
+                domain: [],         // todo: remove this
                 order: 'title',
                 sort: 'desc',
                 start: 0,
@@ -907,6 +909,7 @@ angular.module('resiexchange')
                     },
                     function(data) {
                         // something went wrong server-side
+                        console.log('something went wrong server-side');
                         deferred.reject(data); 
                     });                    
                 },
@@ -2678,7 +2681,12 @@ angular.module('resiexchange')
     
     var ctrl = this;
 
-    ctrl.user = user;    
+    ctrl.user = user;
+    
+    if(Object.keys(user).length == 0) {
+        console.log('empty object');
+        return;
+    }
     ctrl.publicity_mode = {id: 1, text: 'Fullname'};
     
     ctrl.modes = [ 
@@ -2759,7 +2767,12 @@ angular.module('resiexchange')
                 country: ctrl.user.country,
                 location: ctrl.user.location,
                 about: ctrl.user.about,
-                avatar_url: ctrl.user.avatar_url
+                avatar_url: ctrl.user.avatar_url,
+                notify_reputation_update: ctrl.user.notify_reputation_update,
+                notify_badge_awarded: ctrl.user.notify_badge_awarded,
+                notify_question_comment: ctrl.user.notify_question_comment,
+                notify_answer_comment: ctrl.user.notify_answer_comment,
+                notify_question_answer: ctrl.user.notify_question_answer
             },
             // scope in wich callback function will apply 
             scope: $scope,
