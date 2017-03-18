@@ -33,7 +33,12 @@ class DataAdapter {
 	private static function &getConfig() {
 		if( !isset($GLOBALS['DataAdapter_config']) ) {
             $adapter = array();
-        
+
+            $adapter['boolean']['orm']['ui'] =	function($value) {
+                    if($value) $value = 'true';
+                    else $value = 'false';
+                    return $value;
+            };            
             $adapter['date']['orm']['ui'] =	function($value) {
                     if($value == '0000-00-00') $value = '';
                     else {
@@ -105,6 +110,9 @@ class DataAdapter {
                     }
                     return $res;
             };
+            $adapter['boolean']['db']['orm'] = function($value) {
+                return (intval($value) > 0);
+            };                
             $adapter['file']['db']['orm'] = function($value) {
                     $res = '';
                     if(FILE_STORAGE_MODE == 'DB') {

@@ -311,7 +311,7 @@ namespace config {
 				switch($config['type']) {
 					case 'bool':
                     case 'boolean':
-						if(in_array($_REQUEST[$param], array('TRUE', 'true', '1', 1))) $_REQUEST[$param] = true;						
+						if(in_array($_REQUEST[$param], array('TRUE', 'true', '1', 1))) $_REQUEST[$param] = true;
 						else $_REQUEST[$param] = false;								
 						break;
 					case 'array':
@@ -322,6 +322,8 @@ namespace config {
 						break;
 					case 'int':
                     case 'integer':
+                        if(in_array($_REQUEST[$param], array('TRUE', 'true'))) $_REQUEST[$param] = 1;
+                        else if(in_array($_REQUEST[$param], array('FALSE', 'false'))) $_REQUEST[$param] = 0;
                         if(isset($config['min'])) {
                             $min = $config['min'];
                             if($_REQUEST[$param] < $min) $_REQUEST[$param] = $min;
