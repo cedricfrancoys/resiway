@@ -58,7 +58,7 @@
                 <div class="featured-questions" ng-repeat="question in ctrl.questions">
                     <p>
                         <span class="mini-counts btn btn-success btn-xs">{{question.count_votes | humanizeCount}}</span>
-                        <a href="#/question/{{question.id}}">{{question.title}}</a>                    
+                        <a href="#/question/{{question.id}}" title="{{question.title}}">{{question.title}}</a>                    
                     </p>
                 </div>                
             </div>

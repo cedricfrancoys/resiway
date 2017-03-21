@@ -92,7 +92,7 @@
                                id="question-delete"
                                title="{{'QUESTION_ACTIONS_DELETE_TOOLTIP' | translate}}"
                                class="delete-post-link"                                
-                               ng-show="user.id==question.creator.id"
+                               ng-show="user.id==question.creator.id || user.role!='u'"
                                ng-click="questionDelete($event)"
                                uib-popover-template="'popoverCustom.html'"
                                popover-trigger="'toggle-popover'"

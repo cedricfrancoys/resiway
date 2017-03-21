@@ -183,6 +183,7 @@ var translations = {
     "action_already_performed": "Vous ne pouvez effectuer cette action qu'une seule fois",
     "request_failed": "La requête a échoué",
     "user_unidentified": "Seul les utilisateurs identifiés peuvent effectuer cette action",
+    "user_reputation_insufficient": "Votre réputation n'est pas encore suffisante pour effectuer cette action",
     "user_not_admin": "Seuls les administrateurs peuvent effectuer cette action",
     "user_not_owner": "Seul le créateur peut effectuer cette action",
 

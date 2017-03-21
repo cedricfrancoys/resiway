@@ -199,6 +199,7 @@ class ResiAPI {
                 'country', 
                 'location',                
                 'reputation',
+                'role',
                 'count_questions', 
                 'count_views', 
                 'count_answers', 
