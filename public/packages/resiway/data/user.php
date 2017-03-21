@@ -29,8 +29,7 @@ list($result, $error_message_ids) = [true, []];
 
 
 /**
-*
-* this script should not be requested for views involving users listing
+* note: for performance reasons, this script should not be requested for views involving users listing
 */
 try {
     
@@ -39,10 +38,9 @@ try {
     $user_id = ResiAPI::userId();
     if($user_id < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
     
-    // retrieve given user    
+    // retrieve given user data 
     // user and admins have acess to all fields
-    if($user_id == $object_id
-    || $user_id == 1) {
+    if(ResiAPI::isActionAllowed($user_id, ResiAPI::actionId('resiway_user_edit'), $object_class, $object_id) ) {
         $user = ResiAPI::loadUserPrivate($object_id);
     }
     else {
