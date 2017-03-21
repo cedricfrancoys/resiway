@@ -56,16 +56,7 @@ try {
             ResiAPI::repositoryInc('resiexchange.count_questions');                      
             return false;
         },
-        [                                                           // $limitations
-            // user has to be admin or owner
-            function ($om, $user_id, $action_id, $object_class, $object_id) {
-                $object = $om->read($object_class, $object_id, ['creator'])[$object_id];
-                if($user_id != $object['creator']
-                && $user_id != 1) {
-                    throw new Exception("user_not_owner", QN_ERROR_NOT_ALLOWED);  
-                }             
-            }
-     
+        [                                                           // $limitations     
         ]
     );
 
