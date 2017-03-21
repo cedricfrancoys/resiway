@@ -12,6 +12,9 @@
 }
 
 /* user profile */
+.user-profile {
+    padding-bottom: 50px;
+}
 
 .user-profile .user-card {
     border: 1px solid #c8ccd0;

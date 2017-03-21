@@ -141,13 +141,6 @@ try {
         },
         null,                                                      // $undo
         [                                                          // $limitations
-            // only user and root user can change profile
-            function ($om, $user_id, $action_id, $object_class, $object_id) {
-                if($user_id != $object_id
-                && $user_id != 1) {
-                    throw new Exception("user_not_admin", QN_ERROR_NOT_ALLOWED);
-                }      
-            },
             // only verified users can change their profile
             function ($om, $user_id, $action_id, $object_class, $object_id) {
                 $res = $om->read($object_class, $object_id, ['verified']);
