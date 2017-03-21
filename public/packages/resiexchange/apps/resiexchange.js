@@ -417,11 +417,21 @@ var resiway = angular.module('resiexchange', [
 .controller('rootController', [
     '$rootScope', 
     '$scope',
-    function($rootScope, $scope) {
+    '$location',
+    '$route',
+    function($rootScope, $scope, $location, $route) {
         console.log('root controller');
 
         var rootCtrl = this;
 
+        
+        rootCtrl.search = function() {
+            // go to questions list page
+            if($location.path() == '/questions') $route.reload();
+            else $location.path('/questions');
+        };
+        
+        
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
             case 'resiexchange\\Question': return '#/question/'+object_id;
@@ -543,7 +553,7 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
-.controller('homeController', ['$http', '$rootScope', '$location', function($http, $rootScope, $location) {
+.controller('homeController', ['$http', '$rootScope', function($http, $rootScope) {
     var ctrl = this;
 
     console.log('home controller');  
@@ -562,14 +572,6 @@ var resiway = angular.module('resiexchange', [
     function errorCallback() {
         // something went wrong server-side
     }); 
-
-    ctrl.search = function(criteria){
-        // update global criteria
-        $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
-        // go to questions list page
-        if($location.path() == '/questions') $route.reload();
-        else $location.path('/questions');
-    };
     
 }]);
 
@@ -979,7 +981,15 @@ angular.module('resiexchange')
                     $http.post('index.php?do='+task.action, task.data).then(
                     function successCallback(response) {
                         if(typeof response.data.notifications != 'undefined' && response.data.notifications.length > 0) {
-                            $rootScope.user.notifications = $rootScope.user.notifications.concat(response.data.notifications);
+                            $http.get('index.php?get=resiway_user_notification_list')
+                            .then(
+                                function successCallback(response) {
+                                    var data = response.data;
+                                    if(typeof data.result == 'object') {
+                                        $rootScope.user.notifications = data.result;
+                                    }
+                                }
+                            );                            
                         }
                         if(typeof task.callback == 'function') {
                             task.callback(task.scope, response.data);
@@ -2379,13 +2389,42 @@ angular.module('resiexchange')
     'feedbackService', 
     'actionService', 
     'textAngularManager',
-    function(question, categories, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager) {
+    '$http',
+    '$httpParamSerializerJQLike',
+    function(question, categories, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   
 
         // @view
-        $scope.categories = categories; 
+        $scope.categories = categories;     
+       
+        $scope.addItem = function(query) {
+            return {
+                id: null, 
+                title: query, 
+                path: query, 
+                parent_id: 0, 
+                parent_path: ''
+            };
+        };
+        
+        $scope.loadMatches = function(query) {
+            if(query.length == 0) return [];
+            
+            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result != 'object') return [];
+                    return data.result;
+                },
+                function errorCallback(response) {
+                    // something went wrong server-side
+                    return [];
+                }
+            );                
+        }
         
         // @model
         // content is inside a textarea and do not need sanitize check
@@ -2398,6 +2437,8 @@ angular.module('resiexchange')
                             tags_ids: [{}]
                           }, 
                           question);
+                          
+
                   
         /**
         * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
@@ -2410,10 +2451,14 @@ angular.module('resiexchange')
         
         // @events
         $scope.$watch('question.tags', function() {
+        
             // reset selection
             $scope.question.tags_ids = angular.copy($scope.initial_tags_ids);
             angular.forEach($scope.question.tags, function(tag, index) {
-                $scope.question.tags_ids.push('+'+tag.id);
+                if(tag.id == null) {
+                    $scope.question.tags_ids.push(tag.title);
+                }
+                else $scope.question.tags_ids.push('+'+tag.id);
             });
         });
 
@@ -2495,11 +2540,10 @@ angular.module('resiexchange')
     '$scope',
     '$rootScope', 
     '$document',
-    '$route',
-    '$location', 
+    '$http',
     'actionService',
     'authenticationService',
-    function($scope, $rootScope, $document, $route, $location, action, authentication) {
+    function($scope, $rootScope, $document, $http, action, authentication) {
         console.log('topbar controller');
         
         var ctrl = this;
@@ -2569,7 +2613,7 @@ angular.module('resiexchange')
             ctrl.helpDropdown = !flag;
         };
         
-        $scope.signOut = function(){          
+        ctrl.signOut = function(){          
             action.perform({
                 action: 'resiway_user_signout',
                 next_path: '/',
@@ -2579,14 +2623,15 @@ angular.module('resiexchange')
             });
         };
         
-        $scope.search = function(criteria){
-            // update global criteria
-            $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
-            // go to questions list page
-            if($location.path() == '/questions') $route.reload();
-            else $location.path('/questions');
+        ctrl.notificationsDismissAll = function() {
+            $http.get('index.php?do=resiway_notification_dismiss-all')
+            .then(
+                function successCallback(response) {
+                    $rootScope.user.notifications = [];
+                }
+            );             
         };
-        
+                
     }
 ]);
 angular.module('resiexchange')

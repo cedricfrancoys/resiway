@@ -34,11 +34,9 @@
             <div class="container">
 
 
-                <form ng-submit="ctrl.search(ctrl.criteria)">
-                    
-                        <div class="input-group">
-                    
-                    <input type="text" class="form-control" name="q" placeholder="{{'TOOLBAR_SEARCH_AMONG_QUESTION_PLACEHOLDER'|translate}}" value="" ng-model="ctrl.criteria" autocomplete="off" maxlength="240">                        
+                <form ng-submit="rootCtrl.search()">                    
+                    <div class="input-group">                    
+                        <input type="text" class="form-control" name="q" placeholder="{{'TOOLBAR_SEARCH_AMONG_QUESTION_PLACEHOLDER'|translate}}" value="" ng-model="search.criteria.q" autocomplete="off" maxlength="240">                        
                         <span class="input-group-btn">
                             <button type="submit" class="btn btn-primary custom_nav_search_button">Go</button>
                         </span>
@@ -53,7 +51,7 @@
                     <div class="sectiontitle">À propos</div>
                 </div>
                 <div id="aboutcontent">
-                    <p><b><a href="/resiexchange.fr">ResiExchange</a></b> est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition et la permaculture.</p>
+                    <p><b><a href="/resiexchange.fr">ResiExchange</a></b> est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition, la permaculture et la résilience.</p>
                 </div>                
             </div>
         </div>

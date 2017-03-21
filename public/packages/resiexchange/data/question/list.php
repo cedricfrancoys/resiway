@@ -21,7 +21,13 @@ $params = QNLib::announce(
 	array(	
     'description'	=>	"Returns a list of question objects matching the received criteria",
     'params' 		=>	array(                                         
-                        'domain'		=> array(
+                        'q'		    => array(
+                                            'description'   => 'Token to search among the questions',
+                                            'type'          => 'string',
+                                            'default'       => ''
+                                            ),
+// todo : remove domain    
+                        'domain'	=> array(
                                             'description'   => 'Criterias that results have to match (serie of conjunctions)',
                                             'type'          => 'array',
                                             'default'       => []
@@ -71,6 +77,9 @@ try {
     // if a channel has been specified in current session, adapt domain to restrict results
     $pdm = &PersistentDataManager::getInstance();
     $params['domain'][] = ['channel_id','=', $pdm->get('channel', 1)];
+    if(strlen($params['q']) > 0) {
+        $params['domain'][] = ['title','ilike', "%{$params['q']}%"];
+    }
     
     // total is not knwon yet
     if($params['total'] < 0) {        

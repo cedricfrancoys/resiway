@@ -21,17 +21,21 @@
                         <div class="controls">
                         <!-- alternate display (but sorting before grouping): oi-options="item.path group by item.parent_path for item in categories" -->
                             <oi-select
-                                        oi-options="item.path for item in categories"
+                                        oi-options="item.path for item in loadMatches($query)"
                                         ng-model="question.tags"
                                         multiple
                                         multiple-limit="8"
                                         oi-select-options="{
                                             searchFilter: 'customSearchFilter',
                                             dropdownFilter: 'customDropdownFilter',
-                                            listFilter: 'customListFilter'
+                                            listFilter: 'customListFilter',
+                                            newItem: true,
+                                            saveTrigger: 'enter blur space . , ;',
+                                            newItemFn: 'addItem($query)'
                                         }"                                        
                                         placeholder="Catégories"></oi-select>
-                            <p class="help-inline">Choisissez une ou plusieurs catégorie(s)</p>
+                                        
+                            <p class="help-inline">Choisissez ou créez une ou plusieurs catégories</p>
                         </div>
                     </div>
                     <div class="control-group">

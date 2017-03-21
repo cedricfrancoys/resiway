@@ -71,4 +71,4 @@ echo json_encode([
         'error_message_ids' => $error_message_ids,
         'notifications'     => $notifications
     ], 
-    JSON_FORCE_OBJECT);
+    JSON_PRETTY_PRINT);

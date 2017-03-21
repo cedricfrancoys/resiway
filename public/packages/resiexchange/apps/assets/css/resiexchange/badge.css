@@ -1,0 +1,33 @@
+.badge-container {
+    position: relative; 
+    height: 80px; 
+    margin-bottom: 10px;    
+}
+
+.badge-container .badge {
+    transition: background-color .15s ease-in-out,border .15s ease-in-out,color .15s ease-in-out;
+    padding: .4em .8em .4em .4em;
+    margin: 0 3px 3px 0;
+    color: #FFF;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 12px;
+    background-color: #2f3337;
+    border: 1px solid transparent;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+.badges .badge1 {
+    color: orange;
+
+}
+
+.badges .badge2 {
+    color: lightgrey;
+}
+
+.badges .badge3 {
+    color: gold;
+}

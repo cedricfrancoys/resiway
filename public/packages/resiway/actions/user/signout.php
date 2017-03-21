@@ -27,4 +27,4 @@ header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
         'result'            => true, 
         'error_message_ids' => $error_message_ids
-     ], JSON_FORCE_OBJECT);
+     ], JSON_PRETTY_PRINT);

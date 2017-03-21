@@ -598,7 +598,7 @@ class ObjectManager {
 							$ids_to_remove = array();
 							$ids_to_add = array();
 							foreach($value as $id) {
-								$id_value = intval($id_value);
+								$id = intval($id);
 								if($id < 0) $ids_to_remove[] = abs($id);
 								if($id > 0) $ids_to_add[] = $id;
 							}

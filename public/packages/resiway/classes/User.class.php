@@ -20,15 +20,7 @@ class User extends \easyobject\orm\Object {
             
             'firstname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
             'lastname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
-
-            /* public hash (md5 of login/email) */
-            'hash'              => array(
-                                    'type'          => 'function',
-                                    'result_type'   => 'string', 
-                                    'store'         => true,
-                                    'function'      => 'resiway\User::getHash'                                    
-                                    ),
-                                    
+                                   
             /* URL to display user avatar (holding string '<size>' to be replaced with display size) */
             'avatar_url'        => array('type' => 'string'),
                                     
@@ -55,6 +47,10 @@ class User extends \easyobject\orm\Object {
             'about'			    => array('type' => 'html'),
             
             'reputation'		=> array('type' => 'integer'),
+
+            // user role: 'u'->user, 'm'->moderator, 'a'->admin (these roles are exclusive)
+            'role'		        => array('type' => 'string', 'selection' => ['u', 'm', 'a']),
+            
             
             /* pfofile views */
             'count_views'       => array('type' => 'integer'),
@@ -62,9 +58,11 @@ class User extends \easyobject\orm\Object {
             'count_questions'   => array('type' => 'integer'),
             'count_answers'     => array('type' => 'integer'),
             'count_comments'    => array('type' => 'integer'),    
-            
+            // bronze
             'count_badges_1'    => array('type' => 'integer'),
+            // silver
             'count_badges_2'    => array('type' => 'integer'),
+            // gold
             'count_badges_3'    => array('type' => 'integer'),
             
             'notify_reputation_update'  => array('type' => 'boolean'),
@@ -111,6 +109,7 @@ class User extends \easyobject\orm\Object {
         return array(
              'verified'                  => function() { return false; },             
              'reputation'                => function() { return 1; },
+             'role'                      => function() { return 'u'; },             
              'publicity_mode'            => function() { return 1; },             
              'count_profile_views'       => function() { return 0; },
              'count_questions'           => function() { return 0; },
@@ -183,16 +182,7 @@ class User extends \easyobject\orm\Object {
                                     }
                                 ),                                                                
         );
-    }
-    
-    public static function getHash($om, $oids, $lang) {
-        $result = [];
-        $res = $om->read('resiway\User', $oids, ['login']);
-        foreach($res as $oid => $odata) {
-            $result[$oid] = md5($odata['login']);
-        }
-        return $result;           
-    }
+    }    
     
     public static function resetDisplayName($om, $oids, $lang) {
         $om->write('resiway\User', $oids, ['display_name' => null]);

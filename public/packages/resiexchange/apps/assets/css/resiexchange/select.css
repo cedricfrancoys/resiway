@@ -132,7 +132,7 @@ oi-select:not(.multiple) .select-search-list-item_selection:not(:active) {
 oi-select:not(.multiple):not(.cleanMode) .select-search-list-item_selection-remove {
   display: none;
 }
-oi-select:not(.cleanMode) .select-search:after {
+oi-select:not(.multiple):not(.cleanMode) .select-search:after {
   content: "";
   position: absolute;
   display: block;

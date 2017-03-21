@@ -45,8 +45,8 @@ try {
             // vote the answer down
             $object = $om->read($object_class, $object_id, ['count_votes', 'score'])[$object_id];              
             $om->write($object_class, $object_id, [
-                'count_votes' => $objects[$object_id]['count_votes']+1, 
-                'score'       => $objects[$object_id]['score']-1
+                'count_votes' => $object[$object_id]['count_votes']+1, 
+                'score'       => $object[$object_id]['score']-1
             ]);
             return true;
         },
@@ -90,7 +90,7 @@ try {
     );
 
     // update badges
-    $notifications = ResiAPI::updateBadges(
+    ResiAPI::updateBadges(
         $action_name,
         $object_class,
         $object_id
@@ -107,6 +107,6 @@ header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
         'result'            => $result, 
         'error_message_ids' => $error_message_ids,
-        'notifications'     => $notifications
+        'notifications'     => ResiAPI::userNotifications()
     ], 
-    JSON_FORCE_OBJECT);
+    JSON_PRETTY_PRINT);

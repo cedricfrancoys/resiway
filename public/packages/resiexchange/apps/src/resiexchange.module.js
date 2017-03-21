@@ -287,11 +287,21 @@ var resiway = angular.module('resiexchange', [
 .controller('rootController', [
     '$rootScope', 
     '$scope',
-    function($rootScope, $scope) {
+    '$location',
+    '$route',
+    function($rootScope, $scope, $location, $route) {
         console.log('root controller');
 
         var rootCtrl = this;
 
+        
+        rootCtrl.search = function() {
+            // go to questions list page
+            if($location.path() == '/questions') $route.reload();
+            else $location.path('/questions');
+        };
+        
+        
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
             case 'resiexchange\\Question': return '#/question/'+object_id;
@@ -413,7 +423,7 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
-.controller('homeController', ['$http', '$rootScope', '$location', function($http, $rootScope, $location) {
+.controller('homeController', ['$http', '$rootScope', function($http, $rootScope) {
     var ctrl = this;
 
     console.log('home controller');  
@@ -432,13 +442,5 @@ var resiway = angular.module('resiexchange', [
     function errorCallback() {
         // something went wrong server-side
     }); 
-
-    ctrl.search = function(criteria){
-        // update global criteria
-        $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
-        // go to questions list page
-        if($location.path() == '/questions') $route.reload();
-        else $location.path('/questions');
-    };
     
 }]);

@@ -80,14 +80,14 @@ try {
     
     if(!empty($logs_ids)) {
         // retrieve logs
-        $res = $om->read('resiway\ActionLog', $logs_ids, ['id', 'created', 'user_id', 'author_id', 'object_name', 'action_id', 'action_id.name', 'user_increment', 'author_increment', 'object_class', 'object_id']);
+        $res = $om->read('resiway\ActionLog', $logs_ids, ['id', 'created', 'user_id', 'author_id', 'object_name', 'action_id', 'action_id.name', 'action_id.description', 'user_increment', 'author_increment', 'object_class', 'object_id']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
         $logs = [];
         foreach($res as $log_id => $log_data) {                
             $logs[$log_id] = array(
                                         'id'                    => $log_id,
-                                        'description'           => $log_data['action_id.name'],
+                                        'description'           => $log_data['action_id.description'],
                                         'user_id'               => $log_data['user_id'],  
                                         'author_id'             => $log_data['author_id'],                                          
                                         'created'               => $log_data['created'],

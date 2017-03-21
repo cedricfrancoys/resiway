@@ -89,8 +89,9 @@
 
 .question-stats .content.about p {
     max-width: 280px;
-    max-height: 150px;
-    overflow: hidden;   
+    max-height: 100px;
+    overflow: hidden;
+    text-align: justify;
 }
 
 .answers, .user-answer {
@@ -232,6 +233,10 @@
     margin-left: 2px;
 }
 
+.user-info .user-details .badges .badge1, .user-info .user-details .badges .badge2, .user-info .user-details .badges .badge3{
+    font-size: 10px;
+}
+
 .user-info .user-avatar {
     box-shadow: 2px 2px 4px rgba(12,13,14,0.5);
     border-collapse: separate;
@@ -241,24 +246,6 @@
     border-radius: 1px;
 }
 
-
-
-.badges .badge1, .badges .badge2, .badges .badge3{
-    font-size: 10px;
-}
-
-.badges .badge1 {
-    color: orange;
-
-}
-
-.badges .badge2 {
-    color: lightgrey;
-}
-
-.badges .badge3 {
-    color: gold;
-}
 
 
 .tags {

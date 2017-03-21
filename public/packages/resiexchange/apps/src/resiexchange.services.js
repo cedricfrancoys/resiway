@@ -405,7 +405,15 @@ angular.module('resiexchange')
                     $http.post('index.php?do='+task.action, task.data).then(
                     function successCallback(response) {
                         if(typeof response.data.notifications != 'undefined' && response.data.notifications.length > 0) {
-                            $rootScope.user.notifications = $rootScope.user.notifications.concat(response.data.notifications);
+                            $http.get('index.php?get=resiway_user_notification_list')
+                            .then(
+                                function successCallback(response) {
+                                    var data = response.data;
+                                    if(typeof data.result == 'object') {
+                                        $rootScope.user.notifications = data.result;
+                                    }
+                                }
+                            );                            
                         }
                         if(typeof task.callback == 'function') {
                             task.callback(task.scope, response.data);

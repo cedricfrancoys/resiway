@@ -1,3 +1,37 @@
+.badge-container {
+    position: relative; 
+    height: 80px; 
+    margin-bottom: 10px;    
+}
+
+.badge-container .badge {
+    transition: background-color .15s ease-in-out,border .15s ease-in-out,color .15s ease-in-out;
+    padding: .4em .8em .4em .4em;
+    margin: 0 3px 3px 0;
+    color: #FFF;
+    line-height: 1;
+    text-decoration: none;
+    white-space: nowrap;
+    font-size: 12px;
+    background-color: #2f3337;
+    border: 1px solid transparent;
+    display: inline-block;
+    border-radius: 4px;
+}
+
+.badges .badge1 {
+    color: orange;
+
+}
+
+.badges .badge2 {
+    color: lightgrey;
+}
+
+.badges .badge3 {
+    color: gold;
+}
+
 /* html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td { */
 html,body {
     border: 0;
@@ -371,8 +405,9 @@ input[type="text"] {
 
 .question-stats .content.about p {
     max-width: 280px;
-    max-height: 150px;
-    overflow: hidden;   
+    max-height: 100px;
+    overflow: hidden;
+    text-align: justify;
 }
 
 .answers, .user-answer {
@@ -514,6 +549,10 @@ input[type="text"] {
     margin-left: 2px;
 }
 
+.user-info .user-details .badges .badge1, .user-info .user-details .badges .badge2, .user-info .user-details .badges .badge3{
+    font-size: 10px;
+}
+
 .user-info .user-avatar {
     box-shadow: 2px 2px 4px rgba(12,13,14,0.5);
     border-collapse: separate;
@@ -523,24 +562,6 @@ input[type="text"] {
     border-radius: 1px;
 }
 
-
-
-.badges .badge1, .badges .badge2, .badges .badge3{
-    font-size: 10px;
-}
-
-.badges .badge1 {
-    color: orange;
-
-}
-
-.badges .badge2 {
-    color: lightgrey;
-}
-
-.badges .badge3 {
-    color: gold;
-}
 
 
 .tags {
@@ -913,7 +934,7 @@ oi-select:not(.multiple) .select-search-list-item_selection:not(:active) {
 oi-select:not(.multiple):not(.cleanMode) .select-search-list-item_selection-remove {
   display: none;
 }
-oi-select:not(.cleanMode) .select-search:after {
+oi-select:not(.multiple):not(.cleanMode) .select-search:after {
   content: "";
   position: absolute;
   display: block;

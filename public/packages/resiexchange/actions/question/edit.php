@@ -34,20 +34,23 @@ $params = QNLib::announce([
                             'description'   => 'List of tags assigned to the question.',
                             'type'          => 'array',
                             'required'      => true
-                            ),                            
+                            ),
+        'channel_id'    => array(
+                            'description'   => 'Identifier of the channel to which store the question.',
+                            'type'          => 'integer',
+                            'default'       => 1
+                            ),
+                            
     ]
 ]);
 
 
 list($result, $error_message_ids, $notifications) = [true, [], []];
 
-list($action_name, $object_class, $object_id, $title, $content, $tags_ids) = [ 
+list($action_name, $object_class, $object_id) = [ 
     'resiexchange_question_edit',
     'resiexchange\Question',
-    $params['question_id'],
-    $params['title'],
-    $params['content'],
-    $params['tags_ids']
+    $params['question_id']
 ];
 
 // override ORM method for cleaning HTML (for field 'content')
@@ -57,13 +60,13 @@ DataAdapter::setMethod('ui', 'orm', 'html', function($value) {
 });
 
 
-// handle new question submission 
-// which has a distinct reputation requirement
+// handle case of new question submission (which has a distinct reputation requirement)
 if($object_id == 0) $action_name = 'resiexchange_question_post';
 
 
-try {
-// try to perform action
+
+try {    
+    // try to perform action
     $result = ResiAPI::performAction(
         $action_name,                                             // $action_name
         $object_class,                                            // $object_class
@@ -73,9 +76,26 @@ try {
         null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {    
-        
+            $pdm = &PersistentDataManager::getInstance();
+            
+            // check tags_ids consistency (we might have received a request for a new tag/category)
+            foreach($params['tags_ids'] as $key => $value) {
+                if(intval($value) == 0 && strlen($value) > 0) {
+                    // create a new category + write given value
+                    $tag_id = $om->create('resiway\Category', [ 
+                                    'creator'           => $user_id,     
+                                    'title'             => $value,
+                                    'description'       => '',
+                                    'parent_id'         => 0,
+                                    'channel_id'        => $pdm->get('channel', 1)
+                                  ]);
+                    // update entry
+                    $params['tags_ids'][$key] = sprintf("+%d", $tag_id);
+                }
+            }        
+            
             if($object_id == 0) {
-                $pdm = &PersistentDataManager::getInstance();                
+            
                 
                 // create a new question + write given value
                 $object_id = $om->create('resiexchange\Question', [ 
@@ -187,7 +207,7 @@ try {
     );
     
     // update badges
-    $notifications = ResiAPI::updateBadges(
+    ResiAPI::updateBadges(
         $action_name,
         $object_class,
         $object_id
@@ -203,6 +223,6 @@ header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
         'result'            => $result, 
         'error_message_ids' => $error_message_ids,
-        'notifications'     => $notifications
+        'notifications'     => ResiAPI::userNotifications()
     ], 
     JSON_PRETTY_PRINT);

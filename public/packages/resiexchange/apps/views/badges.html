@@ -21,16 +21,15 @@
         </div>
 
 
-        <div ng-repeat="badge in badges" class="col-1-4" style="position: relative; height: 80px; margin-bottom: 10px;" >
+        <div ng-repeat="badge in badges" class="badge-container col-1-4" >
         
-            <div style="height: 100%; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">    
-                <div style="height: 32px;"><strong>{{badge.name}}</strong></div>
+            <div class="badges" style="height: 100%; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">    
+                <div class="badge" ><i class="fa fa-circle badge{{badge.type}}" aria-hidden="true"></i> {{badge.name}}</div>
                 <div style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;">{{badge.description}}</div>
             </div>
             <div style="position: absolute; right: 35px; top: 8px;">
                 <a href="#/badge/edit/{{badge.id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
             </div>
-            
         </div>
 
     </div>

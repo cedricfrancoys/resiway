@@ -13,13 +13,42 @@ angular.module('resiexchange')
     'feedbackService', 
     'actionService', 
     'textAngularManager',
-    function(question, categories, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager) {
+    '$http',
+    '$httpParamSerializerJQLike',
+    function(question, categories, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   
 
         // @view
-        $scope.categories = categories; 
+        $scope.categories = categories;     
+       
+        $scope.addItem = function(query) {
+            return {
+                id: null, 
+                title: query, 
+                path: query, 
+                parent_id: 0, 
+                parent_path: ''
+            };
+        };
+        
+        $scope.loadMatches = function(query) {
+            if(query.length == 0) return [];
+            
+            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result != 'object') return [];
+                    return data.result;
+                },
+                function errorCallback(response) {
+                    // something went wrong server-side
+                    return [];
+                }
+            );                
+        }
         
         // @model
         // content is inside a textarea and do not need sanitize check
@@ -32,6 +61,8 @@ angular.module('resiexchange')
                             tags_ids: [{}]
                           }, 
                           question);
+                          
+
                   
         /**
         * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
@@ -44,10 +75,14 @@ angular.module('resiexchange')
         
         // @events
         $scope.$watch('question.tags', function() {
+        
             // reset selection
             $scope.question.tags_ids = angular.copy($scope.initial_tags_ids);
             angular.forEach($scope.question.tags, function(tag, index) {
-                $scope.question.tags_ids.push('+'+tag.id);
+                if(tag.id == null) {
+                    $scope.question.tags_ids.push(tag.title);
+                }
+                else $scope.question.tags_ids.push('+'+tag.id);
             });
         });
 

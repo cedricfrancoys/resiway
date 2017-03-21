@@ -19,4 +19,4 @@ list($result, $error_message_ids) = [ResiAPI::userId(), []];
 
 // send json result
 header('Content-type: application/json; charset=UTF-8');
-echo json_encode(array('result' => $result, 'error_message_ids' => $error_message_ids), JSON_FORCE_OBJECT);
+echo json_encode(array('result' => $result, 'error_message_ids' => $error_message_ids), JSON_PRETTY_PRINT);

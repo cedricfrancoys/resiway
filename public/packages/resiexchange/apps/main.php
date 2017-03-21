@@ -91,7 +91,8 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
 
         <script>
             var global_config = {
-                    locale: '<?php echo $params['lang']; ?>'
+                    locale: '<?php echo $params['lang']; ?>',
+                    channel: '<?php echo $params['channel']; ?>'
             };
         </script>
         <script>

@@ -39,7 +39,7 @@ DataAdapter::setMethod('db', 'orm', 'datetime', function($value) {
     return date("c", $dateTime->getTimestamp());
 });
   */
-  
+
             
 class ResiAPI {
     
@@ -118,8 +118,14 @@ class ResiAPI {
                 return '#/question/'.$res[$object_id]['question_id'];
                 
             case 'resiexchange\QuestionComment':
-            
+                $om = &ObjectManager::getInstance(); 
+                $res = $om->read($object_class, $object_id, ['question_id']);
+                return '#/question/'.$res[$object_id]['question_id'];
+                
             case 'resiexchange\AnswerComment':                        
+                $om = &ObjectManager::getInstance(); 
+                $res = $om->read($object_class, $object_id, ['answer_id.question_id']);
+                return '#/question/'.$res[$object_id]['answer_id.question_id'];            
         }
         return $link;
     }
@@ -143,6 +149,17 @@ class ResiAPI {
     public static function userId() {
         $pdm = &PersistentDataManager::getInstance();
         return $pdm->get('user_id', 0);
+    }
+
+    /**
+    * Retrieves current user pending notifications ids, if any.
+    * otherwise, returns an empty array
+    *
+    * @return   array idetifiers of pending notifications
+    */    
+    public static function userNotifications() {
+        $pdm = &PersistentDataManager::getInstance();
+        return $pdm->get('notifications', []);
     }
     
     /**
@@ -176,7 +193,6 @@ class ResiAPI {
                 'verified',
                 'last_login',
                 'display_name',
-                'hash',
                 'avatar_url',
                 'about',
                 'language', 
@@ -291,11 +307,19 @@ class ResiAPI {
             self::spool($user_id, 'ResiWay - '.$notification['subject'], $notification['body'].$email_notice['body']);  
         }
         // in case we decide to send emails, here is the place to add something to user queue
-        return $om->create('resiway\UserNotification', [  
+        $notification_id = $om->create('resiway\UserNotification', [  
             'user_id'   => $user_id, 
             'title'     => $notification['subject'], 
             'content'   => $notification['body']
-        ]);        
+        ]);
+        // update notifications array for current session
+        $pdm = &PersistentDataManager::getInstance();
+        $notifications = $pdm->get('notifications', []); 
+        $notifications[] = ['id' => $notification_id, 'title' => $notification['subject']];
+        
+        $pdm->set('notifications', $notifications); 
+        // return identifier of the newly created notification
+        return $notification_id;
     }
     
     /*
@@ -408,10 +432,7 @@ class ResiAPI {
     public static function isActionAllowed($user_id, $action_id, $object_class, $object_id) {
         // check params consistency
         if($user_id <= 0 || $action_id <= 0) return false;
-
-        // all actions are granted to root user
-        if($user_id == 1) return true;
-        
+       
         $om = &ObjectManager::getInstance();
 
         if($object_id > 0) {
@@ -421,12 +442,19 @@ class ResiAPI {
             
             // unless specified in action limitations, all actions are granted on an object owner
             if($user_id == $res[$object_id]['creator']) return true;
+            // users have full access on their own profile
+            if($object_class == 'resiway\User' && $user_id == $object_id) return true;
         }
         
         // read user data
-        $res = $om->read('resiway\User', $user_id, ['reputation']);        
+        $res = $om->read('resiway\User', $user_id, ['reputation', 'role']);        
         if($res < 0 || !isset($res[$user_id])) return false;
         $user_data = $res[$user_id];
+        
+        // all actions are granted to admin users
+        if($user_data['role'] == 'a') return true;
+
+// todo : deal with moderators permissions
         
         // read action data (as this is the first call in the action proccessing logic, 
         // we take advantage of this call to load all fields that will be required at some point
@@ -566,6 +594,7 @@ class ResiAPI {
         if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return;
         
         $impact = self::impactReputation($user_id, $action_id, $object_class, $object_id, -1);
+        $author_id = $impact['author']['id'];
         
         $om = &ObjectManager::getInstance();
 
@@ -576,8 +605,31 @@ class ResiAPI {
                                     ['object_id',    '=', $object_id]
                                 ], 'created', 'desc');
                    
-        if($log_ids > 0 && count($log_ids)) {
-            $res = $om->remove('resiway\ActionLog', $log_ids, true);        
+        if($log_ids < 0 || !count($log_ids)) return;
+        
+        $res = $om->remove('resiway\ActionLog', $log_ids, true);        
+
+        // handle notifications
+        $user_data = self::loadUserPrivate($user_id);
+        $author_data = self::loadUserPrivate($author_id);    
+       
+        // build array that will hold the data for the message
+        $data = [
+            'user'          => $user_data,
+            'author'        => $author_data
+        ];
+        
+        // notify users if there is any reputation change 
+        if($impact['user']['increment'] != 0) {
+            $data['reputation_increment'] = sprintf("%+d", $impact['user']['increment']);
+            $notification = self::getUserNotification('notification_reputation_update', $user_data['language'], $data);
+            self::userNotify($user_id, 'reputation_update', $notification);            
+        }
+        if($impact['author']['increment'] != 0) {
+            $data['user'] = $author_data;
+            $data['reputation_increment'] = sprintf("%+d", $impact['author']['increment']);
+            $notification = self::getUserNotification('notification_reputation_update', $author_data['language'], $data);            
+            self::userNotify($author_id, 'reputation_update', $notification);            
         }        
     }
     
@@ -626,9 +678,7 @@ class ResiAPI {
     *
     * @return   boolean  returns true on succes, false if something went wrong
     */     
-    public static function updateBadges($action_name, $object_class, $object_id) {
-        $notifications = [];
-                
+    public static function updateBadges($action_name, $object_class, $object_id) {              
         $om = &ObjectManager::getInstance();
 
         // retrieve user object
@@ -641,12 +691,12 @@ class ResiAPI {
         
         // retrieve action data
         $res = $om->read('resiway\Action', $action_id, ['badges_ids']);
-        if($res < 0 || !isset($res[$action_id])) return $notifications;    
+        if($res < 0 || !isset($res[$action_id])) throw new Exception("action_unknown", QN_ERROR_INVALID_PARAM);
         $action_data = $res[$action_id];
 
         // retrieve author (might be 0 for some objects)
         $res = $om->read($object_class, $object_id, ['creator']);
-        if(!is_array($res) || !isset($res[$object_id])) return $notifications;
+        if(!is_array($res) || !isset($res[$object_id])) throw new Exception("user_unidentified", QN_ERROR_INVALID_PARAM);
         $author_id = $res[$object_id]['creator'];
 
         
@@ -654,7 +704,7 @@ class ResiAPI {
         $user_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', '=', $user_id]]);
         // read status and related badge identifier
         $res = $om->read('resiway\UserBadge', $user_badges_ids, ['awarded', 'badge_id']);
-        if($res < 0) return $notifications;
+        if($res < 0) return;
         // remove badges already awarded from result list
         foreach($user_badges_ids as $key => $user_badge_id) {
             if($res[$user_badge_id]['awarded']) unset($user_badges_ids[$key]);
@@ -674,7 +724,7 @@ class ResiAPI {
             $author_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', '=', $author_id]]);
             // read status and related badge identifier
             $res = $om->read('resiway\UserBadge', $author_badges_ids, ['awarded', 'badge_id']);
-            if($res < 0) return $notifications;
+            if($res < 0) return;
             // remove badges already awarded from result list
             foreach($author_badges_ids as $key => $user_badge_id) {
                 if($res[$user_badge_id]['awarded']) unset($author_badges_ids[$key]);
@@ -691,13 +741,13 @@ class ResiAPI {
         // get badges impacted by current action
         // $users_badges_ids = $om->search('resiway\UserBadge', [['badge_id', 'in', $action_data['badges_ids']], ['user_id', 'in', array($user_id, $author_id)]]);
         $users_badges_ids = array_merge($user_badges_ids, $author_badges_ids);
-        if($users_badges_ids < 0 || !count($users_badges_ids)) return $notifications;
+        if($users_badges_ids < 0 || !count($users_badges_ids)) return;
 
         // force re-computing values of impacted badges
         $om->write('resiway\UserBadge', $users_badges_ids, array('status' => null));
         // read new status and other data
         $res = $om->read('resiway\UserBadge', $users_badges_ids, ['user_id', 'badge_id', 'status', 'badge_id.type', 'badge_id.name']);
-        if($res < 0) return $notifications; 
+        if($res < 0) return; 
         
         // check for newly awarded badges
         foreach($res as $user_badge_id => $user_badge) {
@@ -722,11 +772,7 @@ class ResiAPI {
             ];
 
             $notification = self::getUserNotification('notification_badge_awarded', $user_data['language'], $data);
-            $notification_id = self::userNotify($uid, 'badge_awarded', $notification);   
-
-            if($notification_id > 0) {
-                $notifications[] = ['id' => $notification_id, 'title' => $notification['subject']];
-            }                       
+            $notification_id = self::userNotify($uid, 'badge_awarded', $notification);                  
         }
         // update user badges-counts, if required
         if(count($res)) {            
@@ -740,7 +786,6 @@ class ResiAPI {
             }
         }        
 
-        return $notifications;
     }
 
 
@@ -771,6 +816,10 @@ class ResiAPI {
                                         $limitations = []) {
         
         $result = true;
+
+        // reset pending notifications
+        $pdm = &PersistentDataManager::getInstance();
+        $pdm->set('notifications', []);
         
         $om = &ObjectManager::getInstance();
                     

@@ -9,11 +9,10 @@ angular.module('resiexchange')
     '$scope',
     '$rootScope', 
     '$document',
-    '$route',
-    '$location', 
+    '$http',
     'actionService',
     'authenticationService',
-    function($scope, $rootScope, $document, $route, $location, action, authentication) {
+    function($scope, $rootScope, $document, $http, action, authentication) {
         console.log('topbar controller');
         
         var ctrl = this;
@@ -83,7 +82,7 @@ angular.module('resiexchange')
             ctrl.helpDropdown = !flag;
         };
         
-        $scope.signOut = function(){          
+        ctrl.signOut = function(){          
             action.perform({
                 action: 'resiway_user_signout',
                 next_path: '/',
@@ -93,13 +92,14 @@ angular.module('resiexchange')
             });
         };
         
-        $scope.search = function(criteria){
-            // update global criteria
-            $rootScope.search.criteria.domain = ['title', 'like', '%'+criteria+'%'];
-            // go to questions list page
-            if($location.path() == '/questions') $route.reload();
-            else $location.path('/questions');
+        ctrl.notificationsDismissAll = function() {
+            $http.get('index.php?do=resiway_notification_dismiss-all')
+            .then(
+                function successCallback(response) {
+                    $rootScope.user.notifications = [];
+                }
+            );             
         };
-        
+                
     }
 ]);
