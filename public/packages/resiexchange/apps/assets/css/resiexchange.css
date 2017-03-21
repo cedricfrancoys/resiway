@@ -314,6 +314,24 @@ input[type="text"] {
 .help-center .topic h3 {
     font-size: 18px;
 }
+.featured-questions {
+    
+}
+
+.featured-questions p {
+    height: 23px; 
+    line-height: 23px; 
+    margin-bottom: 4px; 
+    max-width: 100%; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    overflow: hidden;
+}
+
+
+.featured-questions .mini-counts {
+    width: 34px;
+}    
 .question a {
     cursor: pointer;
 }    
@@ -405,9 +423,10 @@ input[type="text"] {
 
 .question-stats .content.about p {
     max-width: 280px;
-    max-height: 100px;
+    max-height: 110px;
     overflow: hidden;
     text-align: justify;
+    text-overflow: ellipsis;
 }
 
 .answers, .user-answer {
@@ -1892,6 +1911,9 @@ body {
 }
 
 /* user profile */
+.user-profile {
+    padding-bottom: 50px;
+}
 
 .user-profile .user-card {
     border: 1px solid #c8ccd0;

@@ -20,7 +20,6 @@
     <div class="col-4-12">
         <div class="panel panel-default">
             <div class="container">
-                     
                 <div class="container">
                     <span class="number">{{ctrl.count_questions}}</span>
                     {{'QUESTIONS_STATS_QUESTIONS' | translate}}
@@ -32,8 +31,6 @@
             </div>
             
             <div class="container">
-
-
                 <form ng-submit="rootCtrl.search()">                    
                     <div class="input-group">                    
                         <input type="text" class="form-control" name="q" placeholder="{{'TOOLBAR_SEARCH_AMONG_QUESTION_PLACEHOLDER'|translate}}" value="" ng-model="search.criteria.q" autocomplete="off" maxlength="240">                        
@@ -42,7 +39,6 @@
                         </span>
                      </div>
                 </form>
-
             </div>           
 
          
@@ -54,6 +50,19 @@
                     <p><b><a href="/resiexchange.fr">ResiExchange</a></b> est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition, la permaculture et la résilience.</p>
                 </div>                
             </div>
+
+            <div class="container">
+                <div class="lead" style="border-bottom: 1px solid grey;">
+                    <div class="sectiontitle">Questions</div>
+                </div>
+                <div class="featured-questions" ng-repeat="question in ctrl.questions">
+                    <p>
+                        <span class="mini-counts btn btn-success btn-xs">{{question.count_votes | humanizeCount}}</span>
+                        <a href="#/question/{{question.id}}">{{question.title}}</a>                    
+                    </p>
+                </div>                
+            </div>
+            
         </div>
     </div>
     
