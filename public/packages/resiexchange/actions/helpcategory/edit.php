@@ -42,7 +42,7 @@ list($action_name, $object_class, $object_id) = [
 ];
 
 
-// handle new topic submission 
+// handle new category submission 
 // which has a distinct reputation requirement
 if($object_id == 0) $action_name = 'resiexchange_helpcategory_post';
 
@@ -60,7 +60,7 @@ try {
         use ($params) {    
         
             if($object_id == 0) {
-                // create a new topic + write given value
+                // create a new category + write given value
                 $object_id = $om->create($object_class, [ 
                                 'creator'           => $user_id,     
                                 'title'             => $params['title'],
@@ -77,7 +77,7 @@ try {
                            ]);
             }
             
-            // read created topic as returned value
+            // read created category as returned value
             $res = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'title', 'title_url', 'description']);
             if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
           
@@ -92,7 +92,7 @@ try {
     ResiAPI::updateBadges(
         $action_name,
         $object_class,
-        $object_id
+        $result['id']
     );     
 }
 catch(Exception $e) {

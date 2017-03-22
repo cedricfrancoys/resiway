@@ -136,7 +136,7 @@ try {
     ResiAPI::updateBadges(
         $action_name,
         $object_class,
-        $object_id
+        $result['id']
     );     
 }
 catch(Exception $e) {
