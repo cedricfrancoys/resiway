@@ -76,7 +76,7 @@
             <div class="loader" ng-show="ctrl.updates.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
-                <div ng-hide="ctrl.actions.items == -1" style="min-height: 250px;">            
+                <div ng-hide="ctrl.updates.items == -1" style="min-height: 250px;">            
                     <div ng-repeat="action in ctrl.updates.items" class="post-summary col-1-1">               
                         <div class="col-9-12 nopad">                                                        
                             <div class="col-5-12" style="overflow: hidden">
@@ -115,7 +115,7 @@
             <div class="loader" ng-show="ctrl.questions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
-                <div ng-hide="ctrl.actions.items == -1" style="min-height: 250px;">
+                <div ng-hide="ctrl.questions.items == -1" style="min-height: 250px;">
                     <div ng-repeat="question in ctrl.questions.items" class="post-summary col-1-1">               
                         <div class="col-9-12">
                             <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.count_votes | humanizeCount}}</span>
@@ -149,7 +149,7 @@
             <div class="loader" ng-show="ctrl.answers.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
-                <div ng-hide="ctrl.actions.items == -1" style="min-height: 250px;">
+                <div ng-hide="ctrl.answers.items == -1" style="min-height: 250px;">
                     <div ng-repeat="answer in ctrl.answers.items" class="post-summary col-1-1">               
                         <div class="col-9-12">
                             <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(answer.count_votes > 0), 'btn-danger':(answer.count_votes < 0), 'btn-info':(answer.count_votes == 0)}">{{answer.count_votes | humanizeCount}}</span>
@@ -182,7 +182,7 @@
             <div class="loader" ng-show="ctrl.favorites.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
-                <div ng-hide="ctrl.actions.items == -1" style="min-height: 250px;">            
+                <div ng-hide="ctrl.favorites.items == -1" style="min-height: 250px;">            
                     <div ng-repeat="action in ctrl.favorites.items" class="post-summary col-1-1">               
                         <div class="col-9-12" style="overflow: hidden">                                                        
                             <h3><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
