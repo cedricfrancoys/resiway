@@ -75,23 +75,25 @@
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.updates.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
-            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">                                
-                <div ng-repeat="action in ctrl.updates.items" class="post-summary col-1-1">               
-                    <div class="col-9-12 nopad">                                                        
-                        <div class="col-5-12" style="overflow: hidden">
-                        <span ng-if="ctrl.user.id == action.user_id" class="mini-counts btn btn-xs" ng-class="{'btn-success': (action.user_increment >= 0), 'btn-danger': (action.user_increment < 0)}">{{((action.user_increment >= 0)?'+':'')+action.user_increment}}</span>
-                        <span ng-if="ctrl.user.id == action.author_id" class="mini-counts btn btn-xs" ng-class="{'btn-success': (action.author_increment >= 0), 'btn-danger': (action.author_increment < 0)}">{{((action.author_increment >= 0)?'+':'')+action.author_increment}}</span>
-                        {{action.description}}
-                        </div> 
-                        <div class="col-7-12" style="overflow: hidden">
-                            <h3><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
+                <div style="min-height: 250px;">            
+                    <div ng-repeat="action in ctrl.updates.items" class="post-summary col-1-1">               
+                        <div class="col-9-12 nopad">                                                        
+                            <div class="col-5-12" style="overflow: hidden">
+                            <span ng-if="ctrl.user.id == action.user_id" class="mini-counts btn btn-xs" ng-class="{'btn-success': (action.user_increment >= 0), 'btn-danger': (action.user_increment < 0)}">{{((action.user_increment >= 0)?'+':'')+action.user_increment}}</span>
+                            <span ng-if="ctrl.user.id == action.author_id" class="mini-counts btn btn-xs" ng-class="{'btn-success': (action.author_increment >= 0), 'btn-danger': (action.author_increment < 0)}">{{((action.author_increment >= 0)?'+':'')+action.author_increment}}</span>
+                            {{action.description}}
+                            </div> 
+                            <div class="col-7-12" style="overflow: hidden">
+                                <h3><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                            </div>
+                        </div>
+                        <div class="col-3-12 text-right">
+                            {{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
                         </div>
                     </div>
-                    <div class="col-3-12 text-right">
-                        {{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
-                    </div>
                 </div>
-
+                
                 <ul uib-pagination 
                     class="pagination-sm" 
                     total-items="ctrl.updates.total" 
@@ -112,14 +114,16 @@
             </uib-tab-heading>
             <div class="loader" ng-show="ctrl.questions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
-            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">                                
-                <div ng-repeat="question in ctrl.questions.items" class="post-summary col-1-1">               
-                    <div class="col-9-12">
-                        <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.count_votes | humanizeCount}}</span>
-                        <h3><a href="#/question/{{question.id}}">{{question.title}}</a></h3>
-                    </div>
-                    <div class="col-3-12 text-right">
-                        {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
+                <div style="min-height: 250px;">
+                    <div ng-repeat="question in ctrl.questions.items" class="post-summary col-1-1">               
+                        <div class="col-9-12">
+                            <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.count_votes | humanizeCount}}</span>
+                            <h3><a href="#/question/{{question.id}}">{{question.title}}</a></h3>
+                        </div>
+                        <div class="col-3-12 text-right">
+                            {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+                        </div>
                     </div>
                 </div>
 
@@ -144,17 +148,19 @@
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.answers.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
-            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">                                
-                <div ng-repeat="answer in ctrl.answers.items" class="post-summary col-1-1">               
-                    <div class="col-9-12">
-                        <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(answer.count_votes > 0), 'btn-danger':(answer.count_votes < 0), 'btn-info':(answer.count_votes == 0)}">{{answer.count_votes | humanizeCount}}</span>
-                        <h3><a href="#/question/{{answer.question_id}}">{{answer.title}}</a></h3>
-                    </div>
-                    <div class="col-3-12 text-right">
-                        {{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
+                <div style="min-height: 250px;">
+                    <div ng-repeat="answer in ctrl.answers.items" class="post-summary col-1-1">               
+                        <div class="col-9-12">
+                            <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(answer.count_votes > 0), 'btn-danger':(answer.count_votes < 0), 'btn-info':(answer.count_votes == 0)}">{{answer.count_votes | humanizeCount}}</span>
+                            <h3><a href="#/question/{{answer.question_id}}">{{answer.title}}</a></h3>
+                        </div>
+                        <div class="col-3-12 text-right">
+                            {{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+                        </div>
                     </div>
                 </div>
-
+                
                 <ul uib-pagination 
                     class="pagination-sm" 
                     total-items="ctrl.answers.total" 
@@ -175,16 +181,18 @@
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.favorites.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
-            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">                                
-                <div ng-repeat="action in ctrl.favorites.items" class="post-summary col-1-1">               
-                    <div class="col-9-12" style="overflow: hidden">                                                        
-                        <h3><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
-                    </div>
-                    <div class="col-3-12 text-right">
-                        {{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
+                <div style="min-height: 250px;">            
+                    <div ng-repeat="action in ctrl.favorites.items" class="post-summary col-1-1">               
+                        <div class="col-9-12" style="overflow: hidden">                                                        
+                            <h3><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                        </div>
+                        <div class="col-3-12 text-right">
+                            {{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+                        </div>
                     </div>
                 </div>
-
+                
                 <ul uib-pagination 
                     class="pagination-sm" 
                     total-items="ctrl.favorites.total" 
@@ -205,21 +213,22 @@
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.actions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                         
-            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">                                
-                <div ng-repeat="action in ctrl.actions.items" class="post-summary col-1-1">               
-                    <div class="col-9-12 nopad">                                                        
-                        <div class="col-4-12" style="overflow: hidden">                        
-                        {{action.description}}
-                        </div> 
-                        <div class="col-8-12" style="overflow: hidden">
-                            <h3><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
+                <div style="min-height: 250px;">                
+                    <div ng-repeat="action in ctrl.actions.items" class="post-summary col-1-1">               
+                        <div class="col-9-12 nopad">                                                        
+                            <div class="col-4-12" style="overflow: hidden">                        
+                            {{action.description}}
+                            </div> 
+                            <div class="col-8-12" style="overflow: hidden">
+                                <h3><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                            </div>
+                        </div>
+                        <div class="col-3-12 text-right">
+                            {{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
                         </div>
                     </div>
-                    <div class="col-3-12 text-right">
-                        {{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
-                    </div>
                 </div>
-
                 <ul uib-pagination 
                     class="pagination-sm" 
                     total-items="ctrl.actions.total" 

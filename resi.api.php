@@ -136,8 +136,11 @@ class ResiAPI {
         if(count($errors)) return QN_ERROR_INVALID_PARAM;
         $ids = $om->search('resiway\User', [['login', '=', $login], ['password', '=', $password]]);
         if($ids < 0 || !count($ids)) return QN_ERROR_INVALID_PARAM;
+        $user_id = $ids[0];
+        // update 'last_login' field
+        $om->write('resiway\User', $user_id, [ 'last_login' => date("Y-m-d H:i:s") ]);        
         $pdm = &PersistentDataManager::getInstance();
-        return $pdm->set('user_id', $ids[0]);                
+        return $pdm->set('user_id', $user_id);                
     }
     
     /**

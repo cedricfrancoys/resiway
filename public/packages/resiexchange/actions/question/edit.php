@@ -184,6 +184,7 @@ try {
                 $count_tags = 0;
                 foreach($params['tags_ids'] as $tag_id) {
                     if(intval($tag_id) > 0) ++$count_tags;
+                    else if(intval($tag_id) == 0 && strlen($tag_id) > 0) ++$count_tags;
                 }
                 if($count_tags < RESIEXCHANGE_QUESTION_CATEGORIES_COUNT_MIN
                 || $count_tags > RESIEXCHANGE_QUESTION_CATEGORIES_COUNT_MAX) {
