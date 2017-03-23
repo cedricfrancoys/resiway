@@ -1261,7 +1261,10 @@ todo: signature differs from other methods	(returned value)
 						}
                         // handle particular cases involving arrays
                         if(in_array($type, ['many2one', 'one2many', 'many2many'])) {
-                            if( in_array($operator, ['in', 'not in']) && (!is_array($value) || !count($value)) ) $value = ['0'];
+                            if( in_array($operator, ['in', 'not in']) ) {
+                                if(!is_array($value)) $value = array($value);
+                                if(!count($value))    $value = ['0'];
+                            }
                         }
 						$conditions[$j][] = array($field, $operator, $value);
 					}

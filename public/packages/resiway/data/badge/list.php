@@ -45,7 +45,7 @@ $params = QNLib::announce(
                                             'type'          => 'integer',
                                             'min'           => 5,
                                             'max'           => 100,
-                                            'default'       => 25
+                                            'default'       => 30
                                             ),
                         'total'		=> array(
                                             'description'   => 'Total of record (if known).',

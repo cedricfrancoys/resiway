@@ -7410,10 +7410,14 @@ $.fn.qFormWidget = function(conf){
 									buttons:	[{
 										text: "Ok",
 										click: function() {
-											$.each(grid_conf.selection, function(id, state){
+											$.each($sub_grid.data('conf').selection, function(id, state){
 												conf.more = add_value(conf.more, id);
 												conf.less = remove_value(conf.less, id);
 											});
+                                            // force grid to refresh its content
+                                            $grid.trigger('reload');                                            
+                                            // update the value of the widget
+                                            $grid.trigger('change');                                            
 											$( this ).trigger('dialogclose');
 										}
 									}]
@@ -7508,34 +7512,38 @@ $.fn.qFormWidget = function(conf){
 									buttons:	[{
 										text: "Ok",
 										click: function() {
-											$.each(grid_conf.selection, function(id, state){
+											$.each($sub_grid.data('conf').selection, function(id, state){
 												conf.more = add_value(conf.more, id);
 												conf.less = remove_value(conf.less, id);
 											});
+                                            // force grid to refresh its content
+                                            $grid.trigger('reload');                                            
+                                            // update the value of the widget
+                                            $grid.trigger('change');
 											$( this ).trigger('dialogclose');
 										}
 									}]
 								});
 							});
-					},
-					del:	function($grid, conf) {
-							var ids = Object.keys(conf.selection);
-							$.when(qinoa.confirm({
-									message:	'<p><b>'+ ids.length +' item(s) selected.</b></p>'+
-												'Do you confirm deletion for selected relations(s) ?',
-									title:		'Deletion'
-							}))
-							.done(function() {
-								$.each(conf.selection, function(id, state){
-									conf.less = add_value(conf.less, id);
-									conf.more = remove_value(conf.more, id);
-								});
-								// force grid to refresh its content
-								$grid.trigger('reload');
-								// update the value of the widget
-								$grid.trigger('change');
-							});
-					}
+                        },
+                        del:	function($grid, conf) {
+                            var ids = Object.keys(conf.selection);
+                            $.when(qinoa.confirm({
+                                    message:	'<p><b>'+ ids.length +' item(s) selected.</b></p>'+
+                                                'Do you confirm deletion for selected relations(s) ?',
+                                    title:		'Deletion'
+                            }))
+                            .done(function() {
+                                $.each(conf.selection, function(id, state){
+                                    conf.less = add_value(conf.less, id);
+                                    conf.more = remove_value(conf.more, id);
+                                });
+                                // force grid to refresh its content
+                                $grid.trigger('reload');
+                                // update the value of the widget
+                                $grid.trigger('change');
+                            });
+                        }
 					}
 				});
 				var $grid =
