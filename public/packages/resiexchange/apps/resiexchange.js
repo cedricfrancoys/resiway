@@ -2997,6 +2997,7 @@ angular.module('resiexchange')
         var defaults = {
             total: -1,
             currentPage: 1,
+            previousPage: 1
         };
         
         
@@ -3006,22 +3007,25 @@ angular.module('resiexchange')
 
         
         ctrl.load = function(config) {
-            // reset objects list (triggers loader display)
-            config.items = -1;          
-            $http.post('index.php?get='+config.provider, {
-                domain: config.domain,
-                start: (config.currentPage-1)*config.limit,
-                limit: config.limit,
-                total: config.total
-            }).then(
-            function successCallback(response) {
-                var data = response.data;
-                config.items = data.result;
-                config.total = data.total;
-            },
-            function errorCallback() {
-                // something went wrong server-side
-            });
+            if(config.currentPage != config.previousPage) {
+                config.previousPage = config.currentPage;
+                // reset objects list (triggers loader display)
+                config.items = -1;          
+                $http.post('index.php?get='+config.provider, {
+                    domain: config.domain,
+                    start: (config.currentPage-1)*config.limit,
+                    limit: config.limit,
+                    total: config.total
+                }).then(
+                function successCallback(response) {
+                    var data = response.data;
+                    config.items = data.result;
+                    config.total = data.total;
+                },
+                function errorCallback() {
+                    // something went wrong server-side
+                });
+            }
         };
         
         angular.merge(ctrl, {

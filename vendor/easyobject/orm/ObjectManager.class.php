@@ -838,11 +838,10 @@ todo: signature differs from other methods	(returned value)
 			if(empty($ids))	return $res;
             // remove duplicate ids, if any
 			$ids = array_unique($ids);   
-            // ensure ids are numerical values
-            foreach($ids as $key => $oid) {      
-                if(!is_numeric($oid) || $oid == 0) {
-                    unset($ids[$key]);
-                }
+            // ensure ids are positive numerical values
+            foreach($ids as $key => $oid) {
+                $ids[$key] = intval($oid);
+                if($ids[$key] <= 0) unset($ids[$key]);
             }
 
    			// 3) check $fields arg validity
@@ -936,9 +935,10 @@ todo: signature differs from other methods	(returned value)
 			// remove duplicate ids, if any
 			$ids = array_unique($ids);
 
-            // ensure ids are numerical values
-            foreach($ids as $key => $oid) {      
-                 if(!is_numeric($oid) || $oid == 0) unset($ids[$key]);
+            // ensure ids are positive numerical values
+            foreach($ids as $key => $oid) {
+                $ids[$key] = intval($oid);
+                if($ids[$key] <= 0) unset($ids[$key]);
             }
 
             // if no ids were specified, the result is an empty list

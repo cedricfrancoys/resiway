@@ -78,7 +78,7 @@ try {
         use ($params) {    
             $pdm = &PersistentDataManager::getInstance();
             
-            // check tags_ids consistency (we might have received a request for a new tag/category)
+            // check tags_ids consistency (we might have received a request for new categories)
             foreach($params['tags_ids'] as $key => $value) {
                 if(intval($value) == 0 && strlen($value) > 0) {
                     // create a new category + write given value
