@@ -109,10 +109,6 @@ angular.module('resiexchange')
                 // request object data
                 category: ['routeCategoryProvider', function (provider) {
                     return provider.load();
-                }],
-                // list of categories is required as well for selecting parent category
-                categories: ['routeCategoriesProvider', function (provider) {
-                    return provider.load();
                 }]
             }        
         })
@@ -143,9 +139,6 @@ angular.module('resiexchange')
             controller  : 'questionEditController as ctrl',
             resolve     : {
                 question: ['routeQuestionProvider', function (provider) {
-                    return provider.load();
-                }],            
-                categories: ['routeCategoriesProvider', function (provider) {
                     return provider.load();
                 }]
             }        
