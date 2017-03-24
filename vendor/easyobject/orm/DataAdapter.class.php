@@ -38,7 +38,12 @@ class DataAdapter {
                     if($value) $value = 'true';
                     else $value = 'false';
                     return $value;
-            };            
+            };
+            $adapter['boolean']['orm']['db'] =	function($value) {
+                    if($value) $value = '1';
+                    else $value = '0';
+                    return $value;
+            };                   
             $adapter['date']['orm']['ui'] =	function($value) {
                     if($value == '0000-00-00') $value = '';
                     else {

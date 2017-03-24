@@ -34,7 +34,7 @@ try {
     $om = &ObjectManager::getInstance();
   
     // retrieve given user
-    $res = $om->read($object_class, $object_id, ['id', 'title', 'description', 'parent_id', 'path']);
+    $res = $om->read($object_class, $object_id, ['id', 'title', 'description', 'path', 'parent_id', 'parent_id.title', 'parent_id.path']);
     if($res < 0 || !isset($res[$object_id])) throw new Exception("category_unknown", QN_ERROR_INVALID_PARAM);
     
     $result = $res[$object_id];

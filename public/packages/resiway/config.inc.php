@@ -2,7 +2,7 @@
 namespace config;
 
 // maximum number of categories a user is allowed to post daily
-define('RESIWAY_CATEGORIES_DAILY_MAX', 10);
+define('RESIWAY_CATEGORIES_DAILY_MAX', 30);
 
 
 define('RESIWAY_CATEGORY_TITLE_LENGTH_MIN', 1);

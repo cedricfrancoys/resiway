@@ -2,33 +2,46 @@ angular.module('resiexchange')
 
 .controller('categoryEditController', [
     'category', 
-    'categories', 
     '$scope', 
     '$window', 
     '$location', 
     'feedbackService', 
     'actionService',
-    function(category, categories, $scope, $window, $location, feedbackService, actionService) {
+    '$http',
+    '$httpParamSerializerJQLike',    
+    function(category, $scope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
         console.log('categoryEdit controller');
         
         var ctrl = this;   
        
         // @model
         $scope.category = category;
-        $scope.categories = categories;
         
-        // set initial parent 
-        angular.forEach(categories, function(cat, index) {
-            if(cat.id == $scope.category.parent_id) {
-                $scope.category.parent = cat; 
-            }
-        });       
+        $scope.loadMatches = function(query) {
+            if(query.length < 2) return [];
+            
+            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result != 'object') return [];
+                    return data.result;
+                },
+                function errorCallback(response) {
+                    // something went wrong server-side
+                    return [];
+                }
+            );                
+        };
         
         // @events
         $scope.$watch('category.parent', function() {
             $scope.category.parent_id = $scope.category.parent.id;   
         });
 
+        // set initial parent 
+        $scope.category.parent = { id: category.parent_id, title: category['parent_id.title'], path: category['parent_id.path']};
+                
         // @methods
         $scope.categoryPost = function($event) {
             var selector = feedbackService.selector(angular.element($event.target));                   

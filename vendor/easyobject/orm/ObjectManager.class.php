@@ -280,7 +280,7 @@ class ObjectManager {
             $found_ids = [];
             while($row = $db->fetchArray($result)) $found_ids[] = $row['id'];
             // remove invalid ids from result array
-            foreach(array_diff($valid_ids, $found_ids) as $missing_id) {
+            foreach(array_diff($ids, $found_ids) as $missing_id) {
                 $index = array_search($missing_id, $valid_ids);
                 unset($valid_ids[$index]);
                 EventListener::ExceptionHandler(new Exception("unknown object #'$missing_id' of class '$class"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);

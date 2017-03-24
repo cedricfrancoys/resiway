@@ -4,8 +4,7 @@ angular.module('resiexchange')
 *
 */
 .controller('questionEditController', [
-    'question', 
-    'categories', 
+    'question',
     '$scope', 
     '$window', 
     '$location', 
@@ -15,13 +14,12 @@ angular.module('resiexchange')
     'textAngularManager',
     '$http',
     '$httpParamSerializerJQLike',
-    function(question, categories, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
+    function(question, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   
 
-        // @view
-        $scope.categories = categories;     
+        // @view 
        
         $scope.addItem = function(query) {
             return {
@@ -34,7 +32,7 @@ angular.module('resiexchange')
         };
         
         $scope.loadMatches = function(query) {
-            if(query.length == 0) return [];
+            if(query.length < 2) return [];
             
             return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
@@ -48,7 +46,7 @@ angular.module('resiexchange')
                     return [];
                 }
             );                
-        }
+        };
         
         // @model
         // content is inside a textarea and do not need sanitize check
@@ -63,7 +61,6 @@ angular.module('resiexchange')
                           question);
                           
 
-                  
         /**
         * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
         */
@@ -75,7 +72,6 @@ angular.module('resiexchange')
         
         // @events
         $scope.$watch('question.tags', function() {
-        
             // reset selection
             $scope.question.tags_ids = angular.copy($scope.initial_tags_ids);
             angular.forEach($scope.question.tags, function(tag, index) {

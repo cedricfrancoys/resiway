@@ -24,7 +24,7 @@ $params = QNLib::announce(
                                             'description' => 'Field on which sort the categories.',
                                             'type' => 'string', 
                                             'default'=> 'path'
-                                            ),                                          
+                                            ),                      
                         )
 	)
 );

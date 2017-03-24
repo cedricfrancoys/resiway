@@ -66,7 +66,8 @@ angular.module('resiexchange')
         if (query) {
             query = oiSelectEscape(query).toASCII().toLowerCase();
             for (i = 0, isFound = false; i < input.length; i++) {
-                isFound = getLabel(input[i]).toASCII().toLowerCase().match(new RegExp(query));
+                // isFound = getLabel(input[i]).toASCII().toLowerCase().match(new RegExp(query));
+                isFound = input[i].title.toASCII().toLowerCase().match(new RegExp(query));
 
                 if (!isFound && options && (options.length || options.fields)) {
                     for (j = 0; j < options.length; j++) {

@@ -1394,7 +1394,8 @@ angular.module('resiexchange')
         if (query) {
             query = oiSelectEscape(query).toASCII().toLowerCase();
             for (i = 0, isFound = false; i < input.length; i++) {
-                isFound = getLabel(input[i]).toASCII().toLowerCase().match(new RegExp(query));
+                // isFound = getLabel(input[i]).toASCII().toLowerCase().match(new RegExp(query));
+                isFound = input[i].title.toASCII().toLowerCase().match(new RegExp(query));
 
                 if (!isFound && options && (options.length || options.fields)) {
                     for (j = 0; j < options.length; j++) {
@@ -1524,33 +1525,46 @@ angular.module('resiexchange')
 
 .controller('categoryEditController', [
     'category', 
-    'categories', 
     '$scope', 
     '$window', 
     '$location', 
     'feedbackService', 
     'actionService',
-    function(category, categories, $scope, $window, $location, feedbackService, actionService) {
+    '$http',
+    '$httpParamSerializerJQLike',    
+    function(category, $scope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
         console.log('categoryEdit controller');
         
         var ctrl = this;   
        
         // @model
         $scope.category = category;
-        $scope.categories = categories;
         
-        // set initial parent 
-        angular.forEach(categories, function(cat, index) {
-            if(cat.id == $scope.category.parent_id) {
-                $scope.category.parent = cat; 
-            }
-        });       
+        $scope.loadMatches = function(query) {
+            if(query.length < 2) return [];
+            
+            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result != 'object') return [];
+                    return data.result;
+                },
+                function errorCallback(response) {
+                    // something went wrong server-side
+                    return [];
+                }
+            );                
+        };
         
         // @events
         $scope.$watch('category.parent', function() {
             $scope.category.parent_id = $scope.category.parent.id;   
         });
 
+        // set initial parent 
+        $scope.category.parent = { id: category.parent_id, title: category['parent_id.title'], path: category['parent_id.path']};
+                
         // @methods
         $scope.categoryPost = function($event) {
             var selector = feedbackService.selector(angular.element($event.target));                   
@@ -2392,8 +2406,7 @@ angular.module('resiexchange')
 *
 */
 .controller('questionEditController', [
-    'question', 
-    'categories', 
+    'question',
     '$scope', 
     '$window', 
     '$location', 
@@ -2403,13 +2416,12 @@ angular.module('resiexchange')
     'textAngularManager',
     '$http',
     '$httpParamSerializerJQLike',
-    function(question, categories, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
+    function(question, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   
 
-        // @view
-        $scope.categories = categories;     
+        // @view 
        
         $scope.addItem = function(query) {
             return {
@@ -2422,7 +2434,7 @@ angular.module('resiexchange')
         };
         
         $scope.loadMatches = function(query) {
-            if(query.length == 0) return [];
+            if(query.length < 2) return [];
             
             return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
@@ -2436,7 +2448,7 @@ angular.module('resiexchange')
                     return [];
                 }
             );                
-        }
+        };
         
         // @model
         // content is inside a textarea and do not need sanitize check
@@ -2451,7 +2463,6 @@ angular.module('resiexchange')
                           question);
                           
 
-                  
         /**
         * tags_ids is a many2many field, so as initial setting we mark all ids to be removed
         */
@@ -2463,7 +2474,6 @@ angular.module('resiexchange')
         
         // @events
         $scope.$watch('question.tags', function() {
-        
             // reset selection
             $scope.question.tags_ids = angular.copy($scope.initial_tags_ids);
             angular.forEach($scope.question.tags, function(tag, index) {

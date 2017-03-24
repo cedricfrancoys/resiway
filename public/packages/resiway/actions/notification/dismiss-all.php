@@ -19,10 +19,9 @@ $params = QNLib::announce([
 
 list($result, $error_message_ids, $notifications) = [true, [], []];
 
-list($action_name, $object_class, $object_id) = [ 
+list($action_name, $object_class) = [ 
     'resiway_notification_dismiss',
-    'resiway\UserNotification',
-    $params['notification_id']
+    'resiway\UserNotification'
 ];
 
 
