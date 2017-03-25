@@ -154,19 +154,9 @@ class ResiAPI {
         return $pdm->get('user_id', 0);
     }
 
+   
     /**
-    * Retrieves current user pending notifications ids, if any.
-    * otherwise, returns an empty array
-    *
-    * @return   array idetifiers of pending notifications
-    */    
-    public static function userNotifications() {
-        $pdm = &PersistentDataManager::getInstance();
-        return $pdm->get('notifications', []);
-    }
-    
-    /**
-    * Retrieves given action identifier based on its name.
+    * Resolve given action name to its related object identifier.
     * If action is unknown, returns a negative value (QN_ERROR_INVALID_PARAM)
     *
     * @param    string  $action_name    name of the action to resolve
@@ -297,11 +287,12 @@ class ResiAPI {
     
 
     /*
-    * type      integer     type of notification (reputation_update, badge_awarded, question_answered, question_commented, answer_commented)
-    * title     string      sort title describing the notice
-    * content   string      html to be displayed (whatever the media)
+    * @param integer    $user_id   identifier of the user to which notification is addressed
+    * @param string     $type      type of notification (reputation_update, badge_awarded, question_answered, question_commented, answer_commented)
+    * @param string     $title     short title describing the notice
+    * @param string     $content   html to be displayed (whatever the media)
     */
-    public static function userNotify($user_id, $type, $notification) {
+    private static function userNotify($user_id, $type, $notification) {
         $om = &ObjectManager::getInstance();
         $user_data = self::loadUserPrivate($user_id);
         // if notification has to be sent by email, store message in spool
@@ -317,11 +308,11 @@ class ResiAPI {
             'content'   => $notification['body']
         ]);
         // update notifications array for current session
-        $pdm = &PersistentDataManager::getInstance();
-        $notifications = $pdm->get('notifications', []); 
-        $notifications[] = ['id' => $notification_id, 'title' => $notification['subject']];
-        
-        $pdm->set('notifications', $notifications); 
+        // we'll need to be able to provide js-client with pending notifications
+        if(self::userId() == $user_id) {
+            $pdm = &PersistentDataManager::getInstance();
+            $pdm->set('notifications', array_merge($pdm->get('notifications', []), [$notification_id]) ); 
+        }        
         // return identifier of the newly created notification
         return $notification_id;
     }
@@ -508,14 +499,14 @@ class ResiAPI {
     * @param    integer  $action_id     identifier of the action being performed
     * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
     * @param    integer  $object_id     identifier of the object on which action is performed
-    * @return   boolean  returns true if operation succeeds, false otherwise.    
+    * @return   boolean  returns true if operation succeeds, false otherwise.   
     */
     public static function registerAction($user_id, $action_name, $object_class, $object_id) {        
         // retrieve action identifier
         $action_id = self::actionId($action_name);
 
         // check params consistency
-        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return;
+        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return false;
         
         $impact = self::impactReputation($user_id, $action_id, $object_class, $object_id, 1);
         $author_id = $impact['author']['id'];
@@ -523,7 +514,7 @@ class ResiAPI {
         $om = &ObjectManager::getInstance();
         
         // register action
-        $om->create('resiway\ActionLog', [
+        $actionlog_id = $om->create('resiway\ActionLog', [
                         'user_id'               => $user_id,
                         'author_id'             => $author_id,
                         'action_id'             => $action_id, 
@@ -532,7 +523,12 @@ class ResiAPI {
                         'user_increment'        => $impact['user']['increment'],
                         'author_increment'      => $impact['author']['increment']
                        ]);
-                       
+
+        // update current user's pending actions list
+        // we'll need to be able to provide js-client with pending actions (for badges update)        
+        $pdm = &PersistentDataManager::getInstance();
+        $pdm->set('actions', array_merge($pdm->get('actions', []), [$actionlog_id]));
+        
         // handle notifications
         $user_data = self::loadUserPrivate($user_id);
         $author_data = self::loadUserPrivate($author_id);    
@@ -574,10 +570,13 @@ class ResiAPI {
         if($impact['author']['increment'] != 0) {
             $data['user'] = $author_data;
             $data['reputation_increment'] = sprintf("%+d", $impact['author']['increment']);
-            $notification = self::getUserNotification('notification_reputation_update', $author_data['language'], $data);            
-            self::userNotify($author_id, 'reputation_update', $notification);            
+            self::userNotify( $author_id, 
+                              'reputation_update', 
+                              self::getUserNotification('notification_reputation_update', $author_data['language'], $data)
+                             );
+                              
         }        
-
+        return true;
     }
 
      
@@ -595,7 +594,7 @@ class ResiAPI {
         $action_id = self::actionId($action_name);
         
         // check params consistency
-        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return;
+        if($user_id <= 0 || $action_id <= 0 || $object_id <= 0) return false;
         
         $impact = self::impactReputation($user_id, $action_id, $object_class, $object_id, -1);
         $author_id = $impact['author']['id'];
@@ -634,7 +633,9 @@ class ResiAPI {
             $data['reputation_increment'] = sprintf("%+d", $impact['author']['increment']);
             $notification = self::getUserNotification('notification_reputation_update', $author_data['language'], $data);            
             self::userNotify($author_id, 'reputation_update', $notification);            
-        }        
+        }
+        
+        return true;
     }
     
     /**
@@ -672,26 +673,33 @@ class ResiAPI {
     
     /**
     * Updates badges status for user and object author.
-    * Note: once a badge has been awarded it will never be withrawn.
-    * This method expects resiway_user_badge table to be synched with resiway_badge : 
-    * which means that if badge list is updated, we need to generate missing entries in resiway_user_badge table for all users
+    * Note: once a badge has been awarded it will never be withdrawn.
+    * In case some badge is not yet defined in resiway_userbadge table, this method takes care of updating resiway_userbadge table
     *
-    * @param    string   $action_name   name of the action being performed
+    * @param    mixed    $action        either action name (string) or action identifier (integer)
     * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
     * @param    integer  $object_id     identifier of the object on which action is performed
     *
     * @return   boolean  returns true on succes, false if something went wrong
     */     
-    public static function updateBadges($action_name, $object_class, $object_id) {              
+    public static function updateBadges($action, $object_class, $object_id) {         
+// how to make sure that user actually just performed this action ?
+// in session; list of performed actions (actionlogs_ids
+        $result = [];
+        
         $om = &ObjectManager::getInstance();
 
         // retrieve user object
         $user_id = self::userId();
         if($user_id <= 0) throw new Exception("user_unidentified", QN_ERROR_NOT_ALLOWED);
 
-        // retrieve action object
-        $action_id = self::actionId($action_name);
-        if($action_id <= 0) throw new Exception("action_unknown", QN_ERROR_INVALID_PARAM);
+        // retrieve action object identifier
+        $action_id = intval($action);
+        if($action_id == 0) {
+            // if we received a string, try to resolve action name
+            $action_id = self::actionId($action);
+            if($action_id <= 0) throw new Exception("action_unknown", QN_ERROR_INVALID_PARAM);
+        }
         
         // retrieve action data
         $res = $om->read('resiway\Action', $action_id, ['badges_ids']);
@@ -776,7 +784,8 @@ class ResiAPI {
             ];
 
             $notification = self::getUserNotification('notification_badge_awarded', $user_data['language'], $data);
-            $notification_id = self::userNotify($uid, 'badge_awarded', $notification);                  
+            self::userNotify($uid, 'badge_awarded', $notification);
+
         }
         // update user badges-counts, if required
         if(count($res)) {            
@@ -788,8 +797,8 @@ class ResiAPI {
                                                         'count_badges_3'=> $res[$user_id]['count_badges_3']+$bagdes_increment[3] 
                                                      ]);
             }
-        }        
-
+        }
+        return $result;
     }
 
 
@@ -798,7 +807,7 @@ class ResiAPI {
     *
     * This method throws an error if some rule is broken or if something goes wrong
     * 
-    * @param string     $action_name
+    * @param mixed      $action_name
     * @param string     $object_class
     * @param integer    $object_id
     * @param string     $toggle             indicates the kind of action (repeated actions or toggle between on and off / performed - not performed)
@@ -820,11 +829,7 @@ class ResiAPI {
                                         $limitations = []) {
         
         $result = true;
-
-        // reset pending notifications
-        $pdm = &PersistentDataManager::getInstance();
-        $pdm->set('notifications', []);
-        
+       
         $om = &ObjectManager::getInstance();
                     
         // 0) retrieve parameters 

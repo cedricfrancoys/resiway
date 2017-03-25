@@ -147,7 +147,8 @@ var resiway = angular.module('resiexchange', [
     'oi.select',    
     'textAngular',
     'pascalprecht.translate',
-    'angularMoment'    
+    'angularMoment',
+    'ngToast'    
 ])
 
 
@@ -220,6 +221,15 @@ var resiway = angular.module('resiexchange', [
         }]);    
     }
 ])
+
+/**
+* Configure ngToast animations
+*
+*/
+.config(['ngToastProvider', function(ngToastProvider) { 
+    // Built-in ngToast animations include slide & fade
+    ngToastProvider.configure({ animation: 'fade' }); 
+}]) 
 
 /**
 * moment.js : customization
@@ -930,7 +940,8 @@ angular.module('resiexchange')
     '$http', 
     '$location', 
     'authenticationService',
-    function($rootScope, $http, $location, authenticationService) {
+    'ngToast',
+    function($rootScope, $http, $location, authenticationService, ngToast) {
     
         this.perform = function(action) {
             var defaults = {
@@ -958,17 +969,33 @@ angular.module('resiexchange')
                 && task.action.length > 0) {
                     $http.post('index.php?do='+task.action, task.data).then(
                     function successCallback(response) {
-                        if(typeof response.data.notifications != 'undefined' && response.data.notifications.length > 0) {
-                            $http.get('index.php?get=resiway_user_notification_list')
-                            .then(
-                                function successCallback(response) {
-                                    var data = response.data;
-                                    if(typeof data.result == 'object') {
-                                        $rootScope.user.notifications = data.result;
+                        
+                        $http.get('index.php?do=resiway_user_badges_update').then(
+                            function successCallback(response) {
+                                $http.get('index.php?get=resiway_user_notifications').then(
+                                    function successCallback(response) {
+                                        var data = response.data;
+                                        if(typeof data.result == 'object') {
+                                            $rootScope.user.notifications = $rootScope.user.notifications.concat(data.result);
+                                            
+                                            angular.forEach(data.result, function(notification, index) {
+                                                ngToast.create({
+                                                    content: notification.content,
+                                                    className: 'success',
+                                                    dismissOnTimeout: true,
+                                                    timeout: 4000,
+                                                    dismissButton: true,
+                                                    dismissButtonHtml: '&times',
+                                                    dismissOnClick: false,
+                                                    compileContent: false
+                                                });
+                                            });
+                                        }
                                     }
-                                }
-                            );                            
-                        }
+                                );
+                            }
+                        );
+                        
                         if(typeof task.callback == 'function') {
                             task.callback(task.scope, response.data);
                         }
@@ -2992,16 +3019,6 @@ angular.module('resiexchange')
         var ctrl = this;
         
         ctrl.user = user;
-        ctrl.actions = -1;    
-        ctrl.answers = -1;
-        ctrl.favorites = -1;    
-
-        
-        var defaults = {
-            total: -1,
-            currentPage: 1,
-            previousPage: 1
-        };
         
         
         // @init
@@ -3036,14 +3053,25 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,
                 limit: 5,
                 domain: [[['user_id', '=', ctrl.user.id],['user_increment','<>', 0]],[['author_id', '=', ctrl.user.id],['author_increment','<>', 0]]],
                 provider: 'resiway_actionlog_list'
             },
+            badges: {
+                items: -1,
+                total: -1,
+                currentPage: 1,
+                previousPage: -1,                
+                limit: 5,
+                domain: ['user_id', '=', ctrl.user.id],
+                provider: 'resiway_userbadge_list'
+            },            
             questions: {
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 domain: ['creator', '=', ctrl.user.id],
                 provider: 'resiexchange_question_list'
@@ -3052,6 +3080,7 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 domain: ['creator', '=', ctrl.user.id],
                 provider: 'resiexchange_answer_list'
@@ -3060,6 +3089,7 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 // 'resiexchange_question_star' == action (id=4)
                 domain: [['user_id', '=', ctrl.user.id], ['action_id','=','4']],
@@ -3069,6 +3099,7 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 domain: [['user_id', '=', ctrl.user.id]],
                 provider: 'resiway_actionlog_list'

@@ -91,6 +91,7 @@ var translations = {
     // Users
     "USER_PROFILE_TAB_PROFILE": "Profil",    
     "USER_PROFILE_TAB_REPUTATION": "Réputation",
+    "USER_PROFILE_TAB_BADGES": "Badges",    
     "USER_PROFILE_TAB_QUESTIONS": "Questions",
     "USER_PROFILE_TAB_ANSWERS": "Réponses",
     "USER_PROFILE_TAB_FAVORITES": "Favoris",

@@ -34,8 +34,7 @@ class ActionLog extends \easyobject\orm\Object {
                                         'result_type'       => 'string', 
                                         'store'             => false,                               
                                         'function'          => 'resiway\ActionLog::getObjectName'
-                                    ),
-            
+                                    )
         );
     }
 

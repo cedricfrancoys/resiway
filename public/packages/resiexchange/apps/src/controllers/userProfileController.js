@@ -10,16 +10,6 @@ angular.module('resiexchange')
         var ctrl = this;
         
         ctrl.user = user;
-        ctrl.actions = -1;    
-        ctrl.answers = -1;
-        ctrl.favorites = -1;    
-
-        
-        var defaults = {
-            total: -1,
-            currentPage: 1,
-            previousPage: 1
-        };
         
         
         // @init
@@ -54,14 +44,25 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,
                 limit: 5,
                 domain: [[['user_id', '=', ctrl.user.id],['user_increment','<>', 0]],[['author_id', '=', ctrl.user.id],['author_increment','<>', 0]]],
                 provider: 'resiway_actionlog_list'
             },
+            badges: {
+                items: -1,
+                total: -1,
+                currentPage: 1,
+                previousPage: -1,                
+                limit: 5,
+                domain: ['user_id', '=', ctrl.user.id],
+                provider: 'resiway_userbadge_list'
+            },            
             questions: {
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 domain: ['creator', '=', ctrl.user.id],
                 provider: 'resiexchange_question_list'
@@ -70,6 +71,7 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 domain: ['creator', '=', ctrl.user.id],
                 provider: 'resiexchange_answer_list'
@@ -78,6 +80,7 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 // 'resiexchange_question_star' == action (id=4)
                 domain: [['user_id', '=', ctrl.user.id], ['action_id','=','4']],
@@ -87,6 +90,7 @@ angular.module('resiexchange')
                 items: -1,
                 total: -1,
                 currentPage: 1,
+                previousPage: -1,                
                 limit: 5,
                 domain: [['user_id', '=', ctrl.user.id]],
                 provider: 'resiway_actionlog_list'

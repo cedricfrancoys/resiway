@@ -108,7 +108,45 @@
             </div>          
         </uib-tab>
 
-        <uib-tab index="2" select="ctrl.load(ctrl.questions)">
+        <uib-tab index="2" select="ctrl.load(ctrl.badges)">
+          <uib-tab-heading>
+            <i class="fa fa-trophy"></i> {{'USER_PROFILE_TAB_BADGES'|translate}}
+          </uib-tab-heading>
+            <div class="loader" ng-show="ctrl.badges.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
+                        
+            <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
+                <div ng-hide="ctrl.badges.items == -1" style="min-height: 250px;">            
+                    <div ng-repeat="badge in ctrl.badges.items" class="post-summary col-1-1">               
+                        <div class="col-9-12 nopad">                                                        
+                            <div class="col-5-12" style="overflow: hidden">
+                            <span class="mini-counts btn btn-xs">{{badge['badge_id.type']}}</span>
+                            {{badge['badge_id.description']}}
+                            </div> 
+                            <div class="col-7-12" style="overflow: hidden">
+                                <h3><a href="#/badge/{{badge.badge_id}}">{{badge['badge_id.name']}}</a></h3>
+                            </div>
+                        </div>
+                        <div class="col-3-12 text-right">
+                            {{badge.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+                        </div>
+                    </div>
+                </div>
+                
+                <ul uib-pagination 
+                    class="pagination-sm" 
+                    total-items="ctrl.badges.total" 
+                    ng-model="ctrl.badges.currentPage"
+                    ng-change="ctrl.load(ctrl.badges)"
+                    items-per-page="5"
+                    max-size="5" 
+                    direction-links="false"
+                    boundary-links="true"
+                    rotate="true"
+                    force-ellipses="true"></ul>                
+            </div>          
+        </uib-tab>
+        
+        <uib-tab index="3" select="ctrl.load(ctrl.questions)">
             <uib-tab-heading>
                 <i class="fa fa-comment-o"></i> {{'USER_PROFILE_TAB_QUESTIONS' | translate}}
             </uib-tab-heading>
@@ -142,7 +180,7 @@
             
         </uib-tab>
         
-        <uib-tab index="3" select="ctrl.load(ctrl.answers)">
+        <uib-tab index="4" select="ctrl.load(ctrl.answers)">
           <uib-tab-heading>
             <i class="fa fa-comments-o"></i> {{'USER_PROFILE_TAB_ANSWERS' | translate}}
           </uib-tab-heading>
@@ -175,7 +213,7 @@
             </div>            
         </uib-tab>
         
-        <uib-tab index="4" select="ctrl.load(ctrl.favorites)">
+        <uib-tab index="5" select="ctrl.load(ctrl.favorites)">
           <uib-tab-heading>
             <i class="fa fa-star"></i> {{'USER_PROFILE_TAB_FAVORITES' | translate}}
           </uib-tab-heading>
@@ -207,7 +245,7 @@
             </div>           
         </uib-tab>
         
-        <uib-tab index="5" select="ctrl.load(ctrl.actions)">
+        <uib-tab index="6" select="ctrl.load(ctrl.actions)">
           <uib-tab-heading>
             <i class="fa fa-history"></i> {{'USER_PROFILE_TAB_ACTIVITY' | translate}}
           </uib-tab-heading>

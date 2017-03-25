@@ -376,7 +376,8 @@ angular.module('resiexchange')
     '$http', 
     '$location', 
     'authenticationService',
-    function($rootScope, $http, $location, authenticationService) {
+    'ngToast',
+    function($rootScope, $http, $location, authenticationService, ngToast) {
     
         this.perform = function(action) {
             var defaults = {
@@ -404,17 +405,33 @@ angular.module('resiexchange')
                 && task.action.length > 0) {
                     $http.post('index.php?do='+task.action, task.data).then(
                     function successCallback(response) {
-                        if(typeof response.data.notifications != 'undefined' && response.data.notifications.length > 0) {
-                            $http.get('index.php?get=resiway_user_notification_list')
-                            .then(
-                                function successCallback(response) {
-                                    var data = response.data;
-                                    if(typeof data.result == 'object') {
-                                        $rootScope.user.notifications = data.result;
+                        
+                        $http.get('index.php?do=resiway_user_badges_update').then(
+                            function successCallback(response) {
+                                $http.get('index.php?get=resiway_user_notifications').then(
+                                    function successCallback(response) {
+                                        var data = response.data;
+                                        if(typeof data.result == 'object') {
+                                            $rootScope.user.notifications = $rootScope.user.notifications.concat(data.result);
+                                            
+                                            angular.forEach(data.result, function(notification, index) {
+                                                ngToast.create({
+                                                    content: notification.content,
+                                                    className: 'success',
+                                                    dismissOnTimeout: true,
+                                                    timeout: 4000,
+                                                    dismissButton: true,
+                                                    dismissButtonHtml: '&times',
+                                                    dismissOnClick: false,
+                                                    compileContent: false
+                                                });
+                                            });
+                                        }
                                     }
-                                }
-                            );                            
-                        }
+                                );
+                            }
+                        );
+                        
                         if(typeof task.callback == 'function') {
                             task.callback(task.scope, response.data);
                         }

@@ -584,7 +584,7 @@
             </div>
         </div>
     </div>
-    <div class="col-4-12 answer-help">
+    <div class="col-4-12 answer-help" ng-hide="user.id && question.history['resiexchange_question_answer']">
         <div ng-include="'answerHelp.html'"></div>
     </div>
 </div>

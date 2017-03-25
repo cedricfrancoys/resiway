@@ -17,7 +17,8 @@ var resiway = angular.module('resiexchange', [
     'oi.select',    
     'textAngular',
     'pascalprecht.translate',
-    'angularMoment'    
+    'angularMoment',
+    'ngToast'    
 ])
 
 
@@ -90,6 +91,15 @@ var resiway = angular.module('resiexchange', [
         }]);    
     }
 ])
+
+/**
+* Configure ngToast animations
+*
+*/
+.config(['ngToastProvider', function(ngToastProvider) { 
+    // Built-in ngToast animations include slide & fade
+    ngToastProvider.configure({ animation: 'fade' }); 
+}]) 
 
 /**
 * moment.js : customization
