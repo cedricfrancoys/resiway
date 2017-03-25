@@ -75,6 +75,13 @@ try {
     // 0) retrieve matching questions identifiers
 
     // if a channel has been specified in current session, adapt domain to restrict results
+    // build domain
+    /*
+    search syntax : 
+        [category-name]
+    */
+    
+    
     $pdm = &PersistentDataManager::getInstance();
     $params['domain'][] = ['channel_id','=', $pdm->get('channel', 1)];
     if(strlen($params['q']) > 0) {
@@ -95,7 +102,7 @@ try {
     
     if(!empty($questions_ids)) {
         // retrieve questions
-        $res = $om->read('resiexchange\Question', $questions_ids, ['creator', 'created', 'title', 'content_excerpt', 'count_views', 'count_votes', 'count_answers', 'categories_ids']);
+        $res = $om->read('resiexchange\Question', $questions_ids, ['creator', 'created', 'title', 'title_url', 'content_excerpt', 'count_views', 'count_votes', 'count_answers', 'categories_ids']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
         $authors_ids = [];
@@ -107,13 +114,14 @@ try {
             $tags_ids = array_merge($tags_ids, (array) $question_data['categories_ids']);         
             
             $questions[$question_id] = array(
-                                        'id'            => $question_id,
-                                        'title'         => $question_data['title'],                                    
-                                        'content'       => $question_data['content_excerpt'],
-                                        'created'       => $question_data['created'],
-                                        'count_views'   => $question_data['count_views'],
-                                        'count_votes'   => $question_data['count_votes'],
-                                        'count_answers' => $question_data['count_answers']
+                                        'id'                => $question_id,
+                                        'title'             => $question_data['title'],                                    
+                                        'title_url'         => $question_data['title_url'],
+                                        'content_excerpt'   => $question_data['content_excerpt'],
+                                        'created'           => $question_data['created'],
+                                        'count_views'       => $question_data['count_views'],
+                                        'count_votes'       => $question_data['count_votes'],
+                                        'count_answers'     => $question_data['count_answers']
                                        );
         }    
         

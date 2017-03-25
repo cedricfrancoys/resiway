@@ -79,6 +79,7 @@
 .question-stats .title {
     line-height: 25px;
     display: table-cell;
+    text-transform: capitalize;
 }
 
 .question-stats .content {

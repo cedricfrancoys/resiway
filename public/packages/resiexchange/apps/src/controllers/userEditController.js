@@ -45,9 +45,9 @@ angular.module('resiexchange')
     });
     
     ctrl.avatars = {
-        libravatar: 'http://cdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
+        libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
+        gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
+        identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
         google: ''
     };
         

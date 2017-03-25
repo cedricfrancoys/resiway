@@ -413,6 +413,7 @@ input[type="text"] {
 .question-stats .title {
     line-height: 25px;
     display: table-cell;
+    text-transform: capitalize;
 }
 
 .question-stats .content {
@@ -423,7 +424,7 @@ input[type="text"] {
 
 .question-stats .content.about p {
     max-width: 280px;
-    max-height: 110px;
+    max-height: 120px;
     overflow: hidden;
     text-align: justify;
     text-overflow: ellipsis;

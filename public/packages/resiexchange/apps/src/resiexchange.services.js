@@ -419,7 +419,7 @@ angular.module('resiexchange')
                                                     content: notification.content,
                                                     className: 'success',
                                                     dismissOnTimeout: true,
-                                                    timeout: 4000,
+                                                    timeout: 7000,
                                                     dismissButton: true,
                                                     dismissButtonHtml: '&times',
                                                     dismissOnClick: false,
