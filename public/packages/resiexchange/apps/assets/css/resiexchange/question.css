@@ -89,7 +89,7 @@
 
 .question-stats .content.about p {
     max-width: 280px;
-    max-height: 110px;
+    max-height: 120px;
     overflow: hidden;
     text-align: justify;
     text-overflow: ellipsis;
