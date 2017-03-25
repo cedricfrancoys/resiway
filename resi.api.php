@@ -770,7 +770,7 @@ class ResiAPI {
         // mark all newly awarded badges at once
         $om->write('resiway\UserBadge', array_keys($res), array('awarded' => '1'));
         // keep track of users badges-counts update
-        $bagdes_increment = [];
+        $bagdes_increments = [];
         // do some treatment to inform user that a new badge has been awarded to him
         foreach($res as $user_badge_id => $user_badge) {
             
@@ -778,8 +778,8 @@ class ResiAPI {
             $bid = $user_badge['badge_id'];
             $user_data = self::loadUserPrivate($uid);
             
-            if(!isset($bagdes_increment[$uid])) $bagdes_increment[$uid] = array(1 => 0, 2 => 0, 3 => 0);
-            ++$bagdes_increment[$uid][ $user_badge['badge_id.type'] ];
+            if(!isset($bagdes_increments[$uid])) $bagdes_increments[$uid] = array(1 => 0, 2 => 0, 3 => 0);
+            ++$bagdes_increments[$uid][ $user_badge['badge_id.type'] ];
             
             $data = [
                 'user' => $user_data,
@@ -791,7 +791,7 @@ class ResiAPI {
 
         }
         // update user badges-counts, if required
-        foreach($bagdes_increment as $uid => $bagdes_increment) {
+        foreach($bagdes_increments as $uid => $bagdes_increment) {
             $res = $om->read('resiway\User', $uid, ['count_badges_1','count_badges_2','count_badges_3']);
             if($res > 0 && isset($res[$uid])) {
                 $om->write('resiway\User', $uid, [ 
