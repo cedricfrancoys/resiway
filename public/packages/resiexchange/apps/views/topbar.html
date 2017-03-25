@@ -43,7 +43,7 @@
         <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
             <div class="head">
                 <a href="#/user/notifications/{{user.id}}">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
-                <a href class="pull-right" ng-click="ctrl.notificationsDismissAll()">supprimer toutes les notifications</a>
+                <a href class="pull-right" ng-click="ctrl.notificationsDismissAll()">tout supprimer</a>
             </div>
             <ul>
                 <li ng-repeat="(notification_index, notification) in user.notifications">
