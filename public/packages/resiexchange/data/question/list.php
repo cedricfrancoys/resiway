@@ -87,7 +87,7 @@ try {
     if(strlen($params['q']) > 0) {
         $params['domain'][] = ['title','ilike', "%{$params['q']}%"];
     }
-    
+
     // total is not knwon yet
     if($params['total'] < 0) {        
         $ids = $om->search('resiexchange\Question', $params['domain'], $params['order'], $params['sort']);

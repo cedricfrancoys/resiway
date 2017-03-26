@@ -4,19 +4,22 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 use config\QNlib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
 use html\HtmlTemplate as HtmlTemplate;
-use mail\Swift_SmtpTransport as Swift_SmtpTransport;
-use mail\Swift_Mailer as Swift_Mailer;
-use mail\Swift_Message as Swift_Message;
 
-define('MAIL_SMTP_HOST', 'smtp.ovh.net');
-define('MAIL_SMTP_PORT', '446');
-define('MAIL_USERNAME', 'cedricfrancoys@gmail.com');
-define('MAIL_PASSWORD', '');
 
-$params = ['code' => 'dGVzdGVyQGV4YW1wbGUuY29tOzAwMDAwMDAwYzU1OWMyNTA0N2JiNjk2OGMzYTE3NzQz'];
+
+
+$params = [
+    'code' => 'dGVzdGVyQGV4YW1wbGUuY29tOzAwMDAwMDAwYzU1OWMyNTA0N2JiNjk2OGMzYTE3NzQz',
+    'increment' => '+5'
+    ];
 $template = '
+<var id="subject" title="test"></var>
 <p>
 Bonjour <var id="username"></var>,<br />
+<br />
+<var if="false">always shown</var>
+<var if="score &gt; 0">score greater than 0</var>
+<var if="increment &lt; 0">increment lower than 0</var><var if="increment &gt; 0">increment greater than 0</var>
 <br />
 Ceci est un message automatique envoyé depuis resiway.org suite à une demande de réinitialisation de mot de passe.<br />
 Si vous n\'êtes pas à l\'origine de cette requête, ignorez simplement ce message.<br />
@@ -27,6 +30,12 @@ Si vous souhaitez continuer et définir un nouveau mot de passe maintenant, veuil
 ';
 
 $template = new HtmlTemplate($template, [
+                                'subject'		=>	function ($params, $attributes) {
+                                                        return $attributes['title'];
+                                                    },
+                                'score'		    =>	function ($params) {
+                                                        return '+5';
+                                                    },
                                 'username'		=>	function ($params) {
                                                         return 'cedric';
                                                     },
@@ -39,26 +48,6 @@ $template = new HtmlTemplate($template, [
                             
 $body = $template->getHtml();
     
-$to = 'cedricfrancoys@gmail.com';
-$subject = '';
 
-try {
-    $transport = Swift_SmtpTransport::newInstance(MAIL_SMTP_HOST, MAIL_SMTP_PORT, "ssl")
-                ->setUsername(MAIL_USERNAME)
-                ->setPassword(MAIL_PASSWORD);
-                
-    $mailer = Swift_Mailer::newInstance($transport);
-
-    $message = Swift_Message::newInstance($subject)
-                ->setFrom(array(MAIL_USERNAME => 'ResiExchange'))
-                ->setTo(array($to))
-                ->setBody($body);
-
-    if($result = $mailer->send($message)) {
-        
-    }
-}
-catch(Exception $e) {
-}
 
 print($body);

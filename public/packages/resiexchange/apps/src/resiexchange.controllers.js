@@ -1100,16 +1100,7 @@ angular.module('resiexchange')
         var ctrl = this;
 
         // @data model
-        ctrl.questions = questions;
-
-        $scope.doSearch = function(criteria) {
-            // update global criteria            
-            angular.extend($rootScope.search.criteria, criteria);
-            // go to questions list page
-            $route.reload();           
-        };
-        
-                         
+        ctrl.questions = questions;  
         
     }
 ]);
@@ -1165,6 +1156,8 @@ angular.module('resiexchange')
             });            
         }
         
+        // @events
+            
         $scope.togglePlatformDropdown = function() {
             var flag = ctrl.platformDropdown;
             hideAll();     
@@ -1339,9 +1332,9 @@ angular.module('resiexchange')
     });
     
     ctrl.avatars = {
-        libravatar: 'http://cdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
+        libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
+        gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
+        identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
         google: ''
     };
         

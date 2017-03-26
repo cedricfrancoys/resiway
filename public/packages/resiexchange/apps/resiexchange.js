@@ -327,9 +327,18 @@ var resiway = angular.module('resiexchange', [
         
         // search criteria (filters)
         $rootScope.search = {
+            default: {
+                q: '',
+                cat: 0,
+                domain: [],
+                order: 'title',
+                sort: 'desc',
+                start: 0,
+                limit: 25
+            },            
             criteria: {
                 q: '',              // query string (against question title)
-                c: 0,               // category (result including subcategories)
+                cat: 0,             // category (result including subcategories)
                 domain: [],         // todo: remove this
                 order: 'title',
                 sort: 'desc',
@@ -435,9 +444,15 @@ var resiway = angular.module('resiexchange', [
         var rootCtrl = this;
 
         
-        rootCtrl.search = function() {
+        rootCtrl.search = function(values) {
+            var criteria = angular.extend({}, $rootScope.search.default, values || {});
+            angular.copy(criteria, $rootScope.search.criteria);
             // go to questions list page
-            if($location.path() == '/questions') $route.reload();
+            if($location.path() == '/questions') { 
+                $rootScope.$broadcast('$locationChangeStart');
+//                $rootScope.$broadcast('$routeUpdate');
+                $route.reload();
+            }
             else $location.path('/questions');
         };
         
@@ -1247,7 +1262,7 @@ angular.module('resiexchange')
                 category: ['routeCategoryProvider', function (provider) {
                     return provider.load();
                 }]
-            }        
+            }            
         })      
         /**
         * Question related routes
@@ -1260,7 +1275,8 @@ angular.module('resiexchange')
                 questions: ['routeQuestionsProvider', function (provider) {
                     return provider.load();
                 }]
-            }                
+            }
+            //,reloadOnSearch: false           
         })
         .when('/question/edit/:id', {
             templateUrl : templatePath+'questionEdit.html',
@@ -2558,16 +2574,7 @@ angular.module('resiexchange')
         var ctrl = this;
 
         // @data model
-        ctrl.questions = questions;
-
-        $scope.doSearch = function(criteria) {
-            // update global criteria            
-            angular.extend($rootScope.search.criteria, criteria);
-            // go to questions list page
-            $route.reload();           
-        };
-        
-                         
+        ctrl.questions = questions;  
         
     }
 ]);
@@ -2623,6 +2630,8 @@ angular.module('resiexchange')
             });            
         }
         
+        // @events
+            
         $scope.togglePlatformDropdown = function() {
             var flag = ctrl.platformDropdown;
             hideAll();     
@@ -2797,9 +2806,9 @@ angular.module('resiexchange')
     });
     
     ctrl.avatars = {
-        libravatar: 'http://cdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        gravatar: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        identicon: 'http://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
+        libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
+        gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
+        identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
         google: ''
     };
         

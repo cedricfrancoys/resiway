@@ -13,10 +13,10 @@
 
                   <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                     <li class="dropdown-header">Questions...</li>
-                    <li><a href ng-click="doSearch({order:'count_answers', sort: 'asc'});">les moins répondues</a></li>
-                    <li><a href ng-click="doSearch({order:'count_views', sort: 'desc'});">les plus vues</a></li>
-                    <li><a href ng-click="doSearch({order:'modified', sort: 'desc'});">les plus récentes</a></li>
-                    <li><a href ng-click="doSearch({order:'score', sort: 'desc'});">les plus populaires</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'count_answers', sort: 'asc'});">les moins répondues</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'count_views', sort: 'desc'});">les plus vues</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'modified', sort: 'desc'});">les plus récentes</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'score', sort: 'desc'});">les plus populaires</a></li>
                   </ul>
                 </div>
             </div>
@@ -63,7 +63,7 @@
                 <div class="excerpt">{{question.content}}</div>
                 
                 <div class="tags">
-                    <a ng-repeat="tag in question.tags" href="#/questions/search" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
+                    <a ng-repeat="tag in question.tags" ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}">{{tag.title}}</a> 
                 </div>
                 <div class="started">
                     <div class="signature owner">

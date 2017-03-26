@@ -50,6 +50,8 @@ angular.module('resiexchange')
             });            
         }
         
+        // @events
+            
         $scope.togglePlatformDropdown = function() {
             var flag = ctrl.platformDropdown;
             hideAll();     

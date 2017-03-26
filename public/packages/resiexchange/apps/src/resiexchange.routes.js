@@ -119,7 +119,7 @@ angular.module('resiexchange')
                 category: ['routeCategoryProvider', function (provider) {
                     return provider.load();
                 }]
-            }        
+            }            
         })      
         /**
         * Question related routes
@@ -132,7 +132,7 @@ angular.module('resiexchange')
                 questions: ['routeQuestionsProvider', function (provider) {
                     return provider.load();
                 }]
-            }                
+            }
         })
         .when('/question/edit/:id', {
             templateUrl : templatePath+'questionEdit.html',

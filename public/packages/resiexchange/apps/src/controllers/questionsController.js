@@ -12,16 +12,7 @@ angular.module('resiexchange')
         var ctrl = this;
 
         // @data model
-        ctrl.questions = questions;
-
-        $scope.doSearch = function(criteria) {
-            // update global criteria            
-            angular.extend($rootScope.search.criteria, criteria);
-            // go to questions list page
-            $route.reload();           
-        };
-        
-                         
+        ctrl.questions = questions;  
         
     }
 ]);

@@ -197,9 +197,18 @@ var resiway = angular.module('resiexchange', [
         
         // search criteria (filters)
         $rootScope.search = {
+            default: {
+                q: '',
+                cat: 0,
+                domain: [],
+                order: 'title',
+                sort: 'desc',
+                start: 0,
+                limit: 25
+            },            
             criteria: {
                 q: '',              // query string (against question title)
-                c: 0,               // category (result including subcategories)
+                cat: 0,             // category (result including subcategories)
                 domain: [],         // todo: remove this
                 order: 'title',
                 sort: 'desc',
@@ -305,9 +314,14 @@ var resiway = angular.module('resiexchange', [
         var rootCtrl = this;
 
         
-        rootCtrl.search = function() {
+        rootCtrl.search = function(values) {
+            var criteria = angular.extend({}, $rootScope.search.default, values || {});
+            angular.copy(criteria, $rootScope.search.criteria);
             // go to questions list page
-            if($location.path() == '/questions') $route.reload();
+            if($location.path() == '/questions') { 
+                $rootScope.$broadcast('$locationChangeStart');
+                $route.reload();
+            }
             else $location.path('/questions');
         };
         

@@ -94,7 +94,7 @@
                     <i class="fa fa-caret-down" aria-hidden="true"></i>          
                 </div>
                 <div id="search-input" class="search-input form-group-sm hidden-xs">
-                    <form ng-submit="rootCtrl.search()">
+                    <form ng-submit="rootCtrl.search({q: search.criteria.q})">
                     <div class="input-group">            
                         <input class="form-control" name="q" type="text" placeholder="{{'TOOLBAR_SEARCH_PLACEHOLDER'|translate}}" value="" ng-model="search.criteria.q" autocomplete="off" maxlength="240" >
                         <div class="input-group-btn">
