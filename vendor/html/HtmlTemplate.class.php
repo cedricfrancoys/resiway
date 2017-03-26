@@ -26,7 +26,9 @@ class HtmlTemplate {
             $condition = $attributes['if'];
             // inside conditional statement, replace matching strings with values defined in params
             foreach($this->params as $param => $value) {
-                $condition = str_replace($param, "'{$value}'", $condition);                
+                if(is_string($value) {
+                    $condition = str_replace($param, "'{$value}'", $condition);                
+                }
             }
             $condition = html_entity_decode($condition);
             $res = eval('return ('.$condition.');');
