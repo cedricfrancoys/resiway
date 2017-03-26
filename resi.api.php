@@ -373,6 +373,12 @@ class ResiAPI {
         
         $om = &ObjectManager::getInstance();
 
+        // retrieve author identifier
+        $res = $om->read($object_class, $object_id, ['creator']);
+        if($res > 0 && isset($res[$object_id])) {
+            $result['author']['id'] = $res[$object_id]['creator'];
+        }
+        
         // retrieve action data
         $res = $om->read('resiway\Action', $action_id, ['name', 'user_increment', 'author_increment']);
         if($res > 0 && isset($res[$action_id])) {
@@ -393,20 +399,17 @@ class ResiAPI {
             
             if($action_data['author_increment'] != 0) {
                 // retrieve author data (creator of targeted object)
-                $res = $om->read($object_class, $object_id, ['creator']);
-                if($res > 0 && isset($res[$object_id])) {
-                    $author_id = $res[$object_id]['creator'];
-                    $result['author']['id'] = $author_id;
-                    $res = $om->read('resiway\User', $author_id, ['verified', 'reputation']);        
-                    if($res > 0 && isset($res[$author_id])) {    
-                        $author_data = $res[$author_id];            
-                        // prevent reputation update for non-verified users
-                        if($author_data['verified']) {                    
-                            $result['author']['increment'] = $sign*$action_data['author_increment'];            
-                            $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+$result['author']['increment']));
-                        }
+                $author_id = $result['author']['id'];
+                $res = $om->read('resiway\User', $author_id, ['verified', 'reputation']);        
+                if($res > 0 && isset($res[$author_id])) {    
+                    $author_data = $res[$author_id];            
+                    // prevent reputation update for non-verified users
+                    if($author_data['verified']) {                    
+                        $result['author']['increment'] = $sign*$action_data['author_increment'];            
+                        $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+$result['author']['increment']));
                     }
                 }
+
             }
         }
         return $result;
