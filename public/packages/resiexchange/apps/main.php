@@ -97,7 +97,7 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
         <script src="packages/resiexchange/apps/i18n/moment-locale/<?php echo $params['lang'] ?>.js"></script>   
         <?php endif; ?>
         
-        <script src="packages/resiexchange/apps/resiexchange.js"></script>
+        <script src="packages/resiexchange/apps/resiexchange.min.js"></script>
         
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/font-awesome.min.css" />
