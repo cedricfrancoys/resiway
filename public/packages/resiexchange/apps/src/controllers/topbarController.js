@@ -95,12 +95,8 @@ angular.module('resiexchange')
         };
         
         ctrl.notificationsDismissAll = function() {
-            $http.get('index.php?do=resiway_notification_dismiss-all')
-            .then(
-                function successCallback(response) {
-                    $rootScope.user.notifications = [];
-                }
-            );             
+            $rootScope.user.notifications = [];            
+            $http.get('index.php?do=resiway_notification_dismiss-all');
         };
                 
     }

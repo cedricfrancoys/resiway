@@ -38,7 +38,7 @@
             -->
         </div>
 
-        <div ng-repeat="question in ctrl.questions" class="question narrow col-1-1">
+        <div ng-repeat="question in ctrl.questions.items" class="question narrow col-1-1">
             <div class="counters" >
                 <div class="votes" title="{{question.count_votes}} {{'QUESTIONS_VOTES' | translate}}">
                     <div class="mini-counts">                
@@ -76,7 +76,7 @@
                             </div>
                             <div class="user-details">
                                 <a href="#/user/profile/{{question.creator.id}}">{{question.creator.display_name}}</a>
-                                <div class="-flair">
+                                <div>
                                     <span class="reputation-score" title="reputation score " dir="ltr">{{question.creator.reputation}}</span>
                                     <span class="badges">
                                         <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
@@ -98,6 +98,20 @@
             </div>
         </div>
 
+        <ul uib-pagination 
+            class="pagination-sm" 
+            total-items="search.total" 
+            ng-model="ctrl.questions.currentPage"
+            ng-change="ctrl.load()"
+            items-per-page="25"
+            max-size="5" 
+            direction-links="false"
+            boundary-links="true"
+            first-text="«" 
+            last-text="»"
+            rotate="true"
+            force-ellipses="true"></ul>
+            
     </div>
     <div class="col-4-12">
         <div class="panel panel-default">
