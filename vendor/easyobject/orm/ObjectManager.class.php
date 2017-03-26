@@ -1054,14 +1054,14 @@ todo: signature differs from other methods	(returned value)
         
 		try {
             // cast ids to an array (passing a single id is accepted)
-			if(!is_array($ids))     $ids = (array) $ids;           
+			if(!is_array($ids)) $ids = [$ids];
             
             // ensure ids are numerical values
             foreach($ids as $key => $oid) {      
                  if(!is_numeric($oid)) unset($ids[$key]);
             }
          
-            if(empty($ids)) throw new Exception("argument is not an array of objects identifiers : '$ids'", INVALID_PARAM);
+            if(empty($ids)) throw new Exception("argument is not an array of objects identifiers (emtpy array or wrong type): '$ids'", INVALID_PARAM);
             
 			// 1) check rights and object schema
 			$object = &$this->getStaticInstance($object_class);
