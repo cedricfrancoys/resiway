@@ -21,14 +21,10 @@ class HtmlTemplate {
 	protected function decorator($attributes, $innerHTML='') {
         $result = '';
         // handle conditional statement
+        // note: if statement should only be used with parameters, not with renderer keys
         if(isset($attributes['if'])) {
             $condition = $attributes['if'];
-            // inside conditional statement, replace matching strings with values defined in renderer or params
-            // note: user should ensure ther is no collision in the renderer keys and params
-            foreach($this->renderer as $param => $fn) {
-                $value = $fn($this->params, $attributes);
-                $condition = str_replace($param, "'{$value}'", $condition);
-            }
+            // inside conditional statement, replace matching strings with values defined in params
             foreach($this->params as $param => $value) {
                 $condition = str_replace($param, "'{$value}'", $condition);                
             }

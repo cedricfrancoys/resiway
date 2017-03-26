@@ -13,7 +13,7 @@ $params = [
     'increment' => '+5'
     ];
 $template = '
-<var id="subject" title="test"></var>
+<var id="subject" title="réputation mise à jour"></var>
 <p>
 Bonjour <var id="username"></var>,<br />
 <br />
@@ -29,9 +29,11 @@ Si vous souhaitez continuer et définir un nouveau mot de passe maintenant, veuil
 
 ';
 
+$subject = '';
 $template = new HtmlTemplate($template, [
-                                'subject'		=>	function ($params, $attributes) {
-                                                        return $attributes['title'];
+                                'subject'		=>	function ($params, $attributes) use(&$subject) {
+                                                        $subject = $attributes['title'];
+                                                        return '';
                                                     },
                                 'score'		    =>	function ($params) {
                                                         return '+5';
@@ -49,5 +51,5 @@ $template = new HtmlTemplate($template, [
 $body = $template->getHtml();
     
 
-
+print($subject);
 print($body);
