@@ -6,7 +6,7 @@ use easyobject\orm\ObjectManager as ObjectManager;
 use html\HtmlTemplate as HtmlTemplate;
 
 
-
+/*
 
 $params = [
     'code' => 'dGVzdGVyQGV4YW1wbGUuY29tOzAwMDAwMDAwYzU1OWMyNTA0N2JiNjk2OGMzYTE3NzQz',
@@ -53,3 +53,17 @@ $body = $template->getHtml();
 
 print($subject);
 print($body);
+*/
+set_silent(false);
+
+$om = &ObjectManager::getInstance();
+
+$uid = 3;
+$answers_ids = $om->search('resiexchange\Answer', ['creator', '=', $uid]);
+$res = $om->read('resiexchange\Answer', $answers_ids, ['question_id']);
+$questions_ids = array_map(function($a){return $a['question_id'];}, $res);
+
+
+$res = $om->search('resiexchange\Question', [['id', 'in', $questions_ids], ['count_answers', '=', 1]]);
+
+print_r($res);

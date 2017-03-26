@@ -152,22 +152,28 @@ class Badge extends \easyobject\orm\Object {
         case 'inspired':
             $answers_ids = $om->search('resiexchange\Answer', ['creator', '=', $uid]);
             $res = $om->read('resiexchange\Answer', $answers_ids, ['question_id']);
-            $questions_ids = array_map(function($a){return $a['question_id'];}, $res);
-            $res = $om->search('resiexchange\Question', [['id', 'in', $questions_ids], ['count_answers', '=', 1]]);
+            $res = array_map(function($a){return $a['question_id'];}, $res);
+            if(count($res)) {
+                $res = $om->search('resiexchange\Question', [['id', 'in', $res], ['count_answers', '=', 1]]);
+            }
             return (float) (count($res)/1);
 
         case 'enlightened':
             $answers_ids = $om->search('resiexchange\Answer', ['creator', '=', $uid]);
             $res = $om->read('resiexchange\Answer', $answers_ids, ['question_id']);
-            $questions_ids = array_map(function($a){return $a['question_id'];}, $res);
-            $res = $om->search('resiexchange\Question', [['id', 'in', $questions_ids], ['count_answers', '=', 1], ['score', '>=', '5']]);
+            $res = array_map(function($a){return $a['question_id'];}, $res);
+            if(count($res)) {            
+                $res = $om->search('resiexchange\Question', [['id', 'in', $res], ['count_answers', '=', 1], ['score', '>=', '5']]);
+            }
             return (float) (count($res)/1);
 
         case 'savior':
             $answers_ids = $om->search('resiexchange\Answer', ['creator', '=', $uid]);
             $res = $om->read('resiexchange\Answer', $answers_ids, ['question_id']);
-            $questions_ids = array_map(function($a){return $a['question_id'];}, $res);
-            $res = $om->search('resiexchange\Question', [['id', 'in', $questions_ids], ['count_answers', '=', 1], ['score', '>=', '10']]);
+            $res = array_map(function($a){return $a['question_id'];}, $res);
+            if(count($res)) {
+                $res = $om->search('resiexchange\Question', [['id', 'in', $res], ['count_answers', '=', 1], ['score', '>=', '10']]);
+            }
             return (float) (count($res)/1);            
             
 
