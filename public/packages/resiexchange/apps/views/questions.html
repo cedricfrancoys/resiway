@@ -37,6 +37,7 @@
             </div>
             -->
         </div>
+        <div class="loader" ng-show="ctrl.questions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
 
         <div ng-repeat="question in ctrl.questions.items" class="question narrow col-1-1">
             <div class="counters" >
