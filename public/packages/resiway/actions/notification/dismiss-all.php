@@ -35,10 +35,10 @@ try {
     $res = $om->read('resiway\User', $user_id, ['notifications_ids']);
     if($res < 0 || !isset($res[$user_id])) throw new Exception("request_failed", QN_ERROR_UNKNOWN_OBJECT);    
     
-    
-    $res = $om->remove($object_class, $res[$user_id]['notifications_ids'], true);
-    if($res < 0 || !count($res)) throw new Exception("action_failed", QN_ERROR_UNKNOWN); 
-    
+    if(count($res[$user_id]['notifications_ids'])) {
+        $res = $om->remove($object_class, $res[$user_id]['notifications_ids'], true);
+        if($res < 0 || !count($res)) throw new Exception("action_failed", QN_ERROR_UNKNOWN); 
+    }
 }
 catch(Exception $e) {
     $result = $e->getCode();
