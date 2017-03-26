@@ -18,8 +18,25 @@ class HtmlTemplate {
 	*
 	* @param array $attributes	tag attributes
 	*/
-	protected function decorator($attributes) {
+	protected function decorator($attributes, $innerHTML='') {
         $result = '';
+        // handle conditional statement
+        if(isset($attributes['if'])) {
+            $condition = $attributes['if'];
+            // inside conditional statement, replace matching strings with values defined in renderer or params
+            // note: user should ensure ther is no collision in the renderer keys and params
+            foreach($this->renderer as $param => $fn) {
+                $value = $fn($this->params, $attributes);
+                $condition = str_replace($param, "'{$value}'", $condition);
+            }
+            foreach($this->params as $param => $value) {
+                $condition = str_replace($param, "'{$value}'", $condition);                
+            }
+            $condition = html_entity_decode($condition);
+            $res = eval('return ('.$condition.');');
+            if(!$res) return '';
+        }
+        // if id attribute is present, use it to retrieve related value
 		if(isset($attributes['id'])) {
             if(isset($this->renderer[$attributes['id']])) {
                 $result = $this->renderer[$attributes['id']]($this->params, $attributes);
@@ -36,6 +53,9 @@ class HtmlTemplate {
                 }
                 $result = $array[$key];
             }
+        }
+        else {
+            $result = $innerHTML;
         }
 		return $result;
 	}
@@ -63,29 +83,30 @@ class HtmlTemplate {
 	* Replaces 'var' tags with content specified by the decorator method.
 	*
 	*
-	* @param string $template	Some html to parse
-	* @return string	html resulting from the processed template 
+	* @param  string $template	Some HTML to parse
+	* @return string        	HTML resulting from the processed template 
 	*/
 	public function getHtml() {
 		$previous_pos = 0;
 		$html = '';
 		// use regular expression to locate all 'var' tags in the template
-		preg_match_all("/<var([^>]*)>.*<\/var>/iU", $this->template, $matches, PREG_OFFSET_CAPTURE);
+		preg_match_all("/<var([^>]*)>(.*)<\/var>/iU", $this->template, $matches, PREG_OFFSET_CAPTURE);
 		// replace each 'var' tags with its associated content
 		for($i = 0, $j = count($matches[1]); $i < $j; ++$i) {
-			// 1) get tag attributes
-			$attributes = array();
-			$args = explode('" ', ltrim($matches[1][$i][0]));
-			foreach($args as $arg) {
-				if(!strlen($arg) || !strpos($arg, '=')) continue;
-				list($attribute, $value) = explode('=', $arg);
-				$attributes[$attribute] = str_replace(array("'", '"'), '', $value);
-			}
+			// 0) get inner HTML
+            $innerHTML = trim($matches[2][$i][0]);
+            // 1) get tag attributes
+            preg_match_all('/([^ ]*)="([^"]*)"/iU', $matches[1][$i][0], $matches2);
+			$attributes = array();            
+            for($k = 0, $l = count($matches2[0]); $k < $l; ++$k) {
+                $attribute = $matches2[1][$k];
+                $attributes[$attribute] = $matches2[2][$k];                
+            }
 			// 2) get content pointed by var tag
 			$pos = $matches[0][$i][1];
 			$len = strlen($matches[0][$i][0]);
 			// replace tag with content and build resulting html
-			$html .= substr($this->template, $previous_pos, ($pos-$previous_pos)).$this->decorator($attributes);
+			$html .= substr($this->template, $previous_pos, ($pos-$previous_pos)).$this->decorator($attributes, $innerHTML);
 			$previous_pos = $pos + $len;
 		}
 		// add trailer
