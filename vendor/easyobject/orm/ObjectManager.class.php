@@ -1142,8 +1142,8 @@ todo: signature differs from other methods	(returned value)
             else if($domain) {
                 // valid format : [[['field', 'operator', 'value']]]
                 // accepted shortcuts: [['field', 'operator', 'value']], ['field', 'operator', 'value']
-                if(!is_array($domain[0])) $domain = array(array($domain));
-                else if (!is_array($domain[0][0])) $domain = array($domain);
+                if( !is_array($domain[0]) ) $domain = array(array($domain));
+                else if( isset($domain[0][0]) && !is_array($domain[0][0]) ) $domain = array($domain);
             }
             
 			$res_list = array();
