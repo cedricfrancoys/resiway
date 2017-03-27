@@ -22,7 +22,7 @@ if(isset($_REQUEST['show'])) {
 }
 
 $content = getAppOutput();
-if( isset($cache_filename) /*&& is_writable($cache_filename)*/ ) {
+if( isset($cache_filename) && is_writable(dirname($cache_filename)) ) {
     file_put_contents($cache_filename, $content);
 }
 print($content);
