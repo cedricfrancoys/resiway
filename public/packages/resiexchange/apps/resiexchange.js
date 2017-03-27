@@ -1298,6 +1298,15 @@ angular.module('resiexchange')
         /**
         * User related routes
         */
+        .when('/user/current/profile', {
+            templateUrl : templatePath+'userProfile.html',
+            controller  : ['$location', 'authenticationService', function($location, authenticationService) {
+                authenticationService.userId().then(
+                function(user_id) {
+                    $location.path('/user/profile/'+user_id);
+                });                
+            }]  
+        })          
         .when('/user/current/edit', {
             templateUrl : templatePath+'userEdit.html',
             controller  : ['$location', 'authenticationService', function($location, authenticationService) {

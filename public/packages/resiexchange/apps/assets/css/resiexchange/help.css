@@ -1,3 +1,9 @@
+.help-container {
+    min-height: 121px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .help-toc ul {
     line-height: 120%;
     margin-left: 0;
