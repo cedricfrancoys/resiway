@@ -125,10 +125,10 @@ class Question extends \easyobject\orm\Object {
         $value = htmlentities($value, ENT_QUOTES, 'UTF-8');
         $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
         $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
-        // remove all non-space-alphanum-dash chars
-        $value = preg_replace('/[^\s-a-z0-9]/i', '', $value);
-        // replace spaces with dashes
-        $value = preg_replace('/[\s-]+/', '-', $value);           
+        // remove all non-quote-space-alphanum-dash chars
+        $value = preg_replace('/[^\'\s-a-z0-9]/i', '', $value);
+        // replace spaces, dashes and quotes with dashes
+        $value = preg_replace('/[\s-\']+/', '-', $value);           
         // trim the end of the string
         $value = trim($value, '.-_');
         return strtolower($value);

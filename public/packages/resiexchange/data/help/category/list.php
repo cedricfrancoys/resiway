@@ -34,7 +34,7 @@ try {
     
     // retrieve categories
     $result = [];
-    $categories_ids = $om->search($object_class);
+    $categories_ids = $om->search($object_class, [], 'order');
     $res = $om->read($object_class, $categories_ids, ['id', 'title', 'title_url', 'description', 'topics_ids'], $lang);
     
     if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);

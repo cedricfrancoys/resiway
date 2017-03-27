@@ -10,7 +10,10 @@ class HelpCategory extends \easyobject\orm\Object {
             'title'				    => array('type' => 'string', 'multilang' => true),
                         
             /* text describing the category */
-            'description'			=> array('type' => 'text', 'multilang' => true)
+            'description'			=> array('type' => 'text', 'multilang' => true),
+
+            /* index to follow for sorting categories */
+            'order'	        		=> array('type' => 'integer')
             
         );
     }

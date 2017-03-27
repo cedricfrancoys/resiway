@@ -17,7 +17,7 @@ $params = QNLib::announce([
         'category_id'	=> array(
                             'description'   => 'Identifier of the category being edited (a null identifier means creation of a new topic).',
                             'type'          => 'integer', 
-                            'default'       => 0
+                            'required'      => true
                             ),    
         'title'	        => array(
                             'description'   => 'Title of the submitted category.',
