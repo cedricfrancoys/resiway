@@ -68,12 +68,11 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
         <script src="packages/resiexchange/apps/assets/js/angular-translate.min.js"></script>
         <script src="packages/resiexchange/apps/assets/js/angular-moment.min.js"></script>        
         
-        <script src="packages/resiexchange/apps/assets/js/ui-bootstrap-tpls-2.2.0.min.js"></script>    
-        
+        <script src="packages/resiexchange/apps/assets/js/ui-bootstrap-tpls-2.2.0.min.js"></script>        
         <script src='packages/resiexchange/apps/assets/js/textAngular-rangy.min.js'></script>
         <script src='packages/resiexchange/apps/assets/js/textAngular-sanitize.min.js'></script>
         <script src='packages/resiexchange/apps/assets/js/textAngular.min.js'></script>   
-        
+        <script src='packages/resiexchange/apps/assets/js/ngToast.min.js'></script>        
         <script src='packages/resiexchange/apps/assets/js/select-tpls.min.js'></script>
         <?php if(file_exists("packages/resiexchange/apps/i18n/locale-{$params['lang']}.js")): ?>
         <script src="packages/resiexchange/apps/i18n/locale-<?php echo $params['lang'] ?>.js"></script>           

@@ -42,7 +42,7 @@ try {
     
     // retrieve topics
     $category_data['topics'] = [];
-    $res = $om->read('resiexchange\HelpTopic', $category_data['topics_ids'], ['title', 'title_url', 'description']);
+    $res = $om->read('resiexchange\HelpTopic', $category_data['topics_ids'], ['title', 'title_url', 'content']);
     if($res > 0) {
         $topics = [];
         foreach($res as $topic_id => $topic_data) {           
@@ -50,7 +50,7 @@ try {
                                         'id'            => $topic_id,
                                         'title'         => $topic_data['title'], 
                                         'title_url'     => $topic_data['title_url'],                                         
-                                        'description'   => $topic_data['description'],                                         
+                                        'content'   => $topic_data['content'],                                         
                                     );
         }      
         

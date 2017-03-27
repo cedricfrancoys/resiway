@@ -5,7 +5,6 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
-use easyobject\orm\PersistentDataManager as PersistentDataManager;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -26,7 +25,6 @@ $params = QNLib::announce(
                                             'type'          => 'string',
                                             'default'       => ''
                                             ),
-// todo : remove domain    
                         'domain'	=> array(
                                             'description'   => 'Criterias that results have to match (serie of conjunctions)',
                                             'type'          => 'array',
@@ -58,7 +56,12 @@ $params = QNLib::announce(
                                             'description'   => 'Total of record (if known).',
                                             'type'          => 'integer',
                                             'default'       => -1
-                                            )                                              
+                                            ),
+                        'channel'	    => array(
+                                            'description'   => 'Channel for which questions are requested (default, help, meta, ...)',
+                                            'type'          => 'integer',
+                                            'default'       => 1
+                                            )                                            
                         )
 	)
 );
@@ -74,16 +77,16 @@ try {
 
     // 0) retrieve matching questions identifiers
 
-    // if a channel has been specified in current session, adapt domain to restrict results
+
     // build domain
     /*
     search syntax : 
         [category-name]
     */
     
+    // adapt domain to restrict results to given channel
+    $params['domain'][] = ['channel_id','=', $params['channel']];
     
-    $pdm = &PersistentDataManager::getInstance();
-    $params['domain'][] = ['channel_id','=', $pdm->get('channel', 1)];
     if(strlen($params['q']) > 0) {
         $params['domain'][] = ['title','ilike', "%{$params['q']}%"];
     }

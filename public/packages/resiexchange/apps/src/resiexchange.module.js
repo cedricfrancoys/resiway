@@ -166,11 +166,12 @@ var resiway = angular.module('resiexchange', [
     '$window', 
     '$timeout', 
     '$rootScope', 
-    '$location', 
+    '$location',
+    '$cookies',
     'authenticationService', 
     'actionService', 
     'feedbackService',
-    function($window, $timeout, $rootScope, $location, authenticationService, actionService, feedbackService) {
+    function($window, $timeout, $rootScope, $location, $cookies, authenticationService, actionService, feedbackService) {
         console.log('run method invoked');
 
         // Bind rootScope with feedbackService service (popover display)
@@ -217,6 +218,12 @@ var resiway = angular.module('resiexchange', [
             },
             total: 0
         };
+
+        /**
+        * Global config
+        * make global configuration accessible through rootScope
+        */
+        $rootScope.config = angular.extend({application: 'resiway', locale: 'fr', channel: 1}, global_config);
         
         /**
         * Object of signed in user (if authenticated)
@@ -226,6 +233,8 @@ var resiway = angular.module('resiexchange', [
         */
         $rootScope.user = {id: 0};
      
+        // @events
+        
         // when requesting another location (user click some link)
         $rootScope.$on('$locationChangeStart', function(angularEvent) {
             // mark content as being loaded (show loading spinner)
@@ -293,7 +302,7 @@ var resiway = angular.module('resiexchange', [
         /*
         * auto-restore session or auto-login with cookie values    
         */
-
+        authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
         // try to authenticate or restore the session
         authenticationService.authenticate();
     }

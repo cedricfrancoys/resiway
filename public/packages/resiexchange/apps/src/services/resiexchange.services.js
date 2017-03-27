@@ -41,9 +41,9 @@ angular.module('resiexchange')
     }
 ])
 
-.service('routeCategoriesProvider', ['$http', function($http) {
+.service('routeCategoriesProvider', ['$http', '$rootScope', function($http, $rootScope) {
     this.load = function() {
-        return $http.get('index.php?get=resiway_category_list&order=title')
+        return $http.get('index.php?get=resiway_category_list&order=title&channel='+$rootScope.config.channel)
         .then(
             function successCallback(response) {
                 var data = response.data;
@@ -60,7 +60,7 @@ angular.module('resiexchange')
 
 .service('routeQuestionsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
     this.load = function() {
-        return $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+        return $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
         .then(
             function successCallback(response) {
                 var data = response.data;
@@ -323,45 +323,26 @@ angular.module('resiexchange')
                 deferred.resolve($rootScope.user);
             }
             // user is still unidentified
-            else {
-                // request user_id (checks if seesion is set server-side)
-                $auth.userId().then(
-                // session is already set
-                function(user_id) {
-                    // fetch related data
-                    $auth.userData(user_id).then(
-                    function(data) {
-                        $rootScope.user = data;
-                        deferred.resolve(data);
-                    },
-                    function(data) {
-                        // something went wrong server-side
-                        console.log('something went wrong server-side');
-                        deferred.reject(data); 
-                    });                    
+            else {                    
+                // try to sign in with current credentials                    
+                $auth.signin().then(
+                function successHandler(user_id) {
+                    $auth.userData(user_id)
+                    .then(
+                        function successHandler(data) {
+                            $rootScope.user = data;
+                            deferred.resolve(data);
+                        },
+                        function errorHandler(data) {
+                            // something went wrong server-side
+                            deferred.reject(data);                                
+                        }
+                    );                            
                 },
-                // user is not identified yet
-                function() {                    
-                    // try to sign in with current credentials                    
-                    $auth.signin().then(
-                    function(user_id) {
-                        $auth.userData(user_id)
-                        .then(
-                            function successHandler(data) {
-                                $rootScope.user = data;
-                                deferred.resolve(data);
-                            },
-                            function errorHandler(data) {
-                                // something went wrong server-side
-                                deferred.reject(data);                                
-                            }
-                        );                            
-                    },
-                    function(data) {
-                        // given values were not accepted 
-                        // or something went wrong server-side
-                        deferred.reject(data);  
-                    });
+                function errorHandler(data) {
+                    // given values were not accepted 
+                    // or something went wrong server-side
+                    deferred.reject(data);  
                 });
             }
             return deferred.promise;

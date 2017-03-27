@@ -9,7 +9,7 @@ class Category extends \easyobject\orm\Object {
             /* all objects must define a 'name' column (default is id) */
             'name'				=> array('type' => 'alias', 'alias' => 'title'),
 
-            /* channel of the current question ('default', 'meta', 'help', ...) */
+            /* channel of the current question (1:'default', 2:'help', 3:'meta', ...) */
             'channel_id'        => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
             
             'title'             => array('type' => 'string', 'multilang' => true, 'onchange' => 'resiway\Category::onchangeTitle'),

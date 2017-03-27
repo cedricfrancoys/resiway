@@ -965,7 +965,7 @@ todo: signature differs from other methods	(returned value)
 					// remove fields not defined in related schema
 					if(!in_array($field, $allowed_fields)) {
 						unset($fields[$i]);
-						EventListener::ExceptionHandler(new Exception('unknown field '.$field.' in $fields arg'), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
+						EventListener::ExceptionHandler(new Exception("unknown field '$field' for class : '$class'"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
 					}
                     else if($schema[$field]['type'] == 'alias') {
                         $fields[] = $schema[$field]['alias'];

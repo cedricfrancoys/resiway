@@ -22,7 +22,7 @@ class Question extends \easyobject\orm\Object {
             /* language into which the question is asked */
             'lang'                  => array('type' => 'string'),
 
-            /* channel of the current question ('default', 'meta', 'help', ...) */
+            /* channel of the current question ('default', 'help', 'meta', ...) */
             'channel_id'            => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
             
             /* subject of the question */

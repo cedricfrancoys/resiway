@@ -2,7 +2,7 @@
 <div id="topBar" class="topbar" ng-controller="topBarCtrl as ctrl" >        
 
     <div class="grid wrapper">
-        <!-- 1) dropdown dialogs -->
+    <!-- 1) dropdown dialogs -->
         
         <!-- platform dialog -->
         <div class="platform-dialog" ng-show="ctrl.platformDropdown" ng-cloak>
@@ -77,11 +77,12 @@
                 </li>
             </ul>
         </div>
+
         
-        <!-- 2) toolbar -->
+    <!-- 2) toolbar -->
         <div class="col-1-1">
             <div class="platform-items">
-                <div class="platform-btn resiexchange" ng-class="{open: ctrl.platformDropdown}" ng-click="togglePlatformDropdown()">
+                <div class="platform-btn {{config.application}}" ng-class="{open: ctrl.platformDropdown}" ng-click="togglePlatformDropdown()">
                     <div class="app-icon"></div>
                     <i class="fa fa-caret-down" aria-hidden="true"></i>          
                 </div>            
@@ -111,7 +112,7 @@
             </div>
             <div id="user-btn" class="user-btn ng-hide" ng-class="{open: ctrl.userDropdown}" ng-click="toggleUserDropdown()" ng-show="user.id">
                 <span class="user-avatar pull-left">
-                  <img ng-src="{{rootCtrl.avatarURL(user.avatar_url, 30)}}" class="center-block" title="{{user.display_name}}" alt="{{user.display_name}}">
+                  <img ng-src="{{rootCtrl.avatarURL(user.avatar_url, 30)}}" class="center-block">
                 </span>
                 {{ user.display_name }}
                 <i class="fa fa-caret-down" aria-hidden="true"></i>          

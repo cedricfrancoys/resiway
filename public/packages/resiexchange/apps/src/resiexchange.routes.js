@@ -6,7 +6,9 @@ angular.module('resiexchange')
     '$httpProvider',
     function($routeProvider, $routeParamsProvider, $httpProvider) {
         
-        var templatePath = 'packages/resiexchange/apps/views/';
+        // var templatePath = 'packages/resiexchange/apps/views/';
+        var templatePath = '';
+
         /**
         * Routes definition
         * This call associates handled URL with their related views and controllers
