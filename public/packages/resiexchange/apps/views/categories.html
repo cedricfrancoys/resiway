@@ -24,10 +24,10 @@
         <div ng-repeat="category in categories" class="col-1-4" style="position: relative; height: 80px; margin-bottom: 10px;" >
         
             <div style="height: 100%; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">    
-                <div style="height: 32px;"><strong>{{category.title}}</strong></div>
+                <div style="height: 32px;"><strong><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})">{{category.title}}</a></strong></div>
                 <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div>
                 <!-- <div style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;">{{category.description}}</div> -->
-                <div class="small" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;" ng-show="category.count_questions > 0">x {{category.count_questions | humanizeCount}}</div>
+                <div class="small" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;" ng-show="category.count_questions > 0"><b>x {{category.count_questions | humanizeCount}}</b></div>
             </div>
             <div style="position: absolute; right: 35px; top: 8px;">
                 <a href="#/category/edit/{{category.id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>

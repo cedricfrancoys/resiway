@@ -2,7 +2,7 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 $rev = ResiAPI::currentRevision(); 
-$token = md5($res.rand(1, 100));
+$token = md5($rev.rand(1, 100));
 ?>
 <!DOCTYPE html>
 <html lang="fr" ng-app="resiexchange" id="top" ng-controller="rootController as rootCtrl">

@@ -32,7 +32,7 @@
     left: 0;
     vertical-align: top;
     height: 34px;
-    width: 500px;
+    width: auto;
     line-height: 34px;
 }
 
@@ -82,7 +82,22 @@
     line-height: 34px;
     color: lightgrey;
     padding-left: 10px;
-    padding-top: 2px;    
+    padding-top: 2px;
+   -webkit-transition: all .5s ease;
+   -moz-transition: all .5s ease;
+   transition: all .5s ease;      
+}
+
+.topbar .search-input:hover {
+    width: 400px;
+}
+
+.topbar .search-input input:focus {
+    width: 358px;
+}
+
+.topbar .search-input button, .topbar .search-input button:focus {
+    outline:none !important;
 }
 
 .topbar .search-input label {

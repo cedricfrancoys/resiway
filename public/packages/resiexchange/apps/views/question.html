@@ -64,7 +64,7 @@
                 </div>
                 
                 <div class="tags">
-                    <a ng-repeat="tag in question.tags" href="#/questions/search" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
+                    <a ng-repeat="tag in question.tags" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
                 </div>
                 
                 <div class="footer">

@@ -54,7 +54,7 @@ class ResiAPI {
         $config->set('CSS.AllowedProperties',   []);                    // remove all CSS
         // allow only tags and attributes that match most lightweight markup language 
         $config->set('HTML.AllowedElements',    array('h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'hr', 'pre', 'a', 'img', 'br', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'ul', 'ol', 'li', 'strong', 'b', 'i', 'code', 'blockquote'));
-        $config->set('HTML.AllowedAttributes',  array('a.href', 'img.src', 'img.style'));
+        $config->set('HTML.AllowedAttributes',  array('a.href', 'img.src', 'img.alt', 'table.summary', 'td.abbr', 'th.abbr'));
         return $config;
     }
     

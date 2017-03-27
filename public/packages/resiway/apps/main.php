@@ -121,7 +121,7 @@ if(isset($_COOKIE['username']) && isset($_COOKIE['password'])) {
             <div class="grid wrapper">
                 <div class="container col-1-1">
                     <!-- footer -->
-                    <?php echo file_get_contents("packages/resiexchange/apps/views/footer.html"); ?>                    
+                    <?php echo file_get_contents("packages/resiexchange/apps/views/parts/footer.html"); ?>                    
                     <span class="small">rev <?php echo ResiAPI::currentRevision(); ?></span>
                 </div>
             </div>
