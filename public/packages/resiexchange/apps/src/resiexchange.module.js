@@ -13,7 +13,6 @@ var resiway = angular.module('resiexchange', [
     'ngSanitize',
     'ngCookies', 
     'ngAnimate',
-    'angular.filter',
     'ui.bootstrap',
     'oi.select',    
     'textAngular',
