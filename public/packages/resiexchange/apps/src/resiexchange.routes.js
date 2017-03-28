@@ -87,7 +87,7 @@ angular.module('resiexchange')
             templateUrl : templatePath+'badges.html',
             controller  : 'badgesController as ctrl',
             resolve     : {
-                badges: ['routeBadgesProvider', function (provider) {
+                badges: ['routeBadgeCategoriesProvider', function (provider) {
                     return provider.load();
                 }]
             }

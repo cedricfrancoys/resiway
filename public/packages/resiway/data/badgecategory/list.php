@@ -33,7 +33,7 @@ $params = QNLib::announce(
                         'sort'		=> array(
                                             'description'   => 'The direction  (i.e. \'asc\' or \'desc\').',
                                             'type'          => 'string',
-                                            'default'       => 'desc'
+                                            'default'       => 'asc'
                                             ),
                         'start'		=> array(
                                             'description'   => 'The row from which results have to start.',
@@ -60,7 +60,7 @@ $params = QNLib::announce(
 
 
 list($result, $error_message_ids, $total) = [[], [], $params['total']];
-list($object_class) = ['resiway\Badge'];
+list($object_class) = ['resiway\BadgeCategory'];
 
 try {    
     $om = &ObjectManager::getInstance();
@@ -83,9 +83,16 @@ try {
     
     if(!empty($badges_ids)) {
         // retrieve objects
-        $res = $om->read($object_class, $badges_ids, ['id', 'name', 'description', 'type', 'group', 'category_id.name'], $lang);
+        $res = $om->read($object_class, $badges_ids, ['id', 'title', 'description', 'badges_ids'], $lang);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
- 
+
+
+        
+        foreach($res as $category_id => $category_values) {
+            $badges = $om->read('resiway\Badge', $category_values['badges_ids'], ['id', 'name', 'description', 'group', 'type'], $lang);            
+            $res[$category_id]['badges'] = array_values($badges);
+        }
+        
         $result = array_values($res);
     }
 }

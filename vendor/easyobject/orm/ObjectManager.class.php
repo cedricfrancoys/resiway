@@ -1283,7 +1283,10 @@ todo: signature differs from other methods	(returned value)
 			// second pass : fetch the ids of matching objects
 			$select_fields = array($table_alias.'.id');
 			$order_table_alias = $table_alias;
+            
+            if($schema[$order]['type'] == 'alias') $order = $schema[$order]['alias'];            
 			$order_field = $order;
+            
 			// we might need to request more than the id field (for example, for sorting purpose)
 			if($lang != DEFAULT_LANG && isset($schema[$order]['multilang']) && $schema[$order]['multilang']) {
 // todo : validate this code (we should probabily add join conditions in some cases)

@@ -59,4 +59,4 @@ define('RESIEXCHANGE_ANSWER_CONTENT_EXCERPT_LENGTH_MAX', 200);
 
 
 // default app for this package
-define('DEFAULT_APP', 'main');
+define('DEFAULT_APP', 'resiway.fr');

@@ -218,7 +218,8 @@ namespace config {
 		* @return	string
 		*/
 		public static function get_url($server_port=true, $query_string=true) {
-			$url = 'http://'.$_SERVER['SERVER_NAME'];
+            $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+			$url = $protocol.$_SERVER['SERVER_NAME'];
 			if($server_port && $_SERVER['SERVER_PORT'] != '80')  $url .= ':'.$_SERVER['SERVER_PORT'];
 			// add full request URI if required
 			if($query_string) $url .= $_SERVER['REQUEST_URI'];	

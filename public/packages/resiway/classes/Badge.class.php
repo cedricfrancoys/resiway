@@ -9,14 +9,23 @@ class Badge extends \easyobject\orm\Object {
     public static function getColumns() {
         return array(
             'name'			    => array('type' => 'string', 'multilang' => true),
+            
             'description'       => array('type' => 'string', 'multilang' => true),
 
             /* human-readable unique identifier*/
             'code'			    => array('type' => 'string'),
             
-            /* category of badge : 1, 2 or 3 - for bronze, silver, gold / badge_1, badge_2, badge_3 */
+            /* level of badge : 1, 2 or 3 - for bronze, silver, gold / badge_1, badge_2, badge_3 */
             'type'              => array('type' => 'integer'),
 
+            /* identifier for grouping badges inside a same category following steps logic (1,2,3) */
+            'group'              => array('type' => 'integer'),
+            
+            /* category of badge (used for grouping badges that belong to the same area of actions) */
+            'category_id'		=> array('type' => 'many2one', 'foreign_object' => 'resiway\BadgeCategory'),            
+            
+            'count_awarded'     => array('type' => 'integer'),
+            
             /* list of actions that might trigger badge attribution */
             'actions_ids'	    => array(
                                     'type' 			    => 'many2many', 
@@ -26,6 +35,7 @@ class Badge extends \easyobject\orm\Object {
                                     'rel_foreign_key'	=> 'action_id', 
                                     'rel_local_key'		=> 'badge_id'
                                    ),
+                                   
             /* list of users having earned the badge */
             'users_ids'	        => array(
                                     'type' 			    => 'many2many', 
@@ -39,6 +49,12 @@ class Badge extends \easyobject\orm\Object {
         );
     }
     
+
+    public static function getDefaults() {
+        return array(
+             'count_awarded'      => function() { return 0; }
+        );
+    }
     
     /*
     This method defines how badges are granted.

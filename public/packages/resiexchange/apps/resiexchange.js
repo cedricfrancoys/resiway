@@ -142,7 +142,8 @@ var resiway = angular.module('resiexchange', [
     'ngRoute', 
     'ngSanitize',
     'ngCookies', 
-    'ngAnimate', 
+    'ngAnimate',
+    'angular.filter',
     'ui.bootstrap',
     'oi.select',    
     'textAngular',
@@ -761,6 +762,23 @@ angular.module('resiexchange')
     };
 }])
 
+.service('routeBadgeCategoriesProvider', ['routeObjectProvider', '$http', function(routeObjectProvider, $http) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_badgecategory_list&order=name')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
 /**
 *
 */
@@ -1260,7 +1278,7 @@ angular.module('resiexchange')
             templateUrl : templatePath+'badges.html',
             controller  : 'badgesController as ctrl',
             resolve     : {
-                badges: ['routeBadgesProvider', function (provider) {
+                badges: ['routeBadgeCategoriesProvider', function (provider) {
                     return provider.load();
                 }]
             }
@@ -1578,8 +1596,19 @@ angular.module('resiexchange')
         var ctrl = this;
 
         // @data model
-        $scope.badges = badges;
-    
+        $scope.badgeCategories = badges;
+        
+        
+        angular.forEach($scope.badgeCategories, function(category, i) {
+            $scope.badgeCategories[i].groups = {};
+            angular.forEach(category.badges, function(badge, j) {
+                if(typeof $scope.badgeCategories[i].groups[badge.group] == 'undefined') {
+                    $scope.badgeCategories[i].groups[badge.group] = [];
+                }
+                $scope.badgeCategories[i].groups[badge.group].push(badge);                
+            });
+        });
+
     }
 ]);
 angular.module('resiexchange')

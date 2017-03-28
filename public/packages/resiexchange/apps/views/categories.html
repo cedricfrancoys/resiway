@@ -29,7 +29,7 @@
                 <!-- <div style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;">{{category.description}}</div> -->
                 <div class="small" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;" ng-show="category.count_questions > 0"><b>x {{category.count_questions | humanizeCount}}</b></div>
             </div>
-            <div style="position: absolute; right: 35px; top: 8px;">
+            <div ng-show="user.role != 'u'" style="position: absolute; right: 35px; top: 8px;">
                 <a href="#/category/edit/{{category.id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
             </div>
             

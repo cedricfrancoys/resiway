@@ -174,6 +174,23 @@ angular.module('resiexchange')
     };
 }])
 
+.service('routeBadgeCategoriesProvider', ['routeObjectProvider', '$http', function(routeObjectProvider, $http) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_badgecategory_list&order=name')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
 /**
 *
 */
