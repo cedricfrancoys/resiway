@@ -71,7 +71,15 @@ $token = md5($rev.rand(1, 100));
 
     <body class="ng-cloak">
         <toast></toast>
-                
+
+        <!-- images preload -->
+        <div class="ng-hide">
+        <?php
+        foreach (glob("packages/resiexchange/apps/assets/img/*") as $filename) {
+            echo '<img src="'.$filename.'" width="1" height="1" />'."\n";
+        }
+        ?>
+        </div>
         <!-- templates in rootScope -->
         <?php
         foreach (glob("packages/resiexchange/apps/views/*.html") as $filename) {

@@ -4,9 +4,16 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-concat');
 	grunt.loadNpmTasks('grunt-contrib-uglify'); 
 	grunt.loadNpmTasks('grunt-contrib-watch');
-
+	grunt.loadNpmTasks('grunt-contrib-clean');
+    
 	grunt.initConfig({
-
+        clean: {
+            options: {
+                'force': true
+            },            
+            all: ['../../../../cache/*']
+        },
+        
 		concat: {
 			options: {
 				stripBanners: true
@@ -92,5 +99,5 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', ['watch']);
 	grunt.registerTask('compile', ['concat:qinoa_js', 'uglify:qinoa_js']);
 */
-	grunt.registerTask('default', ['concat', 'cssmin', 'uglify']);
+	grunt.registerTask('default', ['clean', 'concat', 'cssmin', 'uglify']);
 };

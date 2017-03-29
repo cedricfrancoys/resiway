@@ -14,7 +14,8 @@ set_silent(true);
 $params = QNLib::announce(	
 	array(	
     'description'	=>	"Returns all help category objects with their topics lists",
-    'params' 		=>	array()
+    'params' 		=>	[
+    ]
 	)
 );
 

@@ -78,16 +78,16 @@
                             <div class="user-details">
                                 <a href="#/user/profile/{{question.creator.id}}">{{question.creator.display_name}}</a>
                                 <div>
-                                    <span class="reputation-score" title="reputation score " dir="ltr">{{question.creator.reputation}}</span>
-                                    <span class="badges">
+                                    <span class="reputation-score" title="score de reputation" dir="ltr">{{question.creator.reputation}}</span>
+                                    <span class="badges" ng-show="question.creator.count_badges_1 > 0">
                                         <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                         <span class="badgecount">{{question.creator.count_badges_1}}</span>
                                     </span>
-                                    <span class="badges">
+                                    <span class="badges" ng-show="question.creator.count_badges_2 > 0">
                                         <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                         <span class="badgecount">{{question.creator.count_badges_2}}</span>
                                     </span>
-                                    <span class="badges">
+                                    <span class="badges" ng-show="question.creator.count_badges_3 > 0">
                                         <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                         <span class="badgecount">{{question.creator.count_badges_3}}</span>
                                     </span>

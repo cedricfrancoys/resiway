@@ -23,6 +23,9 @@ class HelpCategory extends \easyobject\orm\Object {
                                        
             /* text describing the category */
             'description'			=> array('type' => 'text', 'multilang' => true),
+
+            /* value for ordering categories between them */
+            'order'	        		=> array('type' => 'integer'),
             
             /* identifiers of the topics in this category */                                        
             'topics_ids'            => array(

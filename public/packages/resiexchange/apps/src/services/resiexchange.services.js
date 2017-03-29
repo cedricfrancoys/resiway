@@ -206,6 +206,8 @@ angular.module('resiexchange')
         $auth.username = '';
         $auth.password = '';
         
+        /* retrieve user_id if set server-side
+        */
         this.userId = function() {
             var deferred = $q.defer();
             // attempt to log the user in
@@ -224,7 +226,9 @@ angular.module('resiexchange')
             });
             return deferred.promise;            
         };
-            
+        
+        /* request user data (if id matches current user, we receive private data as well) 
+        */
         this.userData = function(user_id) {
             var deferred = $q.defer();
             // attempt to retrieve user data
@@ -289,22 +293,22 @@ angular.module('resiexchange')
             else {
                 $http.get('index.php?do=resiway_user_signin&login='+$auth.username+'&password='+$auth.password)
                 .then(
-                function successCallback(response) {
-                    if(typeof response.data.result == 'undefined') {
+                    function successCallback(response) {
+                        if(typeof response.data.result == 'undefined') {
+                            // something went wrong server-side
+                            return deferred.reject({'result': -1});
+                        }
+                        if(response.data.result < 0) {
+                            // given values not accepted
+                            // $auth.clearCredentials();
+                            return deferred.reject(response.data);
+                        }
+                        return deferred.resolve(response.data.result);
+                    },
+                    function errorCallback(response) {
                         // something went wrong server-side
                         return deferred.reject({'result': -1});
                     }
-                    if(response.data.result < 0) {
-                        // given values not accepted
-                        // $auth.clearCredentials();
-                        return deferred.reject(response.data);
-                    }
-                    return deferred.resolve(response.data.result);
-                },
-                function errorCallback(response) {
-                    // something went wrong server-side
-                    return deferred.reject({'result': -1});
-                }
                 );
             }
             return deferred.promise;
@@ -328,81 +332,68 @@ angular.module('resiexchange')
             return deferred.promise;
         };
         
-        // this method works in best-effort to ensure user identification
-        // tries to recover if a session is already set server-side
-        // otherwise it uses current credentials to log user in and read related data
-        //
+        /*
+        * Checks if current user is authenticated and, if not, tries to login
+        * This method tries to recover if a session is already set server-side,
+        * otherwise it uses current credentials to log user in and read related data
+        *
+        * @public
+        */
         this.authenticate = function() {
-            var deferred = $q.defer();
+            var deferred = $q.defer();            
+            // note: we cannot trust $rootScope.user.id, since session might have expired on server
+            // request user_id (checks if session is set server-side)
+            $auth.userId().then(
             
-            // if the user is already logged in
-            if($rootScope.user.id > 0) {        
-                deferred.resolve($rootScope.user);
-            }
-            // user is still unidentified
-            else {
-                /*
-                // try to sign in with current credentials                    
-                $auth.signin().then(
-                function successHandler(user_id) {
-                    $auth.userData(user_id)
-                    .then(
-                        function successHandler(data) {
-                            $rootScope.user = data;
-                            deferred.resolve(data);
-                        },
-                        function errorHandler(data) {
-                            // something went wrong server-side
-                            deferred.reject(data);                                
-                        }
-                    );                            
-                },
-                function errorHandler(data) {
-                    // given values were not accepted 
-                    // or something went wrong server-side
-                    deferred.reject(data);  
-                });
-                */
-                // request user_id (checks if seesion is set server-side)
-                $auth.userId().then(
                 // session is already set
-                function(user_id) {
-                    // fetch related data
-                    $auth.userData(user_id).then(
-                    function(data) {
-                        $rootScope.user = data;
-                        deferred.resolve(data);
-                    },
-                    function(data) {
-                        // something went wrong server-side
-                        console.log('something went wrong server-side');
-                        deferred.reject(data); 
-                    });                    
-                },
-                // user is not identified yet
-                function() {                    
-                    // try to sign in with current credentials                    
-                    $auth.signin().then(
-                    function(user_id) {
-                        $auth.userData(user_id)
-                        .then(
+                function successHandler(user_id) {
+                    // we already have user data
+                    if($rootScope.user.id > 0) {
+                        deferred.resolve($rootScope.user);
+                    }
+                    // we still need user data
+                    else {
+                        // retrieve user data
+                        $auth.userData(user_id).then(
                             function successHandler(data) {
                                 $rootScope.user = data;
                                 deferred.resolve(data);
                             },
                             function errorHandler(data) {
                                 // something went wrong server-side
-                                deferred.reject(data);                                
+                                console.log('something went wrong server-side');
+                                deferred.reject(data); 
                             }
-                        );                            
-                    },
-                    function(data) {
-                        // given values were not accepted 
-                        // or something went wrong server-side
-                        deferred.reject(data);  
-                    });
-                });                
-            }
+                        );
+                    }                        
+                },
+                
+                // user is not identified yet (or session has expired server-side)
+                function errorHandler() {                    
+                    // try to sign in with current credentials                    
+                    $auth.signin().then(
+                        function successHandler(user_id) {
+                            // retrieve user data
+                            $auth.userData(user_id).then(
+                                function successHandler(data) {
+                                    $rootScope.user = data;
+                                    deferred.resolve(data);
+                                },
+                                function errorHandler(data) {
+                                    // something went wrong server-side
+                                    deferred.reject(data);                                
+                                }
+                            );                            
+                        },
+                        function errorHandler(data) {
+                            // given values were not accepted 
+                            // or something went wrong server-side
+                            deferred.reject(data);  
+                        }
+                    );
+                }
+            );                
+
             return deferred.promise;
         };
     }

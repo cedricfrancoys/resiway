@@ -1283,7 +1283,9 @@ todo: signature differs from other methods	(returned value)
 			// second pass : fetch the ids of matching objects
 			$select_fields = array($table_alias.'.id');
 			$order_table_alias = $table_alias;
-            
+
+            // if invalid order field is given, fallback on id
+            if(!isset($schema[$order])) $order = 'id'; 
             if($schema[$order]['type'] == 'alias') $order = $schema[$order]['alias'];            
 			$order_field = $order;
             
@@ -1296,6 +1298,7 @@ todo: signature differs from other methods	(returned value)
 				$order_field = 'value';
 			}
 			elseif($order != 'id') $select_fields[] = $table_alias.'.'.$order;
+            
 			// get the matching records by generating the resulting SQL query
 			$res = $db->getRecords($tables, $select_fields, NULL, $conditions, $table_alias.'.id', $order_table_alias.'.'.$order_field, $sort, $start, $limit);
 			while ($row = $db->fetchArray($res)) {

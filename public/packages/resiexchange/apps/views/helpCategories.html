@@ -10,7 +10,7 @@
     <div class="col-4-12 help-container" ng-repeat="category in ctrl.categories">
         <div>
             <div class="panel-heading">
-                <div class="panel-title"><h3>{{category.title}}</h3></div>
+                <div class="panel-title"><h3><a href="#/help/category/{{category.id}}/{{category.title_url}}">{{category.title}}</a></h3></div>
             </div>
             <div class="panel-body help-toc">
                 <ul>

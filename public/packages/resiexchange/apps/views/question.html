@@ -115,16 +115,16 @@
                                 <div class="user-details">
                                     <a href="#/user/profile/{{question.editor.id}}">{{question.editor.display_name}}</a>
                                     <div>
-                                        <span class="reputation-score" title="reputation score" dir="ltr">{{question.editor.reputation}}</span>
-                                        <span class="badges" title="gold badges" ng-show="question.editor.count_badges_1 > 0">
+                                        <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}">{{question.editor.reputation}}</span>
+                                        <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="question.editor.count_badges_1 > 0">
                                             <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.editor.count_badges_1 }}</span>
                                         </span>
-                                        <span class="badges" title="silver badges" ng-show="question.editor.count_badges_2 > 0">
+                                        <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_SILVER'|translate}}" ng-show="question.editor.count_badges_2 > 0">
                                             <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.editor.count_badges_2 }}</span>
                                         </span>
-                                        <span class="badges" title="bronze badges" ng-show="question.editor.count_badges_3 > 0">
+                                        <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="question.editor.count_badges_3 > 0">
                                             <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.editor.count_badges_3 }}</span>
                                         </span>
@@ -147,19 +147,20 @@
                                 <div class="user-details">
                                     <a href="#/user/profile/{{question.creator.id}}">{{question.creator.display_name}}</a>
                                     <div>
-                                        <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}" dir="ltr">{{question.creator.reputation}}</span>
-                                        <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="question.creator.count_badges_3 > 0">
-                                            <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
-                                            <span class="badgecount">{{ question.creator.count_badges_3 }}</span>
+                                        <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}">{{question.creator.reputation}}</span>
+                                        <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="question.creator.count_badges_1 > 0">
+                                            <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ question.creator.count_badges_1 }}</span>
                                         </span>
                                         <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_SILVER'|translate}}" ng-show="question.creator.count_badges_2 > 0">
                                             <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.creator.count_badges_2 }}</span>
                                         </span>
-                                        <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="question.creator.count_badges_1 > 0">
-                                            <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
-                                            <span class="badgecount">{{ question.creator.count_badges_1 }}</span>
+                                        <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="question.creator.count_badges_3 > 0">
+                                            <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ question.creator.count_badges_3 }}</span>
                                         </span>
+                                        
                                     </div>
                                 </div>
                             </div>
