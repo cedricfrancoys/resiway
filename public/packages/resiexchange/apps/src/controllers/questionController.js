@@ -171,8 +171,32 @@ angular.module('resiexchange')
             });
         };  
         
-        $scope.questionVoteUp = function ($event) {
+        $scope.questionVoteUp = function ($event) {            
+            // accept action, and check if it is valid later
+            
+            // define begin and rollback functions
+            function begin() {
+                var res = {resiexchange_question_votedown: $scope.question.history['resiexchange_question_votedown'], resiexchange_question_voteup: $scope.question.history['resiexchange_question_voteup']};
+                $scope.question.score++;
+                if(angular.isDefined($scope.question.history['resiexchange_question_votedown']) 
+                    && $scope.question.history['resiexchange_question_votedown'] === true) {
+                    $scope.question.history['resiexchange_question_votedown'] = false;
+                }
+                else {
+                    $scope.question.history['resiexchange_question_voteup'] = true;
+                }
+                return res;
+            }
+            
+            function rollback(previous) {
+                $scope.question.score--;
+                angular.merge($scope.question.history, previous);                
+            }
+            
+            var previous = begin();
+            
             var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_question_voteup',
@@ -185,14 +209,17 @@ angular.module('resiexchange')
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // (if route is changed to signin form)
                     if(data.result === true) {                  
-                        $scope.question.history['resiexchange_question_voteup'] = true;
-                        $scope.question.score++;
+                        // $scope.question.history['resiexchange_question_voteup'] = true;
+                        // $scope.question.score++;
                     }
                     else if(data.result === false) {
-                        $scope.question.history['resiexchange_question_votedown'] = false;
-                        $scope.question.score++;
+                        // $scope.question.history['resiexchange_question_votedown'] = false;
+                        // $scope.question.score++;
                     }
                     else {
+                        // rollback
+                        rollback(previous);
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
