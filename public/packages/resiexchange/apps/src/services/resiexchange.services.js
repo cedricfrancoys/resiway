@@ -435,6 +435,10 @@ angular.module('resiexchange')
                 && task.action.length > 0) {
                     $http.post('index.php?do='+task.action, task.data).then(
                     function successCallback(response) {
+
+                        if(typeof task.callback == 'function') {
+                            task.callback(task.scope, response.data);
+                        }
                         
                         $http.get('index.php?do=resiway_user_badges_update').then(
                             function successCallback(response) {
@@ -462,9 +466,6 @@ angular.module('resiexchange')
                             }
                         );
                         
-                        if(typeof task.callback == 'function') {
-                            task.callback(task.scope, response.data);
-                        }
                     },
                     function errorCallback() {
                         // something went wrong server-side
