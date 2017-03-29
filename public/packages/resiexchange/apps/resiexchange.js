@@ -329,25 +329,19 @@ var resiway = angular.module('resiexchange', [
         // search criteria (filters)
         $rootScope.search = {
             default: {
-                q: '',
-                cat: 0,
+                q: '',                  // query string (against question title)
+                cat: 0,                 // category (result including subcategories)
                 domain: [],
-                order: 'title',
-                sort: 'desc',
-                start: 0,
-                limit: 25
-            },            
-            criteria: {
-                q: '',              // query string (against question title)
-                cat: 0,             // category (result including subcategories)
-                domain: [],         // todo: remove this
-                order: 'title',
+                order: 'count_answers',
                 sort: 'desc',
                 start: 0,
                 limit: 25
             },
+            criteria: {},
             total: 0
         };
+        
+        angular.merge($rootScope.search.criteria, $rootScope.search.default);
 
         /**
         * Global config
