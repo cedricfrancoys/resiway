@@ -39,6 +39,11 @@
     margin-top: 0;
 }
 
+.help-center .panel-body {
+    padding: 0 15px;
+}
+
+
 .help-center .panel-body.help-toc, .help-center .panel-body.help-toc ul {
     padding-top: 0px;
 }
