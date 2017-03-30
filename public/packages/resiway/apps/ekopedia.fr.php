@@ -65,14 +65,7 @@
         <!-- topbar -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/topbar.html"); ?>
 
-        <?php
-        $url = $_SERVER[REQUEST_URI];
-        if(strpos($url, '?') !== false) {
-            $url = explode('?', $url)[1];
-        }
-        else $url = '';
-        ?>  
-        <iframe id="main_iframe" src="https://www.ekopedia.fr/<?php echo $url; ?>"></iframe>
+        <iframe id="main_iframe" src="https://www.ekopedia.fr"></iframe>
 
     </body>
 </html>
