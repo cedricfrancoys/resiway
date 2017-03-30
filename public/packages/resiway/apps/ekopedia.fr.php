@@ -65,7 +65,7 @@
         <!-- topbar -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/topbar.html"); ?>
 
-        <iframe id="main_iframe" src="https://www.ekopedia.fr"></iframe>
+        <iframe id="main_iframe" src="https://www.ekopedia.fr/wiki/Accueil"></iframe>
 
     </body>
 </html>
