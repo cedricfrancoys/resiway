@@ -7,7 +7,7 @@
         <meta name="title" content="ResiExchange - Des réponses pour la résilience">
         <meta name="description" content="ResiExchange est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition, la permaculture et la résilience.">
 
-        <title>ResiExchange</title>
+        <title>EkoPedia</title>
 
 
         <script src="packages/resiexchange/apps/assets/js/moment.min.js"></script>
