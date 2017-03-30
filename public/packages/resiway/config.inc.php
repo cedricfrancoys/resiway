@@ -44,7 +44,7 @@ define('RESIEXCHANGE_COMMENT_FLAG_DAILY_MAX', 50);
 * Let's try not being too restrictive here, 
 * the idea beign to let the community deal with everyone's behavior 
 */
-define('RESIEXCHANGE_QUESTION_TITLE_LENGTH_MIN', 25);
+define('RESIEXCHANGE_QUESTION_TITLE_LENGTH_MIN', 23);
 define('RESIEXCHANGE_QUESTION_TITLE_LENGTH_MAX', 128);
 define('RESIEXCHANGE_QUESTION_CONTENT_LENGTH_MIN', 0);
 define('RESIEXCHANGE_QUESTION_CONTENT_LENGTH_MAX', 4096);
