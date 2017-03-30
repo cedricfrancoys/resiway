@@ -454,19 +454,42 @@ class ObjectManager {
 
 						if(count($parts) > 1) {
                             // if $parts[1] still contains a dot, this call will recurse down
+
+                            if($schema[$parts[0]]['type'] == 'many2one') {
+                                $sub_ids = array_map(function($a) use ($parts){return $a[$parts[0]];}, $values);
+                            }
+                            else {
+                                $sub_ids = [];
+                                foreach($values as $object_id => $item) {
+                                    $sub_ids = array_merge($sub_ids, $item[$parts[0]]);
+                                }
+                            }
+
 							$sub_values = $om->read(
 													$schema[$parts[0]]['foreign_object'],
-													array_map(function($a) use ($parts){return $a[$parts[0]];}, $values),
+													$sub_ids,
 													array($parts[1]),
 													$lang);
+
 							foreach($values as $object_id => $item) {
                                 // resulting value is stored in the cache using given $field value (ex. 'user_id.firstname')
-                                if(isset($sub_values[$item[$parts[0]]][$parts[1]])) {
-                                    $om->cache[$class][$object_id][$field][$lang] = $sub_values[$item[$parts[0]]][$parts[1]];
+
+                                if(is_array($item[$parts[0]])) {
+                                    $result_value = [];
+                                    foreach($item[$parts[0]] as $item_prop) {
+                                        $result_value[] = $sub_values[$item_prop][$parts[1]];
+                                    }
                                 }
                                 else {
-                                    $om->cache[$class][$object_id][$field][$lang] = null;
+                                    if(isset($sub_values[$item[$parts[0]]][$parts[1]])) {
+                                        $result_value = $sub_values[$item[$parts[0]]][$parts[1]];
+                                    }
+                                    else {
+                                        $result_value = null;
+                                    }
                                 }
+
+                                $om->cache[$class][$object_id][$field][$lang] = $result_value;
                             }
 						}
 					}
