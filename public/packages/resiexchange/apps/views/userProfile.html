@@ -255,7 +255,7 @@
             </div>           
         </uib-tab>
         
-        <uib-tab index="6" select="ctrl.load(ctrl.actions)">
+        <uib-tab index="6" select="ctrl.load(ctrl.actions)" ng-show="ctr.user.id == user.id || user.role == 'a'">
           <uib-tab-heading>
             <i class="fa fa-history"></i> {{'USER_PROFILE_TAB_ACTIVITY' | translate}}
           </uib-tab-heading>

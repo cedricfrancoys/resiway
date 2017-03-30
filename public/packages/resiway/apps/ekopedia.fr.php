@@ -64,6 +64,8 @@
     <body class="ng-cloak">
         <!-- topbar -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/topbar.html"); ?>
+        
+        <script type="text/ng-template" id="home.html"></script>
 
         <iframe id="main_iframe" src="https://www.ekopedia.fr/wiki/Accueil"></iframe>
 

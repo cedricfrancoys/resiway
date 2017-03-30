@@ -65,6 +65,8 @@
         <!-- topbar -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/topbar.html"); ?>
 
+        <script type="text/ng-template" id="home.html"></script>
+        
         <iframe id="main_iframe" src="https://www.resiway.org/resilib"></iframe>
 
     </body>
