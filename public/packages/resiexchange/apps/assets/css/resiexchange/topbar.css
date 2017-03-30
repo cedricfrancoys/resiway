@@ -74,46 +74,6 @@
     white-space: nowrap;    
 }
 
-.topbar .search-input {
-    position: relative;
-    float: left;
-    height: 34px;
-    width: 150px;    
-    line-height: 34px;
-    color: lightgrey;
-    padding-left: 10px;
-    padding-top: 2px;
-   -webkit-transition: all .5s ease;
-   -moz-transition: all .5s ease;
-   transition: all .5s ease;      
-}
-
-.topbar .search-input:hover {
-    width: 400px;
-}
-
-.topbar .search-input input:focus {
-    width: 358px;
-}
-
-.topbar .search-input button, .topbar .search-input button:focus {
-    outline:none !important;
-}
-
-.topbar .search-input label {
-    position: absolute;
-    left: 10px;
-}
-
-.topbar .search-input.form-group-sm .form-control, .topbar .search-input.form-group-sm .input-group .btn-sm {
-    height: 30px;
-}
-
-.topbar .search-input.form-group-sm .input-group .btn-sm {
-    vertical-align: top;
-}
-
-
 .topbar .login-btn {
     position: absolute;
     right: 0;
