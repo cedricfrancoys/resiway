@@ -1433,7 +1433,7 @@ angular.module('resiexchange')
         
     // @init
     // retrieve GMail avatar, if any
-    $http.get('http://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
+    $http.get('https://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
     .then(
         function successCallback(response) {
             var url = response.data['entry']['gphoto$thumbnail']['$t'];

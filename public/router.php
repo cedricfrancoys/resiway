@@ -51,7 +51,7 @@ if(($pos = strpos($request_uri, '#')) !== false) $request_uri = substr($request_
 
 // look for a match among defined routes
 $params = [];
-$uri = str_replace($base, '/', $_SERVER['REQUEST_URI']);
+$uri = str_replace($base, '/', $request_uri);
 
 $uri_parts = explode('/', ltrim($uri, '/'));
 $found_url = null;

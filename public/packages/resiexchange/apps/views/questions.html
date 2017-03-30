@@ -61,7 +61,7 @@
                 <h3>
                     <a class="question-hyperlink" href="#question/{{question.id}}/{{question.title_url}}">{{question.title}}</a>
                 </h3>
-                <div class="excerpt">{{question.content}}</div>
+                <div class="excerpt">{{question.content_excerpt}}</div>
                 
                 <div class="tags">
                     <a ng-repeat="tag in question.tags" ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}">{{tag.title}}</a> 

@@ -342,6 +342,14 @@ angular.module('resiexchange')
         this.authenticate = function() {
             var deferred = $q.defer();            
             // note: we cannot trust $rootScope.user.id, since session might have expired on server
+            /*
+            todo: improvement
+            var last_query = 0;
+            var max_delay = 1000 * 60 * 5;      // 5 minutes
+            var now = new Date().getTime();
+            if( (now - last_query) < max_delay ) // do not request userId            
+            */
+            
             // request user_id (checks if session is set server-side)
             $auth.userId().then(
             
@@ -445,7 +453,7 @@ angular.module('resiexchange')
                                 $http.get('index.php?get=resiway_user_notifications').then(
                                     function successCallback(response) {
                                         var data = response.data;
-                                        if(typeof data.result == 'object') {
+                                        if(typeof data.result == 'object' && $rootScope.user.id > 0) {
                                             $rootScope.user.notifications = $rootScope.user.notifications.concat(data.result);
                                             
                                             angular.forEach(data.result, function(notification, index) {

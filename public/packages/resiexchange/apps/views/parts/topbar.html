@@ -8,20 +8,18 @@
         <div class="platform-dialog" ng-show="ctrl.platformDropdown" ng-cloak>
             <div class="head text-uppercase">{{'TOOLBAR_PLATFORM_OTHER_APPS'|translate}}</div>
             <ul>
-                <li onclick="window.location.href='https://www.resiway.org/resiway.fr'">
+                <li onclick="window.location.href='/resiway.fr'">
                     <div class="platform-icon resiway"></div>
-                    <div class="descr"><a href="//www.resiway.org/resiway.fr">Présentation et gestion des outils collaboratifs</a></div>
+                    <div class="descr"><a href="/resiway.fr">Présentation et gestion des outils collaboratifs</a></div>
                 </li>
-                <li onclick="window.location.href='https://www.resiway.org/resiexchange.fr'">
+                <li onclick="window.location.href='/resiexchange.fr'">
                     <div class="platform-icon resiexchange"></div>
-                    <div class="descr"><a href="//www.resiway.org/resiexchange.fr">Questions &amp; Réponses sur les thèmes de l'autonomie, la transition, la permaculture et la résilience</a></div>
+                    <div class="descr"><a href="/resiexchange.fr">Questions &amp; Réponses sur les thèmes de l'autonomie, la transition, la permaculture et la résilience</a></div>
                 </li>
-                <!--
-                <li onclick="window.location.href='https://www.resiway.org/resilib/'">
+                <li onclick="window.location.href='/resilib.fr'">
                     <div class="platform-icon resilib"></div>
-                    <div class="descr"><a href="//www.resiway.org/resilib/">Bibliothèque de retours d'expériences pour la réappropriation des savoirs-faire</a></div>
+                    <div class="descr"><a href="/resilib.fr">Bibliothèque de retours d'expériences pour la réappropriation des savoirs-faire</a></div>
                 </li>
-                -->
                 <!--
                 <li>
                     <div class="platform-icon resinet"></div>
@@ -34,34 +32,32 @@
                     <div class="descr">Wiki rassemblant les informations de toutes les plateformes</div>
                 </li>
                 -->
-                <!--
-                <li>
+                <li onclick="window.location.href='/ekopedia.fr'">
                     <div class="platform-icon ekopedia"></div>
-                    <div class="descr"><a href="//www.ekopedia.fr/">Encyclopédie pratique pour intégrer l'écologie à son quotidien</a></div>
+                    <div class="descr"><a href="/ekopedia.fr">Encyclopédie pratique pour intégrer l'écologie à son quotidien</a></div>
                 </li>
-                -->
             </ul>
         </div>
         <!-- notifications dialog -->        
         <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
             <div class="head">
-                <a href="#/user/notifications/{{user.id}}">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
+                <a href="/resiexchange.fr#/user/notifications/{{user.id}}">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
                 <a href class="pull-right" ng-click="ctrl.notificationsDismissAll()">tout supprimer</a>
             </div>
             <ul>
                 <li ng-repeat="(notification_index, notification) in user.notifications">
-                    <div class="title"><a href="#/user/notifications/{{user.id}}">{{notification.title}}</a></div>
+                    <div class="title"><a href="/resiexchange.fr#/user/notifications/{{user.id}}">{{notification.title}}</a></div>
                     <div class="descr" ng-bind-html="notification.content"></div>
                 </li>
             </ul>
-            <div class="foot"><a href="#/user/notifications/{{user.id}}">+ Voir toutes les notifications</a></div>
+            <div class="foot"><a href="/resiexchange.fr#/user/notifications/{{user.id}}">+ Voir toutes les notifications</a></div>
         </div>
         <!-- help dialog -->
         <div class="help-dialog" ng-show="ctrl.helpDropdown">
             <ul>
                 <li>
                     <div class="title">Centre d'Aide</div>
-                    <div class="descr small"><a href="#/help/categories">Des réponses à toutes vos questions sur le fonctionnement de la plateforme</a></div>
+                    <div class="descr small"><a href="/resiexchange.fr#/help/categories">Des réponses à toutes vos questions sur le fonctionnement de la plateforme</a></div>
                 </li>
                 <li>
                     <div class="title">Meta</div>
@@ -73,7 +69,7 @@
         <div class="user-dialog" ng-show="ctrl.userDropdown">
             <ul>
                 <li>
-                    <a href="#user/profile/{{user.id}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
+                    <a href="/resiexchange.fr#user/profile/{{user.id}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
                 </li>
                 <li>
                    <a href ng-click="ctrl.signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion</a>
@@ -110,8 +106,8 @@
             </div>
             
             <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">
-                    <a href="#/user/sign/in"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
-                    <a href="#/user/sign/up"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
+                    <a href="/resiexchange.fr#/user/sign/in"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
+                    <a href="/resiexchange.fr#/user/sign/up"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
             </div>
             <div id="user-btn" class="user-btn ng-hide" ng-class="{open: ctrl.userDropdown}" ng-click="toggleUserDropdown()" ng-show="user.id">
                 <span class="user-avatar pull-left">
