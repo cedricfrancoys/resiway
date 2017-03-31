@@ -47,6 +47,6 @@ class TextTransformer {
     * returned value is intended to be stored in a UNISGNED BIGINT DBMS column (8 bytes/20 digits)
     */
     public static function hash($value) {
-        return \gmp_strval(\gmp_init(substr(md5($value), 0, 16), 16), 10);
+        return gmp_strval(gmp_init(substr(md5($value), 0, 16), 16), 10);
     }
 }
