@@ -104,7 +104,7 @@ class DBManipulatorMySQL extends DBManipulator {
 	}
 
 	public static function fetchArray(&$result) {
-		return mysqli_fetch_array($result, MYSQL_ASSOC);
+		return mysqli_fetch_array($result, MYSQLI_ASSOC);
 	}
 
 	/**
