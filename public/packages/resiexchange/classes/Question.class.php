@@ -24,6 +24,9 @@ class Question extends \easyobject\orm\Object {
 
             /* channel of the current question ('default', 'help', 'meta', ...) */
             'channel_id'            => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
+
+            /* does current question need to be (re-)indexed */
+            'indexed'               => array('type' => 'boolean'),
             
             /* subject of the question */
             'title'				    => array('type' => 'string', 'onchange' => 'resiexchange\Question::onchangeTitle'),
@@ -107,6 +110,7 @@ class Question extends \easyobject\orm\Object {
     
     public static function getDefaults() {
         return array(
+             'indexed'          => function() { return false; },        
              'channel_id'       => function() { return 1; },
              'lang'             => function() { return 'fr'; },
              'editor'           => function() { return 0; },             

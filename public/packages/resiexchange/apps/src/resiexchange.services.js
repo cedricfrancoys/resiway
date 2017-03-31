@@ -65,10 +65,10 @@ angular.module('resiexchange')
             function successCallback(response) {
                 var data = response.data;
                 if(typeof data.result != 'object') {
-                    $rootScope.search.total = 0;
+                    $rootScope.search.criteria.total = 0;
                     return [];
                 }
-                $rootScope.search.total = data.total;
+                $rootScope.search.criteria.total = data.total;
                 return data.result;
             },
             function errorCallback(response) {

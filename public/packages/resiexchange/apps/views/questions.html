@@ -101,7 +101,7 @@
 
         <ul uib-pagination 
             class="pagination-sm" 
-            total-items="search.total" 
+            total-items="search.criteria.total" 
             ng-model="ctrl.questions.currentPage"
             ng-change="ctrl.load()"
             items-per-page="25"
@@ -118,7 +118,7 @@
         <div class="panel panel-default">
             <div class="container">
                 <div class="container">
-                    <span class="number">{{search.total | humanizeCount:true}}</span>
+                    <span class="number">{{search.criteria.total | humanizeCount:true}}</span>
                     {{'QUESTIONS_STATS_QUESTIONS' | translate}}
                 </div>
             </div>

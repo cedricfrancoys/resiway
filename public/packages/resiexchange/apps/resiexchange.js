@@ -330,15 +330,14 @@ var resiway = angular.module('resiexchange', [
         $rootScope.search = {
             default: {
                 q: '',                  // query string (against question title)
-                cat: 0,                 // category (result including subcategories)
                 domain: [],
-                order: 'count_answers',
+                order: 'score',
                 sort: 'desc',
                 start: 0,
-                limit: 25
+                limit: 25,
+                total: -1
             },
-            criteria: {},
-            total: 0
+            criteria: {}
         };
         
         angular.merge($rootScope.search.criteria, $rootScope.search.default);
@@ -646,10 +645,10 @@ angular.module('resiexchange')
             function successCallback(response) {
                 var data = response.data;
                 if(typeof data.result != 'object') {
-                    $rootScope.search.total = 0;
+                    $rootScope.search.criteria.total = 0;
                     return [];
                 }
-                $rootScope.search.total = data.total;
+                $rootScope.search.criteria.total = data.total;
                 return data.result;
             },
             function errorCallback(response) {

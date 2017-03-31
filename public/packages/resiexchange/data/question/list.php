@@ -5,6 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
+use qinoa\text\TextTransformer as TextTransformer;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -57,10 +58,15 @@ $params = QNLib::announce(
                                             'type'          => 'integer',
                                             'default'       => -1
                                             ),
-                        'channel'	    => array(
+                        'channel'	=> array(
                                             'description'   => 'Channel for which questions are requested (default, help, meta, ...)',
                                             'type'          => 'integer',
                                             'default'       => 1
+                                            ),
+                        'api'	    => array(
+                                            'description'   => 'Flag for API requests',
+                                            'type'          => 'boolean',
+                                            'default'       => false
                                             )                                            
                         )
 	)
@@ -71,24 +77,50 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids, $total) = [[], [], $params['total']];
 
+
+function searchFromIndex($query) {
+    $result = [];
+    $query = TextTransformer::normalize($query);
+    $keywords = explode(' ', $query);
+    $hash_list = array_map(function($a) { return TextTransformer::hash($a); }, $keywords);
+    // we have all words related to the question :
+    $om = &ObjectManager::getInstance();    
+    $db = $om->getDBHandler();    
+    // obtain related ids of index entries to add to question (don't mind the collision / false-positive)
+	$res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in ('".implode("','", $hash_list)."');");
+    $index_ids = [];
+    while($row = $db->fetchArray($res)) {
+        $index_ids[] = $row['id'];
+    }
+    
+    if(count($index_ids)) {
+        $res = $db->sendQuery("SELECT DISTINCT(question_id) FROM resiway_rel_index_question WHERE index_id in ('".implode("','", $index_ids)."');");
+        while($row = $db->fetchArray($res)) {
+            $result[] = $row['question_id'];
+        }
+    }
+    return $result;
+}
+
+
 try {
     
     $om = &ObjectManager::getInstance();
 
     // 0) retrieve matching questions identifiers
 
-
-    // build domain
-    /*
-    search syntax : 
-        [category-name]
-    */
-    
-    // adapt domain to restrict results to given channel
-    $params['domain'][] = ['channel_id','=', $params['channel']];
-    
+    // build domain   
     if(strlen($params['q']) > 0) {
-        $params['domain'][] = ['title','ilike', "%{$params['q']}%"];
+        // clear domain
+        $params['domain'] = [];
+        // adapt domain to restrict results to given channel
+        $params['domain'][] = ['channel_id','=', $params['channel']];        
+        $questions_ids = searchFromIndex($params['q']);
+        $params['domain'][] = ['id','in', $questions_ids];
+    }
+    else {
+        // adapt domain to restrict results to given channel
+        $params['domain'][] = ['channel_id','=', $params['channel']];
     }
 
     // total is not knwon yet
