@@ -73,6 +73,7 @@ angular.module('resiexchange')
             },
             function errorCallback(response) {
                 // something went wrong server-side
+                $rootScope.search.criteria.total = 0;
                 return [];
             }
         );
