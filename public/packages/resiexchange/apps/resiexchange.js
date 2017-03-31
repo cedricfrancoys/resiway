@@ -440,7 +440,8 @@ var resiway = angular.module('resiexchange', [
     '$scope',
     '$location',
     '$route',
-    function($rootScope, $scope, $location, $route) {
+    '$http',
+    function($rootScope, $scope, $location, $route, $http) {
         console.log('root controller');
 
         var rootCtrl = this;
@@ -574,7 +575,16 @@ var resiway = angular.module('resiexchange', [
             }
         };
         
-        
+
+        $scope.getKeywords = function(val) {
+            return $http.get('index.php?get=resiway_index_list', {
+                    params: {
+                        q: val
+                    }
+                }).then(function(response){
+                    return response.data.result;
+                });
+        };        
         
     }
 ]);
@@ -623,7 +633,7 @@ angular.module('resiexchange')
 
 .service('routeCategoriesProvider', ['$http', '$rootScope', function($http, $rootScope) {
     this.load = function() {
-        return $http.get('index.php?get=resiway_category_list&order=title&channel='+$rootScope.config.channel)
+        return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel)
         .then(
             function successCallback(response) {
                 var data = response.data;
@@ -1927,7 +1937,7 @@ angular.module('resiexchange')
         // something went wrong server-side
     }); 
 
-    $http.get('index.php?get=resiexchange_question_list&order=score&limit=5&sort=desc')
+    $http.get('index.php?get=resiexchange_question_list&order=count_answers&limit=5&sort=asc')
     .then(
     function successCallback(response) {
         var data = response.data;

@@ -30,11 +30,24 @@
             </div>
             <div id="search-input" class="search-input form-group-sm hidden-xs">
                 <form ng-submit="rootCtrl.search({q: search.criteria.q})">
-                <div class="input-group">            
-                    <input class="form-control" name="q" type="text" placeholder="{{'TOOLBAR_SEARCH_PLACEHOLDER'|translate}}" value="" ng-model="search.criteria.q" autocomplete="off" maxlength="240" >
+                <div class="input-group">
+                    <i ng-show="loadingLocations" class="fa fa-spin fa-spinner" style="position: absolute; left: -15px; top: 10px;"></i>                
+                    <input 
+                    class="form-control" 
+                    name="q" 
+                    type="text" 
+                    placeholder="{{'TOOLBAR_SEARCH_PLACEHOLDER'|translate}}"  
+                    ng-model="search.criteria.q" 
+                    autocomplete="off"
+                    uib-typeahead="item for item in getKeywords($viewValue)" 
+                    typeahead-loading="loadingLocations" 
+                    typeahead-append-to-body="true"                    
+                    maxlength="240">                   
                     <div class="input-group-btn">
                         <button class="btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
                     </div>
+                    
+                   
                 </div>
                 </form>
             </div>            
@@ -42,7 +55,17 @@
                 <a href="#/questions" ng-click="rootCtrl.search()" class="btn btn-info">Questions</a>
                 <a href="#/categories" class="btn btn-info">Catégories</a>
                 <a href="#/badges" class="btn btn-info">Badges</a>                
-                <a href="#/help/categories" class="btn btn-warning">Aide</a>
+                <div class="btn-group" uib-dropdown dropdown-append-to-body>
+                  <a href="/resiexchange.fr#/help/categories" id="help-button" class="btn btn-warning">Aide</a>
+                  <button type="button" class="btn btn-warning" uib-dropdown-toggle>
+                    <span class="caret"></span>
+                    <span class="sr-only">Aide</span>
+                  </button>
+                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="help-button">
+                    <li role="menuitem"><a href="#">Centre d'aide</a></li>
+                    <li role="menuitem"><a href="#">Meta</a></li>
+                  </ul>
+                </div>
             </div>
         </div>
 

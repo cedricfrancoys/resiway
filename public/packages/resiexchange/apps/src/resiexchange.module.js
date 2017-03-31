@@ -310,7 +310,8 @@ var resiway = angular.module('resiexchange', [
     '$scope',
     '$location',
     '$route',
-    function($rootScope, $scope, $location, $route) {
+    '$http',
+    function($rootScope, $scope, $location, $route, $http) {
         console.log('root controller');
 
         var rootCtrl = this;
@@ -444,7 +445,16 @@ var resiway = angular.module('resiexchange', [
             }
         };
         
-        
+
+        $scope.getKeywords = function(val) {
+            return $http.get('index.php?get=resiway_index_list', {
+                    params: {
+                        q: val
+                    }
+                }).then(function(response){
+                    return response.data.result;
+                });
+        };        
         
     }
 ]);

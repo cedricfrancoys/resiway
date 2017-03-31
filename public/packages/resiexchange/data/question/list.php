@@ -82,7 +82,7 @@ function searchFromIndex($query) {
     $result = [];
     $query = TextTransformer::normalize($query);
     $keywords = explode(' ', $query);
-    $hash_list = array_map(function($a) { return TextTransformer::hash($a); }, $keywords);
+    $hash_list = array_map(function($a) { return TextTransformer::hash(TextTransformer::axiomize($a)); }, $keywords);
     // we have all words related to the question :
     $om = &ObjectManager::getInstance();    
     $db = $om->getDBHandler();    

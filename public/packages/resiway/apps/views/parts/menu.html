@@ -33,8 +33,18 @@
                 <a href="/ekopedia.fr" class="btn btn-info">Articles</a>
                 <a href="/resilib.fr" class="btn btn-info">Documents</a>                
                 <a href="/resiexchange.fr#/questions" class="btn btn-info">Questions</a>
-                <a href="/resiexchange.fr#/categories" class="btn btn-info">Catégories</a>            
-                <a href="/resiexchange.fr#/help/categories" class="btn btn-warning">Aide</a>
+                <a href="/resiexchange.fr#/categories" class="btn btn-info">Catégories</a>
+                <div class="btn-group" uib-dropdown dropdown-append-to-body>
+                  <a href="/resiexchange.fr#/help/categories" id="help-button" class="btn btn-warning">Aide</a>
+                  <button type="button" class="btn btn-warning" uib-dropdown-toggle>
+                    <span class="caret"></span>
+                    <span class="sr-only">Aide</span>
+                  </button>
+                  <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="help-button">
+                    <li role="menuitem"><a href="#">Centre d'aide</a></li>
+                    <li role="menuitem"><a href="#">Meta</a></li>
+                  </ul>
+                </div>
             </div>
         </div>
 

@@ -43,7 +43,7 @@ angular.module('resiexchange')
 
 .service('routeCategoriesProvider', ['$http', '$rootScope', function($http, $rootScope) {
     this.load = function() {
-        return $http.get('index.php?get=resiway_category_list&order=title&channel='+$rootScope.config.channel)
+        return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel)
         .then(
             function successCallback(response) {
                 var data = response.data;

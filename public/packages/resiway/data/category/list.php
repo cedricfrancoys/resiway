@@ -22,7 +22,29 @@ $params = QNLib::announce(
                         'order'	        => array(
                                             'description'   => 'Field on which sort the categories',
                                             'type'          => 'string',
-                                            'default'       => 'path'
+                                            'default'       => 'count_questions'
+                                            ),
+                        'sort'		=> array(
+                                            'description'   => 'The direction  (i.e. \'asc\' or \'desc\').',
+                                            'type'          => 'string',
+                                            'default'       => 'desc'
+                                            ),
+                        'start'		=> array(
+                                            'description'   => 'The row from which results have to start.',
+                                            'type'          => 'integer',
+                                            'default'       => 0
+                                            ),
+                        'limit'		=> array(
+                                            'description'   => 'The maximum number of results.',
+                                            'type'          => 'integer',
+                                            'min'           => 5,
+                                            'max'           => 150,
+                                            'default'       => 30
+                                            ),                                            
+                        'total'		=> array(
+                                            'description'   => 'Total of record (if known).',
+                                            'type'          => 'integer',
+                                            'default'       => -1
                                             ),
                         'channel'	    => array(
                                             'description'   => 'Channel for which categories are requested (default, help, meta, ...)',
@@ -43,7 +65,7 @@ try {
     $params['domain'][] = ['channel_id','=', $params['channel']];
 
     // retrieve given user
-    $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order']);
+    $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
     if($tags_ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
     $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path', 'count_questions']);

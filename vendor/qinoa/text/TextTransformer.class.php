@@ -33,6 +33,39 @@ class TextTransformer {
         return strtolower($value); 
     }
 
+
+    /*
+    * tries to convert a word to its most common form
+    */
+    public static function axiomize($word, $locale='fr') {
+        static $locales = [
+        'fr' => [
+            'eaux'  => 'eau',
+            'aux'   => 'al',
+            'eux'   => 'eu',
+            'oux'   => 'ou',
+            's'     => '',
+            'onne'  => 'on',
+            'euse'  => 'eur',
+            'rice'  => 'eur',
+            'ere'   => 'er'
+            ]
+        ];
+        $items = $locales[$locale];
+        $word_len = strlen($word);
+        foreach($items as $key => $val) {
+            $key_len = strlen($key);
+            if($word_len > $key_len) {
+                if(substr($word, -$key_len) == $key) {
+                    $word = substr($word, 0, -$key_len);
+                    $word = $word.$val;
+                    $word_len = strlen($word);
+                }
+            }
+        }
+        return $word;
+    }    
+    
     /**
     * Transform a string into a slug (URL-compatible words separated by dashes)
     * This method expects a UTF-8 string
