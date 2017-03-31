@@ -2,8 +2,8 @@
 angular.module('resiexchange')
 
 .service('routeObjectProvider', [
-    '$http', 
-    '$route', 
+    '$http',
+    '$route',
     '$q',
     function ($http, $route, $q) {
         return {
@@ -12,9 +12,9 @@ angular.module('resiexchange')
                 // set an empty object as default result
                 deferred.resolve({});
 
-                if(typeof $route.current.params.id == 'undefined' 
+                if(typeof $route.current.params.id == 'undefined'
                 || $route.current.params.id == 0) return deferred.promise;
-                
+
                 return $http.get('index.php?get='+provider+'&id='+$route.current.params.id)
                 .then(
                     function successCallback(response) {
@@ -30,10 +30,10 @@ angular.module('resiexchange')
             }
         };
     }
-])      
+])
 
 .service('routeCategoryProvider', [
-    'routeObjectProvider', 
+    'routeObjectProvider',
     function(routeObjectProvider) {
         this.load = function() {
             return routeObjectProvider.provide('resiway_category');
@@ -89,10 +89,10 @@ angular.module('resiexchange')
                 commentsLimit: 5,
                 newCommentShow: false,
                 newCommentContent: '',
-                newAnswerContent: ''                               
+                newAnswerContent: ''
             }
             // add meta info attributes
-            angular.extend(result, attributes);            
+            angular.extend(result, attributes);
             // mark html as safe
             result.content = $sce.trustAsHtml(result.content);
             // process each answer
@@ -101,7 +101,7 @@ angular.module('resiexchange')
                 result.answers[index].content = $sce.trustAsHtml(result.answers[index].content);
                 // add meta info attributes
                 angular.extend(result.answers[index], attributes);
-            });       
+            });
             return result;
         });
     };
@@ -110,7 +110,7 @@ angular.module('resiexchange')
 .service('routeAnswerProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
     this.load = function() {
         return routeObjectProvider.provide('resiexchange_answer')
-        .then(function(result) {        
+        .then(function(result) {
             // mark html as safe
             result.content = $sce.trustAsHtml(result.content);
             return result;
@@ -127,12 +127,12 @@ angular.module('resiexchange')
 .service('routeHelpTopicProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
     this.load = function() {
         return routeObjectProvider.provide('resiexchange_help_topic')
-        .then(function(result) {     
+        .then(function(result) {
             // mark html as safe
-            result.content = $sce.trustAsHtml(result.content);  
+            result.content = $sce.trustAsHtml(result.content);
             return result;
         });
-    };    
+    };
 }])
 
 .service('routeHelpCategoryProvider', ['routeObjectProvider', function(routeObjectProvider) {
@@ -196,17 +196,17 @@ angular.module('resiexchange')
 *
 */
 .service('authenticationService', [
-    '$rootScope', 
-    '$http', 
-    '$q', 
+    '$rootScope',
+    '$http',
+    '$q',
     '$cookies',
     function($rootScope, $http, $q, $cookies) {
         var $auth = this;
-        
+
         // @init
         $auth.username = '';
         $auth.password = '';
-        
+
         /* retrieve user_id if set server-side
         */
         this.userId = function() {
@@ -217,25 +217,25 @@ angular.module('resiexchange')
                 if(typeof response.data.result != 'undefined'
                 && response.data.result > 0) {
                     deferred.resolve(response.data.result);
-                } 
+                }
                 else {
-                    deferred.reject(); 
+                    deferred.reject();
                 }
             },
             function errorCallback(response) {
                 deferred.reject();
             });
-            return deferred.promise;            
+            return deferred.promise;
         };
-        
-        /* request user data (if id matches current user, we receive private data as well) 
+
+        /* request user data (if id matches current user, we receive private data as well)
         */
         this.userData = function(user_id) {
             var deferred = $q.defer();
             // attempt to retrieve user data
             $http.get('index.php?get=resiway_user&id='+user_id)
             .success(function(data, status, headers, config) {
-                if(typeof data == 'object' 
+                if(typeof data == 'object'
                 && typeof data.result == 'object'
                 && data.result.id == user_id) {
                     deferred.resolve(data.result);
@@ -246,8 +246,8 @@ angular.module('resiexchange')
             })
             .error(function(data, status, headers, config) {
                 deferred.reject();
-            });    
-            return deferred.promise;            
+            });
+            return deferred.promise;
         };
 
 
@@ -268,24 +268,24 @@ angular.module('resiexchange')
                 var exp = new Date(now.getFullYear()+1, now.getMonth(), now.getDate());
                 $cookies.put('username', username, {expires: exp});
                 $cookies.put('password', password, {expires: exp});
-            }             
+            }
         };
-        
+
         this.clearCredentials = function () {
             console.log('clearing credentials');
             $auth.username = '';
-            $auth.password = '';        
+            $auth.password = '';
             $rootScope.user = {id: 0};
             $cookies.remove('username');
-            $cookies.remove('password'); 
-        };    
-        
+            $cookies.remove('password');
+        };
+
 
         this.signin = function() {
             var deferred = $q.defer();
             if(typeof $auth.username == 'undefined'
             || typeof $auth.password == 'undefined'
-            || !$auth.username.length 
+            || !$auth.username.length
             || !$auth.password.length) {
                 $auth.clearCredentials();
                 // reject with 'missing_param' error code
@@ -328,11 +328,11 @@ angular.module('resiexchange')
             function errorCallback(response) {
                 // something went wrong server-side
                 return deferred.reject({'result': -1});
-            }            
+            }
             );
             return deferred.promise;
         };
-        
+
         /*
         * Checks if current user is authenticated and, if not, tries to login
         * This method tries to recover if a session is already set server-side,
@@ -341,19 +341,19 @@ angular.module('resiexchange')
         * @public
         */
         this.authenticate = function() {
-            var deferred = $q.defer();            
+            var deferred = $q.defer();
             // note: we cannot trust $rootScope.user.id, since session might have expired on server
             /*
             todo: improvement
             var last_query = 0;
             var max_delay = 1000 * 60 * 5;      // 5 minutes
             var now = new Date().getTime();
-            if( (now - last_query) < max_delay ) // do not request userId            
+            if( (now - last_query) < max_delay ) // do not request userId
             */
-            
+
             // request user_id (checks if session is set server-side)
             $auth.userId().then(
-            
+
                 // session is already set
                 function successHandler(user_id) {
                     // we already have user data
@@ -371,15 +371,15 @@ angular.module('resiexchange')
                             function errorHandler(data) {
                                 // something went wrong server-side
                                 console.log('something went wrong server-side');
-                                deferred.reject(data); 
+                                deferred.reject(data);
                             }
                         );
-                    }                        
+                    }
                 },
-                
+
                 // user is not identified yet (or session has expired server-side)
-                function errorHandler() {                    
-                    // try to sign in with current credentials                    
+                function errorHandler() {
+                    // try to sign in with current credentials
                     $auth.signin().then(
                         function successHandler(user_id) {
                             // retrieve user data
@@ -390,18 +390,18 @@ angular.module('resiexchange')
                                 },
                                 function errorHandler(data) {
                                     // something went wrong server-side
-                                    deferred.reject(data);                                
+                                    deferred.reject(data);
                                 }
-                            );                            
+                            );
                         },
                         function errorHandler(data) {
-                            // given values were not accepted 
+                            // given values were not accepted
                             // or something went wrong server-side
-                            deferred.reject(data);  
+                            deferred.reject(data);
                         }
                     );
                 }
-            );                
+            );
 
             return deferred.promise;
         };
@@ -411,13 +411,13 @@ angular.module('resiexchange')
 
 
 .service('actionService', [
-    '$rootScope', 
-    '$http', 
-    '$location', 
+    '$rootScope',
+    '$http',
+    '$location',
     'authenticationService',
     'ngToast',
     function($rootScope, $http, $location, authenticationService, ngToast) {
-    
+
         this.perform = function(action) {
             var defaults = {
                 // valid name of the action to perform server-side
@@ -431,9 +431,9 @@ angular.module('resiexchange')
                 // callback function to run after action completion (to handle error cases, ...)
                 callback: function(scope, data) {}
             };
-            
+
             var task = angular.extend({}, defaults, action);
-            
+
             authenticationService.authenticate().then(
             // user is authentified and can perform the action
             function() {
@@ -448,7 +448,7 @@ angular.module('resiexchange')
                         if(typeof task.callback == 'function') {
                             task.callback(task.scope, response.data);
                         }
-                        
+
                         $http.get('index.php?do=resiway_user_badges_update').then(
                             function successCallback(response) {
                                 $http.get('index.php?get=resiway_user_notifications').then(
@@ -456,7 +456,7 @@ angular.module('resiexchange')
                                         var data = response.data;
                                         if(typeof data.result == 'object' && $rootScope.user.id > 0) {
                                             $rootScope.user.notifications = $rootScope.user.notifications.concat(data.result);
-                                            
+
                                             angular.forEach(data.result, function(notification, index) {
                                                 ngToast.create({
                                                     content: notification.content,
@@ -474,7 +474,7 @@ angular.module('resiexchange')
                                 );
                             }
                         );
-                        
+
                     },
                     function errorCallback() {
                         // something went wrong server-side
@@ -490,7 +490,7 @@ angular.module('resiexchange')
                 $location.path('/user/sign');
             });
         };
-        
+
     }
 ])
 
@@ -516,7 +516,7 @@ angular.module('resiexchange')
         content: function() {
             return popover.content;
         },
-        
+
         classname: function() {
             // quick workaround to set popover background according to classname (could be done with custom directive)
             var domElem = document.querySelector('#'+popover.id);
@@ -530,18 +530,18 @@ angular.module('resiexchange')
         id: function() {
             return popover.id;
         },
-        
+
         /**
         * Scrolls to target element and
-        * if msg is not empty, displays popover 
-        */           
-        popover: function (selector, msg, classname) {            
+        * if msg is not empty, displays popover
+        */
+        popover: function (selector, msg, classname) {
             // popover has been previously assign
             closePopover();
 
             // retrieve element
             var elem = angular.element(document.querySelector( selector ));
-            
+
             // save target content and element
             popover.content = msg;
             popover.elem = elem;
@@ -551,25 +551,25 @@ angular.module('resiexchange')
             // scroll to element, if outside viewport
             var elemYOffset = elem[0].offsetTop;
 
-            if(elemYOffset < $window.pageYOffset 
+            if(elemYOffset < $window.pageYOffset
             || elemYOffset > ($window.pageYOffset + $window.innerHeight)) {
                 $window.scrollTo(0, elemYOffset-($window.innerHeight/4));
             }
-            
+
             if(msg.length > 0) {
                 // trigger popover display (toggle)
                 elem.triggerHandler('toggle-popover');
-            }            
+            }
         },
-        
+
         /**
         * Close current popover, if any
-        * 
-        */           
+        *
+        */
         close: function() {
             closePopover();
         },
-        
+
         /**
         * Retrieves the node holding the uib-popover* attribute
         * returns the selector allowing to retrieve this node in the document
@@ -579,26 +579,26 @@ angular.module('resiexchange')
             closePopover();
             return selectorFromElement(domElement);
         }
-        
+
     };
 
     // @private methods
     function closePopover() {
         if(popover.elem) {
             popover.elem.triggerHandler('toggle-popover');
-            popover.elem = null; 
-        }        
+            popover.elem = null;
+        }
     }
-    
+
     function selectorFromElement(domElement) {
         var element = angular.element(domElement);
         var body = angular.element(document.body);
         while(typeof element.attr('id') == 'undefined'
            || typeof element.attr('uib-popover-template') == 'undefined') {
             element = element.parent();
-            if(element == body) break;            
+            if(element == body) break;
         }
-        return '#' + element.attr('id');          
+        return '#' + element.attr('id');
     }
 
 }]);
