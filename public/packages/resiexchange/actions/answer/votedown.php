@@ -45,8 +45,8 @@ try {
             // vote the answer down
             $object = $om->read($object_class, $object_id, ['count_votes', 'score'])[$object_id];              
             $om->write($object_class, $object_id, [
-                'count_votes' => $object[$object_id]['count_votes']+1, 
-                'score'       => $object[$object_id]['score']-1
+                'count_votes' => $object['count_votes']+1, 
+                'score'       => $object['score']-1
             ]);
             return true;
         },

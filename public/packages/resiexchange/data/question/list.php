@@ -8,7 +8,7 @@ use easyobject\orm\ObjectManager as ObjectManager;
 use qinoa\text\TextTransformer as TextTransformer;
 
 // force silent mode (debug output would corrupt json data)
-set_silent(true);
+set_silent(false);
 
 /*
  @actions   this is a data provider: no change is made to the stored data
@@ -116,7 +116,10 @@ try {
         // adapt domain to restrict results to given channel
         $params['domain'][] = ['channel_id','=', $params['channel']];        
         $questions_ids = searchFromIndex($params['q']);
-        $params['domain'][] = ['id','in', $questions_ids];
+        if(count($questions_ids) > 0) {
+            $params['domain'][] = ['id','in', $questions_ids];
+        }
+        else $params['domain'][] = ['id','=', -1];        
     }
     else {
         // adapt domain to restrict results to given channel

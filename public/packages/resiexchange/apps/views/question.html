@@ -100,7 +100,7 @@
                                 <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ACTIONS_DELETE' | translate}}
                             </a>                            
                         </div>
-                        <div class="signature" ng-if="question.editor != 0">
+                        <div class="signature" ng-if="question.editor != 0 && question.editor.id != question.creator.id">
                             <div class="user-info">
                                 <div class="user-action-time">
                                     <span class="relativetime">{{'QUESTION_STATS_EDITED' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>

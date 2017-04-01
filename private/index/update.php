@@ -62,11 +62,15 @@ try {
                 $hash = TextTransformer::hash($keyword);
                 if(in_array($hash, $hash_list)) continue;
                 $hash_list[] = $hash;
-                $db->addRecords('resiway_index', ['hash', 'value'], [[$hash, $keyword]]);
+                // $db->addRecords('resiway_index', ['hash', 'value'], [[$hash, $keyword]]);
+                $db->sendQuery( 
+                    "INSERT INTO `resiway_index` (`hash`, `value`) SELECT $hash, '$keyword' FROM DUAL
+                    WHERE NOT EXISTS(SELECT `hash`, `value` FROM `resiway_index` WHERE `hash` = $hash AND `value` = '$keyword');"
+                    );
             }
             
             // obtain related ids of index entries to add to question
-            $res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in ('".implode("','", $hash_list)."');");
+            $res = $db->sendQuery("SELECT id FROM `resiway_index` WHERE hash in ('".implode("','", $hash_list)."');");
             $index_ids = [];
             while($row = $db->fetchArray($res)) {
                 $index_ids[] = $row['id'];

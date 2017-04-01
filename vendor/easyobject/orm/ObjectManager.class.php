@@ -983,7 +983,7 @@ todo: signature differs from other methods	(returned value)
 			if(empty($fields)) $fields = $allowed_fields;
 			else {
                 // handle 'dot' notation (check will apply on root field)
-				for($i = 0, $j = count($fields); $i < $j; ++$i) {					
+				for($i = 0, $j = count($fields); $i < $j; ++$i) {				
 					$field = explode('.', $fields[$i])[0];
 					// remove fields not defined in related schema
 					if(!in_array($field, $allowed_fields)) {
@@ -994,6 +994,8 @@ todo: signature differs from other methods	(returned value)
                         $fields[] = $schema[$field]['alias'];
                     }
 				}
+                // make sure there is not gap in the keys indexes 
+                $fields = array_values($fields);
 			}
 			// remove duplicate fields, if any
 			$fields = array_unique($fields);
