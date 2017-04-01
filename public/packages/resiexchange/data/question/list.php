@@ -8,7 +8,7 @@ use easyobject\orm\ObjectManager as ObjectManager;
 use qinoa\text\TextTransformer as TextTransformer;
 
 // force silent mode (debug output would corrupt json data)
-set_silent(false);
+set_silent(true);
 
 /*
  @actions   this is a data provider: no change is made to the stored data
