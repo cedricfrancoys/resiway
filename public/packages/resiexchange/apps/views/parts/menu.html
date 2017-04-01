@@ -28,11 +28,12 @@
             <div class="btn-group">
                 <a href="#/question/edit/0" class="btn btn-success">Poser une question</a>
             </div>
-            <div id="search-input" class="search-input form-group-sm hidden-xs">
+            <div class="search-input form-group-sm hidden-xs">
                 <form ng-submit="rootCtrl.search({q: search.criteria.q})">
                 <div class="input-group">
                     <i ng-show="loadingLocations" class="fa fa-spin fa-spinner" style="position: absolute; left: -15px; top: 10px;"></i>                
                     <input 
+                    id="search-input"
                     class="form-control" 
                     name="q" 
                     type="text" 
@@ -40,14 +41,13 @@
                     ng-model="search.criteria.q" 
                     autocomplete="off"
                     uib-typeahead="item for item in getKeywords($viewValue)" 
-                    typeahead-loading="loadingLocations" 
-                    typeahead-append-to-body="true"                    
+                    typeahead-append-to-body="true"
+                    typeahead-min-length="3"
+                    typeahead-wait-ms="750"
                     maxlength="240">                   
                     <div class="input-group-btn">
                         <button class="btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
                     </div>
-                    
-                   
                 </div>
                 </form>
             </div>            
