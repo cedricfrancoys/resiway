@@ -41,6 +41,7 @@
                     ng-model="search.criteria.q" 
                     autocomplete="off"
                     uib-typeahead="item for item in getKeywords($viewValue)" 
+                    typeahead-loading="loadingLocations" 
                     typeahead-append-to-body="true"
                     typeahead-min-length="3"
                     typeahead-wait-ms="250"
@@ -48,6 +49,8 @@
                     <div class="input-group-btn">
                         <button class="btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
                     </div>
+                    
+                   
                 </div>
                 </form>
             </div>            
