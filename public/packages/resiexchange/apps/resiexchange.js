@@ -450,6 +450,7 @@ var resiway = angular.module('resiexchange', [
         rootCtrl.search = function(values) {
             var criteria = angular.extend({}, $rootScope.search.default, values || {});
             angular.copy(criteria, $rootScope.search.criteria);
+
             // go to questions list page
             if($location.path() == '/questions') { 
                 $rootScope.$broadcast('$locationChangeStart');
@@ -575,7 +576,10 @@ var resiway = angular.module('resiexchange', [
             }
         };
         
-
+        $scope.selectMatch = function($item, $model, $label, $event) {           
+            rootCtrl.search({q: $label});
+        };
+        
         $scope.getKeywords = function(val) {
             return $http.get('index.php?get=resiway_index_list', {
                     params: {

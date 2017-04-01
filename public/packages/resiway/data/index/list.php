@@ -51,7 +51,7 @@ try {
         }
         
         // obtain related ids of index entries 
-        $res = $db->sendQuery("SELECT DISTINCT(`value`) FROM `resiway_index` WHERE ".implode(' OR ', $sql_clause).";");
+        $res = $db->sendQuery("SELECT DISTINCT(`value`) FROM `resiway_index` WHERE ".implode(' OR ', $sql_clause)." LIMIT 0,10;");
         while($row = $db->fetchArray($res)) {
             $result[] = $row['value'];
         }
