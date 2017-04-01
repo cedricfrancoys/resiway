@@ -36,12 +36,22 @@ list($result, $error_message_ids, $total) = [[], [], $params['total']];
 
 try {
     if(strlen($params['q']) >= 3) {
-        $query = TextTransformer::normalize($params['q']);
         $om = &ObjectManager::getInstance();
         $db = $om->getDBHandler();
+        
+        $query = TextTransformer::normalize($params['q']);        
         $query = TextTransformer::normalize($query);
-        // obtain related ids of index entries to add to question (don't mind the collision / false-positive)
-        $res = $db->sendQuery("SELECT value FROM resiway_index WHERE value like '$query%';");
+        $keywords = explode(' ', $query);
+        
+        $sql_clause = [];
+        foreach($keywords as $keyword) {
+            if(strlen($keyword) >= 3) {
+                $sql_clause[] = "`value` like '{$keyword}%'";
+            }
+        }
+        
+        // obtain related ids of index entries 
+        $res = $db->sendQuery("SELECT DISTINCT(`value`) FROM `resiway_index` WHERE ".implode(' OR ', $sql_clause).";");
         while($row = $db->fetchArray($res)) {
             $result[] = $row['value'];
         }
