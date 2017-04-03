@@ -1,9 +1,11 @@
 angular.module('resiexchange')
 
 .controller('homeController', ['$http', '$rootScope', function($http, $rootScope) {
+    console.log('home controller');  
+    
     var ctrl = this;
 
-    console.log('home controller');  
+    ctrl.questions = [];
     
     $http.get('index.php?get=resiexchange_stats')
     .then(
