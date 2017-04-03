@@ -22,9 +22,9 @@
             
         </div>
 
-        <div class="loader" ng-show="ctrl.loading"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
+        <div class="loader" ng-show="ctrl.config.loading"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
         
-        <div ng-repeat="category in ctrl.config.items" class="col-1-4 categories category-container" >
+        <div ng-show="!ctrl.config.loading" ng-repeat="category in ctrl.config.items" class="col-1-4 categories category-container" >
         
             <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})">{{category.title}}</a>
             <div class="category-count">x {{category.count_questions | humanizeCount}}</div>
