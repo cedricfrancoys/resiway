@@ -64,7 +64,25 @@ try {
     
     $om = &ObjectManager::getInstance();
 
-    // 0) retrieve matching logs identifiers
+    // check user permissions (prevent accessing other user datalog)
+
+    $user_id = ResiAPI::userId();
+    if($user_id < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
+    
+    // retrieve given user data 
+    $user = ResiAPI::loadUserPublic($user_id);
+
+    $params['domain'] = QNLib::domain_normalize($params['domain']);
+    foreach($params['domain'] as $clause) {
+        foreach($clause as $condition) {
+            if($condition[0] == 'user_id') {
+                if($condition[2] == $user_id) break 2;
+                if($user['role'] != 'a') throw new Exception("user_not_owner", QN_ERROR_NOT_ALLOWED);
+            }
+        }
+    }
+    
+    // 0) retrieve matching logs identifiers    
     
     // total is not knwon yet
     if($params['total'] < 0) {        

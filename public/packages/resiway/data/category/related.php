@@ -47,6 +47,7 @@ try {
     if($res < 0 || !isset($res[$object_id])) throw new Exception("object_unknown", QN_ERROR_INVALID_PARAM);       
     
     $domain = QNLib::domain_condition_add([], ['channel_id','=', $params['channel']]);
+    $domain = QNLib::domain_condition_add($domain, ['count_questions','>', 0]);    
     
     if(strlen($res[$object_id]['parent_path']) > 0) {
         $domain = QNLib::domain_condition_add($domain, ['path', 'like', $res[$object_id]['parent_path'].'/%']);

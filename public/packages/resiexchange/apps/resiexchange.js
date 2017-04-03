@@ -331,7 +331,7 @@ var resiway = angular.module('resiexchange', [
             default: {
                 q: '',                  // query string (against question title)
                 domain: [],
-                order: 'modified',
+                order: 'score',
                 sort: 'desc',
                 start: 0,
                 limit: 25,

@@ -408,13 +408,18 @@ input[type="text"] {
 }
 
 
-.number {
+.item-number {
     display: block;
     color: #0C0D0E;
     font-weight: 700;
     font-size: 17px;
 }
 
+.item-label {
+    display: inline-block;
+    padding: .4em 0;
+    margin: 2px 0;    
+}
 
 /* footer */
 

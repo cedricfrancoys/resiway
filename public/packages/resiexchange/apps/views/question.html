@@ -538,7 +538,7 @@
     </div>
     <div class="col-4-12">
         <div class="panel panel-default">
-            <div class="container">
+            <div class="container" style="border-bottom: solid 1px lightgrey;">
                 <div class="module question-stats">
                     <div class="stat-row">
                         <div class="title">
@@ -583,8 +583,8 @@
                     
 			    </div>
             </div>
-            <div class="container fade-in-out" ng-show="related_questions.length > 0">                    
-                <span class="small">Questions similaires:</span><br />
+            <div class="container fade-in-out" ng-show="related_questions.length > 0" >                    
+                <h4>Questions similaires</h4>
                 <div class="related-questions" ng-repeat="question in related_questions">
                     <p>
                         <span class="mini-counts btn btn-xs ng-binding btn-success" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.score}}</span>                

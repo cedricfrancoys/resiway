@@ -13,10 +13,10 @@
 
                   <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
                     <li class="dropdown-header">Questions...</li>
-                    <li><a href ng-click="rootCtrl.search({order:'count_answers', sort: 'asc'});">les moins répondues</a></li>
                     <li><a href ng-click="rootCtrl.search({order:'count_views', sort: 'desc'});">les plus vues</a></li>
                     <li><a href ng-click="rootCtrl.search({order:'modified', sort: 'desc'});">les plus récentes</a></li>
                     <li><a href ng-click="rootCtrl.search({order:'score', sort: 'desc'});">les plus populaires</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'count_answers', sort: 'asc'});">les moins répondues</a></li>                    
                   </ul>
                 </div>
             </div>
@@ -117,9 +117,9 @@
     <div class="col-4-12">
         <div class="panel panel-default">
             <div class="container" style="min-height: 500px;">
-                <div class="container" style="min-height: 65px;">
-                    <span class="number">{{search.criteria.total | humanizeCount:true}}</span>
-                    {{'QUESTIONS_STATS_QUESTIONS' | translate}}
+                <div class="container">
+                    <span class="item-number">{{search.criteria.total | humanizeCount:true}}</span>
+                    <span class="item-label">{{'QUESTIONS_STATS_QUESTIONS' | translate}}</span>
                     <div ng-show="categories.length > 0" class="categories container fade-in-out" style="display: inline-block; padding: 0;">
                         dans <div ng-repeat="category in categories" class="category">{{category.title}}</div>
                     </div>
