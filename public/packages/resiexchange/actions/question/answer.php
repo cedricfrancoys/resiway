@@ -51,7 +51,6 @@ try {
         $object_id,                                               // $object_id
         ['count_answers'],                                        // $object_fields
         false,                                                    // $toggle
-        null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {    
             // create a new answer + write given value

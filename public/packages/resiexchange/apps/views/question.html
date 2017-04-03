@@ -583,6 +583,15 @@
                     
 			    </div>
             </div>
+            <div class="container" ng-show="related_questions.length > 0">                    
+                <span class="small">Questions similaires:</span><br />
+                <div class="related-questions" ng-repeat="question in related_questions">
+                    <p>
+                        <span class="mini-counts btn btn-xs ng-binding btn-success" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.score}}</span>                
+                        <a href="#/question/6" title="{{question.title}}">{{question.title}}</a>                    
+                    </p>
+                </div>                
+            </div>
         </div>
     </div>
     <div class="col-4-12 answer-help" ng-hide="user.id && question.history['resiexchange_question_answer']">

@@ -58,7 +58,7 @@ input[type="text"] {
 .container {
     padding-top: 10px;
     padding-bottom: 10px;
-    width: inherit;
+    width: inherit;         
 }
 
 .wrapper {
@@ -77,6 +77,14 @@ input[type="text"] {
 }    
 .text-big {
     font-size: 125%;
+}
+.popover {
+    max-width: 400px !important;
+}
+.popover-content {
+    min-height: 20px;
+    min-width: 300px;
+    max-width: 400px !important;
 }
 
 .popover-success {

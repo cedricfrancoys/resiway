@@ -39,12 +39,12 @@ try {
         $object_id,                                                 // $object_id
         ['creator', 'deleted'],                                     // $object_fields
         true,                                                       // $toggle
-        null,                                                       // $concurrent_action
         function ($om, $user_id, $object_class, $object_id) {       // $do
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 1
                       ]);
+// todo: update related categories questions_count
             ResiAPI::repositoryDec('resiexchange.count_questions');
             return true;
         },
@@ -53,6 +53,7 @@ try {
             $om->write($object_class, $object_id, [
                         'deleted' => 0
                       ]);
+// todo: update related categories questions_count                      
             ResiAPI::repositoryInc('resiexchange.count_questions');                      
             return false;
         },

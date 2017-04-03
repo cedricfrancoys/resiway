@@ -39,7 +39,6 @@ try {
         $object_id,                                                 // $object_id
         ['count_stars'],                                            // $object_fields
         true,                                                       // $toggle
-        null,                                                       // $concurrent_action
         function ($om, $user_id, $object_class, $object_id) {       // $do
             $objects = $om->read($object_class, $object_id, ['count_stars']);  
             // update question star count

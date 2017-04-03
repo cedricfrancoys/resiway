@@ -67,7 +67,7 @@
 
         <script type="text/ng-template" id="home.html"></script>
         
-        <iframe id="main_iframe" src="https://www.resiway.org/resilib"></iframe>
+        <iframe id="main_iframe" src="/resilib"></iframe>
 
     </body>
 </html>

@@ -55,23 +55,37 @@ $params = QNLib::announce(
 	)
 );
 
-list($result, $error_message_ids) = [true, []];
+list($result, $error_message_ids, $total) = [true, [], $params['total']];
+
 
 
 try {
 
     $om = &ObjectManager::getInstance();
+    
+    $params['domain'] = QNLib::domain_normalize($params['domain']);
+    if(!QNLib::domain_check($params['domain'])) $params['domain'] = [];
+    
+    $params['domain'] = QNLib::domain_condition_add($params['domain'], ['channel_id','=', $params['channel']]);
 
-    $params['domain'][] = ['channel_id','=', $params['channel']];
+    // total is not knwon yet
+    if($params['total'] < 0) {        
+        $ids = $om->search('resiway\Category', $params['domain'], $params['order'], $params['sort']);
+        if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
+        $total = count($ids);
+		$tags_ids = array_slice($ids, $params['start'], $params['limit']);
+    }
+    else {
+        $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
+        if($tags_ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
+    }
 
-    // retrieve given user
-    $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
-    if($tags_ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
-
-    $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path', 'count_questions']);
-    if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
-
-    $result = array_values($res);
+    if(!empty($tags_ids)) {    
+        // retrieve categories
+        $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path', 'count_questions']);
+        if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
+        $result = array_values($res);
+    }
 }
 catch(Exception $e) {
     $result = $e->getCode();
@@ -82,6 +96,7 @@ catch(Exception $e) {
 header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
                     'result'            => $result,
+                    'total'             => $total,
                     'error_message_ids' => $error_message_ids
                  ],
                  JSON_PRETTY_PRINT);

@@ -120,7 +120,17 @@
                 <div class="container">
                     <span class="number">{{search.criteria.total | humanizeCount:true}}</span>
                     {{'QUESTIONS_STATS_QUESTIONS' | translate}}
+                    <div ng-show="categories.length > 0" class="categories container" style="display: inline-block; padding: 0;">
+                        dans <div ng-repeat="category in categories" class="category">{{category.title}}</div>
+                    </div>
                 </div>
+                <div class="container" ng-show="related_categories.length > 0">                    
+                    <span class="small">Catégories similaires:</span><br />
+                    <div class="categories" ng-repeat="category in related_categories" style="display: inline-block;">
+                        <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})">{{category.title}}</a>
+                        <div class="category-count">x {{category.count_questions}}&nbsp;</div>
+                    </div>
+                </div>                
             </div>
         </div>
     </div>

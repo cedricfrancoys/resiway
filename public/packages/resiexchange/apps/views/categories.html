@@ -23,20 +23,35 @@
         </div>
 
 
-        <div ng-repeat="category in categories" class="col-1-4" style="position: relative; height: 80px; margin-bottom: 10px;" >
+        <div ng-repeat="category in ctrl.config.items" class="col-1-4 categories category-container" >
         
-            <div style="height: 100%; padding: 8px; background-color: #f5f5f5; border: 1px solid #ddd; border-radius: 4px;">    
-                <div style="height: 32px;"><strong><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})">{{category.title}}</a></strong></div>
-                <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div>
-                <!-- <div style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;">{{category.description}}</div> -->
-                <div class="small" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 12px;" ng-show="category.count_questions > 0"><b>x {{category.count_questions | humanizeCount}}</b></div>
-            </div>
+            <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})">{{category.title}}</a>
+            <div class="category-count">x {{category.count_questions | humanizeCount}}</div>
+            <!-- <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div> -->
+            <div class="category-excerpt" >{{category.description}}</div>
+            <div class="category-stats"></div>
+
             <div ng-show="user.role == 'm' || user.role == 'a'" style="position: absolute; right: 35px; top: 8px;">
                 <a href="#/category/edit/{{category.id}}"><i class="fa fa-pencil" aria-hidden="true"></i></a>
             </div>
             
         </div>
-
+        <div style="clear: both;">
+            <ul uib-pagination 
+                class="pagination-sm" 
+                total-items="ctrl.config.total" 
+                ng-model="ctrl.config.currentPage"
+                ng-change="ctrl.load(ctrl.config)"
+                items-per-page="ctrl.config.limit"
+                max-size="5" 
+                direction-links="false"
+                boundary-links="true"
+                boundary-link-numbers="true"
+                first-text="«" 
+                last-text="»"                    
+                rotate="true"
+                force-ellipses="true"></ul>         
+        </div>
     </div>
 
 </div>    

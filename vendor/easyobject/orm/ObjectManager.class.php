@@ -445,6 +445,8 @@ class ObjectManager {
 			'related'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
                 // 'related' is not a real type, it is the description of how to handle the dot notation
 				try {
+                    // todo: an improvement could be made here : in case first part is identical, we could group the subsequent queries
+                    // ex. categories_ids.title, categories_ids.path
 					foreach($fields as $field) {
 						$parts = explode('.', $field, 2);                        
                         // check that field has a relational type                        

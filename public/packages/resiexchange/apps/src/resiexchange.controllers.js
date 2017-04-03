@@ -108,14 +108,48 @@ angular.module('resiexchange')
 .controller('categoriesController', [
     'categories', 
     '$scope',
-    function(categories, $scope) {
+    '$http',
+    function(categories, $scope, $http) {
         console.log('categories controller');
 
         var ctrl = this;
 
         // @data model
-        $scope.categories = categories;
-    
+        ctrl.config = {
+            items: categories,
+            total: -1,
+            currentPage: 1,
+            previousPage: -1,
+            limit: 30,
+            domain: []
+        };
+        
+        ctrl.load = function(config) {
+            if(config.currentPage != config.previousPage) {
+                config.previousPage = config.currentPage;
+                // reset objects list (triggers loader display)
+                config.items = -1;          
+                $http.post('index.php?get=resiway_category_list', {
+                    domain: config.domain,
+                    start: (config.currentPage-1)*config.limit,
+                    limit: config.limit,
+                    total: config.total
+                }).then(
+                function successCallback(response) {
+                    var data = response.data;
+                    config.items = data.result;
+                    config.total = data.total;
+                },
+                function errorCallback() {
+                    // something went wrong server-side
+                });
+            }
+        };
+        
+        
+        // @init
+        ctrl.load(ctrl.config);
+        
     }
 ]);
 angular.module('resiexchange')
@@ -140,7 +174,7 @@ angular.module('resiexchange')
         $scope.loadMatches = function(query) {
             if(query.length < 2) return [];
             
-            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({channel: global_config.channel, domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
                 function successCallback(response) {
                     var data = response.data;
@@ -402,7 +436,7 @@ angular.module('resiexchange')
         // something went wrong server-side
     }); 
 
-    $http.get('index.php?get=resiexchange_question_list&order=count_answers&limit=5&sort=asc')
+    $http.get('index.php?get=resiexchange_question_list&order=score&limit=5&sort=desc')
     .then(
     function successCallback(response) {
         var data = response.data;
@@ -424,14 +458,15 @@ angular.module('resiexchange')
     'question', 
     '$scope', 
     '$window', 
-    '$location', 
+    '$location',
+    '$http',    
     '$sce', 
     '$timeout', 
     '$uibModal', 
     'actionService', 
     'feedbackService', 
     'textAngularManager',
-    function(question, $scope, $window, $location, $sce, $timeout, $uibModal, actionService, feedbackService, textAngularManager) {
+    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService, textAngularManager) {
         console.log('question controller');
         
         var ctrl = this;
@@ -439,6 +474,20 @@ angular.module('resiexchange')
         // @model
         $scope.question = question;
 
+        
+        /*
+        * async load and inject $scope.related_questions
+        */
+        $scope.related_questions = [];
+        $http.get('index.php?get=resiexchange_question_related&question_id='+question.id)
+        .then(
+            function (response) {
+                $scope.related_questions = response.data.result;
+            }
+        );
+
+
+        
     // todo : move this to rootScope
         ctrl.open = function (title_id, header_id, content) {
             return $uibModal.open({
@@ -468,12 +517,31 @@ angular.module('resiexchange')
                     }
                 }
             }).result;
-        };    
+        };
            
 
         // @methods
+        $scope.begin = function (commit, previous) {
+            $scope.committed = false;
+            // make a copy of previous state
+            $scope.previous = angular.merge({}, previous);
+            // commit transaction (can be rolled back to previous state if something goes wrong)
+            commit($scope);
+            // prevent further commits (commit functions are in charge of checking this var)
+            $scope.committed = true;
+        };
+        
+        $scope.rollback = function () {
+            if(angular.isDefined($scope.previous) && typeof $scope.previous == 'object') {
+                angular.merge($scope.question, $scope.previous);
+            }
+        };
+        
         $scope.questionComment = function($event) {
+
+            // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_question_comment',
@@ -512,7 +580,36 @@ angular.module('resiexchange')
         };
 
         $scope.questionFlag = function ($event) {
-            var selector = feedbackService.selector($event.target);           
+
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.history['resiexchange_question_flag'])) {
+                        $scope.question.history['resiexchange_question_flag'] = false;
+                    }
+                    // update current state to new values
+                    if($scope.question.history['resiexchange_question_flag'] === true) {
+                        $scope.question.history['resiexchange_question_flag'] = false;
+                    }
+                    else {
+                        $scope.question.history['resiexchange_question_flag'] = true;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         { 
+                            history: {
+                                resiexchange_question_flag: $scope.question.history['resiexchange_question_flag'] 
+                            }
+                         });     
+            
+            // remember selector for popover location        
+            var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_question_flag',
@@ -527,6 +624,9 @@ angular.module('resiexchange')
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
                     if(data.result < 0) {
+                        // rollback
+                        $scope.rollback();
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -534,14 +634,18 @@ angular.module('resiexchange')
                         feedbackService.popover(selector, msg);                    
                     }                
                     else {
-                        $scope.question.history['resiexchange_question_flag'] = data.result;
+                        commit($scope);
+                        // $scope.question.history['resiexchange_question_flag'] = data.result;
                     }
                 }        
             });
         };
 
         $scope.questionAnswer = function($event) {
+
+            // remember selector for popover location 
             var selector = feedbackService.selector($event.target);                   
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_question_answer',
@@ -588,29 +692,48 @@ angular.module('resiexchange')
         };  
         
         $scope.questionVoteUp = function ($event) {            
-            // accept action, and check if it is valid later
             
-            // define begin and rollback functions
-            function begin() {
-                var res = {resiexchange_question_votedown: $scope.question.history['resiexchange_question_votedown'], resiexchange_question_voteup: $scope.question.history['resiexchange_question_voteup']};
-                $scope.question.score++;
-                if(angular.isDefined($scope.question.history['resiexchange_question_votedown']) 
-                    && $scope.question.history['resiexchange_question_votedown'] === true) {
-                    $scope.question.history['resiexchange_question_votedown'] = false;
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.history['resiexchange_question_votedown'])) {
+                        $scope.question.history['resiexchange_question_votedown'] = false;
+                    }
+                    if(!angular.isDefined($scope.question.history['resiexchange_question_voteup'])) {
+                        $scope.question.history['resiexchange_question_voteup'] = false;
+                    }                    
+                    // update current state to new values
+                    if($scope.question.history['resiexchange_question_voteup'] === true) {
+                        // toggle voteup
+                        $scope.question.history['resiexchange_question_voteup'] = false;
+                        $scope.question.score--;
+                    }
+                    else {
+                        // undo votedown
+                        if($scope.question.history['resiexchange_question_votedown'] === true) {
+                            $scope.question.history['resiexchange_question_votedown'] = false;
+                            $scope.question.score++;
+                        }
+                        // voteup
+                        $scope.question.history['resiexchange_question_voteup'] = true;
+                        $scope.question.score++;
+                    }
                 }
-                else {
-                    $scope.question.history['resiexchange_question_voteup'] = true;
-                }
-                return res;
-            }
-            
-            function rollback(previous) {
-                $scope.question.score--;
-                angular.merge($scope.question.history, previous);                
-            }
-            
-            var previous = begin();
-            
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         {
+                            history: {
+                                resiexchange_question_votedown: $scope.question.history['resiexchange_question_votedown'],
+                                resiexchange_question_voteup:   $scope.question.history['resiexchange_question_voteup']                        
+                            },
+                            score: $scope.question.score
+                         });
+                         
+            // remember selector for popover location    
             var selector = feedbackService.selector($event.target);
             
             actionService.perform({
@@ -624,17 +747,16 @@ angular.module('resiexchange')
                 callback: function($scope, data) {
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // (if route is changed to signin form)
-                    if(data.result === true) {                  
+                    if(data.result >= 0) {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                        if(data.result === true) feedbackService.popover(selector, 'QUESTION_ACTIONS_VOTEUP_OK', 'info', true);
                         // $scope.question.history['resiexchange_question_voteup'] = true;
-                        // $scope.question.score++;
-                    }
-                    else if(data.result === false) {
-                        // $scope.question.history['resiexchange_question_votedown'] = false;
                         // $scope.question.score++;
                     }
                     else {
                         // rollback
-                        rollback(previous);
+                        $scope.rollback();
                         
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
@@ -649,7 +771,50 @@ angular.module('resiexchange')
         };
         
         $scope.questionVoteDown = function ($event) {
+            
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.history['resiexchange_question_votedown'])) {
+                        $scope.question.history['resiexchange_question_votedown'] = false;
+                    }
+                    if(!angular.isDefined($scope.question.history['resiexchange_question_voteup'])) {
+                        $scope.question.history['resiexchange_question_voteup'] = false;
+                    }                    
+                    // update current state to new values
+                    if($scope.question.history['resiexchange_question_votedown'] === true) {
+                        // toggle votedown
+                        $scope.question.history['resiexchange_question_votedown'] = false;
+                        $scope.question.score--;
+                    }
+                    else {
+                        // undo voteup
+                        if($scope.question.history['resiexchange_question_voteup'] === true) {
+                            $scope.question.history['resiexchange_question_voteup'] = false;
+                            $scope.question.score--;
+                        }
+                        // votedown
+                        $scope.question.history['resiexchange_question_votedown'] = true;
+                        $scope.question.score--;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         {
+                            history: {
+                                resiexchange_question_votedown: $scope.question.history['resiexchange_question_votedown'],
+                                resiexchange_question_voteup:   $scope.question.history['resiexchange_question_voteup']                        
+                            },
+                            score: $scope.question.score
+                         });
+                         
+            // remember selector for popover location
             var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_question_votedown',
@@ -661,15 +826,14 @@ angular.module('resiexchange')
                 callback: function($scope, data) {
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
-                    if(data.result === true) {
-                        $scope.question.history['resiexchange_question_votedown'] = true;
-                        $scope.question.score--;
-                    }
-                    else if(data.result === false) {
-                        $scope.question.history['resiexchange_question_voteup'] = false;
-                        $scope.question.score--;                
+                    if(data.result >= 0) {
+                        // commit if it hasn't been done already
+                        commit($scope);
                     }
                     else {
+                        // rollback
+                        $scope.rollback();
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -681,7 +845,39 @@ angular.module('resiexchange')
         };    
 
         $scope.questionStar = function ($event) {
+
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.history['resiexchange_question_star'])) {
+                        $scope.question.history['resiexchange_question_star'] = false;
+                    }
+                    // update current state to new values
+                    if($scope.question.history['resiexchange_question_star'] === true) {
+                        $scope.question.history['resiexchange_question_star'] = false;
+                        $scope.question.count_stars--;
+                    }
+                    else {
+                        $scope.question.history['resiexchange_question_star'] = true;
+                        $scope.question.count_stars++;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         { 
+                            history: {
+                                resiexchange_question_star: $scope.question.history['resiexchange_question_star']
+                            },
+                            count_stars: $scope.question.count_stars            
+                         });    
+            
+            // remember selector for popover location
             var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_question_star',
@@ -694,6 +890,9 @@ angular.module('resiexchange')
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
                     if(data.result < 0) {
+                        // rollback
+                        $scope.rollback();
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -701,6 +900,9 @@ angular.module('resiexchange')
                         feedbackService.popover(selector, msg);                    
                     }                
                     else {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                        /*
                         $scope.question.history['resiexchange_question_star'] = data.result;
                         if(data.result === true) {
                             $scope.question.count_stars++;
@@ -708,13 +910,40 @@ angular.module('resiexchange')
                         else {
                             $scope.question.count_stars--;
                         }
+                        */
                     }
                 }        
             });
         };      
 
         $scope.questionCommentVoteUp = function ($event, index) {
-            var selector = feedbackService.selector($event.target);    
+
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                    
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.comments[index].history['resiexchange_questioncomment_voteup'])) {
+                        $scope.question.comments[index].history['resiexchange_questioncomment_voteup'] = false;
+                    }                    
+                    // update current state to new values
+                    if($scope.question.comments[index].history['resiexchange_questioncomment_voteup'] === true) {
+                        $scope.question.comments[index].history['resiexchange_questioncomment_voteup'] = false;
+                        $scope.question.comments[index].score--;
+                    }
+                    else {
+                        $scope.question.comments[index].history['resiexchange_questioncomment_voteup'] = true;
+                        $scope.question.comments[index].score++;
+                    }
+                }
+            };
+            
+            // set previous state and begin transaction
+            $scope.begin(commit, { comments: $scope.question.comments });
+            
+            // remember selector for popover location            
+            var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_questioncomment_voteup',
@@ -729,6 +958,9 @@ angular.module('resiexchange')
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
                     if(data.result < 0) {
+                        // rollback transaction
+                        $scope.rollback();
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -736,6 +968,9 @@ angular.module('resiexchange')
                         feedbackService.popover(selector, msg);                    
                     }                
                     else {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                        /*
                         $scope.question.comments[index].history['resiexchange_questioncomment_voteup'] = data.result;
                         if(data.result === true) {
                             $scope.question.comments[index].score++;
@@ -743,14 +978,19 @@ angular.module('resiexchange')
                         else {
                             $scope.question.comments[index].score--;
                         }
+                        */
                     }
                 }        
             });
         };
         
         $scope.questionDelete = function ($event) {
+            
+            // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
-            ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title).then(
+            
+            ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title)
+            .then(
                 function () {
                     actionService.perform({
                         // valid name of the action to perform server-side
@@ -779,15 +1019,48 @@ angular.module('resiexchange')
                             }
                         }        
                     });
-                }, 
-                function () {
-                    // dismissed
                 }
             );     
         };
         
         $scope.answerVoteUp = function ($event, index) {
-            var selector = feedbackService.selector($event.target);           
+               
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.answers[index].history['resiexchange_answer_votedown'])) {
+                        $scope.question.answers[index].history['resiexchange_answer_votedown'] = false;
+                    }
+                    if(!angular.isDefined($scope.question.answers[index].history['resiexchange_answer_voteup'])) {
+                        $scope.question.answers[index].history['resiexchange_answer_voteup'] = false;
+                    }
+                    // update current state to new values
+                    if($scope.question.answers[index].history['resiexchange_answer_voteup'] === true) {
+                        // toggle voteup
+                        $scope.question.answers[index].history['resiexchange_answer_voteup'] = false;
+                        $scope.question.answers[index].score--;
+                    }
+                    else {
+                        // undo votedown
+                        if($scope.question.answers[index].history['resiexchange_answer_votedown'] === true) {
+                            $scope.question.answers[index].history['resiexchange_answer_votedown'] = false;
+                            $scope.question.answers[index].score++;
+                        }
+                        // voteup
+                        $scope.question.answers[index].history['resiexchange_answer_voteup'] = true;
+                        $scope.question.answers[index].score++;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, { answers: $scope.question.answers });
+
+            // remember selector for popover location             
+            var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answer_voteup',
@@ -799,15 +1072,15 @@ angular.module('resiexchange')
                 callback: function($scope, data) {
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // (if route is changed to signin form)
-                    if(data.result === true) {                  
-                        $scope.question.answers[index].history['resiexchange_answer_voteup'] = true;
-                        $scope.question.answers[index].score++;
-                    }
-                    else if(data.result === false) {
-                        $scope.question.answers[index].history['resiexchange_answer_votedown'] = false;
-                        $scope.question.answers[index].score++;
+                    if(data.result >= 0) {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                        if(data.result === true) feedbackService.popover(selector, 'QUESTION_ACTIONS_VOTEUP_OK', 'info', true);
                     }
                     else {
+                        // rollback
+                        $scope.rollback();
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -819,7 +1092,43 @@ angular.module('resiexchange')
         };
         
         $scope.answerVoteDown = function ($event, index) {
-            var selector = feedbackService.selector($event.target);        
+
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.answers[index].history['resiexchange_answer_votedown'])) {
+                        $scope.question.answers[index].history['resiexchange_answer_votedown'] = false;
+                    }
+                    if(!angular.isDefined($scope.question.answers[index].history['resiexchange_answer_voteup'])) {
+                        $scope.question.answers[index].history['resiexchange_answer_voteup'] = false;
+                    }
+                    // update current state to new values
+                    if($scope.question.answers[index].history['resiexchange_answer_votedown'] === true) {
+                        // toggle votedown
+                        $scope.question.answers[index].history['resiexchange_answer_votedown'] = false;
+                        $scope.question.answers[index].score++;
+                    }
+                    else {
+                        // undo voteup
+                        if($scope.question.answers[index].history['resiexchange_answer_voteup'] === true) {
+                            $scope.question.answers[index].history['resiexchange_answer_voteup'] = false;
+                            $scope.question.answers[index].score--;                            
+                        }
+                        // votedown
+                        $scope.question.answers[index].history['resiexchange_answer_votedown'] = true;
+                        $scope.question.answers[index].score--;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, { answers: $scope.question.answers });
+
+            // remember selector for popover location              
+            var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answer_votedown',
@@ -831,13 +1140,8 @@ angular.module('resiexchange')
                 callback: function($scope, data) {
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
-                    if(data.result === true) {
-                        $scope.question.answers[index].history['resiexchange_answer_votedown'] = true;
-                        $scope.question.answers[index].score--;
-                    }
-                    else if(data.result === false) {
-                        $scope.question.answers[index].history['resiexchange_answer_voteup'] = false;
-                        $scope.question.answers[index].score--;                
+                    if(data.result >= 0) {                  
+                        commit($scope);                        
                     }
                     else {
                         // result is an error code
@@ -851,7 +1155,31 @@ angular.module('resiexchange')
         };      
         
         $scope.answerFlag = function ($event, index) {
+
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.answers[index].history['resiexchange_answer_flag'])) {
+                        $scope.question.answers[index].history['resiexchange_answer_flag'] = false;
+                    }
+                    // update current state to new values (toggle flag)
+                    if($scope.question.answers[index].history['resiexchange_answer_flag'] === true) {
+                        $scope.question.answers[index].history['resiexchange_answer_flag'] = false;
+                    }
+                    else {
+                        $scope.question.answers[index].history['resiexchange_answer_flag'] = true;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, { answers: $scope.question.answers });
+            
+            // remember selector for popover location 
             var selector = feedbackService.selector($event.target);           
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answer_flag',
@@ -866,6 +1194,7 @@ angular.module('resiexchange')
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
                     if(data.result < 0) {
+                        $scope.rollback();
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -873,14 +1202,18 @@ angular.module('resiexchange')
                         feedbackService.popover(selector, msg);                    
                     }                
                     else {
-                        $scope.question.answers[index].history['resiexchange_answer_flag'] = data.result;
+                        commit($scope);
+                        //$scope.question.answers[index].history['resiexchange_answer_flag'] = data.result;
                     }
                 }        
             });
         };
         
         $scope.answerComment = function($event, index) {
+            
+            // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answer_comment',
@@ -920,7 +1253,35 @@ angular.module('resiexchange')
         };    
             
         $scope.answerCommentVoteUp = function ($event, answer_index, index) {
-            var selector = feedbackService.selector($event.target);           
+            
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                    
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'])) {
+                        $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'] = false;
+                    }                    
+                    // update current state to new values 
+                    if($scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'] === true) {
+                        // undo voteup
+                        $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'] = false;
+                        $scope.question.answers[answer_index].comments[index].score--;
+                    }
+                    else {
+                        // voteup
+                        $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'] = true;
+                        $scope.question.answers[answer_index].comments[index].score++;
+                    }
+                }
+            };
+            
+            // set previous state and begin transaction
+            $scope.begin(commit, { answers: $scope.question.answers });
+            
+            // remember selector for popover location 
+            var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answercomment_voteup',
@@ -935,6 +1296,9 @@ angular.module('resiexchange')
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
                     if(data.result < 0) {
+                        // rollback transaction
+                        $scope.rollback();
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -942,6 +1306,9 @@ angular.module('resiexchange')
                         feedbackService.popover(selector, msg);                    
                     }                
                     else {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                        /*
                         $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_voteup'] = data.result;
                         if(data.result === true) {
                             $scope.question.answers[answer_index].comments[index].score++;
@@ -949,13 +1316,38 @@ angular.module('resiexchange')
                         else {
                             $scope.question.answers[answer_index].comments[index].score--;
                         }
+                        */
                     }
                 }        
             });
         };
 
         $scope.answerCommentFlag = function ($event, answer_index, index) {
+
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                    
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'])) {
+                        $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] = false;
+                    }                    
+                    // update current state to new values (toggle flag)
+                    if($scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] === true) {
+                        $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] = false;
+                    }
+                    else {
+                        $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] = true;
+                    }
+                }
+            };
+            
+            // set previous state and begin transaction
+            $scope.begin(commit, { answers: $scope.question.answers });
+            
+            // remember selector for popover location             
             var selector = feedbackService.selector($event.target);
+            
             actionService.perform({
                 // valid name of the action to perform server-side
                 action: 'resiexchange_answercomment_flag',
@@ -970,6 +1362,9 @@ angular.module('resiexchange')
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // toggle related entries in current history
                     if(data.result < 0) {
+                        // rollback transaction
+                        $scope.rollback();
+                        
                         // result is an error code
                         var error_id = data.error_message_ids[0];                    
                         // todo : get error_id translation
@@ -977,15 +1372,20 @@ angular.module('resiexchange')
                         feedbackService.popover(selector, msg);                    
                     }                
                     else {
-                        $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] = data.result;
+                        // commit if it hasn't been done already
+                        commit($scope);
+                        // $scope.question.answers[answer_index].comments[index].history['resiexchange_answercomment_flag'] = data.result;
                     }
                 }        
             });
         };
 
         $scope.answerDelete = function ($event, index) {
+            // remember selector for popover location             
             var selector = feedbackService.selector($event.target);            
-            ctrl.open('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt).then(
+            
+            ctrl.open('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt)
+            .then(
                 function () {
                     actionService.perform({
                         // valid name of the action to perform server-side
@@ -1015,9 +1415,6 @@ angular.module('resiexchange')
                             }
                         }        
                     });
-                }, 
-                function () {
-                    // dismissed
                 }
             );     
         };
@@ -1198,7 +1595,40 @@ angular.module('resiexchange')
                 );
             }
         };            
-        
+
+
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        angular.forEach($rootScope.search.criteria.domain, function(clause, i) {
+            if(clause[0] == 'categories_ids') {
+                $scope.related_categories = [];
+                if(typeof clause[2] != 'object') {
+                    clause[2] = [clause[2]];
+                }
+                $http.get('index.php?get=resiway_category_list&'+$httpParamSerializerJQLike({domain: ['id', 'in', clause[2]]}))
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result == 'object') {
+                            $scope.categories = data.result;
+                        }
+                    }
+                );
+                angular.forEach(clause[2], function(category_id, j) {
+                    $http.get('index.php?get=resiway_category_related&category_id='+category_id)
+                    .then(
+                        function successCallback(response) {
+                            var data = response.data;
+                            if(typeof data.result == 'object') {
+                                $scope.related_categories = data.result;
+                            }
+                        }
+                    );
+                    
+                });
+            }
+        });        
     }
 ]);
 angular.module('resiexchange')

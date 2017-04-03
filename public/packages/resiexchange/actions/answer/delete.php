@@ -39,7 +39,6 @@ try {
         $object_id,                                                 // $object_id
         ['creator', 'deleted', 'question_id'],                      // $object_fields
         true,                                                       // $toggle
-        null,                                                       // $concurrent_action
         function ($om, $user_id, $object_class, $object_id) {       // $do
             // retreive related question id
             $objects = $om->read($object_class, $object_id, ['question_id']);            

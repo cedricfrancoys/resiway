@@ -20,7 +20,7 @@ angular.module('resiexchange')
         // something went wrong server-side
     }); 
 
-    $http.get('index.php?get=resiexchange_question_list&order=count_answers&limit=5&sort=asc')
+    $http.get('index.php?get=resiexchange_question_list&order=score&limit=5&sort=desc')
     .then(
     function successCallback(response) {
         var data = response.data;

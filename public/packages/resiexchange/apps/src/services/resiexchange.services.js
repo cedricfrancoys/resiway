@@ -206,6 +206,9 @@ angular.module('resiexchange')
         // @init
         $auth.username = '';
         $auth.password = '';
+        
+        $auth.last_auth_time = 0;
+        $auth.max_auth_delay = 1000 * 60 * 5;      // 5 minutes
 
         /* retrieve user_id if set server-side
         */
@@ -216,6 +219,7 @@ angular.module('resiexchange')
             function successCallback(response) {
                 if(typeof response.data.result != 'undefined'
                 && response.data.result > 0) {
+                    $auth.last_auth_time = new Date().getTime();
                     deferred.resolve(response.data.result);
                 }
                 else {
@@ -304,6 +308,7 @@ angular.module('resiexchange')
                             // $auth.clearCredentials();
                             return deferred.reject(response.data);
                         }
+                        $auth.last_auth_time = new Date().getTime();
                         return deferred.resolve(response.data.result);
                     },
                     function errorCallback(response) {
@@ -341,68 +346,78 @@ angular.module('resiexchange')
         * @public
         */
         this.authenticate = function() {
-            var deferred = $q.defer();
-            // note: we cannot trust $rootScope.user.id, since session might have expired on server
-            /*
-            todo: improvement
-            var last_query = 0;
-            var max_delay = 1000 * 60 * 5;      // 5 minutes
-            var now = new Date().getTime();
-            if( (now - last_query) < max_delay ) // do not request userId
-            */
+            var deferred = $q.defer();        
+            var require_new_auth = true;
 
-            // request user_id (checks if session is set server-side)
-            $auth.userId().then(
+            // we cannot trust $rootScope.user.id alone, since session might have expired server-side
+            if($rootScope.user.id > 0) {
+                var now = new Date().getTime();
+                if( (now - $auth.last_auth_time) < $auth.max_auth_delay ) {
+                    // we assume that $auth.autenticate is always walled just before sending request to the server
+                    // and thereby maintain the session active
+                    $auth.last_auth_time = now;
+                    require_new_auth = false;
+                    deferred.resolve($rootScope.user);
+                }
+            }
+        
+            if(require_new_auth) {
+                // request user_id (checks if session is set server-side)
+                $auth.userId()
+                .then(
 
-                // session is already set
-                function successHandler(user_id) {
-                    // we already have user data
-                    if($rootScope.user.id > 0) {
-                        deferred.resolve($rootScope.user);
-                    }
-                    // we still need user data
-                    else {
-                        // retrieve user data
-                        $auth.userData(user_id).then(
-                            function successHandler(data) {
-                                $rootScope.user = data;
-                                deferred.resolve(data);
-                            },
-                            function errorHandler(data) {
-                                // something went wrong server-side
-                                console.log('something went wrong server-side');
-                                deferred.reject(data);
-                            }
-                        );
-                    }
-                },
-
-                // user is not identified yet (or session has expired server-side)
-                function errorHandler() {
-                    // try to sign in with current credentials
-                    $auth.signin().then(
-                        function successHandler(user_id) {
+                    // session is already set
+                    function successHandler(user_id) {
+                        // we already have user data
+                        if($rootScope.user.id > 0) {
+                            deferred.resolve($rootScope.user);
+                        }
+                        // we still need user data
+                        else {
                             // retrieve user data
-                            $auth.userData(user_id).then(
+                            $auth.userData(user_id)
+                            .then(
                                 function successHandler(data) {
                                     $rootScope.user = data;
                                     deferred.resolve(data);
                                 },
                                 function errorHandler(data) {
                                     // something went wrong server-side
+                                    console.log('something went wrong server-side');
                                     deferred.reject(data);
                                 }
                             );
-                        },
-                        function errorHandler(data) {
-                            // given values were not accepted
-                            // or something went wrong server-side
-                            deferred.reject(data);
                         }
-                    );
-                }
-            );
+                    },
 
+                    // user is not identified yet (or session has expired server-side)
+                    function errorHandler() {
+                        // try to sign in with current credentials
+                        $auth.signin()
+                        .then(
+                            function successHandler(user_id) {
+                                // retrieve user data
+                                $auth.userData(user_id)
+                                .then(
+                                    function successHandler(data) {
+                                        $rootScope.user = data;
+                                        deferred.resolve(data);
+                                    },
+                                    function errorHandler(data) {
+                                        // something went wrong server-side
+                                        deferred.reject(data);
+                                    }
+                                );
+                            },
+                            function errorHandler(data) {
+                                // given values were not accepted
+                                // or something went wrong server-side
+                                deferred.reject(data);
+                            }
+                        );
+                    }
+                );
+            }
             return deferred.promise;
         };
     }
@@ -501,7 +516,7 @@ angular.module('resiexchange')
 * to display a popover, we need an anchor : a node having an id and a uid-popover-template attribute
 * an event can be triggered by a A node or any of its sub-nodes
 */
-.service('feedbackService', ['$window', function($window) {
+.service('feedbackService', ['$window', '$timeout', function($window, $timeout) {
     var popover = {
         content: '',
         elem: null,
@@ -535,7 +550,7 @@ angular.module('resiexchange')
         * Scrolls to target element and
         * if msg is not empty, displays popover
         */
-        popover: function (selector, msg, classname) {
+        popover: function (selector, msg, classname, autoclose, autoclose_delay) {
             // popover has been previously assign
             closePopover();
 
@@ -559,6 +574,12 @@ angular.module('resiexchange')
             if(msg.length > 0) {
                 // trigger popover display (toggle)
                 elem.triggerHandler('toggle-popover');
+                popover.is_open = true;
+                if(autoclose) {
+                    $timeout(function () {
+                        closePopover();
+                    }, autoclose_delay || 3000);
+                }
             }
         },
 

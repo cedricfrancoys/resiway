@@ -1,4 +1,4 @@
-<div id="{{popover.id()}}" class="{{popover.classname()}}" style="min-height: 20px;">
+<div id="{{popover.id()}}" class="{{popover.classname()}}">
     <button type="button" 
             class="close" 
             style="margin-left: 30px;" 
@@ -6,5 +6,5 @@
         <span aria-hidden="true">&times;</span>
         <span class="sr-only">Close</span>
     </button>      
-    <div style="min-width: 200px;">{{popover.content() | translate}}</div>
+    <div ng-bind-html="popover.content() | translate"></div>
 </div>

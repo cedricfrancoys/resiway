@@ -117,7 +117,6 @@ try {
         'notify_reputation_update', 'notify_badge_awarded', 'notify_question_comment', 'notify_answer_comment', 'notify_question_answer'
         ],                                                       
         false,                                                    // $toggle
-        null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {        
             $om->write($object_class, $object_id, [

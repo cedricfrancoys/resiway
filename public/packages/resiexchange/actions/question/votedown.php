@@ -1,4 +1,16 @@
 <?php
+/* votedown.php - resiexchange_question_votedown controller
+
+    This file is part of the tagger program <http://www.github.com/cedricfrancoys/resiway>
+    Copyright (C) Cedric Francoys, 2017, Yegen
+    Some Right Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
+*/
+
+/**
+* This controller allows to toggle a question between 'voted down' and 'not voted down' states (which differs from 'voted up')
+* i.e.: one click marks the question as voted down by current user, a second click unmarks it
+*/
+
 // Dispatcher (index.php) is in charge of setting the context and should include easyObject library
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
@@ -37,24 +49,40 @@ try {
         $action_name,                                               // $action_name
         $object_class,                                              // $object_class
         $object_id,                                                 // $object_id
-        ['count_votes', 'score'],                                   // $object_fields
-        false,                                                      // $toggle
-        'resiexchange_question_voteup',                             // $concurrent_action        
+        ['creator', 'count_votes', 'score'],                        // $object_fields
+        true,                                                       // $toggle
         function ($om, $user_id, $object_class, $object_id) {       // $do 
-            // vote the anwer up
-            $object = $om->read($object_class, $object_id, ['count_votes', 'score'])[$object_id];       
-            $om->write($object_class, $object_id, [
-                'count_votes' => $object['count_votes']+1, 
-                'score'       => $object['score']-1
-            ]);
+            // check for concurrent action 
+            $concurrent_action = ResiAPI::isActionRegistered( 
+                                     $user_id, 
+                                     'resiexchange_question_voteup',
+                                     $object_class, 
+                                     $object_id
+                                 );
+            // read question values
+            $object = $om->read($object_class, $object_id, ['count_votes', 'score'])[$object_id];
+            // do action & undo concurrent action, if any
+            if($concurrent_action) {
+                ResiAPI::unregisterAction($user_id, 'resiexchange_question_voteup', $object_class, $object_id);
+                $om->write($object_class, $object_id, [
+                    'score'       => $object['score']-2
+                ]);                                                
+            }
+            else {
+                $om->write($object_class, $object_id, [
+                    'count_votes' => $object['count_votes']+1, 
+                    'score'       => $object['score']-1
+                ]);                
+            }            
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
-            // undo concurrent action (vote question down)
+            // read question values
             $object = $om->read($object_class, $object_id, ['count_votes', 'score'])[$object_id];
+            // undo action
             $om->write($object_class, $object_id, [
                 'count_votes' => $object['count_votes']-1, 
-                'score'       => $object['score']-1
+                'score'       => $object['score']+1
             ]);
             return false;            
         },
@@ -66,12 +94,6 @@ try {
                     throw new Exception("question_created_by_user", QN_ERROR_NOT_ALLOWED);          
                 }
           
-            },
-            // user cannot perform action on an object more than once
-            function ($om, $user_id, $action_id, $object_class, $object_id) {
-                if(ResiAPI::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {
-                    throw new Exception("action_already_performed", QN_ERROR_NOT_ALLOWED);  
-                }        
             },
             // user cannot perform given action more than daily maximum
             function ($om, $user_id, $action_id, $object_class, $object_id) {

@@ -48,6 +48,39 @@ angular.module('resiexchange')
                 );
             }
         };            
-        
+
+
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        angular.forEach($rootScope.search.criteria.domain, function(clause, i) {
+            if(clause[0] == 'categories_ids') {
+                $scope.related_categories = [];
+                if(typeof clause[2] != 'object') {
+                    clause[2] = [clause[2]];
+                }
+                $http.get('index.php?get=resiway_category_list&'+$httpParamSerializerJQLike({domain: ['id', 'in', clause[2]]}))
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result == 'object') {
+                            $scope.categories = data.result;
+                        }
+                    }
+                );
+                angular.forEach(clause[2], function(category_id, j) {
+                    $http.get('index.php?get=resiway_category_related&category_id='+category_id)
+                    .then(
+                        function successCallback(response) {
+                            var data = response.data;
+                            if(typeof data.result == 'object') {
+                                $scope.related_categories = data.result;
+                            }
+                        }
+                    );
+                    
+                });
+            }
+        });        
     }
 ]);

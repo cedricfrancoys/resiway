@@ -2,7 +2,7 @@
     
 }
 
-.featured-questions p {
+.featured-questions p, .related-questions p {
     height: 23px; 
     line-height: 23px; 
     margin-bottom: 4px; 
@@ -13,6 +13,6 @@
 }
 
 
-.featured-questions .mini-counts {
-    width: 34px;
+.featured-questions .mini-counts, .related-questions .mini-counts {
+    min-width: 36px;
 }    

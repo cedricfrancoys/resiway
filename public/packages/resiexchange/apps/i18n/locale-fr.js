@@ -31,6 +31,8 @@ var translations = {
     "QUESTION_ACTIONS_DELETE": "Supprimer",
     "QUESTION_ACTIONS_DELETE_TOOLTIP": "Ne supprimez cette question que si vous avez une bonne raison de le faire",
 
+    "QUESTION_ACTIONS_VOTEUP_OK": "Votre vote a bien été pris en compte.<br />Merci pour votre participation !",
+    
     "QUESTION_COMMENT_SCORE_TOOLTIP": "Nombre de votes 'commentaire utile' reçus",
     "QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce commentaire ajoute quelque chose d'utilie à cette publication",
     "QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur ce commentaire pour modération",

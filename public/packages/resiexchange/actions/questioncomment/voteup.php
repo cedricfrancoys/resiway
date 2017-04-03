@@ -40,9 +40,8 @@ try {
         $action_name,                                               // $action_name
         $object_class,                                              // $object_class
         $object_id,                                                 // $object_id
-        ['score'],                                                  // $object_fields
+        ['creator', 'score'],                                       // $object_fields
         true,                                                       // $toggle
-        null,                                                       // $concurrent_action        
         function ($om, $user_id, $object_class, $object_id) {       // $do 
             // vote the comment up
             $object = $om->read($object_class, $object_id, ['score'])[$object_id];       
@@ -67,13 +66,7 @@ try {
                     throw new Exception("comment_created_by_user", QN_ERROR_NOT_ALLOWED);          
                 }
           
-            },
-            // user cannot perform action on an object more than once
-            function ($om, $user_id, $action_id, $object_class, $object_id) {
-                if(ResiAPI::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {
-                    throw new Exception("action_already_performed", QN_ERROR_NOT_ALLOWED);  
-                }        
-            },            
+            },          
             // user cannot perform given action more than daily maximum
             function ($om, $user_id, $action_id, $object_class, $object_id) {
                 $res = $om->search('resiway\ActionLog', [

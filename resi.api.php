@@ -472,12 +472,20 @@ class ResiAPI {
     * Tells if an action has already been performed by given user on specified object.
     *
     * @param    integer  $user_id       identifier of the user performing the action
-    * @param    integer  $action_id     identifier of the action being performed
+    * @param    mixed    $action        action name or identifier of the action being performed
     * @param    string   $object_class  class of the targeted object (ex. 'resiexchange\Question')
     * @param    integer  $object_id     identifier of the object on which action is performed
     * @return   boolean
     */
-    public static function isActionRegistered($user_id, $action_id, $object_class, $object_id) {
+    public static function isActionRegistered($user_id, $action, $object_class, $object_id) {
+        
+        // retrieve action object identifier
+        $action_id = intval($action);
+        if($action_id == 0) {
+            // if we received a string, try to resolve action name
+            $action_id = self::actionId($action);            
+        }
+        
         // check params consistency
         if($user_id <= 0 || $action_id <= 0) return false;
              
@@ -818,7 +826,6 @@ class ResiAPI {
     * @param string     $toggle             indicates the kind of action (repeated actions or toggle between on and off / performed - not performed)
     * @param array      $fields             fields that are going to be impacted by the action (and therefore need to be loaded)
     * @param array      $limitations        array of functions that will raise an error in case some constrainst is violated
-    * @param string     $concurrent_action  name of the concurrent action, if any (by default this pram is set to null)
     * @param function   $do                 operations to perform by default
     * @param function   $undo               operations to perform in case of toggle (undo action) or concurrent action has already be performed (undo concurrent action)
     */ 
@@ -828,7 +835,6 @@ class ResiAPI {
                                         $object_id,
                                         $object_fields = [],                                        
                                         $toggle = false,
-                                        $concurrent_action = null,                                        
                                         $do = null,
                                         $undo = null,        
                                         $limitations = []) {
@@ -852,11 +858,6 @@ class ResiAPI {
         // retrieve action object
         $action_id = self::actionId($action_name);
         if($action_id <= 0) throw new Exception("action_unknown", QN_ERROR_INVALID_PARAM);
-
-        // retrieve concurrent action, if any            
-        if(isset($concurrent_action)) {
-            $concurrent_action_id = self::actionId($concurrent_action);
-        }
         
         // 1) check rights
         
@@ -875,23 +876,15 @@ class ResiAPI {
         // 3) & 4) log/unlog action and update reputation
         
         // determine which operation has to be performed ($do or $undo)        
-        if($toggle
-           && self::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {
+        if($toggle && self::isActionRegistered($user_id, $action_id, $object_class, $object_id)) {
             self::unregisterAction($user_id, $action_name, $object_class, $object_id);        
             $result = $undo($om, $user_id, $object_class, $object_id);                    
         }
         else {
-            if(isset($concurrent_action) 
-               && self::isActionRegistered($user_id, $concurrent_action_id, $object_class, $object_id)) {
-                self::unregisterAction($user_id, $concurrent_action, $object_class, $object_id);        
-                $result = $undo($om, $user_id, $object_class, $object_id);
-            }
-            else {
-                self::registerAction($user_id, $action_name, $object_class, $object_id);        
-                $result = $do($om, $user_id, $object_class, $object_id);
-            }
+            self::registerAction($user_id, $action_name, $object_class, $object_id);        
+            $result = $do($om, $user_id, $object_class, $object_id);            
         }
-        
+  
         return $result;
     }
     

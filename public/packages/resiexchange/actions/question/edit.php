@@ -73,7 +73,6 @@ try {
         $object_id,                                               // $object_id
         [],                                                       // $object_fields
         false,                                                    // $toggle
-        null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {    
             $pdm = &PersistentDataManager::getInstance();
@@ -96,7 +95,6 @@ try {
             
             if($object_id == 0) {
             
-                
                 // create a new question + write given value
                 $object_id = $om->create('resiexchange\Question', [ 
                                 'creator'           => $user_id,     

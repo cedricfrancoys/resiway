@@ -389,6 +389,81 @@ namespace config {
 			}
 			return $result;
 		}
+        
+        /*
+        * domain checks and operations
+        * a domain should always be composed of a serie of clauses against which a OR test is made
+        * a clause should always be composed of a serie of conditions agaisnt which a AND test is made
+        * a condition should always be composed of a property operand, an operator, and a value
+        */
+        
+        public static function domain_condition_check($condition) {
+            if(!is_array($condition)) return false;
+            if(count($condition) != 3) return false;
+            if(!is_string($condition[0])) return false;
+            // if(!cehck_operator($condition[1])) return false;
+            return true;
+        }
+
+        public static function domain_clause_check($clause) {
+            if(!is_array($clause)) return false;
+            foreach($clause as $condition) {
+                if(!self::domain_condition_check($condition)) return false;
+            }
+            return true;
+        }
+
+        public static function domain_check($domain) {
+            if(!is_array($domain)) return false;
+            foreach($domain as $clause) {
+                if(!self::domain_clause_check($clause)) return false;
+            }
+            return true;
+        }
+
+        public static function domain_normalize($domain) {
+            if(!is_array($domain)) return [];
+            if(!empty($domain)) {
+                if(!is_array($domain[0])) {
+                    // single condition
+                    $domain = [[$domain]];
+                }
+                else {
+                    if(empty($domain[0])) return [];
+                    if(!is_array($domain[0][0])) {
+                        // single clause
+                        $domain = [$domain];
+                    }
+                }
+            }
+            return $domain;
+        }
+        
+        public static function domain_clause_condition_add($clause, $condition) {
+            if(!self::domain_condition_check($condition)) return $clause;
+            $clause[] = $condition;
+            return $clause;
+        }
+        
+        public static function domain_condition_add($domain, $condition) {
+            if(!self::domain_condition_check($condition)) return $dest;
+            
+            if(empty($domain)) {
+                $domain[] = self::domain_clause_condition_add([], $condition);
+            }
+            else {
+                for($i = 0, $j = count($domain); $i < $j; ++$i) {
+                    $domain[$i] = self::domain_clause_condition_add($domain[$i], $condition);
+                }
+            }
+            return $domain;
+        }
+
+        public static function domain_clause_add($domain, $clause) {
+            if(!self::domain_clause_check($clause)) return $domain;
+            $domain[] = $clause;
+            return $domain;
+        }        
 
 	}
 

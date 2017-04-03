@@ -59,7 +59,6 @@ try {
         $object_id,                                               // $object_id
         [],                                                       // $object_fields
         false,                                                    // $toggle
-        null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {    
         

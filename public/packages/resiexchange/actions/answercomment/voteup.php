@@ -40,9 +40,8 @@ try {
         $action_name,                                               // $action_name
         $object_class,                                              // $object_class
         $object_id,                                                 // $object_id
-        ['score'],                                                  // $object_fields
+        ['creator', 'score'],                                       // $object_fields
         true,                                                       // $toggle
-        null,                                                       // $concurrent_action        
         function ($om, $user_id, $object_class, $object_id) {       // $do 
             // vote the comment up
             $object = $om->read($object_class, $object_id, ['score'])[$object_id];       

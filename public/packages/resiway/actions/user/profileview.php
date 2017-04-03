@@ -40,7 +40,6 @@ try {
         'count_views'
         ],                                                       
         false,                                                    // $toggle
-        null,                                                     // $concurrent_action
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {
             // read count_views
