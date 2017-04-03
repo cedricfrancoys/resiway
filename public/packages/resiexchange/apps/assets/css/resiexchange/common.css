@@ -46,6 +46,12 @@ input[type="text"] {
 .fade-in-out.ng-hide {
   opacity: 0;
 }
+
+.animate-show.ng-hide-add.ng-hide-add-active,
+.animate-show.ng-hide-remove.ng-hide-remove-active {
+    -moz-transition: all ease 0.5s;
+    transition: all ease 0.5s;
+}
     
 /* bootstrap customizations */
 

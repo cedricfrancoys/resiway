@@ -121,14 +121,17 @@ angular.module('resiexchange')
             currentPage: 1,
             previousPage: -1,
             limit: 30,
-            domain: []
+            domain: [],
+            loading: false
         };
         
         ctrl.load = function(config) {
             if(config.currentPage != config.previousPage) {
                 config.previousPage = config.currentPage;
                 // trigger loader display
-                config.loading = true;
+                if(config.total > 0) {
+                    config.loading = true;
+                }
                 $http.post('index.php?get=resiway_category_list', {
                     domain: config.domain,
                     start: (config.currentPage-1)*config.limit,
