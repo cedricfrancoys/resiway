@@ -22,8 +22,8 @@ angular.module('resiexchange')
         ctrl.load = function(config) {
             if(config.currentPage != config.previousPage) {
                 config.previousPage = config.currentPage;
-                // reset objects list (triggers loader display)
-                config.items = -1;          
+                // trigger loader display
+                config.loading = true;
                 $http.post('index.php?get=resiway_category_list', {
                     domain: config.domain,
                     start: (config.currentPage-1)*config.limit,
@@ -34,6 +34,7 @@ angular.module('resiexchange')
                     var data = response.data;
                     config.items = data.result;
                     config.total = data.total;
+                    config.loading = false;
                 },
                 function errorCallback() {
                     // something went wrong server-side

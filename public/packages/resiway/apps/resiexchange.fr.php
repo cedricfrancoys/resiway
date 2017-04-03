@@ -2,7 +2,7 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 $rev = ResiAPI::currentRevision(); 
-$token = md5($rev.rand(1, 100));
+$token = md5(substr($rev, 12).rand(1, 100));
 ?>
 <!DOCTYPE html>
 <html lang="fr" ng-app="resiexchange" id="top" ng-controller="rootController as rootCtrl">
@@ -48,8 +48,8 @@ $token = md5($rev.rand(1, 100));
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/ngToast.min.css" />
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/ngToast-animations.min.css" />
 
-        <script src="packages/resiexchange/apps/resiexchange.min.js?<?php echo $token; ?>"></script>        
-        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css?<?php echo $token; ?>" />
+        <script src="packages/resiexchange/apps/resiexchange.min.js?v=<?php echo $token; ?>"></script>        
+        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css?v=<?php echo $token; ?>" />
 
         <script>
         var global_config = {
