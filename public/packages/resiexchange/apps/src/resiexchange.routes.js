@@ -163,6 +163,15 @@ angular.module('resiexchange')
                 }]
             }        
         })     
+        .when('/answer/:id', {
+            templateUrl : templatePath+'question.html',
+            controller  : ['$location', 'routeAnswerProvider', function($location, routeAnswerProvider) {
+                routeAnswerProvider.load().then(
+                function(answer) {
+                    $location.path('/question/'+answer.question_id);
+                });                
+            }]  
+        })
         /**
         * User related routes
         */

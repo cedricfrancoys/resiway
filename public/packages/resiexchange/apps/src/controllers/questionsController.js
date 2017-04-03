@@ -49,38 +49,58 @@ angular.module('resiexchange')
             }
         };            
 
-
-        /*
-        * async load and inject $scope.categories and $scope.related_categories
-        */
+        // @async loads
+        ctrl.categories = [];
+        
         angular.forEach($rootScope.search.criteria.domain, function(clause, i) {
             if(clause[0] == 'categories_ids') {
                 $scope.related_categories = [];
                 if(typeof clause[2] != 'object') {
                     clause[2] = [clause[2]];
                 }
-                $http.get('index.php?get=resiway_category_list&'+$httpParamSerializerJQLike({domain: ['id', 'in', clause[2]]}))
+                ctrl.categories = clause[2];
+            }
+        });
+        
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        if(ctrl.categories.length > 0) {
+            $http.get('index.php?get=resiway_category_list&'+$httpParamSerializerJQLike({domain: ['id', 'in', ctrl.categories]}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result == 'object') {
+                        $scope.categories = data.result;
+                    }
+                }
+            );
+            angular.forEach(ctrl.categories, function(category_id, j) {
+                $http.get('index.php?get=resiway_category_related&category_id='+category_id)
                 .then(
                     function successCallback(response) {
                         var data = response.data;
                         if(typeof data.result == 'object') {
-                            $scope.categories = data.result;
+                            $scope.related_categories = data.result;
                         }
                     }
                 );
-                angular.forEach(clause[2], function(category_id, j) {
-                    $http.get('index.php?get=resiway_category_related&category_id='+category_id)
-                    .then(
-                        function successCallback(response) {
-                            var data = response.data;
-                            if(typeof data.result == 'object') {
-                                $scope.related_categories = data.result;
-                            }
-                        }
-                    );
-                    
-                });
+                
+            });
+        }
+        
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        $http.get('index.php?get=resiway_category_list&limit=15&order=count_questions&sort=desc')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result == 'object') {
+                    $scope.featured_categories = data.result;
+                }
             }
-        });        
+        );
+        
     }
 ]);

@@ -51,11 +51,11 @@
                 </div>                
             </div>
 
-            <div class="container">
+            <div class="container fade-in-out" ng-show="ctrl.questions.length > 0">
                 <div class="lead" style="border-bottom: 1px solid grey;">
                     <div class="sectiontitle">Questions populaires</div>
                 </div>
-                <div ng-show="ctrl.questions.length > 0" class="featured-questions fade-in-out" ng-repeat="question in ctrl.questions">
+                <div class="featured-questions" ng-repeat="question in ctrl.questions">
                     <p>
                         <span class="mini-counts btn btn-success btn-xs">{{question.count_votes | humanizeCount}}</span>
                         <a href="#/question/{{question.id}}" title="{{question.title}}">{{question.title}}</a>                    

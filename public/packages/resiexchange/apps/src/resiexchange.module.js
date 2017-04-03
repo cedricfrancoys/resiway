@@ -201,7 +201,7 @@ var resiway = angular.module('resiexchange', [
             default: {
                 q: '',                  // query string (against question title)
                 domain: [],
-                order: 'score',
+                order: 'modified',
                 sort: 'desc',
                 start: 0,
                 limit: 25,
@@ -333,6 +333,7 @@ var resiway = angular.module('resiexchange', [
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
             case 'resiexchange\\Question': return '#/question/'+object_id;
+            case 'resiexchange\\Answer': return '#/answer/'+object_id;            
             case 'resiway\\Category': return '#/category/'+object_id;
             }
         };
