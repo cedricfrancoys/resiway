@@ -86,7 +86,7 @@ $token = md5($rev.rand(1, 100));
             <div class="modal-wrapper"></div>
             <div class="container">
                 <!-- menu -->
-                <?php echo file_get_contents("packages/resiway/apps/views/parts/menu.html"); ?>
+                <?php //echo file_get_contents("packages/resiway/apps/views/parts/menu.html"); ?>
                 <!-- loader -->                
                 <div ng-show="viewContentLoading" class="loader"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
                 <div ng-view ng-hide="viewContentLoading"></div>

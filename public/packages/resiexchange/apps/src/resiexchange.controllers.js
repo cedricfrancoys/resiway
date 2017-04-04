@@ -240,6 +240,17 @@ angular.module('resiexchange')
 ]);
 angular.module('resiexchange')
 
+.controller('emptyController', [
+    '$scope',
+    function($scope) {
+        console.log('empty controller');
+
+        var ctrl = this;
+        
+    }
+]);
+angular.module('resiexchange')
+
 .controller('helpCategoriesController', [
     'categories', 
     '$scope',

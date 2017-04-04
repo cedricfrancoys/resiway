@@ -1849,6 +1849,10 @@ body {
     font-size: 11px;
 }
 
+.topbar .platform-dialog a, .topbar .platform-dialog a:hover{
+    text-decoration: none;
+}
+
 .topbar .notify-dialog {
     position: absolute;
     display: block;
@@ -1901,6 +1905,9 @@ body {
     font-size: 14px;
 }
 
+.topbar .user-dialog a, .topbar .user-dialog a:hover{
+    text-decoration: none;
+}
 
 .topbar .platform-btn .app-icon {
     display: inline-block;

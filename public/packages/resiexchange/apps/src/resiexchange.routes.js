@@ -229,6 +229,25 @@ angular.module('resiexchange')
             reloadOnSearch: false
         })
         /**
+        * Resiway routes            
+        */        
+        .when('/association/soutenir', {
+            templateUrl : templatePath+'support.html',
+            controller  : 'emptyController as ctrl'
+        })
+        .when('/association/participer', {
+            templateUrl : templatePath+'participate.html',
+            controller  : 'emptyController as ctrl'
+        })
+        .when('/association/mentions-legales', {
+            templateUrl : templatePath+'legal.html',
+            controller  : 'emptyController as ctrl'
+        })        
+        .when('/association', {
+            templateUrl : templatePath+'organisation.html',
+            controller  : 'emptyController as ctrl'
+        })        
+        /**
         * Default route
         */    
         .otherwise({
