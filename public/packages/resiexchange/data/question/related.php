@@ -67,7 +67,7 @@ try {
     
     if(!empty($questions_ids)) {    
         // retrieve categories
-        $res = $om->read($object_class, $questions_ids, ['id', 'title', 'score']);
+        $res = $om->read($object_class, $questions_ids, ['id', 'title', 'score', 'title_url']);
         if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
         $result = array_values($res);
     }

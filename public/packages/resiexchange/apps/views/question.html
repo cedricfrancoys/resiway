@@ -588,7 +588,7 @@
                 <div class="related-questions" ng-repeat="question in related_questions">
                     <p>
                         <span class="mini-counts btn btn-xs ng-binding btn-success" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.score}}</span>                
-                        <a href="#/question/6" title="{{question.title}}">{{question.title}}</a>                    
+                        <a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a>                    
                     </p>
                 </div>                
             </div>
