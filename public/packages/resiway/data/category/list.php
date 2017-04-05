@@ -38,7 +38,7 @@ $params = QNLib::announce(
                                             'description'   => 'The maximum number of results.',
                                             'type'          => 'integer',
                                             'min'           => 5,
-                                            'max'           => 150,
+                                            'max'           => 30,
                                             'default'       => 30
                                             ),                                            
                         'total'		=> array(

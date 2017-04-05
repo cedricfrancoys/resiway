@@ -100,7 +100,7 @@ class Category extends \easyobject\orm\Object {
 
     public static function getCountQuestions($om, $oids, $lang) {
         $result = [];
-        // note: remember that this approach only works if all involved categories paths are set !        
+        // cyclic dependency: remember that this approach only works if all involved categories paths are set !       
         $res = $om->read('resiway\Category', $oids, ['path']);
         foreach($oids as $oid) {
             $result[$oid] = 0;
