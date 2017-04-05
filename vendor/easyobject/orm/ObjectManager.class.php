@@ -371,6 +371,8 @@ class ObjectManager {
 						if(!ObjectManager::checkFieldAttributes(ObjectManager::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory attribute for field '$field' of class '$class'", INVALID_PARAM);
 						$order = (isset($schema[$field]['order']))?$schema[$field]['order']:'id';
 						$sort = (isset($schema[$field]['sort']))?$schema[$field]['sort']:'asc';
+                        // handle alias fields
+                        if($schema[$order]['type'] == 'alias') $order = $schema[$order]['alias'];
 						// obtain the ids by searching inside the foreign object's table
 						$result = $om->db->getRecords(	
 							$om->getObjectTableName($schema[$field]['foreign_object']), 
@@ -1222,6 +1224,7 @@ todo: signature differs from other methods	(returned value)
 						if(!isset($domain[$j][$i]) || !is_array($domain[$j][$i])) throw new Exception("malformed domain", INVALID_PARAM);
 						if(!isset($domain[$j][$i][0]) || !isset($domain[$j][$i][1]) || !isset($domain[$j][$i][2])) throw new Exception("invalid domain, a mandatory attribute is missing", INVALID_PARAM);
 						$field		= $domain[$j][$i][0];
+                        if($schema[$field]['type'] == 'alias') $field = $schema[$field]['alias'];    
 						$operator	= strtolower($domain[$j][$i][1]);
 						$value		= $domain[$j][$i][2]; 
                         if(!self::checkFieldAttributes(self::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory parameter for field '$field' of class '$object_class'", INVALID_PARAM);
@@ -1313,7 +1316,8 @@ todo: signature differs from other methods	(returned value)
 
             // if invalid order field is given, fallback on id
             if(!isset($schema[$order])) $order = 'id'; 
-            if($schema[$order]['type'] == 'alias') $order = $schema[$order]['alias'];            
+            if($schema[$order]['type'] == 'alias') $order = $schema[$order]['alias'];
+            
 			$order_field = $order;
             
 			// we might need to request more than the id field (for example, for sorting purpose)

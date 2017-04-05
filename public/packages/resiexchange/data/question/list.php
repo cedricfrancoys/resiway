@@ -122,8 +122,29 @@ try {
         else $params['domain'][] = ['id','=', -1];        
     }
     else {
+        $params['domain'] = QNLib::domain_normalize($params['domain']);
+        if(!QNLib::domain_check($params['domain'])) $params['domain'] = [];
+        
         // adapt domain to restrict results to given channel
-        $params['domain'][] = ['channel_id','=', $params['channel']];
+        $params['domain'] = QNLib::domain_condition_add($params['domain'], ['channel_id','=', $params['channel']]);
+
+// we shouldn't request questions by categories using the domain, but rather use a specific syntax for the query
+// quick and dirty workaround: 
+        foreach($params['domain'] as $clause_id => $clause) {
+            foreach($clause as $condition_id => $condition) {
+                if($condition[0] == 'categories_ids') {
+                    $categories_ids = (array) $condition[2];
+                    $res = $om->read('resiway\Category', $categories_ids, ['title', 'path', 'parent_path', 'description']);
+                    foreach($res as $category) {
+                        $sub_categories_ids = $om->search('resiway\Category', ['path', 'like', $category['path'].'%']);
+                        $categories_ids = array_merge($categories_ids, $sub_categories_ids);
+                    }
+                    $categories_ids = array_unique($categories_ids);
+                    $params['domain'][$clause_id][$condition_id][2] = $categories_ids;
+                    break 2;
+                }
+            }
+        }
     }
 
     // total is not knwon yet

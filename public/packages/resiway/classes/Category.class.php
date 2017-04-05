@@ -21,7 +21,15 @@ class Category extends \easyobject\orm\Object {
                                     'foreign_object'    => 'resiway\Category', 
                                     'onchange'          => 'resiway\Category::onchangeTitle'),
                                     
-            'count_questions'   => array('type' => 'integer'),
+            // 'count_questions'   => array('type' => 'integer'),
+
+            /* amount of questions in this category and its subcategories */
+            'count_questions'   => array(
+                                    'type'              => 'function',
+                                    'result_type'       => 'integer',
+                                    'store'             => true, 
+                                    'function'          => 'resiway\Category::getCountQuestions'
+                                   ),
             
             'path'				=> array(
                                     'type'              => 'function', 
@@ -48,7 +56,7 @@ class Category extends \easyobject\orm\Object {
                                     'type' 			    => 'many2many', 
                                     'foreign_object'	=> 'resiexchange\Question', 
                                     'foreign_field'		=> 'tags_ids', 
-                                    'rel_table'		    => 'resiexchange_rel_question_tag', 
+                                    'rel_table'		    => 'resiexchange_rel_question_category', 
                                     'rel_foreign_key'	=> 'question_id', 
                                     'rel_local_key'		=> 'tag_id'
                                     )
@@ -90,6 +98,21 @@ class Category extends \easyobject\orm\Object {
         if($tags_ids > 0 && count($tags_ids)) Category::onchangeTitle($om, $tags_ids, $lang);
     }
 
+    public static function getCountQuestions($om, $oids, $lang) {
+        $result = [];
+        // note: remember that this approach only works if all involved categories paths are set !        
+        $res = $om->read('resiway\Category', $oids, ['path']);
+        foreach($oids as $oid) {
+            $result[$oid] = 0;
+            if(isset($res[$oid]) && strlen($res[$oid]['path']) > 0) {
+                $categories_ids = $om->search('resiway\Category', ['path', 'like', $res[$oid]['path'].'%']);
+                $questions_ids = $om->search('resiexchange\Question', ['categories_ids', 'contains', $categories_ids]);
+                $result[$oid] = count($questions_ids);
+            }
+        }        
+        return $result;        
+    }
+    
     public static function getPath($om, $oids, $lang) {
         $result = [];
         $res = $om->read('resiway\Category', $oids, ['title', 'parent_id', 'parent_id.path'], $lang);        

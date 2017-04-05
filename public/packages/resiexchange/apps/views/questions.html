@@ -121,14 +121,14 @@
                     <span class="item-number">{{search.criteria.total | humanizeCount:true}}</span>
                     <span class="item-label">{{'QUESTIONS_STATS_QUESTIONS' | translate}}</span>
                     <div ng-show="categories.length > 0" class="categories container fade-in-out" style="display: inline-block; padding: 0;">
-                        dans <div ng-repeat="category in categories" class="category">{{category.title}}</div>
+                        dans <a href class="category"  ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" ng-repeat="category in categories" title="{{category.path}}">{{category.title}}</a>
                     </div>
                 </div>
 
                 <div ng-show="related_categories.length > 0" class="container fade-in-out">                    
                     <span class="small"><b>Catégories similaires:</b></span><br />
                     <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
-                        <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})">{{category.title}}</a>
+                        <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_questions}}&nbsp;</div>
                     </div>
                 </div>
@@ -136,7 +136,7 @@
                 <div ng-show="featured_categories.length > 0" class="container fade-in-out">                    
                     <span class="small"><b>Categories populaires:</b></span><br />
                     <div class="featured-categories categories" ng-repeat="category in featured_categories" style="display: inline-block;">
-                        <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})">{{category.title}}</a>
+                        <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_questions}}&nbsp;</div>
                     </div>                
                 </div>                

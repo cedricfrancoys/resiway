@@ -3205,6 +3205,7 @@ angular.module('resiexchange')
         // @async loads
         ctrl.categories = [];
         
+        // store categories list in controller, if any
         angular.forEach($rootScope.search.criteria.domain, function(clause, i) {
             if(clause[0] == 'categories_ids') {
                 $scope.related_categories = [];
@@ -3243,7 +3244,7 @@ angular.module('resiexchange')
         }
         
         /*
-        * async load and inject $scope.categories and $scope.related_categories
+        * async load and inject $scope.categories and $scope.featured_categories
         */
         $http.get('index.php?get=resiway_category_list&limit=15&order=count_questions&sort=desc')
         .then(
