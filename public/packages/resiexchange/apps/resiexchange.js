@@ -1453,7 +1453,7 @@ angular.module('resiexchange')
         */        
         .when('/association/soutenir', {
             templateUrl : templatePath+'support.html',
-            controller  : 'emptyController as ctrl'
+            controller  : 'homeController as ctrl'
         })
         .when('/association/participer', {
             templateUrl : templatePath+'participate.html',
@@ -2020,7 +2020,7 @@ angular.module('resiexchange')
 ]);
 angular.module('resiexchange')
 
-.controller('homeController', ['$http', '$rootScope', function($http, $rootScope) {
+.controller('homeController', ['$http', '$scope', '$rootScope', function($http, $scope, $rootScope) {
     console.log('home controller');  
     
     var ctrl = this;
@@ -2052,7 +2052,26 @@ angular.module('resiexchange')
     },
     function errorCallback() {
         // something went wrong server-side
-    });     
+    });
+    
+    $scope.amount = "5EUR/mois";
+    
+    $scope.$watch('amount', function (value){
+        console.log(value);
+        switch(value) {
+            case '5EUR/mois': $scope.amount_dedication = "Contribuez à ce que chacun puisse fabriquer ses produits d'entretien écologiques";
+            break;
+            case '10EUR/mois': $scope.amount_dedication = "Offrez aux agriculteurs le moyen de savoir absorber du CO2 au lieu d'en émettre trop";
+            break;
+            case '25EUR/mois': $scope.amount_dedication = "Participez à la résilience de l'humain vivant en harmonie avec l'environnement dont il dépend";
+            break;
+            case '25EUR/an': $scope.amount_dedication = "Aidez une famille à savoir comment manger sain et local";
+            break;
+            case '50EUR/an': $scope.amount_dedication = "Permettez la diffusion de savoirs ancestraux et de nouvelles technologies écologiques";
+            break;
+            
+        }
+    });
 }]);
 angular.module('resiexchange')
 

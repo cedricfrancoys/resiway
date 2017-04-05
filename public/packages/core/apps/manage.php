@@ -33,7 +33,7 @@ use easyobject\orm\I18n as I18n;
 use html\HtmlWrapper as HtmlWrapper;
 
 
-set_silent(false);
+set_silent(true);
 
 
 $params = announce(	

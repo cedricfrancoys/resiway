@@ -233,7 +233,7 @@ angular.module('resiexchange')
         */        
         .when('/association/soutenir', {
             templateUrl : templatePath+'support.html',
-            controller  : 'emptyController as ctrl'
+            controller  : 'homeController as ctrl'
         })
         .when('/association/participer', {
             templateUrl : templatePath+'participate.html',

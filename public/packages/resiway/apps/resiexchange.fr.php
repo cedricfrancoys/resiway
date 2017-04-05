@@ -13,6 +13,8 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <meta name="title" content="ResiExchange - Des réponses pour la résilience">
         <meta name="description" content="ResiExchange est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition, la permaculture et la résilience.">
 
+        <meta property="og:image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
+        
         <title>ResiExchange</title>
 
         <link type="image/png" sizes="180x180" href="/packages/resiway/apps/assets/icons/apple-icon-180x180.png" rel="apple-touch-icon">

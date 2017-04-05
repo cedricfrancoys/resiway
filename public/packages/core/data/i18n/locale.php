@@ -29,7 +29,7 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../qn.api.php');
 
 // force silent mode (debug output would corrupt json data)
-set_silent(false);
+set_silent(true);
 
 // announce script and fetch parameters values
 $params = announce(

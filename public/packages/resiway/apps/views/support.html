@@ -16,68 +16,68 @@
         <div class="row" style="magin-bottom: 30px;">
             <article class="col-md-12 text-justify">
                 <h2>Faites-un don</h2>
-                <div class="container col-1-1">
+                <div class="container col-1-1" style="min-height: 275px;">
                     <h4><a href="/resiway.fr#/association/soutenir">Contribuez à un bel avenir pour l'humain</a></h4>
-                    <table style="border-collapse: separate; border-spacing: 10px;">
-                        <tr>
-                            <td>
-                                <b>Don unique</b>
-                            </td>
-                            <td>
-                                <form novalidate action="https://www.paypal.com/cgi-bin/webscr" method="post">                        
+                    
+                    <div class="col-1-1">
+                        <div class="col-3-12">
+                            <b>Don unique</b>
+                        </div>
+                        <div class="col-9-12" style="margin-bottom: 5px;">
+                            <form novalidate action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">                        
                                 <input type="hidden" name="cmd" value="_s-xclick">
                                 <input type="hidden" name="hosted_button_id" value="UGPLN9JUU7MJ4">
                                 <input type="image" src="https://www.paypalobjects.com/fr_FR/BE/i/btn/btn_donate_SM.gif" border="0" name="submit">
-                                </form> 
-                            </td>
-                            <td>
-                                Permettez à chacun d'apprendre comment réduire ses factures d'eau et d'électricité
-                            </td>
-                                                      
-                        </tr>
-                        <tr>
-                        
-                            <td>
-                                <b>Cotisation récurrente</b>
-                            </td>
-                            <td colspan="2">
-                                <form novalidate action="https://www.paypal.com/cgi-bin/webscr" method="post">                      
-                                <div class="pull-left" style="width: 160px;">
-                                <select name="os0" class="form-control input-sm" style="width: 100%;">
-                                    <option value="5EUR/mois"> 5,00 EUR - mensuel</option>
-                                    <option value="10EUR/mois">10,00 EUR - mensuel</option>
-                                    <option value="25EUR/mois">25,00 EUR - mensuel</option>
-                                    <option value="25EUR/an">25,00 EUR - annuel</option>
-                                    <option value="50EUR/an">50,00 EUR - annuel</option>
-                                </select>
-                                </div>
-                                <div class="pull-left" style="margin-top: 5px; margin-left: 10px;">
+                            </form>
+                        </div>
+                        <div class="col-12-12" style="font-size: 15px; font-style: italic;">
+                            Permettez à chacun d'apprendre comment réduire ses factures d'eau et d'électricité
+                        </div>
+
+                    </div>
+                    
+                    <div class="col-1-1" style="margin-top: 30px;">
+                        <div class="col-3-12" style="height: 30px; line-height: 30px;">
+                            <b>Cotisation récurrente</b>
+                        </div>
+                        <div class="col-9-12" style="margin-bottom: 5px;">
+                            <form novalidate action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">                      
+                            <div class="pull-left" style="width: 160px;">
+                            <select name="os0" class="form-control input-sm" style="width: 100%;" ng-model="amount">
+                                <option value="5EUR/mois"> 5,00 EUR - mensuel</option>
+                                <option value="10EUR/mois">10,00 EUR - mensuel</option>
+                                <option value="25EUR/mois">25,00 EUR - mensuel</option>
+                                <option value="25EUR/an">25,00 EUR - annuel</option>
+                                <option value="50EUR/an">50,00 EUR - annuel</option>
+                            </select>
+                            </div>
+                            <div class="pull-left" style="margin-top: 5px; margin-left: 10px;">
                                 <input type="image" src="https://www.paypalobjects.com/fr_FR/BE/i/btn/btn_subscribe_SM.gif" border="0" name="submit" >
                                 <input type="hidden" name="cmd" value="_s-xclick">
                                 <input type="hidden" name="hosted_button_id" value="KAWC99CND24VU">
                                 <input type="hidden" name="on0" value="Donnation renouvelable">
                                 <input type="hidden" name="currency_code" value="EUR">
-                                </div>
-                                </form>        
-                            </td>
-                                                     
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td colspan="2"></td>
-                        </tr>
-                        <tr>
-                            <td colspan="3" style="position: relative; text-align: right; height: 100px;">
-                                <div><img src="https://www.paypalobjects.com/webstatic/mktg/logo-center/logo_paypal_securise_fr.png" /></div>
-                                <div style="margin-top: 10px;">
-                                    <img src="https://www.paypalobjects.com/en_US/i/logo/logo_ccMaestro.gif" />
-                                    <img src="https://www.paypalobjects.com/en_US/i/logo/logo_ccMC.gif" />
-                                    <img src="https://www.paypalobjects.com/en_US/i/logo/logo_ccVisa.gif" />
-                                    <img src="https://www.paypalobjects.com/fr_FR/FR/i/logo/logo_ccCB_37wx23h.gif" />                            
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                            </div>
+                            </form>  
+                        </div>
+                        <div class="col-12-12" style="font-size: 15px; font-style: italic;">
+                            {{amount_dedication}}
+                        </div>
+                    </div>
+                    
+                    <div class="col-1-1" style="margin-top: 20px;">
+                        <div class="pull-right">
+                            <img src="https://www.paypalobjects.com/webstatic/mktg/logo-center/logo_paypal_securise_fr.png" />
+ 
+                            <div style="margin-top: 10px;">
+                                <img src="https://www.paypalobjects.com/en_US/i/logo/logo_ccMaestro.gif" />
+                                <img src="https://www.paypalobjects.com/en_US/i/logo/logo_ccMC.gif" />
+                                <img src="https://www.paypalobjects.com/en_US/i/logo/logo_ccVisa.gif" />
+                                <img src="https://www.paypalobjects.com/fr_FR/FR/i/logo/logo_ccCB_37wx23h.gif" />                            
+                            </div>
+                        </div>
+                    </div>
+                                
                 </div>                
             </article>
         </div> 
