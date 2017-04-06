@@ -68,10 +68,10 @@
         <!-- user dialog -->
         <div class="user-dialog" ng-show="ctrl.userDropdown">
             <ul>
-                <li>
-                    <a href="/resiexchange.fr#user/profile/{{user.id}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
+                <li onclick="window.location.href='/resiexchange.fr#/user/profile/{{user.id}}'">
+                    <a href="/resiexchange.fr#/user/profile/{{user.id}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
                 </li>
-                <li>
+                <li ng-click="ctrl.signOut()">
                    <a href ng-click="ctrl.signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion</a>
                 </li>
             </ul>
