@@ -42,7 +42,7 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <script src='packages/resiexchange/apps/assets/js/ngToast.min.js'></script>
         <script src='packages/resiexchange/apps/assets/js/select-tpls.min.js'></script>
 
-        <script src="packages/resiexchange/apps/i18n/locale-fr.js"></script>
+        <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
         <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js"></script>
 
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/bootstrap.min.css" />

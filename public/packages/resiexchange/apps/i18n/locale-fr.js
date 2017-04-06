@@ -148,6 +148,7 @@ var translations = {
     "USER_SIGN_SIGNIN": "S'identifier",
     "USER_SIGN_SIGNUP": "S'inscrire",
     "USER_SIGN_REMEMBER_ME": "Rester connecté",
+    "USER_SIGN_ACCEPT_TERMS": "J'accepte les <a href=\"/resiway.fr#/association/mentions-legales\">conditions d'utilisations</a>",
     
     // Categories  
     "CATEGORIES_TITLE": "Catégories",

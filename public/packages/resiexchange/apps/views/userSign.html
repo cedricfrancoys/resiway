@@ -55,10 +55,10 @@
                         <span class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></span>
                         <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
                     </div>
-                    <div class="input-group" style="visibility: hidden;">
+                    <div class="input-group">                     
                       <div class="checkbox">
                         <label>
-                          <input type="checkbox" > &nbsp;
+                          <input ng-model="accept" type="checkbox" name="accept" value="0"><span ng-bind-html="'USER_SIGN_ACCEPT_TERMS' | translate" style="line-height: 20px;"></span>
                         </label>
                       </div>
                     </div>

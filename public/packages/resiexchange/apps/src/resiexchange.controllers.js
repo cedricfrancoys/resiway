@@ -2255,6 +2255,7 @@ angular.module('resiexchange')
 
         // @model             
         $scope.remember = true;
+        $scope.accept = false;
         $scope.username = '';
         $scope.password = '';
         $scope.firstname = '';
@@ -2320,7 +2321,7 @@ angular.module('resiexchange')
                 function errorHandler() {
                     ctrl.running = false;
                     authenticationService.clearCredentials();
-                    $scope.signInAlerts = [{ type: 'danger', msg: 'Email or password mismatch.' }];
+                    $scope.signInAlerts = [{ type: 'danger', msg: 'Email ou mot de passe incorrect.' }];
                 });        
             }
         };
@@ -2328,11 +2329,14 @@ angular.module('resiexchange')
         ctrl.signUp = function() {
             if($scope.username.length == 0 || $scope.firstname.length == 0) {
                 if($scope.firstname.length == 0) {
-                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, indicate your firstname.' });                
+                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Oups, il manque ton prénom.' });
                 }                
                 else if($scope.username.length == 0) {
-                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Please, provide your email as username.' });                
+                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Il faut aussi un email comme identifiant.' });
                 }
+            }
+            else if(!$scope.accept) {
+                $scope.signUpAlerts.push({ type: 'warning', msg: 'Pour pouvoir participer il faut accepter les conditions d\'utilisation.' });
             }
             else {
                 ctrl.running = true;
