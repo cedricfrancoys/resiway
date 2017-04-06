@@ -50,7 +50,7 @@ class Category extends \easyobject\orm\Object {
                                     'type'              => 'one2many', 
                                     'foreign_object'    => 'resiway\Category', 
                                     'foreign_field'     => 'parent_id', 
-                                    'order'             => 'name'),
+                                    'order'             => 'title'),
 
             
             'questions_ids'	    => array(
