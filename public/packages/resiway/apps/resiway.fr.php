@@ -11,8 +11,10 @@ $token = md5($rev.rand(1, 100));
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta name="title" content="ResiWay - La plateforme pour la résilience">        
-        <meta name="description" content="">    
-
+        <meta name="description" content="ResiWay développe et propose des outils collaboratifs libres pour la résilience">    
+        
+        <meta property="og:image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
+        
         <title>ResiWay</title>
 
         <link type="image/png" sizes="180x180" href="/packages/resiway/apps/assets/icons/apple-icon-180x180.png" rel="apple-touch-icon">
