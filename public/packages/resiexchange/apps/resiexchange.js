@@ -1455,6 +1455,10 @@ angular.module('resiexchange')
             templateUrl : templatePath+'support.html',
             controller  : 'homeController as ctrl'
         })
+        .when('/association/contact', {
+            templateUrl : templatePath+'contact.html',
+            controller  : 'emptyController as ctrl'
+        })        
         .when('/association/participer', {
             templateUrl : templatePath+'participate.html',
             controller  : 'emptyController as ctrl'

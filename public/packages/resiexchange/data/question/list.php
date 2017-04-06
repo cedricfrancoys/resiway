@@ -139,8 +139,7 @@ try {
                         $sub_categories_ids = $om->search('resiway\Category', ['path', 'like', $category['path'].'%']);
                         $categories_ids = array_merge($categories_ids, $sub_categories_ids);
                     }
-                    $categories_ids = array_unique($categories_ids);
-                    $params['domain'][$clause_id][$condition_id][2] = $categories_ids;
+                    $params['domain'][$clause_id][$condition_id][2] = array_unique($categories_ids);
                     break 2;
                 }
             }

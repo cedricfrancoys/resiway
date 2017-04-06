@@ -114,8 +114,6 @@ try {
 
                 // update categories count_questions
                 $om->write('resiway\Category', $params['tags_ids'], ['count_questions' => null]);
-                // force recomputing counter
-                $om->read('resiway\Category', $params['tags_ids'], ['count_questions']);
                 
                 // update global counter
                 ResiAPI::repositoryInc('resiexchange.count_questions');
@@ -137,8 +135,6 @@ try {
                 // update categories count_questions
                 $categories_ids = array_map(function($i) { return abs(intval($i)); }, $params['tags_ids']);
                 $om->write('resiway\Category', $categories_ids, ['count_questions' => null]);
-                // force recomputing counter
-                $om->read('resiway\Category', $categories_ids, ['count_questions']);
             }
             
             // read created question as returned value

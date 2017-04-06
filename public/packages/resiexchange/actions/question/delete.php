@@ -47,8 +47,6 @@ try {
             // update categories count_questions
             $object = $om->read($object_class, $object_id, ['categories_ids'])[$object_id];
             $om->write('resiway\Category', $object['categories_ids'], ['count_questions' => null]);
-            // force recomputing counter
-            $om->read('resiway\Category', $object['categories_ids'], ['count_questions']);
             // update global questions-counter
             ResiAPI::repositoryDec('resiexchange.count_questions');
             return true;
@@ -61,8 +59,6 @@ try {
             // update categories count_questions
             $object = $om->read($object_class, $object_id, ['categories_ids'])[$object_id];
             $om->write('resiway\Category', $object['categories_ids'], ['count_questions' => null]);
-            // force recomputing counter
-            $om->read('resiway\Category', $object['categories_ids'], ['count_questions']);
             // update global questions-counter
             ResiAPI::repositoryInc('resiexchange.count_questions');                      
             return false;

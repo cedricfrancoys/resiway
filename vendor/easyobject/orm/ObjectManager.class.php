@@ -898,6 +898,7 @@ todo: signature differs from other methods	(returned value)
 
             
 			// 4) update internal buffer with given values
+// todo : handle dot notation            
 			$schema = $object->getSchema();
 			$onchange_fields = array();
 			foreach($ids as $oid) {
@@ -1330,8 +1331,11 @@ todo: signature differs from other methods	(returned value)
 			}
 			elseif($order != 'id') $select_fields[] = $table_alias.'.'.$order;
             
+            $order_clause = [$order_table_alias.'.'.$order_field];
+            if($order != 'id') $order_clause[] = $table_alias.'.id';
+                
 			// get the matching records by generating the resulting SQL query
-			$res = $db->getRecords($tables, $select_fields, NULL, $conditions, $table_alias.'.id', $order_table_alias.'.'.$order_field, $sort, $start, $limit);
+			$res = $db->getRecords($tables, $select_fields, NULL, $conditions, $table_alias.'.id', $order_clause, $sort, $start, $limit);
 			while ($row = $db->fetchArray($res)) {
 				// if we are in standalone mode, we take advantage of the SQL sort
 				$res_list[] = $row['id'];

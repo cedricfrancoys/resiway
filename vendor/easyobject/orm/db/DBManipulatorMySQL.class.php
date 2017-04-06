@@ -193,15 +193,15 @@ class DBManipulatorMySQL extends DBManipulator {
 	/**
 	 * Get records from specified table, according to some conditions.
 	 *
-	 * @param	array $tables name of involved tables
-	 * @param	array $fields list of requested fields
-	 * @param	array $ids ids to which the selection is limited
-	 * @param	array $conditions list of arrays (field, operand, value)
-	 * @param	string $id_field name of the id field ('id' by default)
-	 * @param	string $order name of the order field
-	 * @return	resource reference to query resource
+	 * @param	array   $tables       name of involved tables
+	 * @param	array   $fields       list of requested fields
+	 * @param	array   $ids          ids to which the selection is limited
+	 * @param	array   $conditions   list of arrays (field, operand, value)
+	 * @param	string  $id_field     name of the id field ('id' by default)
+	 * @param	mixed   $order        string holding name of the order field or array of strings in case of multiple level sorting
+	 * @return	resource              reference to query resource
 	 */
-	public function getRecords($tables, $fields=NULL, $ids=NULL, $conditions=NULL, $id_field='id', $order='', $sort='ASC', $start=0, $limit=0) {       
+	public function getRecords($tables, $fields=NULL, $ids=NULL, $conditions=NULL, $id_field='id', $order='', $sort='ASC', $start=0, $limit=0) {
 		// cast tables to an array (passing a single table is accepted)
 		if(!is_array($tables))						$tables = (array) $tables;
 		// in case fields is not null ans is not an array, cast it to an array (passing a single field is accepted)		
@@ -237,7 +237,11 @@ class DBManipulatorMySQL extends DBManipulator {
 		$sql .= $this->getConditionClause($id_field, $ids, $conditions);
 
 		// order clause
-		if(!empty($order)) $sql .= ' ORDER BY '.DBManipulatorMySQL::escapeFieldName($order)." $sort";
+		if(!empty($order)) {
+            if(!is_array($order)) $order = [$order];
+            foreach($order as $id => $field) $order[$id] = DBManipulatorMySQL::escapeFieldName($field);
+            $sql .= ' ORDER BY '.implode(' '.$sort.',', $order);
+        }
 
 		// limit clause
 		if($limit) $sql .= sprintf(" LIMIT %d, %d", $start, $limit);

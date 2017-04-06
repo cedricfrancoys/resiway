@@ -29,7 +29,7 @@ include_once('../qn.lib.php');
 
 
 // disable output
-set_silent(false);
+set_silent(true);
 
 
 /**

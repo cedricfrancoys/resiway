@@ -45,11 +45,11 @@ class HtmlToText {
         $value = $purifier->purify($value);
         if($linebreaks) {
             // strip multiple horizontal whitespaces (preserve carriage returns)
-            $value = preg_replace('/\h+/', ' ', $value);
+            $value = preg_replace('/\h+/u', ' ', $value);
         }
         else {
             // strip multiple spaces (including carriage returns)
-            $value = preg_replace('/\s+/', ' ', $value);            
+            $value = preg_replace('/\s+/u', ' ', $value);            
         }
         return $value;
     }
