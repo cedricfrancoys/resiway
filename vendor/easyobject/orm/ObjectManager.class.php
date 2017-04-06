@@ -371,8 +371,7 @@ class ObjectManager {
 						if(!ObjectManager::checkFieldAttributes(ObjectManager::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory attribute for field '$field' of class '$class'", INVALID_PARAM);
 						$order = (isset($schema[$field]['order']))?$schema[$field]['order']:'id';
 						$sort = (isset($schema[$field]['sort']))?$schema[$field]['sort']:'asc';
-                        // handle alias fields
-                        if($schema[$order]['type'] == 'alias') $order = $schema[$order]['alias'];
+// todo : handle alias fields (require subsequent schema)
 						// obtain the ids by searching inside the foreign object's table
 						$result = $om->db->getRecords(	
 							$om->getObjectTableName($schema[$field]['foreign_object']), 

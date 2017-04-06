@@ -86,8 +86,6 @@ try {
         $res = $om->read($object_class, $badges_ids, ['id', 'title', 'description', 'badges_ids'], $lang);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
-
-        
         foreach($res as $category_id => $category_values) {
             $badges = $om->read('resiway\Badge', $category_values['badges_ids'], ['id', 'name', 'description', 'group', 'type'], $lang);            
             $res[$category_id]['badges'] = array_values($badges);
