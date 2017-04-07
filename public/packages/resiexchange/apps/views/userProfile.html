@@ -118,15 +118,16 @@
 
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
                 <div ng-hide="ctrl.badges.items == -1" style="min-height: 250px;">
-                    <div ng-repeat="badge in ctrl.badges.items" class="post-summary col-1-1">
+                    <div ng-repeat="badge in ctrl.badges.items" class="post-summary badges col-1-1">
                         <div class="col-9-12 nopad">
-                            <div class="col-5-12" style="overflow: hidden">
-                            <span class="mini-counts btn btn-xs">{{badge['badge_id.type']}}</span>
+
+                            <div class="col-3-12" style="overflow: hidden;">
+                                <div class="badge-item" ><i class="fa fa-circle badge{{badge['badge_id.type']}}" aria-hidden="true"></i> {{badge['badge_id.name']}}</div>
+                            </div>                        
+                            <div class="col-9-12" style="overflow: hidden; line-height: 25px;">
                             {{badge['badge_id.description']}}
                             </div>
-                            <div class="col-7-12" style="overflow: hidden">
-                                <h3 class="post-title"><a href="#/badge/{{badge.badge_id}}">{{badge['badge_id.name']}}</a></h3>
-                            </div>
+
                         </div>
                         <div class="col-3-12 text-right">
                             {{badge.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}

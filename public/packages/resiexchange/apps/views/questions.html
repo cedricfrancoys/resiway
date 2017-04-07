@@ -64,7 +64,15 @@
                 <div class="excerpt">{{question.content_excerpt}}</div>
                 
                 <div class="tags">
-                    <a ng-repeat="tag in question.tags" ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}">{{tag.title}}</a> 
+                    <a ng-repeat="tag in question.tags" 
+                    ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" 
+                    class="tag" 
+                    popover-trigger="'mouseenter'"
+                    uib-popover-html="tag.description"
+                    popover-append-to-body="true"
+                    popover-placement="bottom-left"
+                    popover-title="{{tag.path}}"
+                    >{{tag.title}}</a> 
                 </div>
                 <div class="started">
                     <div class="signature owner">
