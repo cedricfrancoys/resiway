@@ -995,7 +995,7 @@ todo: signature differs from other methods	(returned value)
 						EventListener::ExceptionHandler(new Exception("unknown field '$field' for class : '$class'"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
 					}
                     else if($schema[$field]['type'] == 'alias') {
-                        $fields[] = $schema[$field]['alias'];
+                        $fields[$i] = $schema[$field]['alias'];
                     }
 				}
                 // make sure there is not gap in the keys indexes 

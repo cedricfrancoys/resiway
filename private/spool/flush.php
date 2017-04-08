@@ -77,7 +77,7 @@ try {
             
             if($count_notifications > 1) {
                 $content .= '<b>'.$params['subject']."</b><br />\n";
-                $content .= $params['body']."<br />\n";
+                $content .= $params['body']."<br /><br />\n";
             }
             else {
                 $subject = $params['subject'];
