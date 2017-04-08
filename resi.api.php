@@ -208,12 +208,16 @@ class ResiAPI {
                 'firstname',
                 'lastname', 
                 'publicity_mode',
+// todo : remove relation fields from this list
                 'notifications_ids',
                 'notify_reputation_update', 
                 'notify_badge_awarded', 
                 'notify_question_comment', 
                 'notify_answer_comment', 
-                'notify_question_answer'               
+                'notify_question_answer',
+                'notify_post_edit',
+                'notify_post_flag',
+                'notify_post_delete'
                ];
     }
     
