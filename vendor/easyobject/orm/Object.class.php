@@ -75,6 +75,7 @@ class Object {
 	public final static function getSpecialColumns() {
 		static $special_columns = array(
 			'id'		=> array('type' => 'integer'),
+            // 'name' field is set in constructor if not defined in getColumns method
 			'creator'	=> array('type' => 'integer'),            
 			'created'	=> array('type' => 'datetime'),
 			'modifier'	=> array('type' => 'integer'),

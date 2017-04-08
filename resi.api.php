@@ -396,7 +396,10 @@ class ResiAPI {
                     // prevent reputation update for non-verified users
                     if($user_data['verified']) {
                         $result['user']['increment'] = $sign*$action_data['user_increment'];
-                        $om->write('resiway\User', $user_id, array('reputation' => $user_data['reputation']+$result['user']['increment']));
+                        $new_reputation = $user_data['reputation']+$result['user']['increment'];
+                        // prevent reputation from dropping below 1 (which would prevent user from taking any action)
+                        if($new_reputation < 1) $new_reputation = 1;
+                        $om->write('resiway\User', $user_id, array('reputation' => $new_reputation));
                     }
                 }
             }
@@ -409,8 +412,11 @@ class ResiAPI {
                     $author_data = $res[$author_id];            
                     // prevent reputation update for non-verified users
                     if($author_data['verified']) {                    
-                        $result['author']['increment'] = $sign*$action_data['author_increment'];            
-                        $om->write('resiway\User', $author_id, array('reputation' => $author_data['reputation']+$result['author']['increment']));
+                        $result['author']['increment'] = $sign*$action_data['author_increment'];
+                        $new_reputation = $author_data['reputation']+$result['author']['increment'];
+                        // prevent reputation from dropping below 1 (which would prevent user from taking any action)                        
+                        if($new_reputation < 1) $new_reputation = 1;
+                        $om->write('resiway\User', $author_id, array('reputation' => $new_reputation));
                     }
                 }
 
