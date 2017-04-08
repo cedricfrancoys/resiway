@@ -1701,8 +1701,9 @@ angular.module('resiexchange')
 .controller('categoriesController', [
     'categories', 
     '$scope',
+    '$rootScope',    
     '$http',
-    function(categories, $scope, $http) {
+    function(categories, $scope, $rootScope, $http) {
         console.log('categories controller');
 
         var ctrl = this;
@@ -1725,7 +1726,7 @@ angular.module('resiexchange')
                 if(config.total > 0) {
                     config.loading = true;
                 }
-                $http.post('index.php?get=resiway_category_list', {
+                $http.post('index.php?get=resiway_category_list&channel='+$rootScope.config.channel, {
                     domain: config.domain,
                     start: (config.currentPage-1)*config.limit,
                     limit: config.limit,
@@ -1754,13 +1755,14 @@ angular.module('resiexchange')
 .controller('categoryEditController', [
     'category', 
     '$scope', 
+    '$rootScope',
     '$window', 
     '$location', 
     'feedbackService', 
     'actionService',
     '$http',
     '$httpParamSerializerJQLike',    
-    function(category, $scope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
+    function(category, $scope, $rootScope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
         console.log('categoryEdit controller');
         
         var ctrl = this;   
@@ -1771,7 +1773,7 @@ angular.module('resiexchange')
         $scope.loadMatches = function(query) {
             if(query.length < 2) return [];
             
-            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({channel: global_config.channel, domain: ['title', 'ilike', '%'+query+'%']}))
+            return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&order=title&'+$httpParamSerializerJQLike({channel: global_config.channel, domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
                 function successCallback(response) {
                     var data = response.data;
@@ -3057,7 +3059,8 @@ angular.module('resiexchange')
 */
 .controller('questionEditController', [
     'question',
-    '$scope', 
+    '$scope',
+    '$rootScope',
     '$window', 
     '$location', 
     '$sce', 
@@ -3066,7 +3069,7 @@ angular.module('resiexchange')
     'textAngularManager',
     '$http',
     '$httpParamSerializerJQLike',
-    function(question, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
+    function(question, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   
@@ -3086,7 +3089,7 @@ angular.module('resiexchange')
         $scope.loadMatches = function(query) {
             if(query.length < 2) return [];
             
-            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
                 function successCallback(response) {
                     var data = response.data;
@@ -3207,7 +3210,7 @@ angular.module('resiexchange')
                 ctrl.questions.items = -1;
                 $rootScope.search.criteria.start = (ctrl.questions.currentPage-1)*ctrl.questions.limit;
                 
-                $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+                $http.get('index.php?get=resiexchange_question_list&channel='+$rootScope.config.channel+'&'+$httpParamSerializerJQLike($rootScope.search.criteria))
                 .then(
                     function successCallback(response) {
                         var data = response.data;
@@ -3243,7 +3246,7 @@ angular.module('resiexchange')
         * async load and inject $scope.categories and $scope.related_categories
         */
         if(ctrl.categories.length > 0) {
-            $http.get('index.php?get=resiway_category_list&'+$httpParamSerializerJQLike({domain: ['id', 'in', ctrl.categories]}))
+            $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&'+$httpParamSerializerJQLike({domain: ['id', 'in', ctrl.categories]}))
             .then(
                 function successCallback(response) {
                     var data = response.data;
@@ -3269,7 +3272,7 @@ angular.module('resiexchange')
         /*
         * async load and inject $scope.categories and $scope.featured_categories
         */
-        $http.get('index.php?get=resiway_category_list&limit=15&order=count_questions&sort=desc')
+        $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&limit=15&order=count_questions&sort=desc')
         .then(
             function successCallback(response) {
                 var data = response.data;
