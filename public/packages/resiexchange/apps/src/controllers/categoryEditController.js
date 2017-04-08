@@ -3,13 +3,14 @@ angular.module('resiexchange')
 .controller('categoryEditController', [
     'category', 
     '$scope', 
+    '$rootScope',
     '$window', 
     '$location', 
     'feedbackService', 
     'actionService',
     '$http',
     '$httpParamSerializerJQLike',    
-    function(category, $scope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
+    function(category, $scope, $rootScope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
         console.log('categoryEdit controller');
         
         var ctrl = this;   
@@ -20,7 +21,7 @@ angular.module('resiexchange')
         $scope.loadMatches = function(query) {
             if(query.length < 2) return [];
             
-            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({channel: global_config.channel, domain: ['title', 'ilike', '%'+query+'%']}))
+            return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&order=title&'+$httpParamSerializerJQLike({channel: global_config.channel, domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
                 function successCallback(response) {
                     var data = response.data;

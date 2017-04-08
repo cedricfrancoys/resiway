@@ -5,7 +5,8 @@ angular.module('resiexchange')
 */
 .controller('questionEditController', [
     'question',
-    '$scope', 
+    '$scope',
+    '$rootScope',
     '$window', 
     '$location', 
     '$sce', 
@@ -14,7 +15,7 @@ angular.module('resiexchange')
     'textAngularManager',
     '$http',
     '$httpParamSerializerJQLike',
-    function(question, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
+    function(question, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   
@@ -34,7 +35,7 @@ angular.module('resiexchange')
         $scope.loadMatches = function(query) {
             if(query.length < 2) return [];
             
-            return $http.get('index.php?get=resiway_category_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
                 function successCallback(response) {
                     var data = response.data;

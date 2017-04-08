@@ -241,9 +241,10 @@
                                 class="btn btn-primary btn-xs"
                                 ng-click="questionComment($event)"
                                 uib-popover-template="'popoverCustom.html'" 
+                                popover-append-to-body="true"
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="right">
-                            Submit
+                            {{ 'QUESTION_COMMENTS_ADD_BUTTON' | translate}}
                         </button>
                     </div>
                 </div>
@@ -497,7 +498,7 @@
                                     uib-popover-template="'popoverCustom.html'" 
                                     popover-trigger="'toggle-popover'" 
                                     popover-placement="right">                                    
-                                Submit
+                                {{'QUESTION_COMMENTS_ADD_BUTTON' | translate}}
                             </button>
                         </div>
                     </div>
@@ -529,7 +530,8 @@
             <button id="question-addAnswer"
                     class="user-answer-submit btn btn-primary" 
                     ng-click="questionAnswer($event)"
-                    uib-popover-template="'popoverCustom.html'" 
+                    uib-popover-template="'popoverCustom.html'"
+                    popover-append-to-body="true"
                     popover-trigger="'toggle-popover'" 
                     popover-placement="right">
                 {{'QUESTION_USER_ANSWER_SUBMIT' | translate}}</button>            

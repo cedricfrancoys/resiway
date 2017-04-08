@@ -48,7 +48,7 @@ class User extends \easyobject\orm\Object {
             
             'reputation'		=> array('type' => 'integer'),
 
-            // user role: 'u'->user, 'm'->moderator, 'a'->admin (these roles are exclusive)
+            // user role: 'u'->user, 'm'->moderator, 'a'->admin (these roles are mutually exclusive)
             'role'		        => array('type' => 'string', 'selection' => ['u', 'm', 'a']),
             
             
@@ -67,9 +67,16 @@ class User extends \easyobject\orm\Object {
             
             'notify_reputation_update'  => array('type' => 'boolean'),
             'notify_badge_awarded'      => array('type' => 'boolean'),
+
+            'notify_question_answer'    => array('type' => 'boolean'),
+            
             'notify_question_comment'   => array('type' => 'boolean'),
             'notify_answer_comment'     => array('type' => 'boolean'),
-            'notify_question_answer'    => array('type' => 'boolean'),            
+
+            'notify_post_edit'          => array('type' => 'boolean'),
+            'notify_post_flag'          => array('type' => 'boolean'),
+            'notify_post_delete'        => array('type' => 'boolean'),
+            
             
             'notifications_ids'	=> array(
                                     'type'		    => 'one2many', 
@@ -122,7 +129,10 @@ class User extends \easyobject\orm\Object {
              'notify_badge_awarded'      => function() { return true; }, 
              'notify_question_comment'   => function() { return true; }, 
              'notify_answer_comment'     => function() { return true; }, 
-             'notify_question_answer'    => function() { return true; },              
+             'notify_question_answer'    => function() { return true; },
+             'notify_post_edit'          => function() { return true; },
+             'notify_post_flag'          => function() { return true; },
+             'notify_post_delete'        => function() { return true; }
         );
     }
     

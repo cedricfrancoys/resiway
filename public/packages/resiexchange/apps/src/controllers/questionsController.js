@@ -31,7 +31,7 @@ angular.module('resiexchange')
                 ctrl.questions.items = -1;
                 $rootScope.search.criteria.start = (ctrl.questions.currentPage-1)*ctrl.questions.limit;
                 
-                $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+                $http.get('index.php?get=resiexchange_question_list&channel='+$rootScope.config.channel+'&'+$httpParamSerializerJQLike($rootScope.search.criteria))
                 .then(
                     function successCallback(response) {
                         var data = response.data;
@@ -67,7 +67,7 @@ angular.module('resiexchange')
         * async load and inject $scope.categories and $scope.related_categories
         */
         if(ctrl.categories.length > 0) {
-            $http.get('index.php?get=resiway_category_list&'+$httpParamSerializerJQLike({domain: ['id', 'in', ctrl.categories]}))
+            $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&'+$httpParamSerializerJQLike({domain: ['id', 'in', ctrl.categories]}))
             .then(
                 function successCallback(response) {
                     var data = response.data;
@@ -93,7 +93,7 @@ angular.module('resiexchange')
         /*
         * async load and inject $scope.categories and $scope.featured_categories
         */
-        $http.get('index.php?get=resiway_category_list&limit=15&order=count_questions&sort=desc')
+        $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&limit=15&order=count_questions&sort=desc')
         .then(
             function successCallback(response) {
                 var data = response.data;

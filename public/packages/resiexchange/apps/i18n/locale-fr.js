@@ -41,7 +41,8 @@ var translations = {
     "QUESTION_COMMENTS_ADD_TOOLTIP": "Utilisez les commentaires pour demander plus d'info ou pour suggérer des clarifications. Évitez de répondre aux questions dans les commentaires.",
     "QUESTION_COMMENTS_ADD_PLACEHOLDER": "Faites votre commentaire ici",
     "QUESTION_COMMENTS_SHOW_ALL": "Voir tous les commentaires",  
-    "QUESTION_COMMENTS_SHOW_ALL_TOOLTIP": "Cliquez pour étendre la liste à tous les commentaires",    
+    "QUESTION_COMMENTS_SHOW_ALL_TOOLTIP": "Cliquez pour étendre la liste à tous les commentaires",
+    "QUESTION_COMMENTS_ADD_BUTTON": "Ajouter",    
 
     "QUESTION_ANSWERS_COUNT_LABEL": "Réponses",
 

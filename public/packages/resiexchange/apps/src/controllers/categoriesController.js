@@ -3,8 +3,9 @@ angular.module('resiexchange')
 .controller('categoriesController', [
     'categories', 
     '$scope',
+    '$rootScope',    
     '$http',
-    function(categories, $scope, $http) {
+    function(categories, $scope, $rootScope, $http) {
         console.log('categories controller');
 
         var ctrl = this;
@@ -27,7 +28,7 @@ angular.module('resiexchange')
                 if(config.total > 0) {
                     config.loading = true;
                 }
-                $http.post('index.php?get=resiway_category_list', {
+                $http.post('index.php?get=resiway_category_list&channel='+$rootScope.config.channel, {
                     domain: config.domain,
                     start: (config.currentPage-1)*config.limit,
                     limit: config.limit,

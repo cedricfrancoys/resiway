@@ -19,7 +19,7 @@ class Answer extends \easyobject\orm\Object {
             (we need this field to make a distinction with ORM writes using special field 'modified' */
             'edited'				=> array('type' => 'datetime'),
             
-            /* subject of the question */
+            /* subject of related question */
             'title'				    => array(
                                         'type'              => 'function',
                                         'result_type'       => 'string', 
