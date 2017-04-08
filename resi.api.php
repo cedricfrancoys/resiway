@@ -47,7 +47,7 @@ class ResiAPI {
         // clean HTML input html
         // strict cleaning: remove non-standard tags and attributes    
         $config = HTMLPurifier_Config::createDefault();
-        $config->set('URI.Base',                'http://www.resiway.org/');
+        $config->set('URI.Base',                'https://www.resiway.org/');
         $config->set('URI.MakeAbsolute',        true);                  // make all URLs absolute using the base URL set above
         $config->set('AutoFormat.RemoveEmpty',  true);                  // remove empty elements
         $config->set('HTML.Doctype',            'XHTML 1.0 Strict');    // valid XML output
@@ -344,13 +344,13 @@ class ResiAPI {
                                         },
                                         'url_object'	    =>	function ($params, $attributes) {
                                                 $link = self::makeLink($params['object_class'], $params['object_id']);
-                                                return "<a href=\"http://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
+                                                return "<a href=\"https://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
                                         },                                                        
                                         'url_profile'	    =>	function ($params, $attributes) {
-                                                return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/profile/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                                return "<a href=\"https://www.resiway.org/resiexchange.fr#/user/profile/{$params['user']['id']}\">{$attributes['title']}</a>";
                                         },
                                         'url_profile_edit'	=>	function ($params, $attributes) {
-                                                return "<a href=\"http://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                                return "<a href=\"https://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
                                         }                                        
                                         ], 
                                         // remaining data is given in the $data parameter
