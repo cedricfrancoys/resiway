@@ -1803,6 +1803,7 @@ angular.module('resiexchange')
                 action: 'resiway_category_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
+                    channel: $rootScope.config.channel,
                     category_id: $scope.category.id,
                     title: $scope.category.title,
                     description: $scope.category.description,
@@ -3145,6 +3146,7 @@ angular.module('resiexchange')
                 action: 'resiexchange_question_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
+                    channel: $rootScope.config.channel,
                     question_id: $scope.question.id,
                     title: $scope.question.title,
                     content: $scope.question.content,

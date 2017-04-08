@@ -91,6 +91,7 @@ angular.module('resiexchange')
                 action: 'resiexchange_question_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
+                    channel: $rootScope.config.channel,
                     question_id: $scope.question.id,
                     title: $scope.question.title,
                     content: $scope.question.content,
