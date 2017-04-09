@@ -11,6 +11,9 @@ class Question extends \easyobject\orm\Object {
             /* all objects must define a 'name' column (default is id) */
             'name'				    => array('type' => 'alias', 'alias' => 'title'),
 
+            /* override default creator field to make it explicitly point to resiway\User objects */
+            'creator'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
+            
             /* identifier of the last user to edit the question.
             (we need this field to make a distinction with ORM writes using special field 'modifier' */
             'editor'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),

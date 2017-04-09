@@ -99,5 +99,7 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', ['watch']);
 	grunt.registerTask('compile', ['concat:qinoa_js', 'uglify:qinoa_js']);
 */
+	grunt.registerTask('clear-cache', ['clean']);
+	grunt.registerTask('compile', ['cssmin', 'uglify']);
 	grunt.registerTask('default', ['clean', 'concat', 'cssmin', 'uglify']);
 };

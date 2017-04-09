@@ -80,11 +80,15 @@ try {
                 $content .= $params['body']."<br /><br />\n";
             }
             else {
-                $subject = $params['subject'];
+                $subject = 'ResiWay - '.$params['subject'];
                 $content = $params['body'];
             }
         }       
         
+        // append a notice to all mails sent by resiway
+        $email_notice = ResiAPI::getUserNotification('mail_notice', $user_data['language'], ['user'=>$user_data]);
+        $content .= $email_notice['body'];
+
         $transport = Swift_SmtpTransport::newInstance(EMAIL_SMTP_HOST, EMAIL_SMTP_PORT, "ssl")
                     ->setUsername(EMAIL_SMTP_ACCOUNT_USERNAME)
                     ->setPassword(EMAIL_SMTP_ACCOUNT_PASSWORD);

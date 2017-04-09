@@ -301,9 +301,7 @@ class ResiAPI {
         $user_data = self::loadUserPrivate($user_id);
         // if notification has to be sent by email, store message in spool
         if(isset($user_data['notify_'.$type]) && $user_data['notify_'.$type]) {
-            // append a notice to all mails sent by resiway
-            $email_notice = self::getUserNotification('mail_notice', $user_data['language'], ['user'=>$user_data]);
-            self::spool($user_id, 'ResiWay - '.$notification['subject'], $notification['body'].$email_notice['body']);  
+            self::spool($user_id, $notification['subject'], $notification['body']);  
         }
         // in case we decide to send emails, here is the place to add something to user queue
         $notification_id = $om->create('resiway\UserNotification', [  
@@ -325,7 +323,7 @@ class ResiAPI {
     *
     * $data is expected to be an array holding a 'user' entry with, at least, a 'id' index
     */
-    private static function getUserNotification($template_id, $lang, $data) {
+    public static function getUserNotification($template_id, $lang, $data) {
         $om = &ObjectManager::getInstance();
 
         // subject of the email should be defined in the template, as a <var> tag holding a 'title' attribute
@@ -339,7 +337,7 @@ class ResiAPI {
                                         // renderer is in charge of resolving vars common to all templates
                                         [
                                         'subject'		    =>	function ($params, $attributes) use (&$subject) {
-                                                $subject = $attributes['title'];
+                                                $subject = date("d/m/Y").' @ '.date("H:i").', '.$attributes['title'];
                                                 return '';
                                         },
                                         'url_object'	    =>	function ($params, $attributes) {

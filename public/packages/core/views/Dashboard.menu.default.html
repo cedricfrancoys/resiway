@@ -1,27 +1,14 @@
 <ul>
-    <li name="Accountancy">
+    <li name="Questions &amp; Réponses">
         <ul>
-            <li target="account\Invoice">Paid Invoices</li>
-        </ul>
-    </li>
-    <li name="Workflow">
-        <ul>
-            <li target="workflow\Job">All Jobs</li>
-            <li target="workflow\Job" sortname="our_ref" sortorder="desc" domain="[[['invoice_id','=','0']]]">Jobs in progress</li>
+            <li target="resiexchange\Question" sortname="created" sortorder="desc">Dernières questions</li>
+            <li target="resiexchange\Question" sortname="created" sortorder="desc" domain="[[['count_answers','=','0']]]">Questions non répondues</li>            
+            <li target="resiexchange\Answer" sortname="created" sortorder="desc" >Dernières réponses</li>
         </ul>    
     </li>
-    <li name="Users &amp; Groups">
+    <li name="Utilisateurs">
         <ul>
-            <li target="core\User">Users</li>
-            <li target="core\Group">Groups</li>            
-            <li target="core\Permission">Rights management</li>
+            <li target="resiway\User">Tous les utilisateurs</li>
         </ul>
     </li>
-    <li name="CRM">
-        <ul>
-            <li target="crm\Contact">Contacts</li>
-            <li target="core\Lead">Leads</li>            
-            <li target="core\Customers">Customers</li>
-        </ul>    
-    </li>    
 </ul>
