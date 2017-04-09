@@ -473,13 +473,13 @@ angular.module('resiexchange')
     $scope.$watch('amount', function (value){
         console.log(value);
         switch(value) {
-            case '5EUR/mois': $scope.amount_dedication = "Contribuez à ce que chacun puisse fabriquer ses produits d'entretien écologiques";
+            case '5EUR/mois': $scope.amount_dedication = "Aidez une famille à savoir comment manger sain et local";
             break;
             case '10EUR/mois': $scope.amount_dedication = "Offrez aux agriculteurs le moyen de savoir absorber du CO2 au lieu d'en émettre trop";
             break;
             case '25EUR/mois': $scope.amount_dedication = "Participez à la résilience de l'humain vivant en harmonie avec l'environnement dont il dépend";
             break;
-            case '25EUR/an': $scope.amount_dedication = "Aidez une famille à savoir comment manger sain et local";
+            case '25EUR/an': $scope.amount_dedication = "Contribuez à ce que chacun puisse fabriquer ses produits d'entretien écologiques";
             break;
             case '50EUR/an': $scope.amount_dedication = "Permettez la diffusion de savoirs ancestraux et de nouvelles technologies écologiques";
             break;
