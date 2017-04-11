@@ -999,12 +999,12 @@ todo: signature differs from other methods	(returned value)
                         $fields[] = $schema[$field]['alias'];
                     }
 				}
-                // make sure there is not gap in the keys indexes 
-                $fields = array_values($fields);
 			}
 			// remove duplicate fields, if any
 			$fields = array_unique($fields);
-            
+            // make sure there is no gap in the keys/indexes 
+            $fields = array_values($fields);
+                
 			// 4) check among requested fields wich ones are not yet present in the internal buffer
 			// if internal buffer is empty, query the DB to load all fields from requested objects 
 			if(empty($this->cache) || !isset($this->cache[$class])) $this->load($class, $ids, $fields, $lang);			

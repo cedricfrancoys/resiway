@@ -91,8 +91,7 @@ try {
                 $res = $om->read($object_class, $object_id, ['creator']);
                 if($res[$object_id]['creator'] == $user_id) {
                     throw new Exception("answer_created_by_user", QN_ERROR_NOT_ALLOWED);          
-                }
-          
+                }          
             },        
             // user cannot perform given action more than daily maximum
             function ($om, $user_id, $action_id, $object_class, $object_id) {

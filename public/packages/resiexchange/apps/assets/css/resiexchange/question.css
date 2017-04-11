@@ -318,6 +318,11 @@
 
 }
 
+.comments .comment .comment-text p {
+    display: inline-block;
+    margin: 0;
+}
+
 .comments .comment .comment-vote {
     display: block;
 }

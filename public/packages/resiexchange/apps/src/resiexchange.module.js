@@ -17,6 +17,7 @@ var resiway = angular.module('resiexchange', [
     'oi.select',    
     'textAngular',
     'pascalprecht.translate',
+    'btford.markdown',
     'angularMoment',
     'ngToast'    
 ])

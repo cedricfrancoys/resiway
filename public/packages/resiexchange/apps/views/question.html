@@ -38,7 +38,8 @@
                        ng-click="questionVoteDown($event)" 
                        uib-popover-template="'popoverCustom.html'" 
                        popover-trigger="'toggle-popover'" 
-                       popover-placement="right"                        
+                       popover-placement="right"
+                       popover-append-to-body="true"
                        aria-hidden="true">
                     </a>
                 </div>
@@ -51,7 +52,8 @@
                        ng-click="questionStar($event)" 
                        uib-popover-template="'popoverCustom.html'" 
                        popover-trigger="'toggle-popover'" 
-                       popover-placement="right"                        
+                       popover-placement="right"
+                       popover-append-to-body="true"
                        aria-hidden="true">
                     </a>
                 </div>
@@ -85,7 +87,8 @@
                                ng-click="questionFlag($event)"
                                uib-popover-template="'popoverCustom.html'" 
                                popover-trigger="'toggle-popover'" 
-                               popover-placement="right">                               
+                               popover-placement="right"
+                               popover-append-to-body="true">
                                 <i class="fa fa-flag" aria-hidden="true"></i> {{'QUESTION_ACTIONS_FLAG' | translate}}
                             </a>&nbsp;                            
                             <a href 
@@ -96,7 +99,8 @@
                                ng-click="questionDelete($event)"
                                uib-popover-template="'popoverCustom.html'"
                                popover-trigger="'toggle-popover'"
-                               popover-placement="right">
+                               popover-placement="right"
+                               popover-append-to-body="true">
                                 <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ACTIONS_DELETE' | translate}}
                             </a>                            
                         </div>
@@ -171,52 +175,101 @@
 
                 <div class="comments">
                 
-                    <div ng-repeat="(comment_index, comment) in question.comments | limitTo: question.commentsLimit">
-                    <div id="comment-{{comment.id}}" class="comment-{{comment_index}} comment wrapper">
+                    <div ng-repeat="(comment_index, comment) in question.comments | limitTo: question.commentsLimit" class="comment wrapper">
+
+                        <div 
+                            class="wrapper new-comment" 
+                            style="margin-top: 10px;" 
+                            ng-show="question.comments[comment_index].editMode">
+                            <textarea 
+                                ng-model="question.comments[comment_index].content" 
+                                style="width: 100%;" 
+                                placeholder="{{'QUESTION_COMMENTS_ADD_PLACEHOLDER' | translate}}">
+                            </textarea>
+                            <button id="comment-{{comment.id}}-editComment" 
+                                    class="btn btn-primary btn-xs"
+                                    ng-click="questionCommentEdit($event, comment_index)"
+                                    uib-popover-template="'popoverCustom.html'" 
+                                    popover-trigger="'toggle-popover'" 
+                                    popover-placement="right"
+                                    popover-append-to-body="true">
+                                {{'QUESTION_COMMENTS_EDIT_BUTTON' | translate}}
+                            </button>
+                            <button
+                                    class="btn btn-primary btn-xs"
+                                    ng-click="question.comments[comment_index].editMode = false">
+                                {{'QUESTION_COMMENTS_CANCEL_BUTTON' | translate}}
+                            </button>
+                        </div>                        
+                        <div ng-hide="question.comments[comment_index].editMode">
                         
-                        <div class="comment-vote col-1-12 nopad">
-                            <div class="comment-score">
-                                <span title="{{'QUESTION_COMMENT_SCORE_TOOLTIP' | translate}}">
-                                    {{comment.score | humanizeCount}}
-                                </span>
+                            <div id="comment-{{comment.id}}" class="comment-{{comment_index}} comment-vote col-1-12 nopad">
+                                
+                                <div class="comment-score">
+                                    <span title="{{'QUESTION_COMMENT_SCORE_TOOLTIP' | translate}}">
+                                        {{comment.score | humanizeCount}}
+                                    </span>
+                                </div>
+                                <div class="comment-actions" >
+                                    <div class="comment-voteup" 
+                                         ng-class="{on: comment.history['resiexchange_questioncomment_voteup']}">
+                                        <a href
+                                           id="comment-{{comment.id}}-voteup"
+                                           title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"                                   
+                                           class="fa fa-thumbs-o-up" 
+                                           ng-click="questionCommentVoteUp($event, comment_index)"
+                                           uib-popover-template="'popoverCustom.html'" 
+                                           popover-trigger="'toggle-popover'" 
+                                           popover-placement="right"
+                                           popover-append-to-body="true"
+                                           aria-hidden="true">
+                                        </a>
+                                    </div>
+                                    <div class="comment-flag" >
+                                        <a href                                         
+                                           id="comment-{{comment.id}}-flag"
+                                           title="{{'QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
+                                           class="fa fa-flag" 
+                                           ng-class="{on: comment.history['resiexchange_questioncomment_flag']}"                                           
+                                           ng-click="questionCommentFlag($event, comment_index)"
+                                           uib-popover-template="'popoverCustom.html'" 
+                                           popover-trigger="'toggle-popover'" 
+                                           popover-placement="right"
+                                           popover-append-to-body="true"                                               
+                                           aria-hidden="true">
+                                        </a>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="comment-actions" >
-                                <div class="comment-voteup" 
-                                     ng-class="{on: comment.history['resiexchange_questioncomment_voteup']}">
+                            <div class="comment-text col-11-12 nopad">
+                                <div class="comment-body">
+                                    <span btf-markdown="comment.content"></span>
+                                    –&nbsp;
+                                    <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                    <span class="comment-date" dir="ltr">
+                                        <a class="comment-link" href="#/question/{{question.id}}#comment-{{comment.id}}">
+                                            <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
+                                        </a>
+                                    </span>
+                                    <a href ng-click="question.comments[comment_index].editMode = true">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_EDIT' | translate}}
+                                    </a>&nbsp;                               
                                     <a href
-                                       id="comment-{{comment.id}}-voteup"
-                                       title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"                                   
-                                       class="fa fa-thumbs-o-up" 
-                                       ng-click="questionCommentVoteUp($event, comment_index)"
+                                       id="comment-{{comment.id}}-delete"
+                                       title="{{'QUESTION_COMMENT_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                                       ng-show="user.id==comment.creator.id"
+                                       ng-click="questionCommentDelete($event, comment_index)"
                                        uib-popover-template="'popoverCustom.html'" 
                                        popover-trigger="'toggle-popover'" 
                                        popover-placement="right"
-                                       aria-hidden="true">
-                                    </a>
-                                </div>
-                                <div class="comment-flag" >
-                                    <a href
-                                       class="fa fa-flag"
-                                       title="{{'QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"                                    
-                                       aria-hidden="true">
-                                    </a>
+                                       popover-append-to-body="true">
+                                        <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_DELETE' | translate}}
+                                    </a>                                          
+                                    
                                 </div>
 
                             </div>
-                        </div>
-                        <div class="comment-text col-11-12 nopad">
-                            <div class="comment-body">
-                                <span class="comment-copy">{{comment.content}}</span>
-                                –&nbsp;
-                                <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
-                                <span class="comment-date" dir="ltr">
-                                    <a class="comment-link" href="#/question/{{question.id}}#comment-{{comment.id}}">
-                                        <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
-                                    </a>
-                                </span>
-                            </div>
-                        </div>                       
-                    </div>
+                         </div>
                     </div>
                     
                 </div>
@@ -224,7 +277,7 @@
                 <div class="comments-actions">
                     <a href 
                        ng-click="question.newCommentShow = true" 
-                       class="js-add-link comments-link " 
+                       class="comments-link" 
                        title="{{ 'QUESTION_COMMENTS_ADD_TOOLTIP' | translate}}" >
                        {{ 'QUESTION_COMMENTS_ADD' | translate}}</a>
                     <span ng-show="question.comments.length > question.commentsLimit">                        
@@ -243,7 +296,8 @@
                                 uib-popover-template="'popoverCustom.html'" 
                                 popover-append-to-body="true"
                                 popover-trigger="'toggle-popover'" 
-                                popover-placement="right">
+                                popover-placement="right"
+                                popover-append-to-body="true">
                             {{ 'QUESTION_COMMENTS_ADD_BUTTON' | translate}}
                         </button>
                     </div>
@@ -293,7 +347,8 @@
                            ng-click="answerVoteUp($event, answer_index)" 
                            uib-popover-template="'popoverCustom.html'" 
                            popover-trigger="'toggle-popover'" 
-                           popover-placement="right"                           
+                           popover-placement="right"
+                           popover-append-to-body="true"                           
                            aria-hidden="true">
                         </a>
                     </div>
@@ -309,7 +364,8 @@
                            ng-click="answerVoteDown($event, answer_index)" 
                            uib-popover-template="'popoverCustom.html'" 
                            popover-trigger="'toggle-popover'" 
-                           popover-placement="right"                           
+                           popover-placement="right"
+                           popover-append-to-body="true"
                            aria-hidden="true">
                         </a>
                     </div>                                       
@@ -324,8 +380,7 @@
                         <div class="meta">
                             <div class="actions">
                                 <a href="#/question/{{question.id}}#answer-{{answer.id}}"
-                                   title="{{'QUESTION_ANSWER_ACTIONS_SHARE_TOOLTIP' | translate}}" 
-                                   class="short-link" >
+                                   title="{{'QUESTION_ANSWER_ACTIONS_SHARE_TOOLTIP' | translate}}">
                                     <i class="fa fa-share-alt" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_SHARE' | translate}}
                                 </a>&nbsp;
                                 <a href="#/answer/edit/{{answer.id}}">
@@ -338,18 +393,19 @@
                                    ng-click="answerFlag($event, answer_index)"
                                    uib-popover-template="'popoverCustom.html'" 
                                    popover-trigger="'toggle-popover'" 
-                                   popover-placement="right">                               
+                                   popover-placement="right"
+                                   popover-append-to-body="true">  
                                     <i class="fa fa-flag" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_FLAG' | translate}}
                                 </a>&nbsp;                                 
                                 <a href
                                    id="answer-{{answer.id}}-delete"
                                    title="{{'QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP' | translate}}"
-                                   class="delete-post-link "
                                    ng-show="user.id==answer.creator.id"
                                    ng-click="answerDelete($event, answer_index)"
                                    uib-popover-template="'popoverCustom.html'" 
                                    popover-trigger="'toggle-popover'" 
-                                   popover-placement="right">
+                                   popover-placement="right"
+                                   popover-append-to-body="true">
                                     <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_DELETE' | translate}}
                                 </a>                                 
                             </div>
@@ -415,54 +471,97 @@
                     <div class="comments">                                      
 
                         <div ng-repeat="(comment_index, comment) in answer.comments | limitTo: question.answers[answer_index].commentsLimit" class="comment wrapper">
-                            <div id="comment-{{answer.id}}-{{comment.id}}" class="comment-{{comment_index}} comment-vote col-1-12 nopad">
-                                <div class="comment-score">
-                                    <span title="{{'QUESTION_COMMENT_SCORE_TOOLTIP'|translate}}" class="warm">
-                                    {{comment.score | humanizeCount}}
-                                    </span>
+                        
+                            <div 
+                                class="wrapper new-comment" 
+                                style="margin-top: 10px;" 
+                                ng-show="question.answers[answer_index].comments[comment_index].editMode">
+                                <textarea 
+                                    ng-model="question.answers[answer_index].comments[comment_index].content" 
+                                    style="width: 100%;" 
+                                    placeholder="{{'QUESTION_COMMENTS_ADD_PLACEHOLDER' | translate}}">
+                                </textarea>
+                                <button id="answer-{{answer.id}}-comment-{{comment.id}}-editComment" 
+                                        class="btn btn-primary btn-xs"
+                                        ng-click="answerCommentEdit($event, answer_index, comment_index)"
+                                        uib-popover-template="'popoverCustom.html'" 
+                                        popover-trigger="'toggle-popover'" 
+                                        popover-placement="right"
+                                        popover-append-to-body="true">
+                                    {{'QUESTION_COMMENTS_EDIT_BUTTON' | translate}}
+                                </button>
+                                <button
+                                        class="btn btn-primary btn-xs"
+                                        ng-click="question.answers[answer_index].comments[comment_index].editMode = false">
+                                    {{'QUESTION_COMMENTS_CANCEL_BUTTON' | translate}}
+                                </button>
+                            </div>                        
+                            <div ng-hide="question.answers[answer_index].comments[comment_index].editMode">
+                            
+                                <div id="answer-{{answer.id}}-comment-{{comment.id}}" class="comment-{{comment_index}} comment-vote col-1-12 nopad">
+                                    <div class="comment-score">
+                                        <span title="{{'QUESTION_COMMENT_SCORE_TOOLTIP'|translate}}">
+                                        {{comment.score | humanizeCount}}
+                                        </span>
+                                    </div>
+                                    <div class="comment-actions" >
+                                        <div class="comment-voteup" >
+                                            <a href
+                                               id="answer-{{answer.id}}-comment-{{comment.id}}-voteup"
+                                               title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
+                                               class="fa fa-thumbs-o-up"
+                                               ng-class="{on: comment.history['resiexchange_answercomment_voteup']}"                                           
+                                               ng-click="answerCommentVoteUp($event, answer_index, comment_index)"
+                                               uib-popover-template="'popoverCustom.html'" 
+                                               popover-trigger="'toggle-popover'" 
+                                               popover-placement="right"
+                                               popover-append-to-body="true"
+                                               aria-hidden="true">
+                                            </a>
+                                        </div>
+                                        <div class="comment-flag">
+                                            <a href                                         
+                                               id="answer-{{answer.id}}-comment-{{comment.id}}-flag"
+                                               title="{{'QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
+                                               class="fa fa-flag" 
+                                               ng-class="{on: comment.history['resiexchange_answercomment_flag']}"                                           
+                                               ng-click="answerCommentFlag($event, answer_index, comment_index)"
+                                               uib-popover-template="'popoverCustom.html'" 
+                                               popover-trigger="'toggle-popover'" 
+                                               popover-placement="right"
+                                               popover-append-to-body="true"                                               
+                                               aria-hidden="true">
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="comment-actions" >
-                                    <div class="comment-voteup" >
+                                <div class="comment-text col-11-12 nopad">
+                                    <div class="comment-body">
+                                        <span btf-markdown="comment.content"></span>
+                                        –&nbsp;
+                                        <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                        <span class="comment-date" dir="ltr">
+                                            <a class="comment-link" href="#/question/{{question.id}}#comment-{{answer.id}}-{{comment.id}}">
+                                                <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
+                                            </a>
+                                        </span>
+                                        <a href ng-click="question.answers[answer_index].comments[comment_index].editMode = true">
+                                            <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_EDIT' | translate}}
+                                        </a>&nbsp;                               
                                         <a href
-                                           id="answer-{{answer.id}}-comment-{{comment.id}}-voteup"
-                                           title="{{'QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
-                                           class="fa fa-thumbs-o-up"
-                                           ng-class="{on: comment.history['resiexchange_answercomment_voteup']}"                                           
-                                           ng-click="answerCommentVoteUp($event, answer_index, comment_index)"
+                                           id="answer-{{answer.id}}-comment-{{comment.id}}-delete"
+                                           title="{{'QUESTION_COMMENT_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                                           ng-show="user.id==comment.creator.id"
+                                           ng-click="answerCommentDelete($event, answer_index, comment_index)"
                                            uib-popover-template="'popoverCustom.html'" 
                                            popover-trigger="'toggle-popover'" 
                                            popover-placement="right"
-                                           aria-hidden="true">
-                                        </a>
+                                           popover-append-to-body="true">
+                                            <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_DELETE' | translate}}
+                                        </a>  
                                     </div>
-                                    <div class="comment-flag">
-                                        <a href                                         
-                                           id="answer-{{answer.id}}-comment-{{comment.id}}-flag"
-                                           title="{{'QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
-                                           class="fa fa-flag" 
-                                           ng-class="{on: comment.history['resiexchange_answercomment_flag']}"                                           
-                                           ng-click="answerCommentFlag($event, answer_index, comment_index)"
-                                           uib-popover-template="'popoverCustom.html'" 
-                                           popover-trigger="'toggle-popover'" 
-                                           popover-placement="right"                                           
-                                           aria-hidden="true">
-                                        </a>
-                                    </div>
-
                                 </div>
                             </div>
-                            <div class="comment-text col-11-12 nopad">
-                                <div class="comment-body">
-                                    <span class="comment-copy">{{comment.content}}</span>
-                                    –&nbsp;
-                                    <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
-                                    <span class="comment-date" dir="ltr">
-                                        <a class="comment-link" href="#/question/{{question.id}}#comment-{{answer.id}}-{{comment.id}}">
-                                            <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
-                                        </a>
-                                    </span>
-                                </div>
-                            </div>                       
                         </div>  
                         
                     </div>
@@ -470,7 +569,7 @@
                     <div class="comments-actions">
                         <a href
                            ng-click="question.answers[answer_index].newCommentShow = true" 
-                           class="js-add-link comments-link " 
+                           class="comments-link" 
                            title="{{'QUESTION_COMMENTS_ADD_TOOLTIP' | translate}}">
                             {{'QUESTION_COMMENTS_ADD' | translate}}
                         </a>
@@ -497,7 +596,8 @@
                                     ng-click="answerComment($event, answer_index)"
                                     uib-popover-template="'popoverCustom.html'" 
                                     popover-trigger="'toggle-popover'" 
-                                    popover-placement="right">                                    
+                                    popover-placement="right"
+                                    popover-append-to-body="true"> 
                                 {{'QUESTION_COMMENTS_ADD_BUTTON' | translate}}
                             </button>
                         </div>
@@ -531,9 +631,9 @@
                     class="user-answer-submit btn btn-primary" 
                     ng-click="questionAnswer($event)"
                     uib-popover-template="'popoverCustom.html'"
-                    popover-append-to-body="true"
                     popover-trigger="'toggle-popover'" 
-                    popover-placement="right">
+                    popover-placement="right"
+                    popover-append-to-body="true">
                 {{'QUESTION_USER_ANSWER_SUBMIT' | translate}}</button>            
         </div>
             

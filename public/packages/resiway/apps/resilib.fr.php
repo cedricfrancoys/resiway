@@ -7,38 +7,27 @@
         <meta name="title" content="ResiExchange - Des réponses pour la résilience">
         <meta name="description" content="ResiExchange est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition, la permaculture et la résilience.">
 
+        <meta itemscope itemtype="https://schema.org/WebApplication" />        
+        <meta itemprop="image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
+
+        
         <title>ResiLib</title>
 
 
-        <script src="packages/resiexchange/apps/assets/js/moment.min.js"></script>
-        <script src="packages/resiexchange/apps/assets/js/md5.js"></script>
-        
-        <script src="packages/resiexchange/apps/assets/js/angular.min.js"></script>
-        <script src="packages/resiexchange/apps/assets/js/angular-animate.min.js"></script>
-        <script src="packages/resiexchange/apps/assets/js/angular-touch.min.js"></script>
-        <script src="packages/resiexchange/apps/assets/js/angular-sanitize.js"></script>
-        <script src="packages/resiexchange/apps/assets/js/angular-cookies.js"></script>
-        <script src="packages/resiexchange/apps/assets/js/angular-route.min.js"></script>    
-        <script src="packages/resiexchange/apps/assets/js/angular-translate.min.js"></script>
-        <script src="packages/resiexchange/apps/assets/js/angular-moment.min.js"></script>        
-        
-        <script src="packages/resiexchange/apps/assets/js/ui-bootstrap-tpls-2.2.0.min.js"></script>        
-        <script src='packages/resiexchange/apps/assets/js/textAngular-rangy.min.js'></script>
-        <script src='packages/resiexchange/apps/assets/js/textAngular-sanitize.min.js'></script>
-        <script src='packages/resiexchange/apps/assets/js/textAngular.min.js'></script>   
-        <script src='packages/resiexchange/apps/assets/js/ngToast.min.js'></script>        
-        <script src='packages/resiexchange/apps/assets/js/select-tpls.min.js'></script>
+        <!-- favicons -->
+        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/favicons.html"); ?>
+        <!-- scripts -->
+        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/scripts.html"); ?>
+        <!-- styles -->
+        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>        
 
-        <script src="packages/resiexchange/apps/i18n/locale-fr.js"></script>
-        <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js"></script>
-             
-        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/font-awesome.min.css" />
-        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/ngToast.min.css" />
-        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/ngToast-animations.min.css" />
-                
-        <script src="packages/resiexchange/apps/resiexchange.min.js"></script>        
-        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css" />
+        <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
+        <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
+        <script src="packages/resiexchange/apps/resiexchange.min.js?v=<?php echo $token; ?>"></script>        
+        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css?v=<?php echo $token; ?>" />
 
         <script>
         var global_config = {

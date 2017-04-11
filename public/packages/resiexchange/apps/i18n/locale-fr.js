@@ -8,10 +8,12 @@ var translations = {
     "MODAL_YES": "Oui",
     "MODAL_NO": "Non", 
     
-    "MODAL_QUESTION_DELETE_TITLE": "Supprimer la question",
-    "MODAL_QUESTION_DELETE_HEADER": "Êtes-vous certain de vouloir supprimer cette question ?",  
-    "MODAL_ANSWER_DELETE_TITLE": "Supprimer la réponse",
-    "MODAL_ANSWER_DELETE_HEADER": "Êtes-vous certain de vouloir supprimer cette réponse ?",
+    "MODAL_QUESTION_DELETE_TITLE": "Suppression d'une question",
+    "MODAL_QUESTION_DELETE_HEADER": "Supprimer cette question ?",  
+    "MODAL_ANSWER_DELETE_TITLE": "Suppression d'une réponse",
+    "MODAL_ANSWER_DELETE_HEADER": "Supprimer cette réponse ?",
+    "MODAL_COMMENT_DELETE_TITLE": "Suppression d'un commentaire",
+    "MODAL_COMMENT_DELETE_HEADER": "Supprimer ce commentaire ?",  
 
     // Toolbar
     "TOOLBAR_PLATFORM_OTHER_APPS": "Autres applications",    
@@ -22,28 +24,34 @@ var translations = {
     // Questions  
     "QUESTION_ACTIONS_VOTEUP_TOOLTIP": "Cette question fait preuve d'un effort de recherche; elle est utile et claire",
     "QUESTION_ACTIONS_VOTEDOWN_TOOLTIP": "Cette question ne fait preuve d'aucun effort de recherche; elle est inutile ou peu claire",
-    "QUESTION_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter cette question aux favoris (deux clics pour la retirer)",
+    "QUESTION_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter cette question à tes favoris (deux clics pour la retirer)",
     "QUESTION_ACTIONS_SHARE": "Partager",
     "QUESTION_ACTIONS_SHARE_TOOLTIP": "Permalink vers cette question",
     "QUESTION_ACTIONS_EDIT": "Éditer",
     "QUESTION_ACTIONS_FLAG": "Signaler",
     "QUESTION_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur cette question pour modération",
     "QUESTION_ACTIONS_DELETE": "Supprimer",
-    "QUESTION_ACTIONS_DELETE_TOOLTIP": "Ne supprimez cette question que si vous avez une bonne raison de le faire",
+    "QUESTION_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les question que si on a une bonne raison de le faire",
 
     "QUESTION_ACTIONS_VOTEUP_OK": "Votre vote a bien été pris en compte.<br />Merci pour votre participation !",
     
     "QUESTION_COMMENT_SCORE_TOOLTIP": "Nombre de votes 'commentaire utile' reçus",
     "QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce commentaire ajoute quelque chose d'utilie à cette publication",
     "QUESTION_COMMENT_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur ce commentaire pour modération",
+    "QUESTION_COMMENT_ACTIONS_EDIT": "Éditer",
+    "QUESTION_COMMENT_ACTIONS_DELETE": "Supprimer",
+    "QUESTION_COMMENT_ACTIONS_EDIT_TOOLTIP": "Attirer l'attention sur ce commentaire pour modération",
+    "QUESTION_COMMENT_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les commentaires que si on a une bonne raison de le faire",    
 
     "QUESTION_COMMENTS_ADD": "Ajouter un commentaire",
-    "QUESTION_COMMENTS_ADD_TOOLTIP": "Utilisez les commentaires pour demander plus d'info ou pour suggérer des clarifications. Évitez de répondre aux questions dans les commentaires.",
+    "QUESTION_COMMENTS_ADD_TOOLTIP": "Utilisez les commentaires pour demander plus d'info ou pour suggérer des clarifications. Il est préférable d'éviter de répondre aux questions dans les commentaires.",
     "QUESTION_COMMENTS_ADD_PLACEHOLDER": "Faites votre commentaire ici",
     "QUESTION_COMMENTS_SHOW_ALL": "Voir tous les commentaires",  
     "QUESTION_COMMENTS_SHOW_ALL_TOOLTIP": "Cliquez pour étendre la liste à tous les commentaires",
-    "QUESTION_COMMENTS_ADD_BUTTON": "Ajouter",    
-
+    "QUESTION_COMMENTS_ADD_BUTTON": "Ajouter",
+    "QUESTION_COMMENTS_EDIT_BUTTON": "Modifier",
+    "QUESTION_COMMENTS_CANCEL_BUTTON": "Annuler",
+    
     "QUESTION_ANSWERS_COUNT_LABEL": "Réponses",
 
     "QUESTION_ANSWER_ACTIONS_VOTEUP_TOOLTIP": "Cette réponse fait preuve d'un effort de recheche; elle est utile et claire",
@@ -54,7 +62,7 @@ var translations = {
     "QUESTION_ANSWER_ACTIONS_FLAG": "Signaler",
     "QUESTION_ANSWER_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur cette réponse pour modération",
     "QUESTION_ANSWER_ACTIONS_DELETE": "Supprimer",
-    "QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP": "Ne supprimez cette réponse que si vous avez une bonne raison de le faire",
+    "QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les réponses que si on a une bonne raison de le faire",
 
     "QUESTION_USER_DETAILS_REPUTATION": "Réputation",
     "QUESTION_USER_DETAILS_BADGES_GOLD": "Badges d'or",
@@ -80,6 +88,7 @@ var translations = {
     "QUESTIONS_STATS_ANSWERS": "réponses",
     "QUESTIONS_STATS_COMMENTS": "commentaires",
     "QUESTIONS_STATS_USERS": "participants",
+
     
     // Answers 
     "ANSWER_EDIT_TITLE": "Editer une réponse",
@@ -117,7 +126,7 @@ var translations = {
     "USER_EDIT_PLACEHOLDER_PASSWORD": "mot de passe",
     "USER_EDIT_PLACEHOLDER_CONFIRM": "confirmation mot de passe",
     "USER_EDIT_PLACEHOLDER_PUBLICITY_MODE": "Publicité du nom",    
-    "USER_EDIT_PLACEHOLDER_ABOUT": "Une description de vous pour vous présenter brièvement aux autres participants",
+    "USER_EDIT_PLACEHOLDER_ABOUT": "Une description de toi pour te présenter brièvement aux autres participants",
     "USER_EDIT_PUBLICITY_MODE_FULLNAME" : "Nom complet",
     "USER_EDIT_PUBLICITY_MODE_FIRSTNAME_L": "Prénom + Initiale du nom de famille",
     "USER_EDIT_PUBLICITY_MODE_FIRSTNAME": "Prénom seul",    
@@ -184,11 +193,11 @@ var translations = {
     
     // generic errors
     "action_failed": "L'action a échoué",
-    "action_max_reached": "Vous avez atteint le maximum pour aujourd'hui",
-    "action_already_performed": "Vous ne pouvez effectuer cette action qu'une seule fois",
+    "action_max_reached": "Tu as atteint le maximum pour aujourd'hui",
+    "action_already_performed": "Cette action ne peut être réalisée qu'une seule fois",
     "request_failed": "La requête a échoué",
     "user_unidentified": "Seul les utilisateurs identifiés peuvent effectuer cette action",
-    "user_reputation_insufficient": "Votre réputation n'est pas encore suffisante pour effectuer cette action",
+    "user_reputation_insufficient": "Ta réputation n'est pas encore suffisante pour effectuer cette action (<a href=\"/resiexchange.fr#/help/topic/14\">en savoir plus</a>)",
     "user_not_admin": "Seuls les administrateurs peuvent effectuer cette action",
     "user_not_owner": "Seul le créateur peut effectuer cette action",
 
@@ -196,7 +205,7 @@ var translations = {
     // errors related to users
     "user_unknown": "Utilisateur inconnu",
     "user_is_owner": "Les consultations de votre propre profil ne sont pas prises en compte",
-    "user_not_verified": "Vous devez valider votre compte avant de pouvoir effectuer cette action",
+    "user_not_verified": "Merci de valider ton compte avant d'effectuer cette action",
     "user_already_registered": "Cette adresse email est déjà enregistrée",
     "confirm_no_match": "Le mot de passe et la confirmation sont différents",
     "user_invalid_login": "Le format de l'adresse email est invalide",
@@ -207,34 +216,34 @@ var translations = {
     "user_invalid_language": "Le format du code langue n'est pas reconnu",
 
     // errors related to questions
-    "question_missing_title": "Vous avez omis le titre de votre question",
+    "question_missing_title": "Oups, il manque un titre à la question",
     "question_missing_content": "Précisez l'objet de votre question en indiquant une description la plus claire possible (min. 128 caractères)",
     "question_missing_tags_ids": "Pour que votre question puisse être retrouvée facilement, indiquez au moins une catégorie",
     
     "question_unknown": "Question inconnue",
     "question_author_unknown": "Impossible de retrouver l'auteur de la question",
     "question_editor_unknown": "Impossible de retrouver le dernier éditeur de la question",  
-    "question_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour vos questions",
+    "question_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes questions (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
     
-    "question_title_length_invalid": "Assurez-vous que le titre soit suffisamment explicite (min. 25 caractères)",
+    "question_title_length_invalid": "Assures-toi que le titre soit suffisamment explicite (min. 25 caractères)",
     "question_content_length_invalid": "Contenu trop long (max. 4096 caractères)",
     "question_tags_count_invalid": "Pensez à associer la question à une ou plusieurs catégories (max. 5)",
 
     // errors related to answers                    
     "answer_unknown": "Réponse inconnue",
     "answer_missing_content": "Indiquez votre réponse (min. 128 caractères)",
-    "answer_content_length_invalid": "Assurez-vous que votre réponse soit suffisamment explicite, sans être trop longue (min. 128, max. 4096 caractères)",
-    "answer_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour vos réponses",
+    "answer_content_length_invalid": "Assures-toi que ta réponse soit suffisamment explicite, sans être trop longue (min. 128, max. 4096 caractères)",
+    "answer_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes réponses (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
       
     // errors related to comments
     "comment_unknown": "Commentaire inconnu",
-    "comment_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour vos commentaires",
+    "comment_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes commentaires",
 
     // errors related to categories
-    "category_missing_title": "Indiquez un titre pour cette catégorie",
-    "category_missing_description": "Précisez une description pour cette catégorie",
+    "category_missing_title": "Il faut un titre à cette catégorie",
+    "category_missing_description": "Penses à préciser une description pour cette catégorie",
     "category_unknown": "Catégorie inconnue",
     "category_title_length_invalid": "Pour des raisons de clareté, le titre des catégories ne peut excéder 64 caractères",
-    "category_description_length_invalid": "Assurez-vous que la description de la catégorie ne soit pas trop longue (max. 255 caractères)"
+    "category_description_length_invalid": "Assures-toi que la description de la catégorie ne soit pas trop longue (max. 255 caractères)"
                     
 };

@@ -18,7 +18,7 @@ module.exports = function(grunt) {
 			options: {
 				stripBanners: true
 			},            
-			css: {
+			resiexchange_css: {
 				src: 'assets/css/resiexchange/*.css',
 				dest: 'assets/css/resiexchange.css'		
 			},        
@@ -69,6 +69,16 @@ module.exports = function(grunt) {
 				quoteStyle: 3
 			},
 
+            dependencies_all: {
+                files: [{
+                    expand: true,
+                    src: 'assets/js/src/*.js',
+                    dest: 'assets/js',
+                    flatten: true,
+                    ext: '.min.js'
+                }]
+            },
+            
 			resiexchange_all: {
                 files: {
                     'resiexchange.min.js': ['resiexchange.js']
@@ -100,6 +110,6 @@ module.exports = function(grunt) {
 	grunt.registerTask('compile', ['concat:qinoa_js', 'uglify:qinoa_js']);
 */
 	grunt.registerTask('clear-cache', ['clean']);
-	grunt.registerTask('compile', ['cssmin', 'uglify']);
-	grunt.registerTask('default', ['clean', 'concat', 'cssmin', 'uglify']);
+	grunt.registerTask('compile', ['clean', 'concat', 'cssmin', 'uglify']);
+	grunt.registerTask('default', ['clean', 'concat', 'cssmin:resiexchange_css', 'uglify:resiexchange_all']);
 };
