@@ -220,9 +220,15 @@ $(document).ready(function() {
                             permanent_deletion: ($('#recycle')[0].checked)?true:false
                         };
                         
+                        qinoa.loader.show($('#main'));
+                            
                         $('#main')
                         .empty()
-                        .append($('<div/>').qSearchGrid(config));
+                        .append($('<div/>').qSearchGrid(config).on('ready', function() {
+                            qinoa.loader.hide();
+                        }));
+                        
+                        
                         $('#qn-head > .qn-access-pane').trigger('click');
                 });
 
