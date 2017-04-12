@@ -8,16 +8,34 @@ class AccessController {
 	private $permissionsTable;
 
 	private function __construct($usersTable=[]) {
-		$this->usersTable = array();
+		$this->usersTable = $usersTable;
 		$this->groupsTable = array();
 		$this->permissionsTable = array();
 	}
 
 	public static function &getInstance()	{
-		if (!isset($GLOBALS['AccessController_instance'])) $GLOBALS['AccessController_instance'] = new AccessController();
+		if (!isset($GLOBALS['AccessController_instance'])) {
+			$usersTable = array();
+            if(isset($_SESSION['AccessController_instance'])) {
+                // we need to restore object this way because at the time we do so, class might not be fully loaded
+                $incomplete_object = unserialize($_SESSION['AccessController_instance']);
+                $usersTable = $incomplete_object->usersTable;
+            }            
+			$GLOBALS['AccessController_instance'] = new AccessController($usersTable);
+		}
 		return $GLOBALS['AccessController_instance'];
 	}
 
+	public function __destruct() {
+		// to keep track of users data, we store them in the SESSION global array
+		$_SESSION['AccessController_instance'] = serialize($this);
+	}
+
+	public function __sleep() {
+		// we need to store usersTable into session array
+		return array('usersTable');
+	}
+    
 	private static function is_valid_login($login) {
 		// login must be a valid email address
 		return (bool) (preg_match('/^([_a-z0-9-]+)(\.[_a-z0-9-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,4})$/', $login, $matches));
@@ -110,8 +128,12 @@ class AccessController {
                         $this->groupsTable[$user_id] = array_merge(array(DEFAULT_GROUP_ID), $values[$user_id]['groups_ids']);
                     }
 
+                    $object_package = $om->getObjectPackageName($object_class);
 					// check if permissions are defined for the current object class
-					$acl_ids = $om->search('core\Permission', array(array('class_name', '=', $object_class), array('group_id', 'in', $this->groupsTable[$user_id]), array('deleted', '=', '0'), array('modifier', '>', '0')));
+					$acl_ids = $om->search('core\Permission', [
+                                        [ ['class_name', '=', $object_class], ['group_id', 'in', $this->groupsTable[$user_id]] ],
+                                        [ ['class_name', '=', $object_package.'\*'], ['group_id', 'in', $this->groupsTable[$user_id]] ],
+                                    ]);
                     if(count($acl_ids)) {
                         // get the user permissions
                         $values = $om->read('core\Permission', $acl_ids, array('rights'));
@@ -193,13 +215,17 @@ class AccessController {
 
 	public static function hasRight($user_id, $object_class, $objects_ids, $right_flags) {
  		$ac = &self::getInstance();
-// todo: improve this by using bulk queries in method 'getUserPermissions'
 		$user_rights = DEFAULT_RIGHTS;
         if(!is_array($objects_ids)) $objects_ids = array($objects_ids);
 		// we return the most restrictive permission on the given group of object
-		foreach($objects_ids as $object_id) {
-			$user_rights &= $ac->getUserPermissions($user_id, $object_class, $object_id);
-		}
+        if(CONTROL_LEVEL == 'class') {
+            $user_rights |= $ac->getUserPermissions($user_id, $object_class);
+        }
+        else if(CONTROL_LEVEL == 'object') {
+            foreach($objects_ids as $object_id) {
+                $user_rights &= $ac->getUserPermissions($user_id, $object_class, $object_id);
+            }
+        }
 		return (bool) ($user_rights & $right_flags);
 	}
 }

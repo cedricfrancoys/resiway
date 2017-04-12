@@ -6210,9 +6210,7 @@ qinoa.GridCells = {
 		.addClass('ui-state-default')
 		.attr('href', '#');
 		$.each(conf.fields, function (i, field) {
-			if(i > 0) {
-				$widget.append( (i > 1)? ', '+conf.value[field] : conf.value[field] );
-			}
+            $widget.append( (i > 0)? ', '+conf.value[field] : conf.value[field] );
 		});
 		$widget.on('click', function() {
 // todo : temporary (might change after edition)
@@ -6692,7 +6690,7 @@ $.fn.qGrid = function(conf){
 //						$row.append($('<td/>').text(values[column.id]));
 
 						var value = {};
-						// export required required by the widget
+						// export fields required by the widget
 						$.each(column.fields, function (i, field) {
 							value[field] = values[field];
 						});					

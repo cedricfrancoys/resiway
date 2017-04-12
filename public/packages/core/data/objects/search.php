@@ -46,7 +46,7 @@ $params = announce(
 								'domain'		=> array(
 													'description' => 'The domain holds the criteria that results have to match (serie of conjunctions)',
 													'type' => 'array',
-													'default' => array(array())
+													'default' => [[]]
 													),
 								'order'		=> array(
 													'description' => 'Column to use for sorting results.',
@@ -60,13 +60,13 @@ $params = announce(
 													),
 								'start'		=> array(
 													'description' => 'The row from which results have to start.',
-													'type' => 'int',
-													'default' => '0'
+													'type' => 'integer',
+													'default' => 0
 													),
 								'limit'		=> array(
 													'description' => 'The maximum number of results.',
-													'type' => 'int',
-													'default' => '0'
+													'type' => 'integer',
+													'default' => 25
 													),													
 								'lang'			=> array(
 													'description '=> 'Specific language for multilang field.',

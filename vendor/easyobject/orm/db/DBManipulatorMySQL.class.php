@@ -240,7 +240,7 @@ class DBManipulatorMySQL extends DBManipulator {
 		if(!empty($order)) {
             if(!is_array($order)) $order = [$order];
             foreach($order as $id => $field) $order[$id] = DBManipulatorMySQL::escapeFieldName($field);
-            $sql .= ' ORDER BY '.implode(' '.$sort.',', $order);
+            $sql .= ' ORDER BY '.implode(' '.$sort.',', $order).' '.$sort;
         }
 
 		// limit clause

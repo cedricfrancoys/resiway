@@ -61,16 +61,9 @@ $params = announce(
 			
 $params = get_params(array('ui'=>user_lang()));
 
-$user_key = user_key();
 
 $html = file_get_contents('packages/core/html/templates/login.html');
 
-    // standard cleaning: remove non-standard tags and attributes (class)
-    $cleaner = new HtmlPurifier(HTMLPurifier_Config::createDefault());
-    // $html = $cleaner->purify($html);
 
-$doc = phpQuery::newDocumentHTML($html, 'UTF-8');
 
-pq('#user-key')->val($user_key);
-
-print($doc);
+print($html );

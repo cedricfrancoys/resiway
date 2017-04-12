@@ -433,7 +433,7 @@ $.fn.qGrid = function(conf){
 //						$row.append($('<td/>').text(values[column.id]));
 
 						var value = {};
-						// export required required by the widget
+						// export fields required by the widget
 						$.each(column.fields, function (i, field) {
 							value[field] = values[field];
 						});					

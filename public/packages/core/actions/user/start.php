@@ -3,19 +3,20 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../qn.api.php');
 
+use config\QNLib as QNLib;
+use html\HtmlWrapper as HtmlWrapper;
+
 // force silent mode
- set_silent(true);
+set_silent(true);
 
 
 // announce script and fetch parameters values
-$params = announce(	
+$params = QNLib::announce(	
 	array(	
     'description'	=>	"Displays homepage for current user."
 	)
 );
 
-
-load_class('utils/HtmlWrapper');
 
 $html = new HtmlWrapper();
 

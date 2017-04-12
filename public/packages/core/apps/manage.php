@@ -209,9 +209,9 @@ $html->add('
 	<div id="sliding-pane">
 		<div class="content clearfix">
 			<div class="left">
-				<h1>Welcome to easyForge</h1>
+				<h1>Welcome to Qinoa</h1>
 				<h2>easy web applications</h2>
-				<p class="grey">easyForge is a framework for making web applications development fast and easy.</p>
+				<p class="grey">Qinoa is a framework for making web applications development fast and easy.</p>
 				<h2>Current application</h2>
 				<p class="grey">Current application is <b>{}</b><br />
 				See all available apps <a href="index.php?show=core_utils" target=_blank">here &raquo;</a></p>

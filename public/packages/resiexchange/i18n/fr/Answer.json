@@ -1,0 +1,10 @@
+{
+	"model": {
+		"created":{"label":"Date de création"},
+		"editor":{"label":"Editeur", "help":"Dernier utilisateur à avoir édité la réponse."},
+		"question_id.title":{"label":"Question"},
+		"creator.display_name":{"label":"Auteur"}        
+	},
+	"view": {
+	}
+}

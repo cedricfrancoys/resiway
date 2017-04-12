@@ -77,4 +77,4 @@ else {
 // send json result
 header('Content-type: application/json; charset=UTF-8');
 // todo : on success, we should rather return the user object (with all simple fields)
-echo json_encode(array('result' => $result, 'url' => 'index.php?show=core_user_start', 'error_message_ids' => $error_message_ids), JSON_FORCE_OBJECT);
+echo json_encode(array('result' => $result, 'url' => 'index.php?do=core_user_start', 'error_message_ids' => $error_message_ids), JSON_FORCE_OBJECT);
