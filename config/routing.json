@@ -3,6 +3,7 @@
     "/resiexchange":"/resiexchange.fr",
     "/resiexchange.fr/:any":"/resiexchange.fr",
     "/resiway":"/resiway.fr",
+    "/resilib":"/resilib.fr",
     "/question/:id":"/resiexchange.fr#/question/:id",
     "/user/confirm/:code":"/resiexchange.fr#/user/confirm/:code",
     "/user/password/:code":"/resiexchange.fr#/user/password/:code",
