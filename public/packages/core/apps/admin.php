@@ -220,10 +220,9 @@ $(document).ready(function() {
                             permanent_deletion: ($('#recycle')[0].checked)?true:false
                         };
                         
-                        qinoa.loader.show($('#main'));
+                        qinoa.loader.show($('#main').empty());
                             
                         $('#main')
-                        .empty()
                         .append($('<div/>').qSearchGrid(config).on('ready', function() {
                             qinoa.loader.hide();
                         }));
