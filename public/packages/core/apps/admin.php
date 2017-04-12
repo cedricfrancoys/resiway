@@ -126,7 +126,7 @@ html, body {
     padding: 0;
     left: 0;
     top: 0;
-    z-index: 0;
+    z-index: -1;
     height: 100% !important;
     width: 100% !important;
     background: #f4f2f4;
@@ -147,6 +147,8 @@ html, body {
 }
 
 #main {
+    position: absolute;
+    z-index: 100;
     width: 100%;
     height: 100%;
 }

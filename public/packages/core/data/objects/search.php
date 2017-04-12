@@ -66,7 +66,7 @@ $params = announce(
 								'limit'		=> array(
 													'description' => 'The maximum number of results.',
 													'type' => 'integer',
-													'default' => 25
+													'default' => 0
 													),													
 								'lang'			=> array(
 													'description '=> 'Specific language for multilang field.',
