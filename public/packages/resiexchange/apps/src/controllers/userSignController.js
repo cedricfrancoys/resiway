@@ -105,14 +105,14 @@ angular.module('resiexchange')
         ctrl.signUp = function() {
             if($scope.username.length == 0 || $scope.firstname.length == 0) {
                 if($scope.firstname.length == 0) {
-                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Oups, il manque ton prénom.' });
+                    $scope.signUpAlerts.push({ type: 'warning', msg: 'Oups, il manque votre prénom.' });
                 }                
                 else if($scope.username.length == 0) {
                     $scope.signUpAlerts.push({ type: 'warning', msg: 'Il faut aussi un email comme identifiant.' });
                 }
             }
             else if(!$scope.accept) {
-                $scope.signUpAlerts.push({ type: 'warning', msg: 'Pour pouvoir participer il faut accepter les conditions d\'utilisation.' });
+                $scope.signUpAlerts.push({ type: 'warning', msg: 'Pour pouvoir participer il est nécessaire d\'accepter les conditions d\'utilisation.' });
             }
             else {
                 ctrl.running = true;

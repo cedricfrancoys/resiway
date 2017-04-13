@@ -1,69 +1,59 @@
 <?php
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
+require_once('../resi.api.php');
 
 use config\QNlib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
 use html\HtmlTemplate as HtmlTemplate;
 
 
-/*
-
-$params = [
-    'code' => 'dGVzdGVyQGV4YW1wbGUuY29tOzAwMDAwMDAwYzU1OWMyNTA0N2JiNjk2OGMzYTE3NzQz',
-    'increment' => '+5'
-    ];
-$template = '
-<var id="subject" title="réputation mise à jour"></var>
-<p>
-Bonjour <var id="username"></var>,<br />
-<br />
-<var if="false">always shown</var>
-<var if="score &gt; 0">score greater than 0</var>
-<var if="increment &lt; 0">increment lower than 0</var><var if="increment &gt; 0">increment greater than 0</var>
-<br />
-Ceci est un message automatique envoyé depuis resiway.org suite à une demande de réinitialisation de mot de passe.<br />
-Si vous n\'êtes pas à l\'origine de cette requête, ignorez simplement ce message.<br />
-<br />
-Si vous souhaitez continuer et définir un nouveau mot de passe maintenant, veuillez cliquer sur le lien ci-dessous.<br /> 
-</p>
-
-';
-
-$subject = '';
-$template = new HtmlTemplate($template, [
-                                'subject'		=>	function ($params, $attributes) use(&$subject) {
-                                                        $subject = $attributes['title'];
-                                                        return '';
-                                                    },
-                                'score'		    =>	function ($params) {
-                                                        return '+5';
-                                                    },
-                                'username'		=>	function ($params) {
-                                                        return 'cedric';
-                                                    },
-                                'confirm_url'	=>	function ($params) {
-                                                        return "<a href=\"http://resiway.gdn/resiexchange.fr#/user/confirm/{$params['code']}\">Valider mon adresse email</a>";
-                                                        return "<a href=\"http://resiway.gdn/resiexchange.fr#/user/password/{$params['code']}\">Modifier mon mot de passe</a>";
-                                                    }
-                            ], 
-                            $params);
-                            
-$body = $template->getHtml();
-    
-
-print($subject);
-print($body);
-*/
 set_silent(false);
 
 $om = &ObjectManager::getInstance();
 
-$uid = 3;
-$answers_ids = $om->search('resiexchange\Answer', ['creator', '=', $uid]);
-$res = $om->read('resiexchange\Answer', $answers_ids, ['question_id']);
-$questions_ids = array_map(function($a){return $a['question_id'];}, $res);
+$last_week = date("Y-m-d H:i:s", mktime( date("H"), date("i"), date("s"), date("n"), date("j")-7, date("Y") ));
+
+$ids = $om->search('resiway\User', [['verified', '=', '0'], ['created', '<=', $last_week], ['last_login', '<=', $last_week]]);
+
+if($ids > 0 && count($ids) > 0) {
+
+    $objects = $om->read('resiway\User', $ids, ['firstname', 'login', 'password', 'language']);
+
+        foreach($objects as $user_id => $user_data) {
+            
+            // subject of the email should be defined in the template, as a <var> tag holding a 'title' attribute
+            $subject = '';
+            // read template according to user prefered language
+            $file = "packages/resiway/i18n/{$user_data['language']}/mail_user_confirm_reminder.html";
+            if(!($html = @file_get_contents($file, FILE_TEXT))) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
+            $template = new HtmlTemplate($html, [
+                                        'subject'		=>	function ($params, $attributes) {
+                                                                global $subject;
+                                                                $subject = $attributes['title'];
+                                                                return '';
+                                                            },
+                                        'username'		=>	function ($params, $attributes) {
+                                                                return $params['firstname'];
+                                                            },
+                                        'confirm_url'	=>	function ($params, $attributes) {
+                                                                $code = ResiAPI::credentialsEncode($params['login'],$params['password']);
+                                                                $url = QNlib::get_url(true, false)."user/confirm/{$code}";
+                                                                return "<a href=\"$url\">{$attributes['title']}</a>";
+                                                            }
+                                        ], 
+                                        $user_data);
+            // parse template as html
+            $body = $template->getHtml();
+                        
+                        echo $subject;
+                        echo $body;
+                        echo "<br />\n";
+                        
+            // send
 
 
-$res = $om->search('resiexchange\Question', [['id', 'in', $questions_ids], ['count_answers', '=', 1]]);
-
-print_r($res);
+            // store last_login                        
+            //$om->write('resiway\User', $user_id, ['last_login' => date('Y-m-d H:i:s')]);
+        }
+}
+else echo 'no match';

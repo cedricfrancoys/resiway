@@ -99,8 +99,7 @@ try {
     $file = "packages/resiway/i18n/{$user_data['language']}/mail_user_confirm.html";
     if(!($html = @file_get_contents($file, FILE_TEXT))) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
     $template = new HtmlTemplate($html, [
-                                'subject'		=>	function ($params, $attributes) {
-                                                        global $subject;
+                                'subject'		=>	function ($params, $attributes) use (&$subject) {
                                                         $subject = $attributes['title'];
                                                         return '';
                                                     },
