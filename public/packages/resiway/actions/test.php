@@ -37,7 +37,7 @@ if($ids > 0 && count($ids) > 0) {
                                                             },
                                         'confirm_url'	=>	function ($params, $attributes) {
                                                                 $code = ResiAPI::credentialsEncode($params['login'],$params['password']);
-                                                                $url = QNlib::get_url(true, false)."user/confirm/{$code}";
+                                                                $url = "https://www.resiway.org/resiexchange.fr"."#/user/confirm/{$code}";
                                                                 return "<a href=\"$url\">{$attributes['title']}</a>";
                                                             }
                                         ], 
