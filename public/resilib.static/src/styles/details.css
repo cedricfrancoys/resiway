@@ -1,0 +1,76 @@
+table.reference {
+	border: 0;
+	padding: 0;
+	margin: 0;
+    border-collapse: collapse;
+	text-align: left;
+    font-family: "Arial";
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: none;
+    vertical-align: baseline;
+}
+
+table.reference th {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+    border-color: #FFFFFF;
+    border-style: solid;
+    border-width: 1px;
+    padding: 8px;
+	height: 60px;
+    font-size: 14pt;	
+    vertical-align: middle;		
+}
+
+table.reference th.left, table.reference td.left{
+    width: 155.2pt;
+}
+
+table.reference th.left{
+    background: #F3F3F3 url('../img/resilib_logo.png') no-repeat center;
+    background-size: 70%;
+}
+
+table.reference th.right, table.reference td.right {
+    width: 447.8pt;
+}
+
+table.reference th.right{
+	background-color: #498AAA;
+	background-color: #445EAC;	
+	background-color: #246E1C;	
+	background-color: #017FAF;		
+	color: #FFFFFF;
+	color: #F3F3F3;
+    font-weight: bold;
+}
+
+table.reference td.left, table.reference td.right {
+    border-color: #FFFFFF;
+    border-style: solid;
+    border-width: 1pt;
+    padding: 5pt;
+    font-size: 10pt;	
+}
+
+table.reference td.left {
+	background-color: #ECBE13;
+	background-color: #8CA6BC;	
+	background-color: #8CBCA6;
+    background-color: #9BBFCD;    
+	color: #FFFFFF;
+    font-weight: bold;
+    vertical-align: top;	
+}
+
+table.reference td.right {
+	background-color: #F3F3F3;
+	color: #333333;
+    vertical-align: middle;	
+}
+
+table.reference td.right a {
+	color: blue !important;
+}

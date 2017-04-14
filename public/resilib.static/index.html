@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr-FR" ng-app="resilib">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link media="all" rel="stylesheet" type="text/css" href="src/styles/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+<link media="all" rel="stylesheet" type="text/css" href="src/styles/chosen.css" />
+<link media="all" rel="stylesheet" type="text/css" href="src/styles/main.css" />
+<link media="all" rel="stylesheet" type="text/css" href="src/styles/details.css" />
+<link media="all" rel="stylesheet" type="text/css" href="src/styles/result.css" />
+<link media="all" rel="stylesheet" type="text/css" href="src/styles/font-awesome.min.css"  />
+
+<script type="text/javascript" src="src/scripts/jquery.min.js"></script>
+<script type="text/javascript" src="src/scripts/jquery-ui.min.js"></script>
+<script type="text/javascript" src="src/scripts/angular.min.js"></script>
+<script type="text/javascript" src="src/scripts/angular-route.min.js"></script>
+
+<script type="text/javascript" src="src/scripts/chosen.jquery.min.js"></script>
+<script type="text/javascript" src="src/scripts/resilib.js"></script>
+
+<script type="text/javascript" src="src/i18n/resilib.i18n.js"></script>
+
+</head>
+
+<body ng-controller="mainCtrl">
+
+    <div app-loader class="loader" ng-hide="domReady">Loading application...</div>
+
+    <div id="details_dialog" ng-hide="!selectedDocument" ng-cloak>
+        
+        <!-- details template start -->    
+        <table class="details reference" cellspacing="0" cellpadding="0">
+            <tr>
+                <th class="left"></th>
+                <th class="right">{{ selectedDocument.title }}</th>
+            </tr>
+            <tr>
+                <td class="left">{{ ui.i18n['details-author'] }}</td>
+                <td class="right">{{ selectedDocument.author }}</td>
+            </tr>
+            <tr>
+                <td class="left">{{ ui.i18n['details-links'] }}</td>
+                <td class="right">
+                    <i class="fa fa-cloud-download" aria-hidden="true"></i>
+                    <a href="data/download.php?id={{ selectedDocument.id }}" type="application/pdf" download="{{ selectedDocument.id }}.pdf" target="_self">{{ ui.i18n['details-links-download'] }}</a>
+                    
+                    &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;
+                    <i class="fa fa-eye" aria-hidden="true"></i>
+                    <a href="{{ selectedDocument['url-download'] }}" type="application/pdf" target="_blank">{{ ui.i18n['details-links-see'] }}</a>                    
+
+                    &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;
+                    <i class="fa fa-file-code-o" aria-hidden="true"></i>
+                    <a href="data/documents/{{ selectedDocument.id }}/src" target="_blank">{{ ui.i18n['details-links-source'] }}</a>  
+
+                    &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;
+                    <i class="fa fa-link" aria-hidden="true"></i>
+                    <a href="#{{ selectedDocument.id }}" target="_blank">{{ ui.i18n['details-links-direct'] }}</a> 
+                    
+                    &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;                    
+                    <!-- <a href="#{{ selectedDocument.id }}" target="_blank">{{ ui.i18n['details-links-share'] }}</a>  --> 
+                      
+                    <i class="fa fa-facebook-square" aria-hidden="true"></i>
+                    <a href="https://www.facebook.com/dialog/feed?
+app_id=1786954014889199
+&display=page
+&redirect_uri=http%3A//www.resiway.org/resilib
+&caption=ResiLib - {{ selectedDocument.title }}
+&link=http%3A//www.resiway.org/resilib/%23{{ selectedDocument.id }}
+&picture=http%3A//www.resiway.org/resilib/data/documents/{{ selectedDocument.id }}/thumbnail.jpg
+&description={{ selectedDocument.description }}" target="_blank">{{ ui.i18n['details-links-share'] }}</a>
+  
+                </td>
+            </tr>           
+            <tr>
+                <td class="left">{{ ui.i18n['details-language'] }}</td>
+                <td class="right">{{ languages[selectedDocument.language] }}</td>
+            </tr>
+            <tr>
+                <td class="left">{{ ui.i18n['details-description'] }}</td>
+                <td class="right">{{ selectedDocument.description }}</td>
+            </tr>            
+            <tr>
+                <td class="left">{{ ui.i18n['last-update'] }}</td>
+                <td class="right">{{ selectedDocument.version }}</td>
+            </tr>
+            <tr>
+                <td class="left">{{ ui.i18n['details-license'] }}</td>
+                <td class="right">{{ selectedDocument.license }}</td>
+            </tr>
+            <tr>
+                <td class="left">{{ ui.i18n['details-size'] }}</td>
+                <td class="right">{{ selectedDocument['file-size'] }} / {{ selectedDocument['file-pages'] }} p.</td>
+            </tr>
+            <tr>
+                <td class="left">{{ ui.i18n['details-url-origin'] }}</td>
+                <td class="right">{{ selectedDocument['url-origin'] }}</td>
+            </tr>
+            <tr>
+                <td class="left">{{ ui.i18n['categories'] }}</td>
+                <td class="right">
+                    <ul style="padding: 0; margin: 0; padding-left: 10pt;">
+                        <li ng-repeat="(category_id, category) in selectedDocument['categories']">{{ category_id }}</li>
+                    </ul>
+                </td>
+            </tr>
+
+        </table>
+       <!-- details template end -->
+            
+    </div>
+
+    <div id="root" class="simple-tabs" style="display: none;">
+        <div style="position: absolute; top: 10px; right: 0px; margin-right: 50px; font-family: Lucida Grande,Arial; font-size: 14px;">
+        <a href="#" ng-click="ui.lang = 'fr'">français</a> | <a href="#" ng-click="ui.lang = 'en'">english</a> | <a href="#" ng-click="ui.lang = 'es'">español</a>
+        </div>
+        
+        <ul class="simpleTabsNavigation">
+            <li class="current"><a href="#page-1">{{ ui.i18n.search }}</a></li>
+            <li><a href="#page-2">{{ ui.i18n.presentation }}</a></li>
+            <li><a href="#page-3">{{ ui.i18n.contribute }}</a></li>
+        </ul>
+        <div id="page-1" class="simpleTabsContent" style="display: block;">
+
+            <div style="text-align: center; font-size: 18pt; font-family: Lucida Grande,Arial;">
+                <span style="font-size: 15pt;" class="fa fa-file-text-o"></span>&nbsp;110 {{ ui.i18n['documents'].toLowerCase() }}&nbsp;&nbsp;&nbsp;&nbsp;
+                <span style="font-size: 18pt;"class="fa fa-folder-o"></span>&nbsp;94 {{ ui.i18n['categories'].toLowerCase() }}&nbsp;&nbsp;&nbsp;&nbsp;       
+                <span style="font-size: 18pt;" class="fa fa-language"></span>&nbsp;3 {{ ui.i18n['languages'].toLowerCase() }}
+            </div>
+            <div style="position: relative; display: table; margin: 0; padding: 0; height: 100px; width: 100%;" >
+                <div class="quick-search-dock">
+                    <fieldset>
+                        <legend>{{ ui.i18n['main-categories'] }}</legend>
+                        <img class="hover-zoom" ng-repeat="(item_id, item) in quickSearchItems" ng-click="updateResult({ categories: [item.category] })" ng-src="{{ item.picture }}" alt="item_id" />
+                    </fieldset>
+                </div>
+                <div class="logo-dock">
+                    <img src="src/img/resilib_logo.png" />
+                </div>
+            </div>
+
+            <div id="container">
+
+                <table id="inner">
+                <tr>
+                    <td id="left_pane">
+                        <div search-tabs id="tabs" ng-sticky>
+                        
+                          <ul>
+                            <li><a href="#tabs-1">{{ ui.i18n.categories }}</a></li>
+                            <li><a href="#tabs-2">{{ ui.i18n.search }}</a></li>
+                          </ul>
+                          
+                          <div id="tabs-1">
+
+                            <!-- category tree template start -->
+                            <script type="text/ng-template" id="categoryTree">
+                                <a name="{{ category_id }}" href="#" ng-click="updateResult({ categories: [category_id] })">{{ category.title }}</a>
+                                <ul ng-if="category.categories">
+                                    <li ng-repeat="(category_id, category) in category.categories" ng-include="'categoryTree'"></li>
+                                </ul>
+                            </script>
+                            <ul category-tree id="menu" style="display: none;">
+                                <li ng-repeat="(category_id, category) in categories" ng-if="category_id != 'flat'" ng-include="'categoryTree'"></li>
+                            </ul>
+                            <!-- category tree template end -->
+
+                          </div>
+                          
+                          <div id="tabs-2">
+                            <form id="search_form" ng-submit="updateResult()">
+                                <div style="font-weight: bold; height: 25px;">{{ ui.i18n['search-lang'] }}</div>
+                                <div style="width: 200px; display: block;">
+                                  <select id="widget_lang" name="language" data-placeholder="{{ ui.i18n['search-select-lang'] }}" class="chosen-select">
+                                    <option value="" default></option>
+                                    <option value="fr">Français</option>
+                                    <option value="en">Anglais</option>
+                                    <option value="es">Espagnol</option>
+                                  </select>
+                                </div>
+                                <br />
+                                <div style="font-weight: bold; height: 25px;">{{ ui.i18n['search-category'] }}</div>
+                                <div style="width: 200px; display: block;">
+                                    <select id="widget_categories" name="categories" drop-width="500px" data-placeholder="{{ ui.i18n['search-select-categories'] }}" class="chosen-select" multiple="multiple">
+
+                                        <!-- category select template start -->
+                                        <option ng-repeat="(category_id, category) in categories.flat" value="{{ category_id }}">{{ category.title }}</option>
+                                        <!-- category select template end -->
+
+                                    </select>
+                                </div>
+                                <br />
+                                <div style="font-weight: bold; height: 25px;">{{ ui.i18n['search-author'] }}</div>
+                                <div><input id="widget_author" style="width: 198px;" name="author" type="text" value="" placeholder="{{ ui.i18n['search-input-author'] }}"></div>
+                                <br />
+                                <div style="font-weight: bold; height: 25px;">{{ ui.i18n['search-title'] }}</div>
+                                <div><input id="widget_title" style="width: 198px;" name="title" type="text" value="" placeholder="{{ ui.i18n['search-input-title'] }}"></div>
+                                <br />
+                                <div style="width:100%; text-align: right;"><button type="submit" class="button">Ok</button></div>
+                                <input style="display: none;" type="reset" />
+                            </form>
+                          </div>
+                        </div>
+                    </td>
+                    <td id="main">
+                        <section id="result-grid">
+
+                            <div id="result-pager">
+                                <div style="position: absolute; top: 1pt; height: 20pt; left: 50%; margin-left: -50pt;">
+                                    <button type="button" class="ngPagerButton" ng-click="pageToFirst()" ng-disabled="cantPageBackward()" title="First Page"><div class="fa fa-angle-double-left"></div></button>
+                                    <button type="button" class="ngPagerButton" ng-click="pageBackward()" ng-disabled="cantPageBackward()" title="Previous Page"><div class="fa fa-angle-left"></div></button>
+                                    <span ng-bind="pagingOptions.currentPage"></span>
+                                    <span>/ </span><span  ng-bind="pagingOptions.totalPages"></span>
+
+                                    <button type="button" class="ngPagerButton" ng-click="pageForward()" ng-disabled="cantPageForward()" title="Next Page"><div class="fa fa-angle-right"></div></button>
+                                    <button type="button" class="ngPagerButton" ng-click="pageToLast()" ng-disabled="cantPageForward()" title="Last Page"><div class="fa fa-angle-double-right"></div></button>
+                                </div>
+                                <div style="position: absolute; top: 5pt; height: 20pt; left: 2%;">
+                                    <span>{{ ui.i18n['grid-documents'] }}: </span><span>{{ ((pagingOptions.currentPage-1)*pagingOptions.resultsPerPage)+1 }}</span> - <span>{{ min(pagingOptions.totalRecords, (((pagingOptions.currentPage-1)*pagingOptions.resultsPerPage) + pagingOptions.resultsPerPage*1)) }}</span> of <span ng-bind="pagingOptions.totalRecords"></span>
+                                </div>
+                                <div style="position: absolute; top: 2pt; height: 20pt; right: 2%;">
+                                    <span>{{ ui.i18n['grid-show'] }}:&nbsp;</span>
+                                    <select data-ng-model="pagingOptions.resultsPerPage" ng-change="updateResult(pagingOptions.criteria)">
+                                        <option ng-selected="{{pagingOptions.resultsPerPage == 10}}" value="10">10</option>
+                                        <option ng-selected="{{pagingOptions.resultsPerPage == 25}}" value="25">25</option>
+                                        <option ng-selected="{{pagingOptions.resultsPerPage == 50}}" value="50">50</option>
+                                        <option ng-selected="{{pagingOptions.resultsPerPage == 100}}" value="100">100</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div id="loader" class="loader ng-hide">{{ ui.i18n.loading }}</div>
+
+                            <table id="result">
+
+                                <!-- records template start -->
+                                <tr ng-repeat="(document_id, document) in documents" style="border-top: 1px solid darkgrey;">
+                                    <td width="50">
+                                        <a href="{{ document['url-download'] }}" target="_blank"><img width="100" height="133" ng-src="{{document['file-thumbnail']}}" border="1" /></a>
+                                    </td>
+                                    <td class="summary">
+                                        <div class="title">
+                                            <a class="display-details" ng-click="displayDetails( document_id )">{{document.title}}</a>
+                                        </div>
+                                        <div class="author">
+                                            <span>{{document.author}}</span>
+                                        </div>
+                                        <div class="version">{{ ui.i18n['last-update'] }}: 
+                                            <span>{{document.version}}</span>
+                                        </div>
+                                        <div class="categories">{{ ui.i18n.categories }}: 
+                                            <span ng-repeat="(category_id, category) in document.categories"><a href="#" ng-click="updateResult({ categories: [category_id] })" title="{{ category_id }}">{{ categories.flat[category_id].title.substr(categories.flat[category_id].title.lastIndexOf('/')+1) }}</a>&nbsp;&nbsp;</span>
+                                        </div>
+                                        <div class="actions">{{ ui.i18n['result-search'] }}:
+                                            <a href="#" class="search-author" ng-click="updateResult({ author: document_id.substr(0, document_id.indexOf('_', 0)) })" >{{ ui.i18n['author-publications'] }}</a>
+                                            <a href="#" class="search-category" ng-click="updateResult({ categories: keys(document.categories) })">{{ ui.i18n['categories-publications'] }}</a>
+                                        </div>
+                                    </td>
+                                 </tr>
+                                 <!-- records template end -->
+
+                            </table>
+                        </section>
+
+                    </td>
+                </tr>
+                </table>
+            </div>
+        </div>
+        <div id="page-2" class="simpleTabsContent" ng-include="'src/i18n/presentation.fr.html'"></div>
+        <div id="page-3" class="simpleTabsContent" ng-include="'src/i18n/contribute.fr.html'"></div>
+    </div>
+
+    <div id="footer" ng-hide="!domReady">Août 2016 &nbsp;&bull;&nbsp; 110 documents référencés dans 3 langues et 94 catégories<br />Resilib est une initiative citoyenne &nbsp;&bull;&nbsp; Le contenu de ce site est librement partageable </div>
+
+</body>
+</html>
