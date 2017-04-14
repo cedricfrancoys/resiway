@@ -2,20 +2,22 @@
 <html lang="fr-FR" ng-app="resilib" ng-controller="rootController as rootCtrl">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/ui/1.10.4/themes/smoothness/jquery-ui.css" />
-<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/chosen.css" />
-<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/main.css" />
-<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/details.css" />
-<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/result.css" />
-<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/font-awesome.min.css"  />
 
 
+        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/font-awesome.min.css" />
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/bootstrap.min.css" />
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/ngToast.min.css" />
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/ngToast-animations.min.css" />
         
         <script src="packages/resiexchange/apps/i18n/locale-fr.js"></script>
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css" />
+
+
+<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/chosen.css" />
+<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/main.css" />
+<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/details.css" />
+<link media="all" rel="stylesheet" type="text/css" href="resilib.static/src/styles/result.css" />
         
 <script type="text/javascript" src="resilib.static/src/scripts/jquery.min.js"></script>
 <script type="text/javascript" src="resilib.static/src/scripts/jquery-ui.min.js"></script>
