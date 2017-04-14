@@ -101,7 +101,7 @@
             </div>
             <div id="user-btn" class="user-btn ng-hide" ng-class="{open: ctrl.userDropdown}" ng-click="toggleUserDropdown()" ng-show="user.id">
                 <span class="user-avatar pull-left">
-                  <img ng-src="{{rootCtrl.avatarURL(user.avatar_url, 30)}}" class="center-block">
+                  <img ng-if="user.avatar_url" ng-src="{{rootCtrl.avatarURL(user.avatar_url, 30)}}" class="center-block">
                 </span>
                 {{ user.display_name }}
                 <i class="fa fa-caret-down" aria-hidden="true"></i>          
