@@ -12,6 +12,8 @@ $token = md5($rev.rand(1, 100));
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta name="title" content="ResiWay - La plateforme pour la résilience">        
         <meta name="description" content="ResiWay développe et propose des outils collaboratifs libres pour la résilience">    
+
+        <link rel="alternate" href="https://www.resiway.org/resiway.fr" hreflang="fr"/>
         
         <meta itemscope itemtype="https://schema.org/WebApplication" />        
         <meta itemprop="image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />

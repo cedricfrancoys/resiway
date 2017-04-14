@@ -49,7 +49,7 @@ if($ids > 0 && count($ids) > 0) {
                         echo $body;
                         echo "<br />\n";
                         
-            // send
+            // send email
 
 
             // store last_login                        
