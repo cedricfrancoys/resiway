@@ -73,13 +73,10 @@ try {
                         
             $mailer = Swift_Mailer::newInstance($transport);
 
-            // $mailer->send($message);
+            $mailer->send($message);
 
-            print($user_data['login']);
-            print($subject);
-            print($body);
             // store sending date into last_login                        
-            // $om->write('resiway\User', $user_id, ['last_login' => date('Y-m-d H:i:s')]);
+            $om->write('resiway\User', $user_id, ['last_login' => date('Y-m-d H:i:s')]);
         }
     }
     else $error_message_ids = ['no match'];
