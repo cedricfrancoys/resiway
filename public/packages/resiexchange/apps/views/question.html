@@ -72,7 +72,7 @@
                 <div class="footer">
                     <div class="meta">
                         <div class="actions">
-                            <a href="#/question/{{question.id}}/{{question.title_url}}" 
+                            <a href="/question/{{question.id}}/{{question.title_url}}" 
                                title="{{'QUESTION_ACTIONS_SHARE_TOOLTIP' | translate}}"
                                class="short-link">
                                 <i class="fa fa-share-alt" aria-hidden="true"></i> {{'QUESTION_ACTIONS_SHARE' | translate}}
@@ -335,8 +335,8 @@
                  class="answer-{{answer_index}} answer wrapper" 
                  ng-class="{on: (user.id==answer.creator.id)}"
                  itemscope="" 
-                 itemtype="s//schema.org/Answer" 
-                 itemprop="acceptedAnswer">
+                 itemtype="https://schema.org/Answer" 
+                 itemprop="suggestedAnswer">
                 <div class="vote col-1-12 nopad">                                                        
                     <div class="voteup" 
                          ng-class="{on: answer.history['resiexchange_answer_voteup']}">

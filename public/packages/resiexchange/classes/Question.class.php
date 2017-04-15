@@ -88,7 +88,9 @@ class Question extends \easyobject\orm\Object {
             'answers_ids'           => array(
                                         'type'		    => 'one2many', 
                                         'foreign_object'=> 'resiexchange\Answer', 
-                                        'foreign_field'	=> 'question_id'
+                                        'foreign_field'	=> 'question_id',
+                                        'order'         => 'score',
+                                        'sort'          => 'desc'
                                         ),
                                         
             /* identifiers of the comments for this question */                                        
