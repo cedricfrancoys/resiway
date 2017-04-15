@@ -35,10 +35,10 @@ function isGoogleBot() {
     $res = false;
     // $_SERVER['HTTP_USER_AGENT'] = 'Googlebot';
     if(stripos($_SERVER['HTTP_USER_AGENT'], 'Google') !== false) {
-        $hostname = gethostbyaddr($ip);
-        // possible formats:
-        // crawl-66-249-66-1.googlebot.com
-        // rate-limited-proxy-66-249-90-77.google.com
+        $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+        // possible formats (https://support.google.com/webmasters/answer/1061943)
+        //  crawl-66-249-66-1.googlebot.com
+        //  rate-limited-proxy-66-249-90-77.google.com
         $res = preg_match('/\.googlebot\.com$/i', $hostname);
         if(!$res) {
             $res = preg_match('/\.google\.com$/i', $hostname);        
