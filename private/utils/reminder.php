@@ -17,6 +17,7 @@ set_time_limit(0);
 // and requires file config/config.inc.php
 require_once('../qn.lib.php');
 require_once('../resi.api.php');
+config\export_config();
 
 set_silent(true);
 
@@ -27,7 +28,7 @@ try {
 
     $last_week = date("Y-m-d H:i:s", mktime( date("H"), date("i"), date("s"), date("n"), date("j")-7, date("Y") ));
 
-    $ids = $om->search('resiway\User', [['verified', '=', '0'], ['created', '<=', $last_week], ['last_login', '<=', $last_week]]);
+    $ids = $om->search('resiway\User', [['verified', '=', '0'], ['created', '<=', $last_week], ['last_login', '=', '0000-00-00 00:00:00']]);
 
     if($ids > 0 && count($ids) > 0) {
 

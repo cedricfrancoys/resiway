@@ -24,10 +24,10 @@
         <!-- styles -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>        
 
-        <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
-        <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
-        <script src="packages/resiexchange/apps/resiexchange.min.js?v=<?php echo $token; ?>"></script>        
-        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css?v=<?php echo $token; ?>" />
+        <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js"></script>        
+        <script src="packages/resiexchange/apps/i18n/locale-fr.js"></script>
+        <script src="packages/resiexchange/apps/resiexchange.min.js"></script>        
+        <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css" />
 
 
         <script>
