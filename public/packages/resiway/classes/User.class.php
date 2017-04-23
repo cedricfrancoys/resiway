@@ -100,7 +100,15 @@ class User extends \easyobject\orm\Object {
                                     'rel_local_key'		=> 'user_id'
                                     ),
                                     
-                                    
+            /* identifiers of the tags marked by user as favorite */
+            'categories_ids'	=> array(
+                                    'type' 			    => 'many2many', 
+                                    'foreign_object'	=> 'resiway\Category', 
+                                    'foreign_field'		=> 'users_ids', 
+                                    'rel_table'		    => 'resiway_rel_user_category', 
+                                    'rel_foreign_key'	=> 'category_id', 
+                                    'rel_local_key'		=> 'user_id'
+                                    ),                                    
                                     
                                    
         );

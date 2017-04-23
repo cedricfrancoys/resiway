@@ -13,7 +13,12 @@ set_silent(true);
 $params = QNLib::announce(	
 	array(	
     'description'	=>	"Returns sitemap file",
-    'params' 		=>	array(                                         
+    'params' 		=>	array( 
+                            'output' =>  array(
+                                        'description'   => 'output format (txt, html, json)',
+                                        'type'          => 'string', 
+                                        'default'       => 'txt'
+                                        )     
                         )
 	)
 );
@@ -26,9 +31,15 @@ try {
     $om = &ObjectManager::getInstance();    
     $questions_ids = $om->search('resiexchange\Question');
     if($questions_ids > 0 && count($questions_ids)){
-        $questions = $om->read('resiexchange\Question', $questions_ids, ['id', 'title_url']);
+        $questions = $om->read('resiexchange\Question', $questions_ids, ['id', 'title_url', 'title']);
         foreach($questions as $question_id => $question) {
-            echo "https://www.resiway.org/question/{$question['id']}/{$question['title_url']}".PHP_EOL;
+            switch($params['output']) {
+            case 'txt':
+                echo "https://www.resiway.org/question/{$question['id']}/{$question['title_url']}".PHP_EOL;
+                break;
+            case 'html':
+                echo '<a href="https://www.resiway.org/question/'.$question['id'].'/'.$question['title_url'].'">'.$question['title'].'</a>'.PHP_EOL;
+            }
         }
         exit();
     }

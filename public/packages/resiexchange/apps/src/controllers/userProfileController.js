@@ -83,6 +83,7 @@ angular.module('resiexchange')
                 previousPage: -1,                
                 limit: 5,
                 // 'resiexchange_question_star' == action (id=4)
+// todo : how to de-hardcode this                
                 domain: [['user_id', '=', ctrl.user.id], ['action_id','=','4']],
                 provider: 'resiway_actionlog_list'
             },
