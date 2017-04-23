@@ -38,7 +38,7 @@ try {
                 echo "https://www.resiway.org/question/{$question['id']}/{$question['title_url']}".PHP_EOL;
                 break;
             case 'html':
-                echo '<a href="https://www.resiway.org/question/'.$question['id'].'/'.$question['title_url'].'">'.$question['title'].'</a>'.PHP_EOL;
+                echo '<a href="https://www.resiway.org/question/'.$question['id'].'/'.$question['title_url'].'">'.$question['title'].'</a><br />'.PHP_EOL;
             }
         }
         exit();
