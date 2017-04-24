@@ -169,7 +169,7 @@ class User extends \easyobject\orm\Object {
                                             $value = htmlentities($firstname, ENT_QUOTES, 'UTF-8');
                                             $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
                                             $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');                                        
-                                            return (bool) (preg_match('/^[a-z-]+$/i', $value, $matches));
+                                            return (bool) (preg_match("/^[a-z -.]+$/i", $value, $matches));
                                     }            
                                 ),
             'lastname'			=> array(
@@ -180,7 +180,7 @@ class User extends \easyobject\orm\Object {
                                             $value = htmlentities($lastname, ENT_QUOTES, 'UTF-8');
                                             $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
                                             $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');                                          
-                                            return (bool) (preg_match('/^[\sa-z]+$/i', $value, $matches));
+                                            return (bool) (preg_match("/^[a-z -.']+$/i", $value, $matches));
                                     }            
                                 ),
             
