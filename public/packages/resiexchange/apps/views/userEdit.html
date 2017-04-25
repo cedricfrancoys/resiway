@@ -27,7 +27,7 @@
                                     <div class="user-card">
                                         <div class="user-picture"><img ng-src="{{rootCtrl.avatarURL(ctrl.user.avatar_url, 150)}}" width="150" height="150" /></div>
                                         <div class="user-details">
-                                            <div class="btn-group" uib-dropdown ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
+                                            <div class="btn-group" uib-dropdown style="padding-top: 10px;">
                                                 <button id="avatar-button" type="button" class="btn btn-primary" uib-dropdown-toggle >
                                                 {{'USER_EDIT_UPDATE_AVATAR'|translate}} <span class="caret"></span>
                                                 </button>
@@ -137,7 +137,7 @@
                             <div class="form-group col-1-3">
                                 <label>{{'USER_EDIT_COUNTRY'|translate}}</label>
                                 <div class="controls">
-                                    <oi-select  ng-init="countries = ['BE', 'CA', 'CH', 'DE', 'ES', 'FR', 'GB', 'GR', 'IT', 'LU', 'NE', 'PT']"
+                                    <oi-select  ng-init="countries = ['BE', 'BO', 'CA', 'CH', 'DE', 'ES', 'FR', 'GB', 'GR', 'IT', 'LU', 'NE', 'PT']"
                                                 oi-options="item for item in countries"
                                                 ng-model="ctrl.user.country"                                        
                                                 placeholder="Pays"></oi-select>                        

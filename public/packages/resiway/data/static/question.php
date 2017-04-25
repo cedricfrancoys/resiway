@@ -53,7 +53,7 @@ try {
 
     // retrieve question
     $result = [];
-    $res = $om->read('resiexchange\Question', $question_id, ['id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'content_excerpt', 'count_views', 'count_votes', 'score', 'answers_ids']);
+    $res = $om->read('resiexchange\Question', $question_id, ['id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'content_excerpt', 'count_views', 'count_votes', 'score', 'answers_ids', 'categories_ids.title']);
     if($res < 0 || !isset($res[$question_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
     $question_data = $res[$question_id];
     
@@ -83,6 +83,10 @@ try {
         echo '<div itemprop="dateCreated">'.$question_data['created'].'</div>'.PHP_EOL;        
         echo '<div itemprop="dateModified">'.$question_data['modified'].'</div>'.PHP_EOL;                
 
+        foreach($question_data['categories_ids.title'] as $category) {
+            echo '<h2>'.$category.'</h2>'.PHP_EOL;
+        }
+        
         $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score', 'comments_ids']);    
         if($res > 0) {
             $first = true;
