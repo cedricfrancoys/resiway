@@ -333,9 +333,11 @@ var resiway = angular.module('resiexchange', [
         
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
+            case 'resiway\\Category': return '#/category/'+object_id;            
             case 'resiexchange\\Question': return '#/question/'+object_id;
-            case 'resiexchange\\Answer': return '#/answer/'+object_id;            
-            case 'resiway\\Category': return '#/category/'+object_id;
+            case 'resiexchange\\Answer': return '#/answer/'+object_id;
+            case 'resiexchange\\QuestionComment': return '#/questionComment/'+object_id;               
+            case 'resiexchange\\AnswerComment': return '#/answerComment/'+object_id;
             }
         };
 

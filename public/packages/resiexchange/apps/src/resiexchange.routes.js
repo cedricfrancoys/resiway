@@ -172,6 +172,24 @@ angular.module('resiexchange')
                 });                
             }]  
         })
+        .when('/questionComment/:id', {
+            templateUrl : templatePath+'question.html',
+            controller  : ['$location', 'routeObjectProvider', function($location, routeObjectProvider) {
+                routeObjectProvider.provide('resiexchange_questioncomment').then(
+                function(comment) {
+                    $location.path('/question/'+comment.question_id);
+                });                
+            }]  
+        })
+        .when('/answerComment/:id', {
+            templateUrl : templatePath+'question.html',
+            controller  : ['$location', 'routeObjectProvider', function($location, routeObjectProvider) {
+                routeObjectProvider.provide('resiexchange_answercomment').then(
+                function(comment) {
+                    $location.path('/question/'+comment['answer_id.question_id']);
+                });                
+            }]  
+        })        
         /**
         * User related routes
         */

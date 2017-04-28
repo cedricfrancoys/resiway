@@ -1,5 +1,6 @@
 <div class="grid wrapper">
     <div class="col-8-12">
+    <!--
         <div class="well blank_index">
                 <h2>Bienvenue sur ResiExchange !</h2>
                 <p style="font-size:1.0em;">
@@ -14,6 +15,31 @@
                 <a href="#/question/edit/0" class="btn btn-primary" style="margin-bottom: 5px;">Poser votre première question</a>
             </p>            
         </div>
+        -->
+        <div class="row">
+            <article class="col-md-12">                
+                <div class="col-3-12">
+                    <img width="150" src="packages/resiway/apps/assets/img/resiway-logo-small.png" />            
+                </div>
+                <div class="col-9-12">
+                    <h2 style="margin-top: 0;">Bienvenue sur ResiExchange</h2>
+                    <p>Bienvenue sur ResiExchange, un outil résilient de partage de connaissances pour apprendre à vivre de manière saine et écologique, à faible coût énergétique et économique.</p>
+                    <p>Avec l'aide de chacun, l'objectif est de constituer une encyclopédie pour le <b>bien-être</b> et la <b>résilience</b>.</p>
+                </div>
+            </article>
+        </div>
+        <div class="row">
+            <article class="col-md-12">
+                <h2>Qu'est-ce que la résilience ?</h2>
+                <h4>En quoi la plateforme RésiWay est-elle différente ?</h4>            
+                <p>La capacité d'une communauté à faire face aux changements tout en s'épanouissant.<br />Nous vous invitons à lire quelques courts articles qui présentent l'idée de la résilience.</p>
+                <ul class="list-noindent">
+                    <li><a href="http://www.icway.be/index.php?get=icway_resource&mode=view&res_id=27">Homo Resiliens</a></li>
+                    <li><a href="http://www.icway.be/index.php?get=icway_resource&mode=view&res_id=28">A la croisée des chemins</a></li>
+                    <!--<li>De la résilience d'Internet</li>-->
+                </ul>
+            </article>
+        </div>           
         <div class="row">
             <article class="col-md-12">
                 <h2>ResiWay.org, la plateforme résiliente</h2>
@@ -53,16 +79,16 @@
          
             <div class="container">
                 <div class="lead" style="border-bottom: 1px solid grey;">
-                    <div class="sectiontitle">À propos</div>
+                    <div>À propos</div>
                 </div>
                 <div id="aboutcontent">
-                    <p><b><a href="/resiexchange.fr">ResiExchange</a></b> est une plateforme collaborative open source d'échange d'informations sur les thèmes de la <strong>Permaculture</strong>, la <strong>Transition</strong>, l'<strong>Autonomie</strong> et la <strong>Résilience</strong>.</p>
+                    <p><b><a href="/resiexchange.fr">ResiExchange</a></b> est une plateforme collaborative open source de partage de savoirs sur les thèmes de la&nbsp;<strong>Permaculture</strong>, la&nbsp;<strong>Transition</strong>, et l'<strong>Autonomie</strong>.</p>
                 </div>                
             </div>
 
             <div class="container fade-in-out" ng-show="ctrl.questions.length > 0">
                 <div class="lead" style="border-bottom: 1px solid grey;">
-                    <div class="sectiontitle">Questions populaires</div>
+                    <div>Questions populaires</div>
                 </div>
                 <div class="featured-questions" ng-repeat="question in ctrl.questions">
                     <p>

@@ -682,6 +682,35 @@
                             <p ng-bind-html="question.creator.about"></p>
                         </div>
                     </div>                        
+
+
+                    <div class="stat-row" ng-if="question.answers.length">                        
+                        <div class="title">
+                            Réponses
+                        </div>
+                        <div class="content">                            
+                        </div>
+                    </div>
+
+
+                    <div class="stat-row" ng-repeat-start="answer in question.answers"> 
+                        <div class="title">
+                        </div>
+                        <div class="content"> 
+                            <b>{{answer.creator.display_name}}</b>                            
+                        </div>
+                    </div>
+                    <div class="stat-row" ng-repeat-end>
+                        <div class="title">
+                        </div>
+                        <div class="content"> 
+                            <p ng-bind-html="answer.creator.about"></p>
+                        </div>
+                    </div>                        
+
+                                        
+                    
+                    
                     
 			    </div>
             </div>

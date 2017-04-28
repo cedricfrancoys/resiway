@@ -463,9 +463,11 @@ var resiway = angular.module('resiexchange', [
         
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
+            case 'resiway\\Category': return '#/category/'+object_id;            
             case 'resiexchange\\Question': return '#/question/'+object_id;
-            case 'resiexchange\\Answer': return '#/answer/'+object_id;            
-            case 'resiway\\Category': return '#/category/'+object_id;
+            case 'resiexchange\\Answer': return '#/answer/'+object_id;
+            case 'resiexchange\\QuestionComment': return '#/questionComment/'+object_id;               
+            case 'resiexchange\\AnswerComment': return '#/answerComment/'+object_id;
             }
         };
 
@@ -1393,6 +1395,24 @@ angular.module('resiexchange')
                 });                
             }]  
         })
+        .when('/questionComment/:id', {
+            templateUrl : templatePath+'question.html',
+            controller  : ['$location', 'routeObjectProvider', function($location, routeObjectProvider) {
+                routeObjectProvider.provide('resiexchange_questioncomment').then(
+                function(comment) {
+                    $location.path('/question/'+comment.question_id);
+                });                
+            }]  
+        })
+        .when('/answerComment/:id', {
+            templateUrl : templatePath+'question.html',
+            controller  : ['$location', 'routeObjectProvider', function($location, routeObjectProvider) {
+                routeObjectProvider.provide('resiexchange_answercomment').then(
+                function(comment) {
+                    $location.path('/question/'+comment['answer_id.question_id']);
+                });                
+            }]  
+        })        
         /**
         * User related routes
         */
@@ -4021,6 +4041,7 @@ angular.module('resiexchange')
                 previousPage: -1,                
                 limit: 5,
                 // 'resiexchange_question_star' == action (id=4)
+// todo : how to de-hardcode this                
                 domain: [['user_id', '=', ctrl.user.id], ['action_id','=','4']],
                 provider: 'resiway_actionlog_list'
             },
