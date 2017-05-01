@@ -306,7 +306,7 @@ var resiway = angular.module('resiexchange', [
               status: true, 
               cookie: true, 
               xfbml: true,
-              version: 'v2.7'
+              version: 'v2.9'
             });
         };        
     }
