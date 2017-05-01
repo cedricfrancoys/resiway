@@ -47,6 +47,11 @@ $token = md5(substr($rev, 12).rand(1, 100));
 
 
     <body class="ng-cloak">
+        <div id="fb-root"></div>
+        
+        <div class="sectiontitle ng-hide">ResiExchange - Des réponses pour la résilience</div>
+        <title class="ng-hide">ResiExchange - Des réponses pour la résilience</title>
+    
         <toast></toast>
 
         <!-- images preload -->

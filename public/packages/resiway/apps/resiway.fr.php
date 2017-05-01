@@ -47,6 +47,8 @@ $token = md5($rev.rand(1, 100));
 
 
     <body class="ng-cloak">
+        <div id="fb-root"></div>
+        
         <!-- templates in rootScope -->
         <?php
         foreach (glob("packages/resiway/apps/views/*.html") as $filename) {
