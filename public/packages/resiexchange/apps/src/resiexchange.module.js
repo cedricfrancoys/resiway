@@ -302,11 +302,11 @@ var resiway = angular.module('resiexchange', [
         
         $window.fbAsyncInit = function() {
             FB.init({ 
-              appId: '{1786954014889199}',
+              appId: '1786954014889199',
               status: true, 
               cookie: true, 
               xfbml: true,
-              version: 'v2.4'
+              version: 'v2.7'
             });
         };        
     }
