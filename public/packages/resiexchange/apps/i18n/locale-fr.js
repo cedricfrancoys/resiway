@@ -87,6 +87,7 @@ var translations = {
     "QUESTIONS_STATS_QUESTIONS": "questions",
     "QUESTIONS_STATS_ANSWERS": "réponses",
     "QUESTIONS_STATS_COMMENTS": "commentaires",
+    "QUESTIONS_STATS_POSTS": "publications",    
     "QUESTIONS_STATS_USERS": "participants",
 
     

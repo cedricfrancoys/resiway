@@ -299,6 +299,16 @@ var resiway = angular.module('resiexchange', [
         authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
         // try to authenticate or restore the session
         authenticationService.authenticate();
+        
+        $window.fbAsyncInit = function() {
+            FB.init({ 
+              appId: '{1786954014889199}',
+              status: true, 
+              cookie: true, 
+              xfbml: true,
+              version: 'v2.4'
+            });
+        };        
     }
 ])
 
