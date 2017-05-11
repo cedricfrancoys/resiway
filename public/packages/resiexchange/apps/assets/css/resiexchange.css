@@ -2240,5 +2240,19 @@ body {
     margin: 0;
     font-size: 14px;
     font-weight: 700;
-color: #555;    
+    color: #555;    
+}
+
+.user-container {
+    position: relative; 
+    height: 150px; 
+    margin-bottom: 10px;
+    border-bottom: 1px dotted #E4E6E7;    
+}
+
+.user-container .user-descr {
+    overflow: hidden;
+    height: 100px;
+    font-size: 10px;
+    line-height: 10px;
 }

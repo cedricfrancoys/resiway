@@ -118,6 +118,23 @@ angular.module('resiexchange')
     };
 }])
 
+.service('routeUsersProvider', ['$http', '$rootScope', function($http, $rootScope) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_user_list&order=reputation')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
 .service('routeUserProvider', ['routeObjectProvider', function(routeObjectProvider) {
     this.load = function() {
         return routeObjectProvider.provide('resiway_user');

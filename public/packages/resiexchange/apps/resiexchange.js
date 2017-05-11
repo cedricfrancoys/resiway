@@ -717,6 +717,23 @@ angular.module('resiexchange')
     };
 }])
 
+.service('routeUsersProvider', ['$http', '$rootScope', function($http, $rootScope) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_user_list&order=reputation')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') return [];
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
+
 .service('routeUserProvider', ['routeObjectProvider', function(routeObjectProvider) {
     this.load = function() {
         return routeObjectProvider.provide('resiway_user');
@@ -1417,6 +1434,16 @@ angular.module('resiexchange')
         /**
         * User related routes
         */
+        .when('/users', {
+            templateUrl : templatePath+'users.html',
+            controller  : 'usersController as ctrl',
+            resolve     : {
+                // list of categories is required as well for selecting parent category
+                users: ['routeUsersProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })        
         .when('/user/current/profile', {
             templateUrl : templatePath+'userProfile.html',
             controller  : ['$location', 'authenticationService', function($location, authenticationService) {
@@ -4234,5 +4261,59 @@ angular.module('resiexchange')
                 });                  
             }
         };    
+    }
+]);
+angular.module('resiexchange')
+
+.controller('usersController', [
+    'users', 
+    '$scope',
+    '$rootScope',    
+    '$http',
+    function(users, $scope, $rootScope, $http) {
+        console.log('users controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.config = {
+            items: users,
+            total: -1,
+            currentPage: 1,
+            previousPage: -1,
+            limit: 30,
+            domain: [],
+            loading: false
+        };
+        
+        ctrl.load = function(config) {
+            if(config.currentPage != config.previousPage) {
+                config.previousPage = config.currentPage;
+                // trigger loader display
+                if(config.total > 0) {
+                    config.loading = true;
+                }
+                $http.post('index.php?get=resiway_user_list&order=reputation', {
+                    domain: config.domain,
+                    start: (config.currentPage-1)*config.limit,
+                    limit: config.limit,
+                    total: config.total
+                }).then(
+                function successCallback(response) {
+                    var data = response.data;
+                    config.items = data.result;
+                    config.total = data.total;
+                    config.loading = false;
+                },
+                function errorCallback() {
+                    // something went wrong server-side
+                });
+            }
+        };
+        
+        
+        // @init
+        ctrl.load(ctrl.config);
+        
     }
 ]);

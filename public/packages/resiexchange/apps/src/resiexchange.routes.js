@@ -193,6 +193,16 @@ angular.module('resiexchange')
         /**
         * User related routes
         */
+        .when('/users', {
+            templateUrl : templatePath+'users.html',
+            controller  : 'usersController as ctrl',
+            resolve     : {
+                // list of categories is required as well for selecting parent category
+                users: ['routeUsersProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })        
         .when('/user/current/profile', {
             templateUrl : templatePath+'userProfile.html',
             controller  : ['$location', 'authenticationService', function($location, authenticationService) {
