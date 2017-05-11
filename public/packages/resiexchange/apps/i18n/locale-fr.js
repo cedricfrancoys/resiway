@@ -102,6 +102,8 @@ var translations = {
     "ANSWER_STATS_TIMES": "fois",
     
     // Users
+    "USERS_TITLE": "Liste des participants",
+    
     "USER_PROFILE_TAB_PROFILE": "Profil",    
     "USER_PROFILE_TAB_REPUTATION": "Réputation",
     "USER_PROFILE_TAB_BADGES": "Badges",    
