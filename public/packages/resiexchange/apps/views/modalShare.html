@@ -1,0 +1,44 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title"><i class="fa fa-share-alt" aria-hidden="true"></i> {{ctrl.title_id | translate}}</h3>
+</div>
+<div class="modal-body" id="modal-body">
+<!--
+        <i class="fa fa-cloud-download" aria-hidden="true"></i>
+        <a href="/question/{{question.id}}/{{question.title_url}}" target="_self">{{ 'MODAL_QUESTION_SHARE_DOWNLOAD' | translate }}</a>
+
+        
+        &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;
+        
+        <i class="fa fa-eye" aria-hidden="true"></i>
+        <a href=""  target="_blank">{{ 'MODAL_QUESTION_SHARE_VIEW' | translate }}</a>                    
+
+        
+        &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;
+        
+        <i class="fa fa-file-code-o" aria-hidden="true"></i>
+        <a href="" target="_blank">{{ 'MODAL_QUESTION_SHARE_SOURCE' | translate }}</a>  
+
+        
+        &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;
+-->
+        
+        <i class="fa fa-link" aria-hidden="true"></i>
+        <a href="/question/{{question.id}}/{{question.title_url}}" target="_blank">{{ 'MODAL_QUESTION_SHARE_LINK' | translate }}</a> 
+
+        
+        &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;                    
+          
+        <i class="fa fa-facebook-square" aria-hidden="true"></i>
+        <a href="https://www.facebook.com/dialog/feed?
+app_id=1786954014889199
+&display=page
+&redirect_uri=https%3A//www.resiway.org/resiexchange.fr
+&caption={{ question.title }}
+&link=https%3A//www.resiway.org/question/{{question.id}}/{{question.title_url}}
+&picture={{ rootCtrl.avatarURL(question.creator.avatar_url, 80) }}
+&description={{ rootCtrl.htmlToTxt(question.content) }}" target="_blank">{{ 'MODAL_QUESTION_SHARE_SHARE' | translate }}</a>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" type="button" autofocus="true" ng-click="ctrl.ok()">{{'MODAL_CLOSE' | translate}}</button>
+</div>
