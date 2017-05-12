@@ -10,7 +10,7 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-        <meta name="title" content="ResiExchange - Des réponses pour la résilience">
+        <meta name="title" content="ResiExchange - Réponses pour la résilience">
         <meta name="description" content="ResiExchange est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition, la permaculture et la résilience.">
 
         <link rel="alternate" href="https://www.resiway.org/resiexchange.fr" hreflang="fr"/>

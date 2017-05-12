@@ -36,15 +36,13 @@ angular.module('resiexchange')
             }
         );
 
-
         
-    // todo : move this to rootScope
-        ctrl.open = function (title_id, header_id, content) {
+        ctrl.openModal = function (title_id, header_id, content, template) {
             return $uibModal.open({
                 animation: true,
                 ariaLabelledBy: 'modal-title',
                 ariaDescribedBy: 'modal-body',
-                templateUrl: 'modalCustom.html',
+                templateUrl: template || 'modalCustom.html',
                 controller: ['$uibModalInstance', function ($uibModalInstance, items) {
                     var ctrl = this;
                     ctrl.title_id = title_id;
@@ -635,7 +633,7 @@ angular.module('resiexchange')
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
             
-            ctrl.open('MODAL_COMMENT_DELETE_TITLE', 'MODAL_COMMENT_DELETE_HEADER', $scope.question.comments[index].content)
+            ctrl.openModal('MODAL_COMMENT_DELETE_TITLE', 'MODAL_COMMENT_DELETE_HEADER', $scope.question.comments[index].content)
             .then(
                 function () {
                     actionService.perform({
@@ -675,7 +673,7 @@ angular.module('resiexchange')
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
             
-            ctrl.open('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title)
+            ctrl.openModal('MODAL_QUESTION_DELETE_TITLE', 'MODAL_QUESTION_DELETE_HEADER', $scope.question.title)
             .then(
                 function () {
                     actionService.perform({
@@ -1110,7 +1108,7 @@ angular.module('resiexchange')
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
             
-            ctrl.open('MODAL_COMMENT_DELETE_TITLE', 'MODAL_COMMENT_DELETE_HEADER', $scope.question.answers[answer_index].comments[index].content)
+            ctrl.openModal('MODAL_COMMENT_DELETE_TITLE', 'MODAL_COMMENT_DELETE_HEADER', $scope.question.answers[answer_index].comments[index].content)
             .then(
                 function () {
                     actionService.perform({
@@ -1149,7 +1147,7 @@ angular.module('resiexchange')
             // remember selector for popover location             
             var selector = feedbackService.selector($event.target);            
             
-            ctrl.open('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt)
+            ctrl.openModal('MODAL_ANSWER_DELETE_TITLE', 'MODAL_ANSWER_DELETE_HEADER', $scope.question.answers[index].content_excerpt)
             .then(
                 function () {
                     actionService.perform({
@@ -1182,6 +1180,34 @@ angular.module('resiexchange')
                     });
                 }
             );     
+        };
+        
+        $scope.showShareModal = function() {
+
+            return $uibModal.open({
+                animation: true,
+                ariaLabelledBy: 'modal-title',
+                ariaDescribedBy: 'modal-body',
+                templateUrl: 'modalShare.html',
+                controller: ['$uibModalInstance', function ($uibModalInstance, items) {
+                    var ctrl = this;
+                    ctrl.title_id = 'Partager';
+
+                    $uibModalInstance.question = $scope.question;
+                    
+                    ctrl.ok = function () {
+                        $uibModalInstance.close();
+                    };
+                    ctrl.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                }],
+                controllerAs: 'ctrl', 
+                scope: $scope,
+                size: 'md',
+                appendTo: angular.element(document.querySelector(".modal-wrapper"))
+            }).result;
+
         };
         
     }

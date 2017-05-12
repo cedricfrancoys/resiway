@@ -7,14 +7,21 @@ var translations = {
     "MODAL_CANCEL": "Annuler",    
     "MODAL_YES": "Oui",
     "MODAL_NO": "Non", 
-    
+    "MODAL_CLOSE": "Fermer",
+        
     "MODAL_QUESTION_DELETE_TITLE": "Suppression d'une question",
     "MODAL_QUESTION_DELETE_HEADER": "Supprimer cette question ?",  
     "MODAL_ANSWER_DELETE_TITLE": "Suppression d'une réponse",
     "MODAL_ANSWER_DELETE_HEADER": "Supprimer cette réponse ?",
     "MODAL_COMMENT_DELETE_TITLE": "Suppression d'un commentaire",
     "MODAL_COMMENT_DELETE_HEADER": "Supprimer ce commentaire ?",  
-
+    
+    "MODAL_QUESTION_SHARE_DOWNLOAD": "Télécharger",
+    "MODAL_QUESTION_SHARE_VIEW": "Voir",
+    "MODAL_QUESTION_SHARE_LINK": "Lien d'accès direct",
+    "MODAL_QUESTION_SHARE_SOURCE": "Source",
+    "MODAL_QUESTION_SHARE_SHARE": "Publier sur Facebook",
+    
     // Toolbar
     "TOOLBAR_PLATFORM_OTHER_APPS": "Autres applications",    
     "TOOLBAR_NOTIFICATIONS_TITLE": "Notifications",

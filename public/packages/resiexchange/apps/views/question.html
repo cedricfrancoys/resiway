@@ -72,7 +72,8 @@
                 <div class="footer">
                     <div class="meta">
                         <div class="actions">
-                            <a href="/question/{{question.id}}/{{question.title_url}}" 
+                            <a href
+                               ng-click="showShareModal()"
                                title="{{'QUESTION_ACTIONS_SHARE_TOOLTIP' | translate}}"
                                class="short-link">
                                 <i class="fa fa-share-alt" aria-hidden="true"></i> {{'QUESTION_ACTIONS_SHARE' | translate}}

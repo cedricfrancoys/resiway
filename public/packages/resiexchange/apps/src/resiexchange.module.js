@@ -347,6 +347,11 @@ var resiway = angular.module('resiexchange', [
             return str.replace("@size", size);
         };
             
+        rootCtrl.htmlToTxt = function(html) {
+            var str = new String(html);
+            return encodeURIComponent(str.replace(/<[^>]*>/g, '').replace(/\./, ".\n"));
+        };
+            
         rootCtrl.humanReadable = {
             
             date: function(value) {
