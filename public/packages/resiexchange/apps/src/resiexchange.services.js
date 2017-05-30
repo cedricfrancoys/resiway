@@ -58,6 +58,48 @@ angular.module('resiexchange')
     };
 }])
 
+.service('routeDocumentsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
+    this.load = function() {
+        return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') {
+                    $rootScope.search.criteria.total = 0;
+                    return [];
+                }
+                $rootScope.search.criteria.total = data.total;
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                $rootScope.search.criteria.total = 0;
+                return [];
+            }
+        );
+    };
+}])
+
+.service('routeDocumentProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
+    this.load = function() {
+        return routeObjectProvider.provide('resilib_document')
+        .then(function(result) {
+            // adapt result to view requirements
+            var attributes = {
+                commentsLimit: 5,
+                newCommentShow: false,
+                newCommentContent: '',
+                newAnswerContent: ''
+            }
+            // add meta info attributes
+            angular.extend(result, attributes);
+            // mark html as safe
+            result.description = $sce.trustAsHtml(result.description);
+            return result;
+        });
+    };
+}])
+
 .service('routeQuestionsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
     this.load = function() {
         return $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
@@ -474,6 +516,7 @@ angular.module('resiexchange')
                 // submit action to the server, if any
                 if(typeof task.action != 'undefined'
                 && task.action.length > 0) {
+
                     $http.post('index.php?do='+task.action, task.data).then(
                     function successCallback(response) {
 

@@ -547,6 +547,9 @@ class ResiAPI {
         $pdm = &PersistentDataManager::getInstance();
         $pdm->set('actions', array_merge($pdm->get('actions', []), [$actionlog_id]));
         
+        // do not notify user about his own actions
+        if($user_id == $author_id) return true;
+        
         // handle notifications
         $user_data = self::loadUserPrivate($user_id);
         $author_data = self::loadUserPrivate($author_id);    
@@ -593,7 +596,8 @@ class ResiAPI {
                               self::getUserNotification('notification_reputation_update', $author_data['language'], $data)
                              );
                               
-        }        
+        }
+        
         return true;
     }
 

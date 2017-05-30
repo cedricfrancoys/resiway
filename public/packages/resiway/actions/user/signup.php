@@ -75,12 +75,15 @@ try {
     if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
     // initialize list of awarded badges
+    // not necessary : a test is made in ResAPI::updateBadges to add missing badges
+    /*
     $badges_ids = $om->search('resiway\Badge');
     $badges = $om->read('resiway\Badge', $badges_ids, ['id']);    
     foreach($badges as $badge_id => $badge_data) {
         $om->create('resiway\UserBadge', ['user_id' => $user_id, 'badge_id' => $badge_id]);
     }
-
+    */
+    
     // update global counter
     ResiAPI::repositoryInc('resiway.count_users');     
     

@@ -43,8 +43,7 @@ try {
     // everyone has read access over all quetions
     
     // 2) action limitations
-    // no limitation
-    
+    // no limitation    
     // no concurrent action
     
     // retrieve question    
@@ -61,7 +60,7 @@ try {
     if($author_data < 0) throw new Exception("question_author_unknown", QN_ERROR_UNKNOWN_OBJECT);
     $result['creator'] = $author_data;
 
-    // retrieve eiditor data
+    // retrieve editor data
     if($question_data['editor'] > 0) {
         $editor_data = ResiAPI::loadUserPublic($question_data['editor']);
         if($editor_data < 0) throw new Exception("question_editor_unknown", QN_ERROR_UNKNOWN_OBJECT);        

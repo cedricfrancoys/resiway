@@ -13,6 +13,7 @@ var resiway = angular.module('resiexchange', [
     'ngSanitize',
     'ngCookies', 
     'ngAnimate',
+    'ngFileUpload',
     'ui.bootstrap',
     'oi.select',    
     'textAngular',
@@ -349,9 +350,14 @@ var resiway = angular.module('resiexchange', [
             
         rootCtrl.htmlToTxt = function(html) {
             var str = new String(html);
+            return str.replace(/<[^>]*>/g, '').replace(/\./, ".\n");
+        };
+
+        rootCtrl.htmlToURL = function(html) {
+            var str = new String(html);
             return encodeURIComponent(str.replace(/<[^>]*>/g, '').replace(/\./, ".\n"));
         };
-            
+        
         rootCtrl.humanReadable = {
             
             date: function(value) {

@@ -52,6 +52,7 @@ class ObjectManager {
 	public static $complex_types = array('one2many', 'many2many', 'function');
 
 	public static $valid_attributes = array(
+			'alias'		    => array('type', 'alias'),    
 			'boolean'		=> array('type', 'onchange'),
 			'integer'		=> array('type', 'onchange', 'selection', 'unique'),
 			'float'			=> array('type', 'onchange', 'precision'),
@@ -72,7 +73,8 @@ class ObjectManager {
 	);
 
 	public static $mandatory_attributes = array(
-			'boolean'		=> array('type'),
+			'alias'		    => array('type', 'alias'),
+            'boolean'		=> array('type'),
 			'integer'		=> array('type'),
 			'float'			=> array('type'),
 			'string'		=> array('type'),
@@ -161,7 +163,7 @@ class ObjectManager {
 			// if class is unknown, load the file containing the class declaration of the requested object
 			if(!class_exists($class)) {
 				// first, read the file to see if the class extends from another (which could not be loaded yet)
-				$filename = 'packages/'.$this->getObjectPackageName($class).'/classes/'.$this->getObjectName($class).'.class.php';
+				$filename = 'packages/'.self::getObjectPackageName($class).'/classes/'.self::getObjectName($class).'.class.php';
 				if(!is_file($filename)) throw new Exception("unknown object class : '$class'", UNKNOWN_OBJECT);
 				preg_match('/\bextends\b(.*)\{/iU', file_get_contents($filename), $matches);
 				if(!isset($matches[1])) throw new Exception("malformed class file for object '$class' : parent class name not found", INVALID_PARAM);
@@ -257,8 +259,8 @@ class ObjectManager {
 
     /**
     * Filters given object ids and returns on valid identifiers (from existing objects)
-    * Ids that do not match an object in the database are removed from the list.
     *
+    * Ids that do not match an object in the database are removed from the list.
     */
     private function filterValidIdentifiers($class, $ids) {
         // working copy
@@ -326,7 +328,7 @@ class ObjectManager {
 						$field = $row['object_field'];
 						// do some pre-treatment if necessary (this step is symetrical to the one in store method)
 // todo : by default, we should do nothing, to maintain performance - and allow user to pickup a method among some pre-defined default conversions
-						$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $row['value']);
+						$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $row['value'], $class, $oid, $field, $lang);
 						// update the internal buffer with fetched value
 						$om->cache[$class][$oid][$field][$lang] = $value;
 					}
@@ -355,7 +357,7 @@ class ObjectManager {
 						$oid = $row['id'];
 						foreach($row as $field => $value) {
 							// do some pre-treatment if necessary (this step is symetrical to the one in store method)
-							$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $value);
+							$value = DataAdapter::adapt('db', 'orm', $schema[$field]['type'], $value, $class, $oid, $field, $lang);
 							// update the internal buffer with fetched value
 							$om->cache[$class][$oid][$field][$lang] = $value;
 						}
@@ -607,7 +609,7 @@ class ObjectManager {
 				try {
 					foreach($ids as $oid) {
 						$fields_values = array();
-						foreach($fields as $field) $fields_values[$field] = DataAdapter::adapt('orm', 'db', $schema[$field]['type'], $om->cache[$class][$oid][$field][$lang]);
+						foreach($fields as $field) $fields_values[$field] = DataAdapter::adapt('orm', 'db', $schema[$field]['type'], $om->cache[$class][$oid][$field][$lang], $class, $oid, $field, $lang);
 						$om->db->setRecords($om->getObjectTableName($class), array($oid), $fields_values);
 					}
 				}
@@ -904,7 +906,8 @@ todo: signature differs from other methods	(returned value)
 				foreach($fields as $field => $value) {
 					// remember fields whose modification triggers an onchange event
 					if(isset($schema[$field]['onchange'])) $onchange_fields[] = $field;
-					$this->cache[$class][$oid][$field][$lang] = DataAdapter::adapt('ui', 'orm', $schema[$field]['type'], $value);
+                    
+					$this->cache[$class][$oid][$field][$lang] = DataAdapter::adapt('ui', 'orm', $schema[$field]['type'], $value, $class, $oid, $field, $lang);
 				}
 			}
 

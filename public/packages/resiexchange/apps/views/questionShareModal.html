@@ -35,8 +35,8 @@ app_id=1786954014889199
 &redirect_uri=https%3A//www.resiway.org/resiexchange.fr
 &caption={{ question.title }}
 &link=https%3A//www.resiway.org/question/{{question.id}}/{{question.title_url}}
-&picture={{ rootCtrl.avatarURL(question.creator.avatar_url, 80) }}
-&description={{ rootCtrl.htmlToTxt(question.content) }}" target="_blank">{{ 'MODAL_QUESTION_SHARE_SHARE' | translate }}</a>
+&picture={{ rootCtrl.avatarURL(question.creator.avatar_url, 158) }}
+&description={{ rootCtrl.htmlToURL(question.content) }}" target="_blank">{{ 'MODAL_QUESTION_SHARE_SHARE' | translate }}</a>
 
 </div>
 <div class="modal-footer">

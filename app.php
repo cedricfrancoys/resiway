@@ -77,8 +77,8 @@ if (get_magic_quotes_gpc()) {
 	$_REQUEST = array_map('stripslashes_deep', $_REQUEST);
 }
 
-// We need the whole $_FILES array
-// So we merge superglobal arrays $_FILES and $_REQUEST (in order to let the manager handle binary fields)
+// We need the whole $_FILES array in order to let the manager handle binary fields
+// So we merge superglobal arrays $_FILES and $_REQUEST
 $_REQUEST = array_merge($_REQUEST, $_FILES);
 
 /**

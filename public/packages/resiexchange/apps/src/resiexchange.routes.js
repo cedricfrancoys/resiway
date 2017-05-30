@@ -122,7 +122,40 @@ angular.module('resiexchange')
                     return provider.load();
                 }]
             }            
-        })      
+        })
+        
+        /**
+        * Document related routes
+        */
+        .when('/documents', {
+            templateUrl : templatePath+'documents.html',
+            controller  : 'documentsController as ctrl',
+            resolve     : {
+                // list of categories is required as well for selecting parent category
+                documents: ['routeDocumentsProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })
+        .when('/document/edit/:id', {
+            templateUrl : templatePath+'documentEdit.html',
+            controller  : 'documentEditController as ctrl',
+            resolve     : {
+                document: ['routeDocumentProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })    
+        .when('/document/:id/:title?', {
+            templateUrl : templatePath+'document.html',
+            controller  : 'documentController as ctrl',
+            resolve     : {
+                document: ['routeDocumentProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })
+        
         /**
         * Question related routes
         */

@@ -335,7 +335,7 @@ angular.module('resiexchange')
                     if($scope.question.history['resiexchange_question_votedown'] === true) {
                         // toggle votedown
                         $scope.question.history['resiexchange_question_votedown'] = false;
-                        $scope.question.score--;
+                        $scope.question.score++;
                     }
                     else {
                         // undo voteup
@@ -1188,7 +1188,7 @@ angular.module('resiexchange')
                 animation: true,
                 ariaLabelledBy: 'modal-title',
                 ariaDescribedBy: 'modal-body',
-                templateUrl: 'modalShare.html',
+                templateUrl: 'questionShareModal.html',
                 controller: ['$uibModalInstance', function ($uibModalInstance, items) {
                     var ctrl = this;
                     ctrl.title_id = 'Partager';

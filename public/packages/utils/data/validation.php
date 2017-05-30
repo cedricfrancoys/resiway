@@ -93,7 +93,7 @@ foreach($classes_list as $class) {
 	$schema = get_object_schema($class_name);
 
 	// 1) check fields descriptions consistency
-    $valid_types = array_merge(ObjectManager::$simple_types, ObjectManager::$complex_types);
+    $valid_types = array_merge(ObjectManager::$virtual_types, ObjectManager::$simple_types, ObjectManager::$complex_types);
 
 	foreach($schema as $field => $description) {
 		if(!isset($description['type'])) {
@@ -182,6 +182,7 @@ $allowed_associations = array(
 	'datetime' 		=> array('datetime'),
 	'timestamp' 	=> array('timestamp'),
 	'selection' 	=> array('char', 'varchar'),
+	'file'  		=> array('blob', 'mediumblob', 'longblob'),    
 	'binary' 		=> array('blob', 'mediumblob', 'longblob'),
 	'many2one' 		=> array('int')
 );

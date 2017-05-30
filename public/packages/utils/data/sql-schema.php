@@ -71,6 +71,7 @@ $types_associations = array(
 	'datetime' 		=> 'datetime',
 	'timestamp' 	=> 'timestamp',
 	'selection' 	=> 'varchar(50)',
+	'file' 		    => 'mediumblob',    
 	'binary' 		=> 'mediumblob',
 	'many2one' 		=> 'int(11)'
 );

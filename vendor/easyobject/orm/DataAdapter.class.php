@@ -34,17 +34,17 @@ class DataAdapter {
 		if( !isset($GLOBALS['DataAdapter_config']) ) {
             $adapter = array();
 
-            $adapter['boolean']['orm']['ui'] =	function($value) {
+            $adapter['boolean']['orm']['ui'] =	function($value, $class, $oid, $field, $lang) {
                     if($value) $value = 'true';
                     else $value = 'false';
                     return $value;
             };
-            $adapter['boolean']['orm']['db'] =	function($value) {
+            $adapter['boolean']['orm']['db'] =	function($value, $class, $oid, $field, $lang) {
                     if($value) $value = '1';
                     else $value = '0';
                     return $value;
             };                   
-            $adapter['date']['orm']['ui'] =	function($value) {
+            $adapter['date']['orm']['ui'] =	function($value, $class, $oid, $field, $lang) {
                     if($value == '0000-00-00') $value = '';
                     else {
                         $dateFormatter = new DateFormatter($value, DATE_SQL);
@@ -53,7 +53,7 @@ class DataAdapter {
                     }
                     return $value;
             };
-            $adapter['date']['ui']['orm'] =	function($value) {
+            $adapter['date']['ui']['orm'] =	function($value, $class, $oid, $field, $lang) {
                     if(empty($value)) $value = '0000-00-00';
                     else {
                         // DATE_FORMAT constant is defined in config.inc.php
@@ -63,37 +63,38 @@ class DataAdapter {
                     return $value;												
             };
             // exchange format between PHP and Javascript for date, time, datetime	
-            $adapter['date-format']['orm']['ui'] =	function($value) {
+            $adapter['date-format']['orm']['ui'] =	function($value, $class, $oid, $field, $lang) {
                     if(empty($value)) $value = '0000-00-00';
                     else {
                         $value = str_replace(array('d', 'm', 'Y', 'H', 'i', 's'), array('dd', 'mm', 'yy', 'hh', 'mm', 'ss'), $value);
                     }
                     return $value;												
             };
-            $adapter['date-format']['ui']['orm'] = function($value) {
+            $adapter['date-format']['ui']['orm'] = function($value, $class, $oid, $field, $lang) {
                     if(empty($value)) $value = '0000-00-00';
                     else {
                         $value = str_replace(array('dd', 'mm', 'yy', 'hh', 'mm', 'ss'), array('d', 'm', 'Y', 'H', 'i', 's'), $value);
                     }
                     return $value;												
             };
-            $adapter['text']['ui']['orm'] =	function($value) {                    
+            $adapter['text']['ui']['orm'] =	function($value, $class, $oid, $field, $lang) {                    
                     // return htmlspecialchars($value);
                     return $value;
             };
             $adapter['short_text']['ui']['orm'] = $adapter['text']['ui']['orm'];
             $adapter['string']['ui']['orm'] = $adapter['text']['ui']['orm'];
-            $adapter['html']['ui']['orm'] =	function($value) {
+            $adapter['html']['ui']['orm'] =	function($value, $class, $oid, $field, $lang) {
                     // clean HTML input html
                     // standard cleaning: remove non-standard tags and attributes    
                     $config = HTMLPurifier_Config::createDefault();
                     $purifier = new HTMLPurifier($config);    
                     return $purifier->purify($value);
             };            
-            $adapter['file']['ui']['orm'] = function($value) {
+            $adapter['file']['ui']['orm'] = function($value, $class, $oid, $field, $lang) {
                     // note : value is expected to be an array holding data from the $_FILES array and having the following keys set:
                     // ['name'], ['type], ['size'], ['tmp_name'], ['error']
                     $res = '';
+
                     if(!isset($value) || !isset($value['tmp_name'])) {
                         throw new Exception("binary data has not been received or cannot be retrieved", UNKNOWN_ERROR);                    
                     }
@@ -104,21 +105,28 @@ class DataAdapter {
                         // store file content in database
                         $res = file_get_contents($value['tmp_name'], FILE_BINARY, null, -1, UPLOAD_MAX_FILE_SIZE);
                     }
-                    else if(FILE_STORAGE_MODE == 'FS') {
-                        // 1) move temporary file
-                        $filename = FSManipulator::getSanitizedName($value['name']);
-                        $storage_location = FILE_STORAGE_DIR.'/'.$filename;
+                    else if(FILE_STORAGE_MODE == 'FS') { 
+                        // build a unique name  (package/class/field/oid.lang)
+                        $path = sprintf("%s/%s", str_replace('\\', '/', $class), $field);
+                        $file = sprintf("%011d.%s", $oid, $lang);                       
+                                                
+                        $storage_location = realpath(FILE_STORAGE_DIR).'/'.$path;
+
+                        if (!is_dir($storage_location)) {
+                            FSManipulator::assertPath($storage_location);
+                        }
+                        
                         // note : if a file by that name already exists it will be overwritten
-                        move_uploaded_file($value['tmp_name'], $storage_location);
-                        // 2) store file location in database
-                        $res = $filename;
+                        move_uploaded_file($value['tmp_name'], $storage_location.'/'.$file);
+
+                        $res = $path.'/'.$file;
                     }
                     return $res;
             };
-            $adapter['boolean']['db']['orm'] = function($value) {
+            $adapter['boolean']['db']['orm'] = function($value, $class, $oid, $field, $lang) {
                 return (intval($value) > 0);
             };                
-            $adapter['file']['db']['orm'] = function($value) {
+            $adapter['file']['db']['orm'] = function($value, $class, $oid, $field, $lang) {
                     $res = '';
                     if(FILE_STORAGE_MODE == 'DB') {
                         $res = $value;
@@ -131,15 +139,15 @@ class DataAdapter {
                     
                     return $res;
             };        
-            $adapter['file']['orm']['ui'] = function($value) {
+            $adapter['file']['orm']['ui'] = function($value, $class, $oid, $field, $lang) {
                     return base64_encode($value);
             };        
             
-            $adapter['one2many']['ui']['orm'] =	function($value) {
+            $adapter['one2many']['ui']['orm'] =	function($value, $class, $oid, $field, $lang) {
                     if(is_string($value)) $value = explode(',', $value);
                     return $value;
             };										
-            $adapter['many2many']['ui']['orm'] = function($value) {
+            $adapter['many2many']['ui']['orm'] = function($value, $class, $oid, $field, $lang) {
                     if(is_string($value)) $value = explode(',', $value);
                     return $value;
             };	            
@@ -163,9 +171,9 @@ class DataAdapter {
 	}
     
 
-	public static function adapt($from, $to, $type, $value) {											
+	public static function adapt($from, $to, $type, $value, $class, $oid, $field, $lang) {											
         $method = &self::getMethod($from, $to, $type);
-		return $method($value);
+		return $method($value, $class, $oid, $field, $lang);
 	}
 
 }

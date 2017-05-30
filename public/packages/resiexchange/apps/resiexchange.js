@@ -143,6 +143,7 @@ var resiway = angular.module('resiexchange', [
     'ngSanitize',
     'ngCookies', 
     'ngAnimate',
+    'ngFileUpload',
     'ui.bootstrap',
     'oi.select',    
     'textAngular',
@@ -479,9 +480,14 @@ var resiway = angular.module('resiexchange', [
             
         rootCtrl.htmlToTxt = function(html) {
             var str = new String(html);
+            return str.replace(/<[^>]*>/g, '').replace(/\./, ".\n");
+        };
+
+        rootCtrl.htmlToURL = function(html) {
+            var str = new String(html);
             return encodeURIComponent(str.replace(/<[^>]*>/g, '').replace(/\./, ".\n"));
         };
-            
+        
         rootCtrl.humanReadable = {
             
             date: function(value) {
@@ -659,6 +665,48 @@ angular.module('resiexchange')
                 return [];
             }
         );
+    };
+}])
+
+.service('routeDocumentsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
+    this.load = function() {
+        return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') {
+                    $rootScope.search.criteria.total = 0;
+                    return [];
+                }
+                $rootScope.search.criteria.total = data.total;
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                $rootScope.search.criteria.total = 0;
+                return [];
+            }
+        );
+    };
+}])
+
+.service('routeDocumentProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
+    this.load = function() {
+        return routeObjectProvider.provide('resilib_document')
+        .then(function(result) {
+            // adapt result to view requirements
+            var attributes = {
+                commentsLimit: 5,
+                newCommentShow: false,
+                newCommentContent: '',
+                newAnswerContent: ''
+            }
+            // add meta info attributes
+            angular.extend(result, attributes);
+            // mark html as safe
+            result.description = $sce.trustAsHtml(result.description);
+            return result;
+        });
     };
 }])
 
@@ -1078,6 +1126,7 @@ angular.module('resiexchange')
                 // submit action to the server, if any
                 if(typeof task.action != 'undefined'
                 && task.action.length > 0) {
+
                     $http.post('index.php?do='+task.action, task.data).then(
                     function successCallback(response) {
 
@@ -1368,7 +1417,40 @@ angular.module('resiexchange')
                     return provider.load();
                 }]
             }            
-        })      
+        })
+        
+        /**
+        * Document related routes
+        */
+        .when('/documents', {
+            templateUrl : templatePath+'documents.html',
+            controller  : 'documentsController as ctrl',
+            resolve     : {
+                // list of categories is required as well for selecting parent category
+                documents: ['routeDocumentsProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })
+        .when('/document/edit/:id', {
+            templateUrl : templatePath+'documentEdit.html',
+            controller  : 'documentEditController as ctrl',
+            resolve     : {
+                document: ['routeDocumentProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })    
+        .when('/document/:id/:title?', {
+            templateUrl : templatePath+'document.html',
+            controller  : 'documentController as ctrl',
+            resolve     : {
+                document: ['routeDocumentProvider', function (provider) {
+                    return provider.load();
+                }]
+            }
+        })
+        
         /**
         * Question related routes
         */
@@ -1886,6 +1968,951 @@ angular.module('resiexchange')
             });
         };  
            
+    }
+]);
+angular.module('resiexchange')
+
+/**
+ * document controller
+ *
+ */
+.controller('documentController', [
+    'document', 
+    '$scope', 
+    '$window',
+    '$location',
+    '$http',    
+    '$sce', 
+    '$timeout', 
+    '$uibModal', 
+    'actionService', 
+    'feedbackService', 
+    'textAngularManager',
+    function(document, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService, textAngularManager) {
+        console.log('document controller');
+        
+        var ctrl = this;
+
+        // @model
+        $scope.document = document;
+
+        
+        /*
+        * async load and inject $scope.related_documents
+        */
+        $scope.related_documents = [];
+        $http.get('index.php?get=resilib_document_related&document_id='+document.id)
+        .then(
+            function (response) {
+                $scope.related_documents = response.data.result;
+            }
+        );
+
+        
+        ctrl.openModal = function (title_id, header_id, content, template) {
+            return $uibModal.open({
+                animation: true,
+                ariaLabelledBy: 'modal-title',
+                ariaDescribedBy: 'modal-body',
+                templateUrl: template || 'modalCustom.html',
+                controller: ['$uibModalInstance', function ($uibModalInstance, items) {
+                    var ctrl = this;
+                    ctrl.title_id = title_id;
+                    ctrl.header_id = header_id;
+                    ctrl.body = content;
+                    
+                    ctrl.ok = function () {
+                        $uibModalInstance.close();
+                    };
+                    ctrl.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                }],
+                controllerAs: 'ctrl', 
+                size: 'md',
+                appendTo: angular.element($window.document.querySelector(".modal-wrapper")),
+                resolve: {
+                    items: function () {
+                      return ctrl.items;
+                    }
+                }
+            }).result;
+        };
+           
+
+        // @methods
+        $scope.begin = function (commit, previous) {
+            $scope.committed = false;
+            // make a copy of previous state
+            $scope.previous = angular.merge({}, previous);
+            // commit transaction (can be rolled back to previous state if something goes wrong)
+            commit($scope);
+            // prevent further commits (commit functions are in charge of checking this var)
+            $scope.committed = true;
+        };
+        
+        $scope.rollback = function () {
+            if(angular.isDefined($scope.previous) && typeof $scope.previous == 'object') {
+                angular.merge($scope.document, $scope.previous);
+            }
+        };
+        
+        $scope.documentComment = function($event) {
+
+            // remember selector for popover location 
+            var selector = feedbackService.selector($event.target);
+            
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_document_comment',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                    document_id: $scope.document.id,
+                    content: $scope.document.newCommentContent
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var comment_id = data.result.id;
+                        // add new comment to the list
+                        $scope.document.comments.push(data.result);
+                        $scope.document.newCommentShow = false;
+                        $scope.document.newCommentContent = '';
+                        // wait for next digest cycle
+                        $timeout(function() {
+                            // scroll to newly created comment
+                            feedbackService.popover('#comment-'+comment_id, '');
+                        });
+                    }
+                }        
+            });
+        };
+
+        $scope.documentFlag = function ($event) {
+
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {
+                    // make sure impacted properties are set
+                    if(!angular.isDefined($scope.document.history['resilib_document_flag'])) {
+                        $scope.document.history['resilib_document_flag'] = false;
+                    }
+                    // update current state to new values
+                    if($scope.document.history['resilib_document_flag'] === true) {
+                        $scope.document.history['resilib_document_flag'] = false;
+                    }
+                    else {
+                        $scope.document.history['resilib_document_flag'] = true;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         { 
+                            history: {
+                                resilib_document_flag: $scope.document.history['resilib_document_flag'] 
+                            }
+                         });     
+            
+            // remember selector for popover location        
+            var selector = feedbackService.selector($event.target);
+            
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_document_flag',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                        document_id: $scope.document.id
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // toggle related entries in current history
+                    if(data.result < 0) {
+                        // rollback
+                        $scope.rollback();
+                        
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);                    
+                    }                
+                    else {
+                        commit($scope);
+                    }
+                }        
+            });
+        };
+
+         
+        
+        $scope.documentVoteUp = function ($event) {            
+
+            // normalize : make sure impacted properties are set
+            if(!angular.isDefined($scope.document.history['resilib_document_votedown'])) {
+                $scope.document.history['resilib_document_votedown'] = false;
+            }
+            if(!angular.isDefined($scope.document.history['resilib_document_voteup'])) {
+                $scope.document.history['resilib_document_voteup'] = false;
+            }           
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                 
+                    // update current state to new values
+                    if($scope.document.history['resilib_document_voteup'] === true) {
+                        // toggle voteup
+                        $scope.document.history['resilib_document_voteup'] = false;
+                        $scope.document.score--;
+                    }
+                    else {
+                        // undo votedown
+                        if($scope.document.history['resilib_document_votedown'] === true) {
+                            $scope.document.history['resilib_document_votedown'] = false;
+                            $scope.document.score++;
+                        }
+                        // voteup
+                        $scope.document.history['resilib_document_voteup'] = true;
+                        $scope.document.score++;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         {
+                            history: {
+                                resilib_document_votedown: $scope.document.history['resilib_document_votedown'],
+                                resilib_document_voteup:   $scope.document.history['resilib_document_voteup']                        
+                            },
+                            score: $scope.document.score
+                         });
+                         
+            // remember selector for popover location    
+            var selector = feedbackService.selector($event.target);
+            
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_document_voteup',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {document_id: $scope.document.id},
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(data.result >= 0) {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                        if(data.result === true) feedbackService.popover(selector, 'DOCUMENT_ACTIONS_VOTEUP_OK', 'info', true);
+                        // $scope.document.history['resilib_document_voteup'] = true;
+                        // $scope.document.score++;
+                    }
+                    else {
+                        // rollback
+                        $scope.rollback();
+                        
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        
+                        feedbackService.popover(selector, msg);
+
+                    }
+                }        
+            });
+        };
+        
+        $scope.documentVoteDown = function ($event) {
+
+            // normalize : make sure impacted properties are set
+            if(!angular.isDefined($scope.document.history['resilib_document_votedown'])) {
+                $scope.document.history['resilib_document_votedown'] = false;
+            }
+            if(!angular.isDefined($scope.document.history['resilib_document_voteup'])) {
+                $scope.document.history['resilib_document_voteup'] = false;
+            }           
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                                 
+                    // update current state to new values
+                    if($scope.document.history['resilib_document_votedown'] === true) {
+                        // toggle votedown
+                        $scope.document.history['resilib_document_votedown'] = false;
+                        $scope.document.score++;
+                    }
+                    else {
+                        // undo voteup
+                        if($scope.document.history['resilib_document_voteup'] === true) {
+                            $scope.document.history['resilib_document_voteup'] = false;
+                            $scope.document.score--;
+                        }
+                        // votedown
+                        $scope.document.history['resilib_document_votedown'] = true;
+                        $scope.document.score--;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         {
+                            history: {
+                                resilib_document_votedown: $scope.document.history['resilib_document_votedown'],
+                                resilib_document_voteup:   $scope.document.history['resilib_document_voteup']                        
+                            },
+                            score: $scope.document.score
+                         });
+                         
+            // remember selector for popover location
+            var selector = feedbackService.selector($event.target);
+            
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_document_votedown',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {document_id: $scope.document.id},
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // toggle related entries in current history
+                    if(data.result >= 0) {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                    }
+                    else {
+                        // rollback
+                        $scope.rollback();
+                        
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);                    
+                    }
+                }        
+            });
+        };    
+
+        $scope.documentStar = function ($event) {
+
+            // normalize : make sure impacted properties are set
+            if(!angular.isDefined($scope.document.history['resilib_document_star'])) {
+                $scope.document.history['resilib_document_star'] = false;
+            }
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {
+
+                    // update current state to new values
+                    if($scope.document.history['resilib_document_star'] === true) {
+                        $scope.document.history['resilib_document_star'] = false;
+                        $scope.document.count_stars--;
+                    }
+                    else {
+                        $scope.document.history['resilib_document_star'] = true;
+                        $scope.document.count_stars++;
+                    }
+                }
+            };
+
+            // set previous state and begin transaction
+            $scope.begin(commit, 
+                         { 
+                            history: {
+                                resilib_document_star: $scope.document.history['resilib_document_star']
+                            },
+                            count_stars: $scope.document.count_stars            
+                         });    
+            
+            // remember selector for popover location
+            var selector = feedbackService.selector($event.target);
+            
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_document_star',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {document_id: $scope.document.id},
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // toggle related entries in current history
+                    if(data.result < 0) {
+                        // rollback
+                        $scope.rollback();
+                        
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);                    
+                    }                
+                    else {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                    }
+                }        
+            });
+        };      
+
+        $scope.documentCommentVoteUp = function ($event, index) {
+            // normalize : make sure impacted properties are set
+            if(!angular.isDefined($scope.document.comments[index].history['resilib_documentcomment_voteup'])) {
+                $scope.document.comments[index].history['resilib_documentcomment_voteup'] = false;
+            }    
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                                   
+                    // update current state to new values
+                    if($scope.document.comments[index].history['resilib_documentcomment_voteup'] === true) {
+                        $scope.document.comments[index].history['resilib_documentcomment_voteup'] = false;
+                        $scope.document.comments[index].score--;
+                    }
+                    else {
+                        $scope.document.comments[index].history['resilib_documentcomment_voteup'] = true;
+                        $scope.document.comments[index].score++;
+                    }
+                }
+            };
+            
+            // set previous state and begin transaction
+            $scope.begin(commit, { comments: $scope.document.comments });
+            
+            // remember selector for popover location            
+            var selector = feedbackService.selector($event.target);
+            
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_documentcomment_voteup',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                        comment_id: $scope.document.comments[index].id
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // toggle related entries in current history
+                    if(data.result < 0) {
+                        // rollback transaction
+                        $scope.rollback();
+                        
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);                    
+                    }                
+                    else {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                    }
+                }        
+            });
+        };
+
+        $scope.documentCommentFlag = function ($event, index) {
+            // normalize : make sure impacted properties are set
+            if(!angular.isDefined($scope.document.comments[index].history['resilib_documentcomment_flag'])) {
+                $scope.document.comments[index].history['resilib_documentcomment_flag'] = false;
+            }  
+                    
+            // define transaction
+            var commit = function ($scope) {
+                // prevent action if it has already been committed
+                if(!angular.isDefined($scope.committed) || !$scope.committed) {                    
+                  
+                    // update current state to new values (toggle flag)
+                    if($scope.document.comments[index].history['resilib_documentcomment_flag'] === true) {
+                        $scope.document.comments[index].history['resilib_documentcomment_flag'] = false;
+                    }
+                    else {
+                        $scope.document.comments[index].history['resilib_documentcomment_flag'] = true;
+                    }
+                }
+            };
+            
+            // set previous state and begin transaction
+            $scope.begin(commit, { comments: $scope.document.comments });
+            
+            // remember selector for popover location             
+            var selector = feedbackService.selector($event.target);
+            
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_documentcomment_flag',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                        comment_id: $scope.document.comments[index].id
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // toggle related entries in current history
+                    if(data.result < 0) {
+                        // rollback transaction
+                        $scope.rollback();
+                        
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);                    
+                    }                
+                    else {
+                        // commit if it hasn't been done already
+                        commit($scope);
+                    }
+                }        
+            });
+        };        
+
+        $scope.documentCommentEdit = function ($event, index) {
+                       
+            // remember selector for popover location 
+            var selector = feedbackService.selector($event.target);
+
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_documentcomment_edit',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                        comment_id: $scope.document.comments[index].id,
+                        content: $scope.document.comments[index].content
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // toggle related entries in current history
+                    if(data.result < 0) {
+                        // rollback transaction
+                        $scope.rollback();
+                        
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        feedbackService.popover(selector, msg);                    
+                    }                
+                    else {
+                        $scope.document.comments[index].editMode = false;
+                    }
+                }        
+            });
+        };
+
+
+        $scope.documentCommentDelete = function ($event, index) {
+            
+            // remember selector for popover location 
+            var selector = feedbackService.selector($event.target);
+            
+            ctrl.openModal('MODAL_COMMENT_DELETE_TITLE', 'MODAL_COMMENT_DELETE_HEADER', $scope.document.comments[index].content)
+            .then(
+                function () {
+                    actionService.perform({
+                        // valid name of the action to perform server-side
+                        action: 'resilib_documentcomment_delete',
+                        // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                        data: {comment_id: $scope.document.comments[index].id},
+                        // scope in wich callback function will apply 
+                        scope: $scope,
+                        // callback function to run after action completion (to handle error cases, ...)
+                        callback: function($scope, data) {
+                            // we need to do it this way because current controller might be destroyed in the meantime
+                            // (if route is changed to signin form)
+                            if(data.result === true) {                  
+                                // update view
+                                $scope.document.comments.splice(index, 1);
+                            }
+                            else if(data.result === false) { 
+                                // deletion toggle : we shouldn't reach this point with this controller
+                            }
+                            else {
+                                // result is an error code
+                                var error_id = data.error_message_ids[0];                    
+                                // todo : get error_id translation
+                                var msg = error_id;
+                                feedbackService.popover(selector, msg);
+                            }
+                        }        
+                    });
+                }
+            );     
+        };
+
+        
+        $scope.documentDelete = function ($event) {
+            
+            // remember selector for popover location 
+            var selector = feedbackService.selector($event.target);
+            
+            ctrl.openModal('MODAL_DOCUMENT_DELETE_TITLE', 'MODAL_DOCUMENT_DELETE_HEADER', $scope.document.title)
+            .then(
+                function () {
+                    actionService.perform({
+                        // valid name of the action to perform server-side
+                        action: 'resilib_document_delete',
+                        // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                        data: {document_id: $scope.document.id},
+                        // scope in wich callback function will apply 
+                        scope: $scope,
+                        // callback function to run after action completion (to handle error cases, ...)
+                        callback: function($scope, data) {
+                            // we need to do it this way because current controller might be destroyed in the meantime
+                            // (if route is changed to signin form)
+                            if(data.result === true) {                  
+                                // go back to documents list
+                                $location.path('/documents');
+                            }
+                            else if(data.result === false) { 
+                                // deletion toggle : we shouldn't reach this point with this controller
+                            }
+                            else {
+                                // result is an error code
+                                var error_id = data.error_message_ids[0];                    
+                                // todo : get error_id translation
+                                var msg = error_id;
+                                feedbackService.popover(selector, msg);
+                            }
+                        }        
+                    });
+                }
+            );     
+        };
+
+        
+        $scope.showShareModal = function() {
+
+            return $uibModal.open({
+                animation: true,
+                ariaLabelledBy: 'modal-title',
+                ariaDescribedBy: 'modal-body',
+                templateUrl: 'documentShareModal.html',
+                controller: ['$uibModalInstance', function ($uibModalInstance, items) {
+                    var ctrl = this;
+                    ctrl.title_id = 'Partager';
+
+                    $uibModalInstance.document = $scope.document;
+                    
+                    ctrl.ok = function () {
+                        $uibModalInstance.close();
+                    };
+                    ctrl.cancel = function () {
+                        $uibModalInstance.dismiss();
+                    };
+                }],
+                controllerAs: 'ctrl', 
+                scope: $scope,
+                size: 'md',
+                appendTo: angular.element($window.document.querySelector(".modal-wrapper"))
+            }).result;
+
+        };
+        
+    }
+]);
+angular.module('resiexchange')
+/**
+* Display given document for edition
+*
+*/
+.controller('documentEditController', [
+    'document',
+    '$scope',
+    '$rootScope',
+    '$window', 
+    '$location', 
+    '$sce', 
+    'feedbackService', 
+    'actionService', 
+    'textAngularManager',
+    '$http',
+    '$httpParamSerializerJQLike',
+    'Upload',
+    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike, Upload) {
+        console.log('documentEdit controller');
+        
+        var ctrl = this;   
+
+        
+// todo: if user is not identified : redirect to login screen (to prevent risk of losing filled data)
+        // @view 
+       
+        $scope.addItem = function(query) {
+            return {
+                id: null, 
+                title: query, 
+                path: query, 
+                parent_id: 0, 
+                parent_path: ''
+            };
+        };
+        
+        $scope.loadMatches = function(query) {
+            if(query.length < 2) return [];
+            
+            return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result != 'object') return [];
+                    return data.result;
+                },
+                function errorCallback(response) {
+                    // something went wrong server-side
+                    return [];
+                }
+            );                
+        };
+        
+        // @model
+        // description is inside a textarea and do not need sanitize check
+        document.description = $sce.valueOf(document.description);
+        
+        $scope.document = angular.merge({
+                            id: 0,
+                            title: '',
+                            author: '',
+                            last_update: '',
+                            description: '',
+                            categories_ids: [{}],
+                            content: {
+                                name: document.original_filename
+                            }
+                          }, 
+                          document);
+                          
+
+        /**
+        * categories_ids is a many2many field, so as initial setting we mark all ids to be removed
+        */
+        // save initial categories_ids
+        $scope.initial_cats_ids = [];
+        angular.forEach($scope.document.categories, function(cat, index) {
+            $scope.initial_cats_ids.push('-'+cat.id);
+        });
+        
+        // @events
+        $scope.$watch('document.categories', function() {
+            // reset selection
+            $scope.document.categories_ids = angular.copy($scope.initial_cats_ids);
+            angular.forEach($scope.document.categories, function(cat, index) {
+                if(cat.id == null) {
+                    $scope.document.categories_ids.push(cat.title);
+                }
+                else $scope.document.categories_ids.push('+'+cat.id);
+            });
+        });
+
+        // @methods
+        $scope.documentPost = function($event) {
+
+            var update = new Date($scope.document.last_update);
+                      
+            console.log($scope.document.content);
+
+            Upload.upload({
+                url: 'index.php?do=resilib_document_edit', 
+                method: 'POST',                
+                data: {
+                    channel: $rootScope.config.channel,
+                    document_id: $scope.document.id,
+                    title: $scope.document.title,
+                    author: $scope.document.author,                    
+                    last_update: update.getDay()+'/'+update.getMonth()+'/'+update.getFullYear(),  
+                    description: $scope.document.description,
+                    pages: $scope.document.pages,                
+                    categories_ids: $scope.document.categories_ids,
+                    content: $scope.document.content, 
+                    thumbnail: $scope.document.thumbnail
+                }
+            });
+            
+            return;
+            
+
+            
+
+            
+            var selector = feedbackService.selector(angular.element($event.target));                   
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resilib_document_edit',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                    channel: $rootScope.config.channel,
+                    document_id: $scope.document.id,
+                    title: $scope.document.title,
+                    author: $scope.document.author,                    
+                    last_update: update.getDay()+'/'+update.getMonth()+'/'+update.getFullYear(),  
+                    description: $scope.document.description,
+                    pages: $scope.document.pages,                    
+                    content: (typeof fileInput[0].files != 'undefined')?fileInput[0]:[],
+                    categories_ids: $scope.document.categories_ids
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        // in case a field is missing, adapt the generic 'missing_*' message
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'document_'+msg;
+                        }
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var document_id = data.result.id;
+                        $location.path('/document/'+document_id);
+                    }
+                }        
+            });
+        };  
+           
+    }
+]);
+angular.module('resiexchange')
+
+.controller('documentsController', [
+    'documents', 
+    '$scope',
+    '$rootScope',
+    '$route',
+    '$http',
+    '$httpParamSerializerJQLike',
+    '$window',
+    function(documents, $scope, $rootScope, $route, $http, $httpParamSerializerJQLike, $window) {
+        console.log('documents controller');
+
+        var ctrl = this;
+
+        // @data model
+        angular.merge(ctrl, {
+            documents: {
+                items: documents,
+                total: $rootScope.search.total,
+                currentPage: 1,
+                previousPage: -1,                
+                limit: $rootScope.search.criteria.limit
+            }
+        });
+
+        ctrl.load = function() {
+            if(ctrl.documents.currentPage != ctrl.documents.previousPage) {
+                ctrl.documents.previousPage = ctrl.documents.currentPage;
+                // reset objects list (triggers loader display)
+                ctrl.documents.items = -1;
+                $rootScope.search.criteria.start = (ctrl.documents.currentPage-1)*ctrl.documents.limit;
+                
+                $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') {
+                            ctrl.documents.items = [];
+                        }
+                        ctrl.documents.items = data.result;
+                        $window.scrollTo(0, 0);
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return [];
+                    }
+                );
+            }
+        };            
+
+        // @async loads
+        ctrl.categories = [];
+        
+        // store categories list in controller, if any
+        angular.forEach($rootScope.search.criteria.domain, function(clause, i) {
+            if(clause[0] == 'categories_ids') {
+                $scope.related_categories = [];
+                if(typeof clause[2] != 'object') {
+                    clause[2] = [clause[2]];
+                }
+                ctrl.categories = clause[2];
+            }
+        });
+        
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        if(ctrl.categories.length > 0) {
+            $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&'+$httpParamSerializerJQLike({domain: ['id', 'in', ctrl.categories]}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result == 'object') {
+                        $scope.categories = data.result;
+                    }
+                }
+            );
+            angular.forEach(ctrl.categories, function(category_id, j) {
+                $http.get('index.php?get=resiway_category_related&category_id='+category_id)
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result == 'object') {
+                            $scope.related_categories = data.result;
+                        }
+                    }
+                );
+                
+            });
+        }
+        
+        /*
+        * async load and inject $scope.categories and $scope.featured_categories
+        */
+        $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&limit=15&order=count_questions&sort=desc')
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result == 'object') {
+                    $scope.featured_categories = data.result;
+                }
+            }
+        );
+        
     }
 ]);
 angular.module('resiexchange')
@@ -2472,7 +3499,7 @@ angular.module('resiexchange')
                     if($scope.question.history['resiexchange_question_votedown'] === true) {
                         // toggle votedown
                         $scope.question.history['resiexchange_question_votedown'] = false;
-                        $scope.question.score--;
+                        $scope.question.score++;
                     }
                     else {
                         // undo voteup
@@ -3325,7 +4352,7 @@ angular.module('resiexchange')
                 animation: true,
                 ariaLabelledBy: 'modal-title',
                 ariaDescribedBy: 'modal-body',
-                templateUrl: 'modalShare.html',
+                templateUrl: 'questionShareModal.html',
                 controller: ['$uibModalInstance', function ($uibModalInstance, items) {
                     var ctrl = this;
                     ctrl.title_id = 'Partager';

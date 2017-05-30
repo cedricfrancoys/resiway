@@ -15,12 +15,21 @@ var translations = {
     "MODAL_ANSWER_DELETE_HEADER": "Supprimer cette réponse ?",
     "MODAL_COMMENT_DELETE_TITLE": "Suppression d'un commentaire",
     "MODAL_COMMENT_DELETE_HEADER": "Supprimer ce commentaire ?",  
+
+    "MODAL_DOCUMENT_DELETE_TITLE": "Suppression d'un document",
+    "MODAL_DOCUMENT_DELETE_HEADER": "Supprimer ce document ?", 
     
     "MODAL_QUESTION_SHARE_DOWNLOAD": "Télécharger",
     "MODAL_QUESTION_SHARE_VIEW": "Voir",
     "MODAL_QUESTION_SHARE_LINK": "Lien d'accès direct",
     "MODAL_QUESTION_SHARE_SOURCE": "Source",
     "MODAL_QUESTION_SHARE_SHARE": "Publier sur Facebook",
+
+    "MODAL_DOCUMENT_SHARE_DOWNLOAD": "Télécharger",
+    "MODAL_DOCUMENT_SHARE_VIEW": "Voir",
+    "MODAL_DOCUMENT_SHARE_LINK": "Lien d'accès direct",
+    "MODAL_DOCUMENT_SHARE_SOURCE": "Source",
+    "MODAL_DOCUMENT_SHARE_SHARE": "Publier sur Facebook",
     
     // Toolbar
     "TOOLBAR_PLATFORM_OTHER_APPS": "Autres applications",    
@@ -32,7 +41,7 @@ var translations = {
     "QUESTION_ACTIONS_VOTEUP_TOOLTIP": "Cette question fait preuve d'un effort de recherche; elle est utile et claire",
     "QUESTION_ACTIONS_VOTEDOWN_TOOLTIP": "Cette question ne fait preuve d'aucun effort de recherche; elle est inutile ou peu claire",
     "QUESTION_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter cette question à tes favoris (deux clics pour la retirer)",
-    "QUESTION_ACTIONS_SHARE": "Partager",
+    "QUESTION_ACTIONS_SHARE": "Partage",
     "QUESTION_ACTIONS_SHARE_TOOLTIP": "Permalink vers cette question",
     "QUESTION_ACTIONS_EDIT": "Éditer",
     "QUESTION_ACTIONS_FLAG": "Signaler",
@@ -63,7 +72,7 @@ var translations = {
 
     "QUESTION_ANSWER_ACTIONS_VOTEUP_TOOLTIP": "Cette réponse fait preuve d'un effort de recheche; elle est utile et claire",
     "QUESTION_ANSWER_ACTIONS_VOTEDOWN_TOOLTIP": "Cette réponse ne fait preuve d'aucun effort de recherche; elle est inutile ou peu claire",
-    "QUESTION_ANSWER_ACTIONS_SHARE": "Partager",
+    "QUESTION_ANSWER_ACTIONS_SHARE": "Partage",
     "QUESTION_ANSWER_ACTIONS_SHARE_TOOLTIP": "Permalink vers cette réponse",
     "QUESTION_ANSWER_ACTIONS_EDIT": "Éditer",
     "QUESTION_ANSWER_ACTIONS_FLAG": "Signaler",
@@ -107,6 +116,55 @@ var translations = {
     "ANSWER_STATS_VIEWED": "vue",
     "ANSWER_STATS_ACTIVE": "active",  
     "ANSWER_STATS_TIMES": "fois",
+
+    // Documents
+    "DOCUMENTS_DOCUMENTS": "Documents",    
+
+    "DOCUMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce document fait preuve d'un effort de recherche; il est utile et claire",
+    "DOCUMENT_ACTIONS_VOTEDOWN_TOOLTIP": "Ce document ne fait preuve d'aucun effort de recherche; il est inutile ou peu claire",
+    "DOCUMENT_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter ce document à tes favoris (deux clics pour la retirer)",
+    "DOCUMENT_ACTIONS_SHARE": "Partage",
+    "DOCUMENT_ACTIONS_SHARE_TOOLTIP": "Permalink vers ce document",
+    "DOCUMENT_ACTIONS_EDIT": "Éditer",
+    "DOCUMENT_ACTIONS_FLAG": "Signaler",
+    "DOCUMENT_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur ce document pour modération",
+    "DOCUMENT_ACTIONS_DELETE": "Supprimer",
+    "DOCUMENT_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les documents que si on a une bonne raison de le faire",
+
+    "DOCUMENT_ACTIONS_VOTEUP_OK": "Votre vote a bien été pris en compte.<br />Merci pour votre participation !",
+    
+    "DOCUMENT_COMMENT_SCORE_TOOLTIP": "Nombre de votes 'commentaire utile' reçus",
+    "DOCUMENT_COMMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce commentaire ajoute quelque chose d'utilie à cette publication",
+    "DOCUMENT_COMMENT_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur ce commentaire pour modération",
+    "DOCUMENT_COMMENT_ACTIONS_EDIT": "Éditer",
+    "DOCUMENT_COMMENT_ACTIONS_DELETE": "Supprimer",
+    "DOCUMENT_COMMENT_ACTIONS_EDIT_TOOLTIP": "Attirer l'attention sur ce commentaire pour modération",
+    "DOCUMENT_COMMENT_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les commentaires que si on a une bonne raison de le faire",    
+
+    "DOCUMENT_COMMENTS_ADD": "Ajouter un commentaire",
+    "DOCUMENT_COMMENTS_ADD_TOOLTIP": "Utilisez les commentaires pour demander plus d'info ou pour suggérer des clarifications. Il est préférable d'éviter de répondre aux questions dans les commentaires.",
+    "DOCUMENT_COMMENTS_ADD_PLACEHOLDER": "Faites votre commentaire ici",
+    "DOCUMENT_COMMENTS_SHOW_ALL": "Voir tous les commentaires",  
+    "DOCUMENT_COMMENTS_SHOW_ALL_TOOLTIP": "Cliquez pour étendre la liste à tous les commentaires",
+    "DOCUMENT_COMMENTS_ADD_BUTTON": "Ajouter",
+    "DOCUMENT_COMMENTS_EDIT_BUTTON": "Modifier",
+    "DOCUMENT_COMMENTS_CANCEL_BUTTON": "Annuler",
+
+    "DOCUMENT_STATS_ASKED": "soumis",
+    "DOCUMENT_STATS_ASKED_ON": "soumis le",    
+    "DOCUMENT_STATS_EDITED": "édité",
+    "DOCUMENT_STATS_EDITED_ON": "édité le",
+    "DOCUMENT_STATS_VIEWED": "vu",
+    "DOCUMENT_STATS_ACTIVE": "actif",  
+    "DOCUMENT_STATS_TIMES": "fois",
+    
+    "DOCUMENTS_VOTES": "votes",
+    "DOCUMENTS_VIEWS": "vues",
+    
+    "DOCUMENTS_STATS_DOCUMENTS": "documents",
+    "DOCUMENTS_STATS_COMMENTS": "commentaires",
+    "DOCUMENTS_STATS_POSTS": "publications",    
+    "DOCUMENTS_STATS_USERS": "participants",
     
     // Users
     "USERS_TITLE": "Liste des participants",
