@@ -67,19 +67,19 @@ try {
     
     // total is not knwon yet
     if($params['total'] < 0) {        
-        $ids = $om->search('resilib\document', $params['domain'], $params['order'], $params['sort']);
+        $ids = $om->search('resilib\Document', $params['domain'], $params['order'], $params['sort']);
         if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
         $total = count($ids);
 		$documents_ids = array_slice($ids, $params['start'], $params['limit']);
     }
     else {
-        $documents_ids = $om->search('resilib\document', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
+        $documents_ids = $om->search('resilib\Document', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
         if($documents_ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
     }
     
     if(!empty($documents_ids)) {
         // retrieve documents
-        $res = $om->read('resilib\document', $documents_ids, ['creator', 'created', 'title', 'title_url', 'author', 'description', 'count_votes', 'categories_ids']);
+        $res = $om->read('resilib\Document', $documents_ids, ['creator', 'created', 'title', 'title_url', 'author', 'description', 'count_votes', 'categories_ids']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
         $authors_ids = [];        
