@@ -360,6 +360,19 @@ var resiway = angular.module('resiexchange', [
         
         rootCtrl.humanReadable = {
             
+            month: function(value) {
+                var res = '';
+                var timestamp = Date.parse(value);
+                if(timestamp != NaN) {
+                    var date = new Date(timestamp);
+                    res = date.toLocaleString('fr', { 
+                                year:   'numeric', 
+                                month:  'long'
+                           });
+                }
+                return res;
+            },
+
             date: function(value) {
                 var res = '';
                 var timestamp = Date.parse(value);

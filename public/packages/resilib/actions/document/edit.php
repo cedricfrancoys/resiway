@@ -44,7 +44,7 @@ $params = QNLib::announce([
                                 'type'          => 'string', 
                                 'default'       => ''
                             ),
-        'licence'           => array(
+        'license'           => array(
                                 'description'   => 'Licence under which is published the submitted document.',
                                 'type'          => 'string', 
                                 'default'       => 'CC-by-nc-sa' 

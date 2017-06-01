@@ -490,6 +490,19 @@ var resiway = angular.module('resiexchange', [
         
         rootCtrl.humanReadable = {
             
+            month: function(value) {
+                var res = '';
+                var timestamp = Date.parse(value);
+                if(timestamp != NaN) {
+                    var date = new Date(timestamp);
+                    res = date.toLocaleString('fr', { 
+                                year:   'numeric', 
+                                month:  'long'
+                           });
+                }
+                return res;
+            },
+
             date: function(value) {
                 var res = '';
                 var timestamp = Date.parse(value);
@@ -2751,8 +2764,9 @@ angular.module('resiexchange')
                     title: $scope.document.title,
                     author: $scope.document.author,                    
                     last_update: update.getDay()+'/'+update.getMonth()+'/'+update.getFullYear(),  
+                    license: $scope.document.license,                    
                     description: $scope.document.description,
-                    pages: $scope.document.pages,                
+                    pages: $scope.document.pages,
                     categories_ids: $scope.document.categories_ids,
                     content: $scope.document.content, 
                     thumbnail: $scope.document.thumbnail

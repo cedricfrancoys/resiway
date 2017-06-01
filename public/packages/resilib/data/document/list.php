@@ -45,7 +45,12 @@ $params = QNLib::announce(
                                             'description'   => 'Total of record (if known).',
                                             'type'          => 'integer',
                                             'default'       => -1
-                                            )                                              
+                                            ),
+                        'api'		=> array(
+                                            'description'   => 'API version (for output format)',
+                                            'type'          => 'string',
+                                            'default'       => null
+                                            )                                                   
                         )
 	)
 );
@@ -69,7 +74,7 @@ try {
     if($params['total'] < 0) {        
         $ids = $om->search('resilib\Document', $params['domain'], $params['order'], $params['sort']);
         if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
-        $total = count($ids);
+        $params['total'] = count($ids);
 		$documents_ids = array_slice($ids, $params['start'], $params['limit']);
     }
     else {
@@ -137,8 +142,6 @@ try {
                 $documents[$document_id]['history'] = $documents_history[$document_id];        
             }
         }
-
-
         
         $result = array_values($documents);
     }
@@ -148,11 +151,41 @@ catch(Exception $e) {
     $error_message_ids = array($e->getMessage());
 }
 
+// determine output format
+if( intval($params['api']) > 0 && is_array($result) ) {
+    // JSON API RFC7159
+    header('Content-type: application/vnd.api+json');
+    $result = [];
+    $included = [];
+    foreach($documents as $id => $document) {
+        $author_id = $document['creator']['id'];
+        unset($document['creator']['id']);
+        if(!isset($included[$author_id])) {
+// todo : include categories            
+            $included[$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $document['creator']];
+        }
+        unset($document['id']);        
+        unset($document['creator']);        
+        $result[] = [
+            'type'          => 'documents', 
+            'id'            => $id, 
+            'attributes'    => (object) $document, 
+            'relationships' => (object) ['creator' => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']] ]
+        ];
+    }
+    echo json_encode((object)[
+        'meta'      => ['total-pages' => ceil($params['total']/$params['limit'])],
+        'data'      => $result,
+        'included'  => array_values($included),        
+        ], JSON_PRETTY_PRINT);    
+    exit();
+}
+
 // send json result
 header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
                     'result'            => $result, 
-                    'total'             => $total,                     
+                    'total'             => $params['total'],
                     'error_message_ids' => $error_message_ids
                  ], 
                  JSON_PRETTY_PRINT);

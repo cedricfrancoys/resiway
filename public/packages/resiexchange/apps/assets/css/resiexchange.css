@@ -542,7 +542,6 @@ input[type="text"] {
 
 
 .document .author {
-    padding-left: 15px;
     margin-bottom: 5px;
     word-wrap: break-word;
     font-size: 15px;
@@ -550,8 +549,12 @@ input[type="text"] {
     font-weight: bold;
 }
 
+.document .details {
+    margin-bottom: 5px;
+}
+
+
 .document .text{
-    padding-left: 15px;
     margin-bottom: 5px;
     word-wrap: break-word;
     font-size: 15px;
@@ -559,13 +562,12 @@ input[type="text"] {
 }
 
 .document .text p {
-    clear: both;
     margin-bottom: 1em;
     margin-top: 0;
 }
 
 .document .tags {
-    padding-left: 15px;
+    /* padding-left: 15px; */
     clear: none !important;
 }
 
@@ -852,14 +854,18 @@ input[type="text"] {
     float: left;
     width: 102px;
     padding: 0;
+    margin-right: 15px;
     border: solid 1px lightgrey;
+}
+
+.document .document-author {
+    margin-bottom: 8px;
 }
 
 .document .summary {
     float: left;
-    width: calc(100% - 172px);
+    width: calc(100% - 187px);
     padding: 0;
-    padding-left: 12px;
 }
 
 .document .summary h3 {
@@ -868,7 +874,7 @@ input[type="text"] {
     margin: 0;
     font-weight: 400;
     font-size: 15px;
-    margin-bottom: .5em;
+    margin-bottom: 5px;
     line-height: 1.4;
 }
 

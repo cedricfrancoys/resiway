@@ -20,5 +20,6 @@
     "/sitemap.txt":"?show=resiway_sitemap",    
     "/sitemap.html":"?show=resiway_sitemap&output=html",    
     "/api/categories":"?get=resiway_category_list&api=1.0",
-    "/api/questions":"?get=resiexchange_question_list&api=1.0"
+    "/api/questions":"?get=resiexchange_question_list&api=1.0",
+    "/api/documents":"?get=resilib_document_list&api=1.0"    
 }

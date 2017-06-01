@@ -42,7 +42,7 @@ class Document extends \easyobject\orm\Object {
             
             'pages'				    => array('type' => 'integer'),
                             
-            'licence'			    => array('type' => 'string'),
+            'license'			    => array('type' => 'string'),
             
             /* original location of the document */
             'original_url'		    => array('type' => 'string'),

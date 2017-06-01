@@ -61,17 +61,25 @@
             </div>
             <div class="content col-11-12 nopad">
             
-                <div class="document-thumbnail col-2-12 nopad">
+                <div class="document-thumbnail nopad">
                     <a href="index.php?get=resilib_document_raw&id={{document.id}}" target="_blank">
                         <img width="100" height="133" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
                     </a>
                 </div>
 
-                <div class="author col-10-12 nopad">
-                    {{document.author}}
+                <div class="author">
+                    <span style="font-weight: normal;">par </span>{{document.author}}
+                </div>
+
+                <div class="details">
+                    Version: {{rootCtrl.humanReadable.month(document.last_update)}}
+                </div>
+
+                <div class="details">
+                    Licence: {{document.license}}
                 </div>
                 
-                <div class="text col-10-12 nopad" itemprop="text">                    
+                <div class="text" itemprop="text">                    
                     <p ng-bind-html="document.description"></p>
                 </div>
                 
@@ -357,7 +365,7 @@
                     </div>                        
                     <div class="stat-row">                        
                         <div class="title">
-                            Auteur
+                            Partage
                         </div>
                         <div class="content">
                             <b>{{document.creator.display_name}}</b>

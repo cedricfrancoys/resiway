@@ -107,8 +107,9 @@ angular.module('resiexchange')
                     title: $scope.document.title,
                     author: $scope.document.author,                    
                     last_update: update.getDay()+'/'+update.getMonth()+'/'+update.getFullYear(),  
+                    license: $scope.document.license,                    
                     description: $scope.document.description,
-                    pages: $scope.document.pages,                
+                    pages: $scope.document.pages,
                     categories_ids: $scope.document.categories_ids,
                     content: $scope.document.content, 
                     thumbnail: $scope.document.thumbnail

@@ -140,7 +140,7 @@ foreach($documents as $document) {
             'last_update'		=> $meta['version'],
             'original_url'		=> $meta['url-origin'],
             'description'       => $meta['description'],
-            'licence'           => $meta['license'],                            
+            'license'           => $meta['license'],                            
             'lang'              => $meta['language'],
             'pages'             => $meta['file-pages'],                                                        
             'content'	        => $content,

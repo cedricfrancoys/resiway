@@ -58,8 +58,8 @@ $found_url = null;
 
 try {    
     // load routes definition
-    if( ($json = file_get_contents('../config/routing.json')) === false) throw new Exception();    
-    if( ($routes = json_decode($json)) == null) throw new Exception();
+    if( ($json = file_get_contents('../config/routing.json')) === false) throw new Exception('routing config file is missing');    
+    if( ($routes = json_decode($json)) == null) throw new Exception('malformed json in routing config file');
     // check routes and stop on first match
 
     foreach($routes as $route => $url) {
@@ -107,7 +107,7 @@ if(!$found_url) {
 	include_once('packages/core/html/page_not_found.html');    
 }
 // URL match found 
-else {    
+else {
     // merge resolved params with URL params, if any
     $params = array_merge($params, config\QNlib::extract_params($found_url));
     // set the header to HTTP 200 and relay processing to index.php
@@ -122,6 +122,8 @@ else {
         header('Location: '.$found_url);
     }
     else {
+        // merge resolved params with original URL params, if any
+        $params = array_merge($params, config\QNlib::extract_params($_SERVER['REQUEST_URI']));        
         // inject resolved params to global '$_REQUEST' (if a param is already set, its value is overwritten)    
         foreach($params as $key => $value) $_REQUEST[$key] = $value;        
         include_once('index.php');
