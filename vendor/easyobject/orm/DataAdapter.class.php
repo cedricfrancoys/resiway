@@ -171,7 +171,7 @@ class DataAdapter {
 	}
     
 
-	public static function adapt($from, $to, $type, $value, $class, $oid, $field, $lang) {											
+	public static function adapt($from, $to, $type, $value, $class=null, $oid=null, $field=null, $lang=DEFAULT_LANG) {											
         $method = &self::getMethod($from, $to, $type);
 		return $method($value, $class, $oid, $field, $lang);
 	}
