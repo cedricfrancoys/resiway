@@ -119,7 +119,7 @@ try {
                
         // retrieve tags
         $documents_tags = $om->read('resiway\Category', $tags_ids, ['title', 'path', 'parent_path', 'description']);        
-        if($documentss_tags < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
+        if($documents_tags < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
 
         foreach($res as $document_id => $document_data) {
             $documents[$document_id]['categories'] = [];
