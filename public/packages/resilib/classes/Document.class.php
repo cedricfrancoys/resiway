@@ -64,9 +64,12 @@ class Document extends \easyobject\orm\Object {
                                         'rel_local_key'     => 'document_id'
                                        ),
 
-            /* does current question need to be (re-)indexed */
+            /* does current document need to be (re-)indexed */
             'indexed'               => array('type' => 'boolean'),
 
+            /* has resiway notice been already appened ? */
+            'notice'                => array('type' => 'boolean'),
+            
             /* number of times this document has been displayed */
             'count_views'			=> array('type' => 'integer'),
             
@@ -112,6 +115,7 @@ class Document extends \easyobject\orm\Object {
     public static function getDefaults() {
         return array(
              'indexed'          => function() { return false; },
+             'notice'           => function() { return false; },             
              'lang'             => function() { return 'fr'; },
              'editor'           => function() { return 0; },             
              'count_views'      => function() { return 0; },
