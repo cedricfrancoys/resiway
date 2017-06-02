@@ -12,10 +12,10 @@ set_silent(true);
 // announce script and fetch parameters values
 $params = QNLib::announce(	
 	array(	
-    'description'	=>	"Registers a flag raised by a user on given question",
+    'description'	=>	"Registers a flag raised by a user on given document",
     'params' 		=>	array(                                         
-                        'question_id'	=> array(
-                                            'description'   => 'Identifier of the question the user is flaging.',
+                        'document_id'	=> array(
+                                            'description'   => 'Identifier of the document the user is flaging.',
                                             'type'          => 'integer', 
                                             'required'      => true
                                             )                                       
@@ -27,9 +27,9 @@ $params = QNLib::announce(
 list($result, $error_message_ids) = [true, []];
 
 list($action_name, $object_class, $object_id) = [
-    'resiexchange_question_flag', 
-    'resiexchange\Question', 
-    $params['question_id']
+    'resiexchange_document_flag', 
+    'resiexchange\Document', 
+    $params['document_id']
 ];
 
 
@@ -63,7 +63,7 @@ try {
             function ($om, $user_id, $action_id, $object_class, $object_id) {
                 $res = $om->read($object_class, $object_id, ['creator']);
                 if($res[$object_id]['creator'] == $user_id) {
-                    throw new Exception("question_created_by_user", QN_ERROR_NOT_ALLOWED);          
+                    throw new Exception("document_created_by_user", QN_ERROR_NOT_ALLOWED);          
                 }
           
             },        
@@ -75,7 +75,7 @@ try {
                             ['object_class','=',  $object_class], 
                             ['created',     '>=', date("Y-m-d")]
                        ]);
-                if($res > 0 && count($res) > RESIEXCHANGE_QUESTION_FLAG_DAILY_MAX) {
+                if($res > 0 && count($res) > RESIEXCHANGE_document_FLAG_DAILY_MAX) {
                     throw new Exception("action_max_reached", QN_ERROR_NOT_ALLOWED);
                 }        
             }       

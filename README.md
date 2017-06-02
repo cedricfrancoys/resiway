@@ -5,7 +5,15 @@ This project includes ResiExchange : a free open source Q&A platform written in 
 
 
 ### Configuration
-PHP.ini
+#### PHP.ini
 Following constants must be defined to a custom value, matching application requirements
 check post_max_size 
 upload_max_filesize
+
+#### modules
+json
+xml
+gd
+gmp
+mbstring
+mysql

@@ -83,7 +83,7 @@ list($result, $error_message_ids, $notifications) = [true, [], []];
 
 list($action_name, $object_class, $object_id) = [ 
     'resilib_document_edit',
-    'resilib\document',
+    'resilib\Document',
     $params['document_id']
 ];
 
