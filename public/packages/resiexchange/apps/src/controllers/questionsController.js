@@ -24,6 +24,7 @@ angular.module('resiexchange')
             }
         });
 
+        // page loader
         ctrl.load = function() {
             if(ctrl.questions.currentPage != ctrl.questions.previousPage) {
                 ctrl.questions.previousPage = ctrl.questions.currentPage;
@@ -89,6 +90,20 @@ angular.module('resiexchange')
                 
             });
         }
+        else {
+            /*
+            * async load and inject $scope.active_questions
+            */
+            $http.get('index.php?get=resiexchange_question_list&channel='+$rootScope.config.channel+'&limit=15&order=modified&sort=desc')
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result == 'object') {
+                        $scope.active_questions = data.result;
+                    }
+                }
+            );        
+        }
         
         /*
         * async load and inject $scope.categories and $scope.featured_categories
@@ -102,6 +117,7 @@ angular.module('resiexchange')
                 }
             }
         );
+        
         
     }
 ]);

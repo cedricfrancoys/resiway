@@ -41,7 +41,7 @@
 
         <div ng-repeat="question in ctrl.questions.items" class="question narrow col-1-1">
             <div class="counters" >
-                <div class="votes" title="{{question.count_votes}} {{'QUESTIONS_VOTES' | translate}}">
+                <div class="votes" title="{{question.score}} {{'QUESTIONS_VOTES' | translate}}">
                     <div class="mini-counts">                
                         <i class="fa fa-check-circle" ng-class="{'text-success': question.history['resiexchange_question_voteup']  || question.history['resiexchange_question_votedown']}"aria-hidden="true"></i> {{question.count_votes | humanizeCount}}
                     </div> 
@@ -132,7 +132,19 @@
                         dans <a href class="category"  ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" ng-repeat="category in categories" title="{{category.path}}">{{category.title}}</a>
                     </div>
                 </div>
-
+                
+                <div ng-show="active_questions.length > 0" class="container fade-in-out">                    
+                    <span class="small"><b>Sujets actifs:</b></span><br />
+                    <div class="featured-questions" ng-repeat="question in active_questions">
+                        <table>
+                            <tr>
+                                <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                                <td><a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
                 <div ng-show="related_categories.length > 0" class="container fade-in-out">                    
                     <span class="small"><b>Catégories similaires:</b></span><br />
                     <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">

@@ -12,7 +12,7 @@ set_silent(true);
 // announce script and fetch parameters values
 $params = QNLib::announce(
 	array(
-    'description'	=>	"Provide all existing categories",
+    'description'	=>	"Provide questions related to given question",
     'params' 		=>	array(
                         'question_id'	=> array(
                                             'description'   => 'Identifier of the question we want to retrieve related questions',

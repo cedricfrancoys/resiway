@@ -113,6 +113,7 @@ class DataAdapter {
                         $storage_location = realpath(FILE_STORAGE_DIR).'/'.$path;
 
                         if (!is_dir($storage_location)) {
+                            // make missing directories
                             FSManipulator::assertPath($storage_location);
                         }
                         
@@ -133,7 +134,7 @@ class DataAdapter {
                     }
                     else if(FILE_STORAGE_MODE == 'FS') {
                         $filename = $value;                        
-                        if(file_exists(FILE_STORAGE_DIR.'/'.$filename)) $res = file_get_contents(FILE_STORAGE_DIR.'/'.$filename);
+                        if(strlen($filename) && file_exists(FILE_STORAGE_DIR.'/'.$filename)) $res = file_get_contents(FILE_STORAGE_DIR.'/'.$filename);
                     }
                     else throw new Exception("binary data has not been received or cannot be retrieved", UNKNOWN_ERROR);
                     

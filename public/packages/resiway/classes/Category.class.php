@@ -21,7 +21,7 @@ class Category extends \easyobject\orm\Object {
                                     'foreign_object'    => 'resiway\Category', 
                                     'onchange'          => 'resiway\Category::onchangeParentId'),
                                     
-            // 'count_questions'   => array('type' => 'integer'),
+            'thumbnail'			=> array('type' => 'file'),
 
             /* amount of questions in this category and its subcategories */
             'count_questions'   => array(

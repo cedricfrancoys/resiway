@@ -34,6 +34,9 @@ class Document extends \easyobject\orm\Object {
             /* language into which the document is written */
             'lang'			        => array('type' => 'string'),
             
+            /* channel of the current question ('default', 'help', 'meta', ...) */
+            'channel_id'            => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
+            
             'last_update'		    => array('type' => 'date'),				
             
             'description'		    => array('type' => 'short_text'),
@@ -117,7 +120,8 @@ class Document extends \easyobject\orm\Object {
              'indexed'          => function() { return false; },
              'notice'           => function() { return false; },             
              'lang'             => function() { return 'fr'; },
-             'editor'           => function() { return 0; },             
+             'channel_id'       => function() { return 1; },
+             'editor'           => function() { return 0; },
              'count_views'      => function() { return 0; },
              'count_votes'      => function() { return 0; },
              'count_stars'      => function() { return 0; },

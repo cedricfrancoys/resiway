@@ -31,7 +31,12 @@ $params = QNLib::announce([
         'parent_id'     => array(
                             'description'   => 'Identifier of the parent category.',
                             'type'          => 'integer'
-                            ),                            
+                            ),
+        'thumbnail'	    => array(
+                                'description'   => 'Thumbnail picture fot the submitted category.',
+                                'type'          => 'file', 
+                                'default'       => []
+                            ),                       
     ]
 ]);
 
@@ -52,7 +57,10 @@ if($object_id == 0) $action_name = 'resiway_category_post';
 
 
 try {
-// try to perform action
+    // reset file fields if no data have been received
+    if(empty($params['thumbnail']) || !isset($params['thumbnail']['tmp_name'])) unset($params['thumbnail']);    
+    
+    // try to perform action
     $result = ResiAPI::performAction(
         $action_name,                                             // $action_name
         $object_class,                                            // $object_class
@@ -77,12 +85,7 @@ try {
                 if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
             }
             else {
-                $om->write($object_class, $object_id, [
-                                'modifier'          => $user_id, 
-                                'title'             => $params['title'],
-                                'description'       => $params['description'],
-                                'parent_id'         => $params['parent_id']
-                           ]);
+                $om->write($object_class, $object_id, $params);
             }
             
             // read created category as returned value

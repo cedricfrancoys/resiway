@@ -29,7 +29,13 @@
             <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" title="{{category.path}}">{{category.title}}</a>
             <div class="category-count">x {{category.count_questions | humanizeCount}}</div>
             <!-- <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div> -->
-            <div class="category-excerpt" >{{category.description}}</div>
+            <div>
+                <img 
+                 style="width: 32px; height: 32px; padding-top: 4px; border: 0; float: left;" 
+                 ng-src="index.php?get=resiway_category_thumbnail&id={{category.id}}">
+
+                <div class="category-excerpt" >{{category.description}}</div>
+            </div>
             <div class="category-stats"></div>
 
             <div ng-show="user.role == 'm' || user.role == 'a'" style="position: absolute; right: 35px; top: 8px;">

@@ -160,23 +160,36 @@ if( intval($params['api']) > 0 && is_array($result) ) {
     foreach($documents as $id => $document) {
         $author_id = $document['creator']['id'];
         unset($document['creator']['id']);
-        if(!isset($included[$author_id])) {
-// todo : include categories            
-            $included[$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $document['creator']];
+        if(!isset($included['creator_'.$author_id])) {
+            $included['creator_'.$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $document['creator']];
+        }        
+        foreach($document['categories'] as $category) {        
+            $category_id = $category['id'];
+            unset($category['id']);        
+            if(!isset($included['category_'.$category_id])) {
+                $included['category_'.$category_id] = ['type' => 'category', 'id' => $category_id, 'attributes' => (object) $category];
+            }        
         }
+        $categories = $document['categories'];
         unset($document['id']);        
         unset($document['creator']);        
+        unset($document['categories']);                
         $result[] = [
             'type'          => 'documents', 
             'id'            => $id, 
             'attributes'    => (object) $document, 
-            'relationships' => (object) ['creator' => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']] ]
-        ];
+            'relationships' => (object) [
+                'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
+                'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
+            ]
+        ];       
     }
+    ksort($included);
     echo json_encode((object)[
+        'jsonapi'   => (object) ['version' => '1.0'],
         'meta'      => ['total-pages' => ceil($params['total']/$params['limit'])],
         'data'      => $result,
-        'included'  => array_values($included),        
+        'included'  => array_values($included),
         ], JSON_PRETTY_PRINT);    
     exit();
 }

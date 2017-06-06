@@ -85,6 +85,7 @@ angular.module('resiexchange')
 
         // @methods
         $scope.questionPost = function($event) {
+            ctrl.running = true;
             var selector = feedbackService.selector(angular.element($event.target));                   
             actionService.perform({
                 // valid name of the action to perform server-side
@@ -101,6 +102,7 @@ angular.module('resiexchange')
                 scope: $scope,
                 // callback function to run after action completion (to handle error cases, ...)
                 callback: function($scope, data) {
+                    ctrl.running = false;
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // (if route is changed to signin form)
                     if(typeof data.result != 'object') {

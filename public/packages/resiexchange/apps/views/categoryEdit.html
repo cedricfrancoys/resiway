@@ -45,14 +45,33 @@
                         <div class="controls">
                             <div class="wrapper">
                                 <textarea class="content form-control"
-                                          style="height: 200px;"
+                                          style="height: 100px;"
                                           ng-model="category.description">
                                 </textarea>
                             </div>            
                             <p class="help-inline">{{'CATEGORY_EDIT_FIELDS_DESCRIPTION_HELP' | translate}}</p>                     
                         </div>
                     </div>
-                                
+                    <div class="control-group">
+                        <label class="control-label">Vignette</label>
+                        <div class="controls">
+                            <img class="form-control" 
+                                 style="width: 32px; height: 32px; padding: 0; border: solid 1px lightgrey; display: inline-block !important;" 
+                                 ngf-thumbnail="category.thumbnail" 
+                                 ng-src="index.php?get=resiway_category_thumbnail&id={{category.id}}">
+                            <div class="btn btn-default" 
+                                 style="width: 25%; vertical-align: top;"
+                                 ngf-select 
+                                 ng-model="category.thumbnail"
+                                 ngf-accept="'image/png'" 
+                                 ngf-max-size="1MB">
+                                 Choisir
+                            </div> 
+                            
+                            <p class="help-inline">&nbsp;</p>
+                        </div>
+                    </div>  
+                            
                     <div class="form-actions">            
 
                         <button class="btn btn-default" tabindex="30" onclick="history.go(-1)">{{'CATEGORY_EDIT_CANCEL' | translate}}</button>

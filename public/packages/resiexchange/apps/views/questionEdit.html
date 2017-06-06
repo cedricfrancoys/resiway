@@ -43,6 +43,7 @@
                         <div class="controls">
 
                             <div class="wrapper">
+                                <!--
                                 <div class="content" 
                                      text-angular="text-angular" 
                                      ng-model="question.content" 
@@ -55,6 +56,11 @@
                                         ['wordcount', 'charcount']
                                 ]" 
                                 ></div>
+                                -->
+                                <textarea class="content form-control" style="height: 200px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="question.content">
+                                </textarea>
                             </div>            
           
                      
@@ -71,7 +77,8 @@
                                 uib-popover-template="'popoverCustom.html'" 
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="right">
-                            Soumettre la question</button>                          
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> Soumettre la question
+                        </button>                          
                     </div>
 
                 

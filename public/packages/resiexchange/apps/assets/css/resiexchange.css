@@ -200,6 +200,12 @@ input[type="text"] {
     overflow: hidden;
 }
 
+.focused {
+    border-color: #66afe9 !important;
+    outline: 0 !important;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6) !important;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(102, 175, 233, .6) !important;
+}
 
 
 /* styles bootstrap-like that might be defined in further bootstrap versions */
@@ -304,6 +310,10 @@ input[type="text"] {
     border-left-color: #f2dede!important;
 }
 
+/* forms */
+.form-actions {
+    margin-top: 20px;
+}
 
 /* menu */
 
@@ -1018,7 +1028,12 @@ input[type="text"] {
 .help-center .topic h3 {
     font-size: 18px;
 }
-.featured-questions {
+.featured-questions, .related-questions {
+    margin-bottom: 5px;
+}
+
+.featured-questions table tr td, .related-questions table tr td {
+    padding-right: 4px;
     
 }
 
@@ -2265,7 +2280,7 @@ body {
 }
 
 .topbar .notify-btn {
-    float: left;
+    float: right;
     height: 34px;
     width: 36px;
     line-height: 34px;
@@ -2387,7 +2402,7 @@ body {
     z-index: 1000;
     top: 34px;
     left: 0;
-    width: 250px;
+    width: 255px;
     height: auto;
     max-height: 200px;
     overflow-y: scroll;

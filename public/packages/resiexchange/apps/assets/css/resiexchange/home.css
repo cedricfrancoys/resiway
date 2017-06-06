@@ -1,4 +1,9 @@
-.featured-questions {
+.featured-questions, .related-questions {
+    margin-bottom: 5px;
+}
+
+.featured-questions table tr td, .related-questions table tr td {
+    padding-right: 4px;
     
 }
 

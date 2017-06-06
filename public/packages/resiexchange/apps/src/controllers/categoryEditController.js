@@ -9,14 +9,23 @@ angular.module('resiexchange')
     'feedbackService', 
     'actionService',
     '$http',
-    '$httpParamSerializerJQLike',    
-    function(category, $scope, $rootScope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
+    '$httpParamSerializerJQLike',
+    'Upload',    
+    function(category, $scope, $rootScope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike, Upload) {
         console.log('categoryEdit controller');
         
         var ctrl = this;   
        
         // @model
-        $scope.category = category;
+        $scope.category = angular.merge({
+                            id: 0,
+                            title: '',
+                            description: '',
+                            parent_id: 0,
+                            parent: { id: category.parent_id, title: category['parent_id.title'], path: category['parent_id.path']}
+                          }, 
+                          category);        
+
         
         $scope.loadMatches = function(query) {
             if(query.length < 2) return [];
@@ -40,11 +49,24 @@ angular.module('resiexchange')
             $scope.category.parent_id = $scope.category.parent.id;   
         });
 
-        // set initial parent 
-        $scope.category.parent = { id: category.parent_id, title: category['parent_id.title'], path: category['parent_id.path']};
                 
         // @methods
         $scope.categoryPost = function($event) {
+            Upload.upload({
+                url: 'index.php?do=resiway_category_edit', 
+                method: 'POST',                
+                data: {
+                    channel: $rootScope.config.channel,
+                    category_id: $scope.category.id,
+                    title: $scope.category.title,            
+                    description: $scope.category.description,
+                    parent_id: $scope.category.parent_id, 
+                    thumbnail: $scope.category.thumbnail
+                }
+            });
+            
+            return;            
+            /*
             var selector = feedbackService.selector(angular.element($event.target));                   
             actionService.perform({
                 // valid name of the action to perform server-side
@@ -78,6 +100,7 @@ angular.module('resiexchange')
                     }
                 }        
             });
+            */
         };  
            
     }

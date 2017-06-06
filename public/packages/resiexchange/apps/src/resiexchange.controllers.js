@@ -168,14 +168,23 @@ angular.module('resiexchange')
     'feedbackService', 
     'actionService',
     '$http',
-    '$httpParamSerializerJQLike',    
-    function(category, $scope, $rootScope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
+    '$httpParamSerializerJQLike',
+    'Upload',    
+    function(category, $scope, $rootScope, $window, $location, feedbackService, actionService, $http, $httpParamSerializerJQLike, Upload) {
         console.log('categoryEdit controller');
         
         var ctrl = this;   
        
         // @model
-        $scope.category = category;
+        $scope.category = angular.merge({
+                            id: 0,
+                            title: '',
+                            description: '',
+                            parent_id: 0,
+                            parent: { id: category.parent_id, title: category['parent_id.title'], path: category['parent_id.path']}
+                          }, 
+                          category);        
+
         
         $scope.loadMatches = function(query) {
             if(query.length < 2) return [];
@@ -199,11 +208,24 @@ angular.module('resiexchange')
             $scope.category.parent_id = $scope.category.parent.id;   
         });
 
-        // set initial parent 
-        $scope.category.parent = { id: category.parent_id, title: category['parent_id.title'], path: category['parent_id.path']};
                 
         // @methods
         $scope.categoryPost = function($event) {
+            Upload.upload({
+                url: 'index.php?do=resiway_category_edit', 
+                method: 'POST',                
+                data: {
+                    channel: $rootScope.config.channel,
+                    category_id: $scope.category.id,
+                    title: $scope.category.title,            
+                    description: $scope.category.description,
+                    parent_id: $scope.category.parent_id, 
+                    thumbnail: $scope.category.thumbnail
+                }
+            });
+            
+            return;            
+            /*
             var selector = feedbackService.selector(angular.element($event.target));                   
             actionService.perform({
                 // valid name of the action to perform server-side
@@ -237,6 +259,7 @@ angular.module('resiexchange')
                     }
                 }        
             });
+            */
         };  
            
     }
@@ -938,8 +961,8 @@ angular.module('resiexchange')
 
         
 // todo: if user is not identified : redirect to login screen (to prevent risk of losing filled data)
-        // @view 
-       
+
+        // @view        
         $scope.addItem = function(query) {
             return {
                 id: null, 
@@ -1008,11 +1031,11 @@ angular.module('resiexchange')
 
         // @methods
         $scope.documentPost = function($event) {
-
+            var selector = feedbackService.selector(angular.element($event.target));                   
             var update = new Date($scope.document.last_update);
-                      
-            console.log($scope.document.content);
-
+            
+            ctrl.running = true;   
+            
             Upload.upload({
                 url: 'index.php?do=resilib_document_edit', 
                 method: 'POST',                
@@ -1029,14 +1052,40 @@ angular.module('resiexchange')
                     content: $scope.document.content, 
                     thumbnail: $scope.document.thumbnail
                 }
-            });
-            
+            })
+            .then(function (response) {
+                    ctrl.running = false;   
+
+                    var data = response.data;
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        // in case a field is missing, adapt the generic 'missing_*' message
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'document_'+msg;
+                        }
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var document_id = data.result.id;
+                        $location.path('/document/'+document_id);
+                    }
+
+                }, function (resp) {
+                    ctrl.running = false;
+                    feedbackService.popover(selector, 'network error');
+                    console.log('Error status: ' + resp.status);
+                }, function (evt) {
+                    // var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+                }
+            );
             return;
             
 
-            
-
-            
+            /*
             var selector = feedbackService.selector(angular.element($event.target));                   
             actionService.perform({
                 // valid name of the action to perform server-side
@@ -1076,6 +1125,8 @@ angular.module('resiexchange')
                     }
                 }        
             });
+            */
+            
         };  
            
     }
@@ -1380,14 +1431,24 @@ angular.module('resiexchange')
 ]);
 angular.module('resiexchange')
 
-.controller('homeController', ['$http', '$scope', '$rootScope', function($http, $scope, $rootScope) {
+.controller('homeController', ['$http', '$scope', '$rootScope', '$location', 'authenticationService', function($http, $scope, $rootScope, $location, authenticationService) {
     console.log('home controller');  
     
     var ctrl = this;
 
-    ctrl.questions = [];
+    ctrl.active_questions = [];
+    ctrl.poor_questions = [];  
+    ctrl.last_documents = [];
+
+    if(global_config.application == 'resiexchange' && $rootScope.previousPath == '/') {
+        authenticationService.userId().then(
+        function(user_id) {
+            $location.path('/questions');
+        });
+    }
+
     
-    $http.get('index.php?get=resiexchange_stats')
+    $http.get('index.php?get=resiway_stats')
     .then(
     function successCallback(response) {
         var data = response.data;
@@ -1395,7 +1456,8 @@ angular.module('resiexchange')
             ctrl.count_questions = parseInt(data.result['resiexchange.count_questions']);
             ctrl.count_answers = parseInt(data.result['resiexchange.count_answers']);
             ctrl.count_comments = parseInt(data.result['resiexchange.count_comments']);
-            ctrl.count_posts = ctrl.count_questions + ctrl.count_answers + ctrl.count_comments;            
+            ctrl.count_documents = data.result['resilib.count_documents'];                                    
+            ctrl.count_posts = ctrl.count_questions + ctrl.count_answers + ctrl.count_comments;
             ctrl.count_users = data.result['resiway.count_users'];            
         }
     },
@@ -1403,12 +1465,37 @@ angular.module('resiexchange')
         // something went wrong server-side
     }); 
 
-    $http.get('index.php?get=resiexchange_question_list&order=score&limit=7&sort=desc')
+    
+    $http.get('index.php?get=resiexchange_question_list&order=modified&limit=15&sort=desc')
     .then(
     function successCallback(response) {
         var data = response.data;
         if(typeof response.data.result == 'object') {
-            ctrl.questions = response.data.result;
+            ctrl.active_questions = response.data.result;
+        }
+    },
+    function errorCallback() {
+        // something went wrong server-side
+    });
+    
+    $http.get('index.php?get=resiexchange_question_list&order=count_answers&limit=15&sort=asc')
+    .then(
+    function successCallback(response) {
+        var data = response.data;
+        if(typeof response.data.result == 'object') {
+            ctrl.poor_questions = response.data.result;
+        }
+    },
+    function errorCallback() {
+        // something went wrong server-side
+    });
+
+    $http.get('index.php?get=resilib_document_list&order=created&limit=10&sort=desc')
+    .then(
+    function successCallback(response) {
+        var data = response.data;
+        if(typeof response.data.result == 'object') {
+            ctrl.last_documents = response.data.result;
         }
     },
     function errorCallback() {
@@ -1418,7 +1505,6 @@ angular.module('resiexchange')
     $scope.amount = "5EUR/mois";
     
     $scope.$watch('amount', function (value){
-        console.log(value);
         switch(value) {
             case '5EUR/mois': $scope.amount_dedication = "Aidez une famille à savoir comment manger sain et local";
             break;
@@ -1430,7 +1516,6 @@ angular.module('resiexchange')
             break;
             case '50EUR/an': $scope.amount_dedication = "Permettez la diffusion de savoirs ancestraux et de nouvelles technologies écologiques";
             break;
-            
         }
     });
 }]);
@@ -2735,6 +2820,7 @@ angular.module('resiexchange')
 
         // @methods
         $scope.questionPost = function($event) {
+            ctrl.running = true;
             var selector = feedbackService.selector(angular.element($event.target));                   
             actionService.perform({
                 // valid name of the action to perform server-side
@@ -2751,6 +2837,7 @@ angular.module('resiexchange')
                 scope: $scope,
                 // callback function to run after action completion (to handle error cases, ...)
                 callback: function($scope, data) {
+                    ctrl.running = false;
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // (if route is changed to signin form)
                     if(typeof data.result != 'object') {
@@ -2800,6 +2887,7 @@ angular.module('resiexchange')
             }
         });
 
+        // page loader
         ctrl.load = function() {
             if(ctrl.questions.currentPage != ctrl.questions.previousPage) {
                 ctrl.questions.previousPage = ctrl.questions.currentPage;
@@ -2865,6 +2953,20 @@ angular.module('resiexchange')
                 
             });
         }
+        else {
+            /*
+            * async load and inject $scope.active_questions
+            */
+            $http.get('index.php?get=resiexchange_question_list&channel='+$rootScope.config.channel+'&limit=15&order=modified&sort=desc')
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result == 'object') {
+                        $scope.active_questions = data.result;
+                    }
+                }
+            );        
+        }
         
         /*
         * async load and inject $scope.categories and $scope.featured_categories
@@ -2878,6 +2980,7 @@ angular.module('resiexchange')
                 }
             }
         );
+        
         
     }
 ]);

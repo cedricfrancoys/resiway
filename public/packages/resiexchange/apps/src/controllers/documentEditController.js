@@ -23,8 +23,8 @@ angular.module('resiexchange')
 
         
 // todo: if user is not identified : redirect to login screen (to prevent risk of losing filled data)
-        // @view 
-       
+
+        // @view        
         $scope.addItem = function(query) {
             return {
                 id: null, 
@@ -93,11 +93,11 @@ angular.module('resiexchange')
 
         // @methods
         $scope.documentPost = function($event) {
-
+            var selector = feedbackService.selector(angular.element($event.target));                   
             var update = new Date($scope.document.last_update);
-                      
-            console.log($scope.document.content);
-
+            
+            ctrl.running = true;   
+            
             Upload.upload({
                 url: 'index.php?do=resilib_document_edit', 
                 method: 'POST',                
@@ -114,14 +114,40 @@ angular.module('resiexchange')
                     content: $scope.document.content, 
                     thumbnail: $scope.document.thumbnail
                 }
-            });
-            
+            })
+            .then(function (response) {
+                    ctrl.running = false;   
+
+                    var data = response.data;
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        // in case a field is missing, adapt the generic 'missing_*' message
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'document_'+msg;
+                        }
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var document_id = data.result.id;
+                        $location.path('/document/'+document_id);
+                    }
+
+                }, function (resp) {
+                    ctrl.running = false;
+                    feedbackService.popover(selector, 'network error');
+                    console.log('Error status: ' + resp.status);
+                }, function (evt) {
+                    // var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                    // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+                }
+            );
             return;
             
 
-            
-
-            
+            /*
             var selector = feedbackService.selector(angular.element($event.target));                   
             actionService.perform({
                 // valid name of the action to perform server-side
@@ -161,6 +187,8 @@ angular.module('resiexchange')
                     }
                 }        
             });
+            */
+            
         };  
            
     }

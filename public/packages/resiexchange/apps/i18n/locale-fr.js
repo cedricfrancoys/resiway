@@ -49,7 +49,7 @@ var translations = {
     "QUESTION_ACTIONS_DELETE": "Supprimer",
     "QUESTION_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les question que si on a une bonne raison de le faire",
 
-    "QUESTION_ACTIONS_VOTEUP_OK": "Votre vote a bien été pris en compte.<br />Merci pour votre participation !",
+    "QUESTION_ACTIONS_VOTEUP_OK": "Ton vote a bien été pris en compte.<br />Merci pour ta participation !",
     
     "QUESTION_COMMENT_SCORE_TOOLTIP": "Nombre de votes 'commentaire utile' reçus",
     "QUESTION_COMMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce commentaire ajoute quelque chose d'utilie à cette publication",
@@ -60,8 +60,8 @@ var translations = {
     "QUESTION_COMMENT_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les commentaires que si on a une bonne raison de le faire",    
 
     "QUESTION_COMMENTS_ADD": "Ajouter un commentaire",
-    "QUESTION_COMMENTS_ADD_TOOLTIP": "Utilisez les commentaires pour demander plus d'info ou pour suggérer des clarifications. Il est préférable d'éviter de répondre aux questions dans les commentaires.",
-    "QUESTION_COMMENTS_ADD_PLACEHOLDER": "Faites votre commentaire ici",
+    "QUESTION_COMMENTS_ADD_TOOLTIP": "Utilise les commentaires pour demander plus d'info ou pour suggérer des clarifications. Il est préférable d'éviter de répondre aux questions dans les commentaires.",
+    "QUESTION_COMMENTS_ADD_PLACEHOLDER": "Laisse ton commentaire ici",
     "QUESTION_COMMENTS_SHOW_ALL": "Voir tous les commentaires",  
     "QUESTION_COMMENTS_SHOW_ALL_TOOLTIP": "Cliquez pour étendre la liste à tous les commentaires",
     "QUESTION_COMMENTS_ADD_BUTTON": "Ajouter",

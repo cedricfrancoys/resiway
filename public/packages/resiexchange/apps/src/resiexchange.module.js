@@ -15,6 +15,7 @@ var resiway = angular.module('resiexchange', [
     'ngAnimate',
     'ngFileUpload',
     'ui.bootstrap',
+    'ui.tinymce',    
     'oi.select',    
     'textAngular',
     'pascalprecht.translate',
@@ -203,7 +204,7 @@ var resiway = angular.module('resiexchange', [
             default: {
                 q: '',                  // query string (against question title)
                 domain: [],
-                order: 'score',
+                order: 'created',       // show newest first
                 sort: 'desc',
                 start: 0,
                 limit: 25,
@@ -319,6 +320,35 @@ var resiway = angular.module('resiexchange', [
 
         var rootCtrl = this;
 
+        rootCtrl.tinymceOptions = {
+            inline: false,
+            plugins : 'wordcount charcount advlist autolink link image lists charmap fullscreen preview table paste code',
+            skin: 'lightgray',
+            theme : 'modern',
+            content_css: 'packages/resiexchange/apps/assets/css/bootstrap.min.css',
+            elementpath: false,
+            block_formats: 
+                    'Paragraph=p;' +
+                    'Heading 1=h3;' +
+                    'Heading 2=h4;' +
+                    'Heading 3=h5;',
+            menu : {
+                edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
+                format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | charmap | removeformat'}
+            },
+            toolbar: "fullscreen code | undo redo | bold italic | headings formatselect | blockquote bullist numlist outdent indent | link image | table",
+            setup: function(editor) {
+                editor.on("init", function() {
+                    angular.element(editor.editorContainer).addClass('form-control');
+                });
+                editor.on("focus", function() {
+                    angular.element(editor.editorContainer).addClass('focused');
+                });
+                editor.on("blur", function() {
+                    angular.element(editor.editorContainer).removeClass('focused');
+                });
+            }            
+        };        
         
         rootCtrl.search = function(values) {
             var criteria = angular.extend({}, $rootScope.search.default, values || {});
@@ -336,10 +366,10 @@ var resiway = angular.module('resiexchange', [
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
             case 'resiway\\Category': return '#/category/'+object_id;            
-            case 'resiexchange\\Question': return '#/question/'+object_id;
-            case 'resiexchange\\Answer': return '#/answer/'+object_id;
-            case 'resiexchange\\QuestionComment': return '#/questionComment/'+object_id;               
-            case 'resiexchange\\AnswerComment': return '#/answerComment/'+object_id;
+            case 'resiexchange\\Question': return 'resiexchange.'+global_config.locale+'#/question/'+object_id;
+            case 'resiexchange\\Answer': return 'resiexchange.'+global_config.locale+'#/answer/'+object_id;
+            case 'resiexchange\\QuestionComment': return 'resiexchange.'+global_config.locale+'#/questionComment/'+object_id;               
+            case 'resiexchange\\AnswerComment': return 'resiexchange.'+global_config.locale+'#/answerComment/'+object_id;
             }
         };
 

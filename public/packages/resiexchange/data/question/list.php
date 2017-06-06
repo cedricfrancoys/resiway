@@ -160,7 +160,7 @@ try {
     
     if(!empty($questions_ids)) {
         // retrieve questions
-        $res = $om->read('resiexchange\Question', $questions_ids, ['creator', 'created', 'title', 'title_url', 'content_excerpt', 'count_views', 'count_votes', 'count_answers', 'categories_ids']);
+        $res = $om->read('resiexchange\Question', $questions_ids, ['creator', 'created', 'title', 'title_url', 'content_excerpt', 'score', 'count_views', 'count_votes', 'count_answers', 'categories_ids']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
         $authors_ids = [];
@@ -177,6 +177,7 @@ try {
                                         'title_url'         => $question_data['title_url'],
                                         'content_excerpt'   => $question_data['content_excerpt'],
                                         'created'           => $question_data['created'],
+                                        'score'       => $question_data['score'],                                        
                                         'count_views'       => $question_data['count_views'],
                                         'count_votes'       => $question_data['count_votes'],
                                         'count_answers'     => $question_data['count_answers']

@@ -18,14 +18,7 @@
         -->
         <div class="row">
             <article class="col-md-12">                
-                <div class="col-3-12">
-                    <img style="width: 100%;" src="packages/resiway/apps/assets/img/resiway-logo-small.png" />            
-                </div>
-                <div class="col-9-12">
-                    <h2 style="margin-top: 0;">Bienvenue sur ResiExchange</h2>
-                    <p>ResiExchange est un outil résilient de partage de connaissances pour apprendre à vivre de manière saine et écologique, à faible coût énergétique et économique.</p>
-                    <p>Avec l'aide de tous ceux qui le souhaitent, l'objectif est de constituer une encyclopédie universelle pour le <b>bien-être</b> et la <b>résilience</b>.</p>
-                </div>
+                <p><strong class="lead">ResiExchange</strong> est un outil résilient de partage de <b>connaissances</b> pour apprendre à vivre de manière <b>saine</b>&nbsp;et&nbsp;<b>écologique</b>, à faible coût <b>énergétique</b>&nbsp;et&nbsp;<b>économique</b>.</p>
             </article>
         </div>
         
@@ -89,43 +82,30 @@
 
         <div class="row">
             <article class="col-md-12">
-                <h2>Qu'est-ce que la résilience ?</h2>               
-                <p style="margin-bottom: 0;">La résilience est la capacité d'une communauté à faire face aux changements tout en s'épanouissant.<br />
-                RésiWay publie régulièrement des articles autour de la notion de résilience :</p>
-
-                <h4 style="display: inline-block; margin-bottom: 0;">Homo Resiliens - </h4>
-                <cite>Nous ne pouvons imaginer de plus enviable avenir qu’un monde dans lequel chaque humain, par sa simple existence, contribue à la résilience de l’environnement dont dépend la présence de l’Humanité sur Terre...</cite>
-                <a class="btn btn-default btn-xs pull-right" href="http://www.icway.be/index.php?get=icway_resource&mode=view&res_id=27">En lire davantage</a>
-                <br />
-                <h4 style="display: inline-block; margin-bottom: 0;">À la croisée des chemins - </h4>
-                <cite>En tant que membres de l’Humanité adolescente, l’heure est venue de nous demander quel adulte nous voulons devenir...</cite>
-                <a class="btn btn-default btn-xs pull-right" href="http://www.icway.be/index.php?get=icway_resource&mode=view&res_id=28">En lire davantage</a>
-                <!--<li>De la résilience d'Internet</li>-->
+                <p class="lead">Questions qui attendent ta réponse</p>
+                <div class="fade-in-out" ng-show="ctrl.poor_questions.length > 0">
+                <div style="margin-top: 10px;">                
+                    <div class="col-1-2 nopad featured-questions" ng-repeat="question in ctrl.poor_questions | limitTo : 10: 0">
+                        <table>
+                            <tr>
+                                <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                                <td><a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                            </tr>
+                        </table>                
+                    </div>
+                    <div class="col-1-2 nopad featured-questions" ng-repeat="question in ctrl.poor_questions |limitTo : 10 : 10">
+                        <table>
+                            <tr>
+                                <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                                <td><a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                            </tr>
+                        </table>                
+                    </div>
+                
+                </div>                
             </article>
         </div>
         
-        <div class="row">
-            <article class="col-md-12">
-                <h2>ResiWay.org, la plateforme résiliente</h2>
-                <h4>En quoi la plateforme RésiWay est-elle différente ?</h4>
-                <div class="col-4-12">
-                    <h3 class="lead"><i class="fa fa-code" aria-hidden="true"></i> Contenu résilient</h3>
-                    <ul class="list-noindent"><li>contenu sous licence libre</li><li>duplicable et exportable</li><li>multi-format</li></ul>
-                </div>
-                <div class="col-4-12">
-                    <h3 class="lead"><i class="fa fa-creative-commons" aria-hidden="true"></i>  Plateforme libre</h3>
-                    <ul class="list-noindent"><li>participation ouverte à tous</li><li>libres accès et partage</li><li>logiciel open source</li></ul>
-                </div>
-                <div class="col-4-12">
-                    <h3 class="lead"><i class="fa fa-group" aria-hidden="true"></i> Effort collaboratif</h3>
-                    <ul class="list-noindent"><li>communauté en autogestion</li><li>responsabilité individuelle</li><li>valorisation de la participation</li></ul>
-                </div>
-                <div class="col-12-12 pull-right"> 
-                    <a class="btn btn-default" target="_blank" href="/resiway.fr">En savoir plus sur ResiWay</a>                
-                    <a class="btn btn-default" target="_blank" href="/resilib.static/data/documents/RESIWAY_Charte-pour-une-plateforme-resiliente_2017_fr/document.pdf">Lire la charte</a>
-                </div>
-            </article>
-        </div>        
     </div>
     
     <div class="col-4-12">
@@ -159,26 +139,28 @@
                 </div>
             </div>
          
+            <div class="container fade-in-out" ng-show="ctrl.active_questions.length > 0">
+                <div class="lead" style="border-bottom: 1px solid grey;">
+                    <div>Questions actives</div>
+                </div>
+                <div class="featured-questions" ng-repeat="question in ctrl.active_questions">
+                    <table>
+                        <tr>
+                            <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                            <td><a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                        </tr>
+                    </table>                
+                </div>            
+            </div>
+
             <div class="container">
                 <div class="lead" style="border-bottom: 1px solid grey;">
                     <div>À propos</div>
                 </div>
                 <div id="aboutcontent">
-                    <p><b><a href="/resiexchange.fr">ResiExchange</a></b> est une plateforme collaborative open source de partage de savoirs sur les thèmes de la&nbsp;<strong>Permaculture</strong>, la&nbsp;<strong>Transition</strong>, et l'<strong>Autonomie</strong>.</p>
+                    <p><b><a href="/resiway.fr">ResiWay</a></b> est une plateforme collaborative open source de partage de savoirs sur les thèmes de la&nbsp;<strong>Permaculture</strong>, la&nbsp;<strong>Transition</strong>, et l'<strong>Autonomie</strong>.</p>
                 </div>                
-            </div>
-
-            <div class="container fade-in-out" ng-show="ctrl.questions.length > 0">
-                <div class="lead" style="border-bottom: 1px solid grey;">
-                    <div>Questions populaires</div>
-                </div>
-                <div class="featured-questions" ng-repeat="question in ctrl.questions">
-                    <p>
-                        <span class="mini-counts btn btn-success btn-xs">{{question.count_votes | humanizeCount}}</span>
-                        <a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a>                    
-                    </p>
-                </div>                
-            </div>
+            </div>            
             
         </div>
     </div>

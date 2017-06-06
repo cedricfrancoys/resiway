@@ -616,6 +616,7 @@
                 <h2>{{'QUESTION_USER_ANSWER' | translate}}</h2>
             </div>
             <div class="wrapper">
+                <!--
                 <div class="content" text-angular="text-angular" 
                 ng-model="question.newAnswerContent" 
                 ta-toolbar="[
@@ -627,15 +628,22 @@
                         ['wordcount', 'charcount']
                 ]" 
                 ></div>
-            </div>            
-            <button id="question-addAnswer"
-                    class="user-answer-submit btn btn-primary" 
-                    ng-click="questionAnswer($event)"
-                    uib-popover-template="'popoverCustom.html'"
-                    popover-trigger="'toggle-popover'" 
-                    popover-placement="right"
-                    popover-append-to-body="true">
-                {{'QUESTION_USER_ANSWER_SUBMIT' | translate}}</button>            
+                -->
+                <textarea class="content form-control" style="height: 200px;"
+                          ui-tinymce="rootCtrl.tinymceOptions"
+                          ng-model="question.newAnswerContent">
+                </textarea>
+            </div>
+            <div class="form-actions">            
+                <button id="question-addAnswer"
+                        class="btn btn-primary" 
+                        ng-click="questionAnswer($event)"
+                        uib-popover-template="'popoverCustom.html'"
+                        popover-trigger="'toggle-popover'" 
+                        popover-placement="right"
+                        popover-append-to-body="true">
+                    {{'QUESTION_USER_ANSWER_SUBMIT' | translate}}</button>            
+            </div>
         </div>
             
     </div>
@@ -715,15 +723,19 @@
                     
 			    </div>
             </div>
+            
             <div class="container fade-in-out" ng-show="related_questions.length > 0" >                    
                 <h4>Questions similaires</h4>
                 <div class="related-questions" ng-repeat="question in related_questions">
-                    <p>
-                        <span class="mini-counts btn btn-xs ng-binding btn-success" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.score}}</span>                
-                        <a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a>                    
-                    </p>
-                </div>                
+                    <table>
+                        <tr>
+                            <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                            <td><a href="#/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
+
         </div>
     </div>
     <div class="col-4-12 answer-help" ng-hide="user.id && question.history['resiexchange_question_answer']">
