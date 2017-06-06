@@ -1,3 +1,16 @@
+
+#rw-donation {
+    position: fixed;
+    left: 10px;
+    top: 34px;    
+    z-index: 1000;
+}
+
+#rw-donation .btn {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;    
+}
+
 /* topbar */
 
 .topbar {

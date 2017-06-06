@@ -26,6 +26,7 @@ mysql
 
 ### API usage 
 
+(In order to test the API an its features, you may use the excellent https://www.hurl.it/)
 
 #### Methods 
 At the moment, only GET method is supported.
