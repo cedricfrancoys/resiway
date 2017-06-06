@@ -128,6 +128,7 @@
                         <div class="controls">
 
                             <div class="wrapper">
+                                <!--
                                 <div class="description"
                                 style="height: 200px;"
                                      text-angular="text-angular" 
@@ -141,6 +142,11 @@
                                         ['wordcount', 'charcount']
                                 ]" 
                                 ></div>
+                                -->
+                                <textarea class="description form-control" style="height: 200px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="document.description">
+                                </textarea>                                
                             </div>            
           
                      
@@ -157,7 +163,8 @@
                                 uib-popover-template="'popoverCustom.html'" 
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="right">
-                            Soumettre le document</button>                          
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> Soumettre le document
+                        </button>
                     </div>
 
                 
