@@ -1,0 +1,139 @@
+<div class="grid wrapper">
+    <div class="col-8-12">
+    <!--
+        <div class="well blank_index">
+                <h2>Bienvenue sur ResiExchange !</h2>
+                <p style="font-size:1.0em;">
+                <strong>ResiExchange</strong> est une plateforme collaborative d'échange d'informations pour les initiatives aspirant à la résilience.<br />
+                <br />
+                Le développement et la participation à cet outil, supporté par l'association <a href="//www.resiway.org/">RésiWay</a>, sont ouverts à tous.<br />
+                <br />
+                Avec l'aide de chacun, l'objectif est de constituer une bibliothèque de réponses détaillées aux questions relatives à l'autonomie, la transition, la permaculture et la résilience.<br />
+                <br />
+                <a href="#/help/categories" class="btn btn-info" style="margin-bottom: 5px;">Découvrir les fonctionnalités</a>
+                <a href="#/questions" class="btn btn-info" style="margin-bottom: 5px;">Consulter les question-réponses</a>
+                <a href="#/question/edit/0" class="btn btn-primary" style="margin-bottom: 5px;">Poser votre première question</a>
+            </p>            
+        </div>
+        -->
+        <div class="row">
+            <article class="col-md-12">                
+                <p><strong class="lead">ResiLib</strong> est une bibliothèque résiliente de <b>documents librement partageables</b> pour apprendre à vivre de manière <b>saine</b>&nbsp;et&nbsp;<b>écologique</b>, à faible coût <b>énergétique</b>&nbsp;et&nbsp;<b>économique</b>.</p>
+            </article>
+        </div>
+
+        <div class="row">
+            <article class="col-md-12">
+                <div class="subheader">
+                    <h1>Derniers documents</h1>
+                    <div style="margin-top: 10px;" class="col-2-2 fade-in-out" ng-show="ctrl.last_documents.length > 0">
+
+                    <div class="col-1-2 nopad">
+                        <div ng-repeat="document in ctrl.last_documents | limitTo : 4 : 0" class="document narrow col-1-1">
+                            <div class="document-thumbnail">
+                                <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">
+                                    <img width="100" height="133" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
+                                </a>
+                            </div>
+                            <div class="summary">
+                                <h3>
+                                    <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
+                                </h3>
+                                <div class="document-author">par <strong>{{document.author}}</strong></div>
+                                
+                                <div class="tags">
+                                    <a ng-repeat="tag in document.categories" 
+                                    ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" 
+                                    class="tag" 
+                                    popover-trigger="'mouseenter'"
+                                    uib-popover-html="tag.description"
+                                    popover-append-to-body="true"
+                                    popover-placement="bottom-left"
+                                    popover-title="{{tag.path}}"
+                                    >{{tag.title}}</a> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-1-2 nopad">
+                        <div ng-repeat="document in ctrl.last_documents | limitTo : 4 : 4" class="document narrow col-1-1">
+                            <div class="document-thumbnail">
+                                <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">
+                                    <img width="100" height="133" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
+                                </a>
+                            </div>
+                            <div class="summary">
+                                <h3>
+                                    <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
+                                </h3>
+                                <div class="document-author">par <strong>{{document.author}}</strong></div>
+                                
+                                <div class="tags">
+                                    <a ng-repeat="tag in document.categories" 
+                                    ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" 
+                                    class="tag" 
+                                    popover-trigger="'mouseenter'"
+                                    uib-popover-html="tag.description"
+                                    popover-append-to-body="true"
+                                    popover-placement="bottom-left"
+                                    popover-title="{{tag.path}}"
+                                    >{{tag.title}}</a> 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                </div>
+            </article>
+        </div>        
+        
+        
+    </div>
+    
+    <div class="col-4-12">
+        <div class="panel panel-default" style="min-height: 545px;">
+
+            <div class="container" >
+                <div style="width: 100%; height: 90px;">
+                    <div class="fb-like" data-href="https://www.facebook.com/resiway" data-layout="standard" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+                    <!-- <div class="fb-like" data-href="https://www.resiway.org/" data-layout="standard"  data-action="like" data-show-faces="false" data-colorscheme="dark"></div> -->
+                    <div class="fb-follow" style="margin-top: 5px;" data-href="https://www.facebook.com/resiway" data-layout="standard" data-size="small" data-show-faces="false" data-colorscheme="dark"></div>
+                </div>
+                <div class="col-1-1">
+                    <img style="border-radius: 10px; height: 43px; width: 50px;" src="packages/resiway/apps/assets/img/ced_isa.png" />&nbsp;&nbsp;<a href="http://www.icway.be/">Autour de Ced &amp Isa</a>
+                </div>
+            </div>
+            <div class="container" style="padding-bottom: 0;">
+                <div class="lead" style="border-bottom: 1px solid grey;">
+                    <div>Participants</div>
+                </div>
+            
+                <div class="col-3-12" style="display: inline-block;">
+                    <span class="item-number">{{ctrl.count_documents}}</span>
+                    <span class="item-label">documents</span>
+                </div>
+                <div class="col-3-12" style="display: inline-block;">
+                    <span class="item-number">{{ctrl.count_users}}</span>
+                    <span class="item-label">{{'QUESTIONS_STATS_USERS' | translate}}</span>
+                </div>
+                <div class="col-6-12" style="display: inline-block; ">
+                    <a class="btn btn-sm btn-success pull-right col-1-1" href="/resiexchange.fr#/user/sign/up"><i class="fa fa-group" aria-hidden="true"></i> Je participe</a>
+                </div>
+            </div>
+         
+
+
+            <div class="container">
+                <div class="lead" style="border-bottom: 1px solid grey;">
+                    <div>À propos</div>
+                </div>
+                <div id="aboutcontent">
+                    <p><b><a href="/resiway.fr">ResiWay</a></b> est une plateforme collaborative open source de partage de savoirs sur les thèmes de la&nbsp;<strong>Permaculture</strong>, la&nbsp;<strong>Transition</strong>, et l'<strong>Autonomie</strong>.</p>
+                </div>                
+            </div>            
+            
+        </div>
+    </div>
+    
+</div>

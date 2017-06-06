@@ -1,0 +1,430 @@
+<div class="grid wrapper">
+    <div class="col-1-1">
+        <div class="page-header">
+            <h1>{{document.title}}</h1>
+        </div>
+    </div>
+</div>
+<div class="grid wrapper">
+
+    <div class="col-8-12">
+    
+        <div class="document wrapper" 
+            itemscope="" 
+            itemtype="https://schema.org/document">
+            <div class="vote col-1-12 nopad">                
+                <div class="voteup" 
+                     ng-class="{on: document.history['resilib_document_voteup']}">
+                    <a href
+                       id="document-voteup"
+                       title="{{'DOCUMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
+                       class="fa fa-thumbs-o-up" 
+                       ng-click="documentVoteUp($event)" 
+                       uib-popover-template="'popoverCustom.html'" 
+                       popover-trigger="'toggle-popover'" 
+                       popover-placement="right"
+                       popover-append-to-body="true"
+                       aria-hidden="true"></a>
+                </div>
+                <div class="vote-count" itemprop="upvoteCount" >
+                    <span>{{document.score | humanizeCount}}</span>
+                </div>
+                <div class="votedown" 
+                     ng-class="{on: document.history['resilib_document_votedown']}">
+                    <a href
+                       id="document-votedown"
+                       title="{{'DOCUMENT_ACTIONS_VOTEDOWN_TOOLTIP' | translate}}"
+                       class="fa fa-thumbs-o-down" 
+                       ng-click="documentVoteDown($event)" 
+                       uib-popover-template="'popoverCustom.html'" 
+                       popover-trigger="'toggle-popover'" 
+                       popover-placement="right"
+                       popover-append-to-body="true"
+                       aria-hidden="true">
+                    </a>
+                </div>
+                <div class="star" 
+                     ng-class="{on: document.history['resilib_document_star']}">
+                    <a href 
+                       id="document-star"
+                       title="{{'DOCUMENT_ACTIONS_STAR_TOOLTIP' | translate}}"
+                       class="fa fa-star"
+                       ng-click="documentStar($event)" 
+                       uib-popover-template="'popoverCustom.html'" 
+                       popover-trigger="'toggle-popover'" 
+                       popover-placement="right"
+                       popover-append-to-body="true"
+                       aria-hidden="true">
+                    </a>
+                </div>
+                <div class="favorite-count"><span>{{document.count_stars | humanizeCount}}</span></div>
+            </div>
+            <div class="content col-11-12 nopad">
+            
+                <div class="document-thumbnail nopad">
+                    <a href="index.php?get=resilib_document_raw&id={{document.id}}" target="_blank">
+                        <img width="100" height="133" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
+                    </a>
+                </div>
+
+                <div class="author">
+                    <span style="font-weight: normal;">par </span>{{document.author}}
+                </div>
+
+                <div class="details">
+                    Version: {{rootCtrl.humanReadable.month(document.last_update)}}
+                </div>
+
+                <div class="details">
+                    Licence: {{document.license}}
+                </div>
+
+                <div class="details">
+                    Langue: {{document.lang}}
+                </div>
+                
+                <div class="text" itemprop="text">                    
+                    <p ng-bind-html="document.description"></p>
+                </div>
+                
+                <div class="tags">
+                    <a ng-repeat="tag in document.categories" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
+                </div>
+                
+                <div class="footer">
+                    <div class="meta">
+                        <div class="actions">
+                            <a href="index.php?get=resilib_document_raw&id={{document.id}}" 
+                               type="application/pdf" 
+                               target="_blank">
+                              <i class="fa fa-eye" aria-hidden="true"></i> {{ 'MODAL_DOCUMENT_SHARE_VIEW' | translate }}
+                            </a>&nbsp;
+                            <a href
+                               ng-click="showShareModal()"
+                               title="{{'DOCUMENT_ACTIONS_SHARE_TOOLTIP' | translate}}">
+                                <i class="fa fa-share-alt" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_SHARE' | translate}}
+                            </a>&nbsp;
+                            <a href="#/document/edit/{{document.id}}">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_EDIT' | translate}}
+                            </a>&nbsp;                            
+                            <a href                                         
+                               id="document-flag"
+                               title="{{'DOCUMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
+                               ng-class="{on: document.history['resilib_document_flag']}"                                           
+                               ng-click="documentFlag($event)"
+                               uib-popover-template="'popoverCustom.html'" 
+                               popover-trigger="'toggle-popover'" 
+                               popover-placement="right"
+                               popover-append-to-body="true">
+                                <i class="fa fa-flag" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_FLAG' | translate}}
+                            </a>&nbsp;                            
+                            <a href 
+                               id="document-delete"
+                               title="{{'DOCUMENT_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                               class="delete-post-link"                                
+                               ng-show="user.id==document.creator.id || user.role!='u'"
+                               ng-click="documentDelete($event)"
+                               uib-popover-template="'popoverCustom.html'"
+                               popover-trigger="'toggle-popover'"
+                               popover-placement="right"
+                               popover-append-to-body="true">
+                                <i class="fa fa-remove" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_DELETE' | translate}}
+                            </a>                            
+                        </div>
+                        <div class="signature" ng-if="document.editor != 0 && document.editor.id != document.creator.id">
+                            <div class="user-info">
+                                <div class="user-action-time">
+                                    <span class="relativetime">{{'DOCUMENT_STATS_EDITED' | translate}} {{document.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                </div>
+                                <div class="user-avatar">
+                                    <a href="#/user/profile/{{document.editor.id}}">
+                                        <div class="avatar-wrapper">
+                                            <img ng-src="{{rootCtrl.avatarURL(document.editor.avatar_url, 32)}}" title="{{document.editor.display_name}}" width="32" height="32">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="user-details">
+                                    <a href="#/user/profile/{{document.editor.id}}">{{document.editor.display_name}}</a>
+                                    <div>
+                                        <span class="reputation-score" title="{{'DOCUMENT_USER_DETAILS_REPUTATION'|translate}}">{{document.editor.reputation}}</span>
+                                        <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="document.editor.count_badges_1 > 0">
+                                            <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ document.editor.count_badges_1 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_SILVER'|translate}}" ng-show="document.editor.count_badges_2 > 0">
+                                            <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ document.editor.count_badges_2 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="document.editor.count_badges_3 > 0">
+                                            <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ document.editor.count_badges_3 }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="signature owner">
+                            <div class="user-info">
+                                <div class="user-action-time">
+                                    <span class="relativetime">{{'DOCUMENT_STATS_ASKED' | translate}} {{document.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                </div>
+                                <div class="user-avatar">
+                                    <a href="#/user/profile/{{document.creator.id}}">
+                                        <div class="avatar-wrapper">
+                                            <img ng-src="{{rootCtrl.avatarURL(document.creator.avatar_url, 32)}}" title="{{document.creator.display_name}}" width="32" height="32">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="user-details">
+                                    <a href="#/user/profile/{{document.creator.id}}">{{document.creator.display_name}}</a>
+                                    <div>
+                                        <span class="reputation-score" title="{{'DOCUMENT_USER_DETAILS_REPUTATION'|translate}}">{{document.creator.reputation}}</span>
+                                        <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="document.creator.count_badges_1 > 0">
+                                            <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ document.creator.count_badges_1 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_SILVER'|translate}}" ng-show="document.creator.count_badges_2 > 0">
+                                            <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ document.creator.count_badges_2 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="document.creator.count_badges_3 > 0">
+                                            <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ document.creator.count_badges_3 }}</span>
+                                        </span>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="comments">
+                
+                    <div ng-repeat="(comment_index, comment) in document.comments | limitTo: document.commentsLimit" class="comment wrapper">
+
+                        <div 
+                            class="wrapper new-comment" 
+                            style="margin-top: 10px;" 
+                            ng-show="document.comments[comment_index].editMode">
+                            <textarea 
+                                ng-model="document.comments[comment_index].content" 
+                                style="width: 100%;" 
+                                placeholder="{{'document_COMMENTS_ADD_PLACEHOLDER' | translate}}">
+                            </textarea>
+                            <button id="comment-{{comment.id}}-editComment" 
+                                    class="btn btn-primary btn-xs"
+                                    ng-click="documentCommentEdit($event, comment_index)"
+                                    uib-popover-template="'popoverCustom.html'" 
+                                    popover-trigger="'toggle-popover'" 
+                                    popover-placement="right"
+                                    popover-append-to-body="true">
+                                {{'DOCUMENT_COMMENTS_EDIT_BUTTON' | translate}}
+                            </button>
+                            <button
+                                    class="btn btn-primary btn-xs"
+                                    ng-click="document.comments[comment_index].editMode = false">
+                                {{'DOCUMENT_COMMENTS_CANCEL_BUTTON' | translate}}
+                            </button>
+                        </div>                        
+                        <div ng-hide="document.comments[comment_index].editMode">
+                        
+                            <div id="comment-{{comment.id}}" class="comment-{{comment_index}} comment-vote col-1-12 nopad">
+                                
+                                <div class="comment-score">
+                                    <span title="{{'DOCUMENT_COMMENT_SCORE_TOOLTIP' | translate}}">
+                                        {{comment.score | humanizeCount}}
+                                    </span>
+                                </div>
+                                <div class="comment-actions" >
+                                    <div class="comment-voteup" 
+                                         ng-class="{on: comment.history['resiexchange_documentcomment_voteup']}">
+                                        <a href
+                                           id="comment-{{comment.id}}-voteup"
+                                           title="{{'DOCUMENT_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"                                   
+                                           class="fa fa-thumbs-o-up" 
+                                           ng-click="documentCommentVoteUp($event, comment_index)"
+                                           uib-popover-template="'popoverCustom.html'" 
+                                           popover-trigger="'toggle-popover'" 
+                                           popover-placement="right"
+                                           popover-append-to-body="true"
+                                           aria-hidden="true">
+                                        </a>
+                                    </div>
+                                    <div class="comment-flag" >
+                                        <a href                                         
+                                           id="comment-{{comment.id}}-flag"
+                                           title="{{'DOCUMENT_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
+                                           class="fa fa-flag" 
+                                           ng-class="{on: comment.history['resiexchange_documentcomment_flag']}"                                           
+                                           ng-click="documentCommentFlag($event, comment_index)"
+                                           uib-popover-template="'popoverCustom.html'" 
+                                           popover-trigger="'toggle-popover'" 
+                                           popover-placement="right"
+                                           popover-append-to-body="true"                                               
+                                           aria-hidden="true">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-text col-11-12 nopad">
+                                <div class="comment-body">
+                                    <span btf-markdown="comment.content"></span>
+                                    –&nbsp;
+                                    <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                    <span class="comment-date" dir="ltr">
+                                        <a class="comment-link" href="#/document/{{document.id}}#comment-{{comment.id}}">
+                                            <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
+                                        </a>
+                                    </span>
+                                    <a href ng-click="document.comments[comment_index].editMode = true">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_COMMENT_ACTIONS_EDIT' | translate}}
+                                    </a>&nbsp;                               
+                                    <a href
+                                       id="comment-{{comment.id}}-delete"
+                                       title="{{'DOCUMENT_COMMENT_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                                       ng-show="user.id==comment.creator.id"
+                                       ng-click="documentCommentDelete($event, comment_index)"
+                                       uib-popover-template="'popoverCustom.html'" 
+                                       popover-trigger="'toggle-popover'" 
+                                       popover-placement="right"
+                                       popover-append-to-body="true">
+                                        <i class="fa fa-remove" aria-hidden="true"></i> {{'DOCUMENT_COMMENT_ACTIONS_DELETE' | translate}}
+                                    </a>                                          
+                                    
+                                </div>
+
+                            </div>
+                         </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="comments-actions">
+                    <a href 
+                       ng-click="document.newCommentShow = true" 
+                       class="comments-link" 
+                       title="{{ 'DOCUMENT_COMMENTS_ADD_TOOLTIP' | translate}}" >
+                       {{ 'DOCUMENT_COMMENTS_ADD' | translate}}</a>
+                    <span ng-show="document.comments.length > document.commentsLimit">                        
+                        <span class="js-link-separator ">&nbsp;|&nbsp;</span>
+                        <a href 
+                           ng-click="document.commentsLimit=1000" 
+                           class="js-show-link comments-link " 
+                           title="{{ 'DOCUMENT_COMMENTS_SHOW_ALL_TOOLTIP' | translate}}">
+                           {{ 'document_COMMENTS_SHOW_ALL' | translate}}</a>
+                    </span>
+                    <div class="wrapper new-comment" style="margin-top: 10px;" ng-show="document.newCommentShow">
+                        <textarea ng-model="document.newCommentContent" style="width: 100%;" placeholder="{{ 'DOCUMENT_COMMENTS_ADD_PLACEHOLDER' | translate }}"></textarea>
+                        <button id="document-addComment" 
+                                class="btn btn-primary btn-xs"
+                                ng-click="documentComment($event)"
+                                uib-popover-template="'popoverCustom.html'" 
+                                popover-append-to-body="true"
+                                popover-trigger="'toggle-popover'" 
+                                popover-placement="right"
+                                popover-append-to-body="true">
+                            {{ 'DOCUMENT_COMMENTS_ADD_BUTTON' | translate}}
+                        </button>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+       
+        
+       
+            
+    </div>
+    <div class="col-4-12">
+        <div class="panel panel-default">
+            <div class="container" style="border-bottom: solid 1px lightgrey;">
+                <div class="module document-stats">
+                    <div class="stat-row">
+                        <div class="title">
+                            {{'DOCUMENT_STATS_ASKED' | translate}}
+                        </div>
+                        <div class="content">
+                            <b>{{document.created}}</b>
+                        </div>
+                    </div>
+                    <div class="stat-row">                    
+                        <div class="title">
+                            {{'DOCUMENT_STATS_VIEWED' | translate}}
+                        </div>
+                        <div class="content">
+                            <b>{{document.count_views}} {{'DOCUMENT_STATS_TIMES' | translate}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            {{'DOCUMENT_STATS_ACTIVE' | translate}}
+                        </div>
+                        <div class="content">
+                            <b>{{document.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            Partage
+                        </div>
+                        <div class="content">
+                            <b>{{document.creator.display_name}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            
+                        </div>
+                        <div class="content about">
+                            <p ng-bind-html="document.creator.about"></p>
+                        </div>
+                    </div>                        
+
+
+                    <div class="stat-row" ng-if="document.answers.length">                        
+                        <div class="title">
+                            Réponses
+                        </div>
+                        <div class="content">                            
+                        </div>
+                    </div>
+
+
+                    <div class="stat-row" ng-repeat-start="answer in document.answers"> 
+                        <div class="title">
+                        </div>
+                        <div class="content"> 
+                            <b>{{answer.creator.display_name}}</b>                            
+                        </div>
+                    </div>
+                    <div class="stat-row" ng-repeat-end>
+                        <div class="title">
+                        </div>
+                        <div class="content"> 
+                            <p ng-bind-html="answer.creator.about"></p>
+                        </div>
+                    </div>                        
+
+                                        
+                    
+                    
+                    
+			    </div>
+            </div>
+            <div class="container fade-in-out" ng-show="related_documents.length > 0" >                    
+                <h4>documents similaires</h4>
+                <div class="related-documents" ng-repeat="document in related_documents">
+                    <p>
+                        <span class="mini-counts btn btn-xs ng-binding btn-success" ng-class="{'btn-success':(document.count_votes > 0), 'btn-danger':(document.count_votes < 0), 'btn-info':(document.count_votes == 0)}">{{document.score}}</span>                
+                        <a href="#/document/{{document.id}}/{{document.title_url}}" title="{{document.title}}">{{document.title}}</a>                    
+                    </p>
+                </div>                
+            </div>
+        </div>
+    </div>
+
+</div>
