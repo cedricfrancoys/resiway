@@ -28,7 +28,7 @@ function extractKeywords($string) {
     $parts = explode(' ', $string);
     $result = [];
     foreach($parts as $part) {
-        if(strlen($part) >= 3) $result[] = TextTransformer::axiomize($part);
+        if(strlen($part) >= 3) $result[] = substr(TextTransformer::axiomize($part), 0, 32);
     }
     return $result;
 }
