@@ -13,7 +13,12 @@ set_silent(true);
 $params = QNLib::announce(	
 	array(	
     'description'	=>	"Returns a list of documents objects matching the received criteria",
-    'params' 		=>	array(                                         
+    'params' 		=>	array(
+                        'q'		    => array(
+                                            'description'   => 'Token to search among the documents',
+                                            'type'          => 'string',
+                                            'default'       => ''
+                                            ),    
                         'domain'		=> array(
                                             'description'   => 'Criterias that results have to match (serie of conjunctions)',
                                             'type'          => 'array',
