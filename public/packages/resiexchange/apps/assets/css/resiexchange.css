@@ -2235,15 +2235,23 @@ body {
 
 
 #rw-donation {
+    /*
     position: fixed;
     left: 10px;
-    top: 34px;    
-    z-index: 1000;
+    top: 34px;
+*/    
+    float: left; 
+    height: 34px;    
+    margin: 0;
+    padding: 0;
 }
 
 #rw-donation .btn {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;    
+    border-radius: 0;
+    border: 0;
+    height: 34px;
+    margin: 0;
+    vertical-align: top;
 }
 
 /* topbar */

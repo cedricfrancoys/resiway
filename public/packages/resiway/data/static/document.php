@@ -53,24 +53,34 @@ function isGoogleBot() {
 }
 
 try {    
+/*
     if( !isGoogleBot() ) {
         // redirect to JS application
-        // header('Location: '.'/resilib.fr#/document/'.$params['id'].'/'.$params['title']);
-        header('Location: '.'/resilib.fr#'.$params['title']);
+        header('Location: '.'/resilib.fr#/document/'.$params['id'].'/'.$params['title']);
         exit();
     } 
     else {
+        */
+        $om = &ObjectManager::getInstance();
+        $res = $om->read('resilib\Document', $params['id'], ['content']);
+        if($res <= 0 || !count($res)) throw new Exception("document_unknown", QN_ERROR_UNKNOWN_OBJECT);
         // header('Location: '.'/resilib.static/data/documents/'.$params['title'].'/document.pdf');
-        $filepath = getcwd().'/resilib.static/data/documents/'.$params['title'].'/document.pdf';
+        // $filepath = getcwd().'/resilib.static/data/documents/'.$params['title'].'/document.pdf';
+
+        $document = $res[$params['id']];
+        $len = strlen($document['content']);
+        if($len <=0) throw new Exception("document_empty", QN_ERROR_INVALID_PARAM);
+        
         header("Pragma: public");
         header("Expires: 0");
         header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
         header("Cache-Control: public");
         header("Content-Type: application/pdf");
-        header("Content-Length: ".filesize($filepath));        
-        @readfile($filepath);
+        header("Content-Length: ".$len);
+        print($document['content']);
         exit();
-    }
+
+    /* } */
 }
 catch(Exception $e) {
     $result = $e->getCode();

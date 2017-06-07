@@ -60,7 +60,7 @@ angular.module('resiexchange')
 
 .service('routeDocumentsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
     this.load = function() {
-        return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+        return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
         .then(
             function successCallback(response) {
                 var data = response.data;

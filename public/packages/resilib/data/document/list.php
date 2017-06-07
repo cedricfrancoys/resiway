@@ -46,6 +46,11 @@ $params = QNLib::announce(
                                             'type'          => 'integer',
                                             'default'       => -1
                                             ),
+                        'channel'	=> array(
+                                            'description'   => 'Channel for which documents are requested (default, help, meta, ...)',
+                                            'type'          => 'integer',
+                                            'default'       => 1
+                                            ),                                            
                         'api'		=> array(
                                             'description'   => 'API version (for output format)',
                                             'type'          => 'string',
@@ -64,11 +69,75 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids, $total) = [[], [], $params['total']];
 
+
+function searchFromIndex($query) {
+    $result = [];
+    $query = TextTransformer::normalize($query);
+    $keywords = explode(' ', $query);
+    $hash_list = array_map(function($a) { return TextTransformer::hash(TextTransformer::axiomize($a)); }, $keywords);
+    // we have all words related to the question :
+    $om = &ObjectManager::getInstance();    
+    $db = $om->getDBHandler();    
+    // obtain related ids of index entries to add to question (don't mind the collision / false-positive)
+	$res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in ('".implode("','", $hash_list)."');");
+    $index_ids = [];
+    while($row = $db->fetchArray($res)) {
+        $index_ids[] = $row['id'];
+    }
+    
+    if(count($index_ids)) {
+        $res = $db->sendQuery("SELECT DISTINCT(document_id) FROM resiway_rel_index_document WHERE index_id in ('".implode("','", $index_ids)."');");
+        while($row = $db->fetchArray($res)) {
+            $result[] = $row['question_id'];
+        }
+    }
+    return $result;
+}
+
+
 try {
     
     $om = &ObjectManager::getInstance();
 
     // 0) retrieve matching documents identifiers
+
+    // build domain   
+    if(strlen($params['q']) > 0) {
+        // clear domain
+        $params['domain'] = [];
+        // adapt domain to restrict results to given channel
+        $params['domain'][] = ['channel_id','=', $params['channel']];        
+        $questions_ids = searchFromIndex($params['q']);
+        if(count($questions_ids) > 0) {
+            $params['domain'][] = ['id','in', $questions_ids];
+        }
+        else $params['domain'][] = ['id','=', -1];        
+    }
+    else {
+        $params['domain'] = QNLib::domain_normalize($params['domain']);
+        if(!QNLib::domain_check($params['domain'])) $params['domain'] = [];
+        
+        // adapt domain to restrict results to given channel
+        $params['domain'] = QNLib::domain_condition_add($params['domain'], ['channel_id','=', $params['channel']]);
+
+// we shouldn't request questions by categories using the domain, but rather use a specific syntax for the query
+// quick and dirty workaround: 
+        foreach($params['domain'] as $clause_id => $clause) {
+            foreach($clause as $condition_id => $condition) {
+                if($condition[0] == 'categories_ids') {
+                    $categories_ids = (array) $condition[2];
+                    $res = $om->read('resiway\Category', $categories_ids, ['title', 'path', 'parent_path', 'description']);
+                    foreach($res as $category) {
+                        $sub_categories_ids = $om->search('resiway\Category', ['path', 'like', $category['path'].'%']);
+                        $categories_ids = array_merge($categories_ids, $sub_categories_ids);
+                    }
+                    $params['domain'][$clause_id][$condition_id][2] = array_unique($categories_ids);
+                    break 2;
+                }
+            }
+        }
+    }
+
     
     // total is not knwon yet
     if($params['total'] < 0) {        

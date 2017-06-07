@@ -1,13 +1,12 @@
-<div id="rw-donation">
-    <a class="btn btn-danger" href="/resiway.fr#/association/soutenir"><i class="fa fa-heart" aria-hidden="true"></i> Faire un don</a>
-</div>
-    
+
 
 <div id="topBar" class="topbar" ng-controller="topBarCtrl as ctrl" >        
 
     <div class="grid wrapper">
     <!-- 1) dropdown dialogs -->
-        
+
+
+    
         <!-- platform dialog -->
         <div class="platform-dialog" ng-show="ctrl.platformDropdown" ng-cloak>
             <div class="head text-uppercase">{{'TOOLBAR_PLATFORM_OTHER_APPS'|translate}}</div>
@@ -84,6 +83,7 @@
         
     <!-- 2) toolbar -->
         <div class="col-1-1">
+    
             <div class="platform-items">
                 <div class="platform-btn {{config.application}}" ng-class="{open: ctrl.platformDropdown}" ng-click="togglePlatformDropdown()">
                     <div class="app-icon"></div>
@@ -96,7 +96,10 @@
                 <div id="help-btn" class="help-btn hidden-xs" ng-class="{open: ctrl.helpDropdown}" ng-click="toggleHelpDropdown()">
                     Aide 
                     <i class="fa fa-caret-down" aria-hidden="true"></i>          
-                </div>                
+                </div>
+                <div id="rw-donation" class="visible-lg-block visible-md-block visible-sm-block">
+                    <a class="btn btn-danger" href="/resiway.fr#/association/soutenir"><i class="fa fa-heart" aria-hidden="true"></i> Faire un don</a>
+                </div>                    
             </div>
             
             <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">

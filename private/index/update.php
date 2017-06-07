@@ -36,6 +36,7 @@ function extractKeywords($string) {
 
 try {
     $om = &ObjectManager::getInstance();
+    
     // request a batch of 5 non-indexed questions
     $questions_ids = $om->search('resiexchange\Question', ['indexed', '=', 0], 'id', 'asc', 0, 5);
     if($questions_ids > 0 && count($questions_ids)) {
@@ -84,6 +85,55 @@ try {
             $om->write('resiexchange\Question', $id, ['indexed' => true]);  
         }
     }
+    
+    // request a batch of 5 non-indexed documents
+    $documents_ids = $om->search('resilib\Document', ['indexed', '=', 0], 'id', 'asc', 0, 5);
+    if($documents_ids > 0 && count($documents_ids)) {
+        foreach($documents_ids as $id) {
+            // retrieve keywords from document
+            $res = $om->read('resilib\Document', $id, ['title', 'description', 'categories_ids.title']);
+            $keywords = [];
+            foreach($res as $oids => $odata) {
+                foreach($odata as $name => $value) {
+                    if(!is_array($value)) $value = (array) $value;
+                    foreach($value as $key => $str) {
+                        $keywords = array_merge($keywords, extractKeywords($str));
+                    }
+                }
+            }
+         
+            // compose list of hash-codes to query the database
+            $hash_list = [];
+            // we have all words related to the document :
+            $db = $om->getDBHandler();
+            // make sure all words are in the index
+            foreach($keywords as $keyword) {
+                // get a 64-bits unsigned integer hash from keyword
+                $hash = TextTransformer::hash($keyword);
+                if(in_array($hash, $hash_list)) continue;
+                $hash_list[] = $hash;
+                // $db->addRecords('resiway_index', ['hash', 'value'], [[$hash, $keyword]]);
+                $db->sendQuery( 
+                    "INSERT INTO `resiway_index` (`hash`, `value`) SELECT $hash, '$keyword' FROM DUAL
+                    WHERE NOT EXISTS(SELECT `hash`, `value` FROM `resiway_index` WHERE `hash` = $hash AND `value` = '$keyword');"
+                    );
+            }
+            
+            // obtain related ids of index entries to add to document
+            $res = $db->sendQuery("SELECT id FROM `resiway_index` WHERE hash in ('".implode("','", $hash_list)."');");
+            $index_ids = [];
+            while($row = $db->fetchArray($res)) {
+                $index_ids[] = $row['id'];
+            }
+
+            // add them to the index for given question
+            $index_values = array_map(function ($a) use($id) { return [$id, $a]; }, $index_ids);  
+            $db->addRecords('resiway_rel_index_document', ['document_id', 'index_id'], $index_values);
+            
+            // update question indexed status
+            $om->write('resilib\Document', $id, ['indexed' => true]);  
+        }
+    }    
 }
 catch(Exception $e) {
     $result = $e->getCode();

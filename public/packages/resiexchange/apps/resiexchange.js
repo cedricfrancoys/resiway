@@ -484,22 +484,32 @@ var resiway = angular.module('resiexchange', [
             var criteria = angular.extend({}, $rootScope.search.default, values || {});
             angular.copy(criteria, $rootScope.search.criteria);
 
-            // go to questions list page
-            if($location.path() == '/questions') { 
+            var list_page = '';
+            switch($rootScope.config.application) {
+                case 'resiway':
+                case 'resiexchange':
+                    list_page = '/questions';
+                    break;
+                case 'resilib':
+                    list_page = '/documents';
+                    break;
+            }
+            // go to list page
+            if($location.path() == list_page) { 
                 $rootScope.$broadcast('$locationChangeStart');
                 $route.reload();
             }
-            else $location.path('/questions');
+            else $location.path(list_page);
         };
         
         
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
             case 'resiway\\Category': return '#/category/'+object_id;            
-            case 'resiexchange\\Question': return 'resiexchange.'+global_config.locale+'#/question/'+object_id;
-            case 'resiexchange\\Answer': return 'resiexchange.'+global_config.locale+'#/answer/'+object_id;
-            case 'resiexchange\\QuestionComment': return 'resiexchange.'+global_config.locale+'#/questionComment/'+object_id;               
-            case 'resiexchange\\AnswerComment': return 'resiexchange.'+global_config.locale+'#/answerComment/'+object_id;
+            case 'resiexchange\\Question': return 'resiexchange.'+$rootScope.config.locale+'#/question/'+object_id;
+            case 'resiexchange\\Answer': return 'resiexchange.'+$rootScope.config.locale+'#/answer/'+object_id;
+            case 'resiexchange\\QuestionComment': return 'resiexchange.'+$rootScope.config.locale+'#/questionComment/'+object_id;               
+            case 'resiexchange\\AnswerComment': return 'resiexchange.'+$rootScope.config.locale+'#/answerComment/'+object_id;
             }
         };
 
@@ -713,7 +723,7 @@ angular.module('resiexchange')
 
 .service('routeDocumentsProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
     this.load = function() {
-        return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+        return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
         .then(
             function successCallback(response) {
                 var data = response.data;
@@ -3212,12 +3222,15 @@ angular.module('resiexchange')
     ctrl.poor_questions = [];  
     ctrl.last_documents = [];
 
+    /*
+    // redirect to questions list if already logged in ?
     if(global_config.application == 'resiexchange' && $rootScope.previousPath == '/') {
         authenticationService.userId().then(
         function(user_id) {
             $location.path('/questions');
         });
     }
+    */
 
     
     $http.get('index.php?get=resiway_stats')

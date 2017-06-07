@@ -9,12 +9,15 @@ angular.module('resiexchange')
     ctrl.poor_questions = [];  
     ctrl.last_documents = [];
 
+    /*
+    // redirect to questions list if already logged in ?
     if(global_config.application == 'resiexchange' && $rootScope.previousPath == '/') {
         authenticationService.userId().then(
         function(user_id) {
             $location.path('/questions');
         });
     }
+    */
 
     
     $http.get('index.php?get=resiway_stats')
