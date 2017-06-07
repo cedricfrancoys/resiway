@@ -14,7 +14,7 @@ set_silent(true);
 $params = QNLib::announce([
     'description'	=>	"Edit a document or submit a new one",
     'params' 		=>	[
-        'document_id'	    => array(
+        'id'	            => array(
                                 'description'   => 'Identifier of the document being edited (a null identifier means creation of a new document).',
                                 'type'          => 'integer', 
                                 'default'       => 0
@@ -84,7 +84,7 @@ list($result, $error_message_ids, $notifications) = [true, [], []];
 list($action_name, $object_class, $object_id) = [ 
     'resilib_document_edit',
     'resilib\Document',
-    $params['document_id']
+    $params['id']
 ];
 
 

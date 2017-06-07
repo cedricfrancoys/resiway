@@ -13,7 +13,7 @@ set_silent(true);
 $params = QNLib::announce([
     'description'	=>	"Edit a category or submit a new one",
     'params' 		=>	[
-        'category_id'	=> array(
+        'id'	        => array(
                             'description'   => 'Identifier of the category being edited (a null identifier means creation of a new category).',
                             'type'          => 'integer', 
                             'default'       => 0
@@ -46,7 +46,7 @@ list($result, $error_message_ids, $notifications) = [true, [], []];
 list($action_name, $object_class, $object_id) = [ 
     'resiway_category_edit',
     'resiway\Category',
-    $params['category_id']
+    $params['id']
 ];
 
 
