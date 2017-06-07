@@ -5,6 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
+use qinoa\text\TextTransformer as TextTransformer;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
