@@ -39,7 +39,7 @@ class Document extends \easyobject\orm\Object {
             
             'last_update'		    => array('type' => 'date'),				
             
-            'description'		    => array('type' => 'short_text'),
+            'description'		    => array('type' => 'html'),
 
             'thumbnail'			    => array('type' => 'file'),
             
