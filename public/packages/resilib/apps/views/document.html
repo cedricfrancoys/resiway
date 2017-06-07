@@ -409,21 +409,22 @@
                         </div>
                     </div>                        
 
-                                        
-                    
-                    
                     
 			    </div>
             </div>
+                        
             <div class="container fade-in-out" ng-show="related_documents.length > 0" >                    
-                <h4>documents similaires</h4>
+                <h4>Documents similaires</h4>
                 <div class="related-documents" ng-repeat="document in related_documents">
-                    <p>
-                        <span class="mini-counts btn btn-xs ng-binding btn-success" ng-class="{'btn-success':(document.count_votes > 0), 'btn-danger':(document.count_votes < 0), 'btn-info':(document.count_votes == 0)}">{{document.score}}</span>                
-                        <a href="#/document/{{document.id}}/{{document.title_url}}" title="{{document.title}}">{{document.title}}</a>                    
-                    </p>
-                </div>                
+                    <table>
+                        <tr>
+                            <td><span class="mini-counts btn btn-success btn-xs">{{document.score | humanizeCount}}</span></td>
+                            <td><a href="#/document/{{document.id}}/{{document.title_url}}" title="{{document.title}}">{{document.title}}</a></td>
+                        </tr>
+                    </table>
+                </div>
             </div>
+            
         </div>
     </div>
 
