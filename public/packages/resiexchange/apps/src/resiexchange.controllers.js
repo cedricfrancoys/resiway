@@ -216,7 +216,7 @@ angular.module('resiexchange')
                 method: 'POST',                
                 data: {
                     channel: $rootScope.config.channel,
-                    category_id: $scope.category.id,
+                    id: $scope.category.id,
                     title: $scope.category.title,            
                     description: $scope.category.description,
                     parent_id: $scope.category.parent_id, 
@@ -233,7 +233,7 @@ angular.module('resiexchange')
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
                     channel: $rootScope.config.channel,
-                    category_id: $scope.category.id,
+                    id: $scope.category.id,
                     title: $scope.category.title,
                     description: $scope.category.description,
                     parent_id: $scope.category.parent_id
@@ -1041,7 +1041,7 @@ angular.module('resiexchange')
                 method: 'POST',                
                 data: {
                     channel: $rootScope.config.channel,
-                    document_id: $scope.document.id,
+                    id: $scope.document.id,
                     title: $scope.document.title,
                     author: $scope.document.author,                    
                     last_update: update.getDay()+'/'+update.getMonth()+'/'+update.getFullYear(),  
@@ -1093,7 +1093,7 @@ angular.module('resiexchange')
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
                     channel: $rootScope.config.channel,
-                    document_id: $scope.document.id,
+                    id: $scope.document.id,
                     title: $scope.document.title,
                     author: $scope.document.author,                    
                     last_update: update.getDay()+'/'+update.getMonth()+'/'+update.getFullYear(),  
