@@ -81,10 +81,10 @@ function searchFromIndex($query) {
     $query = TextTransformer::normalize($query);
     $keywords = explode(' ', $query);
     $hash_list = array_map(function($a) { return TextTransformer::hash(TextTransformer::axiomize($a)); }, $keywords);
-    // we have all words related to the question :
+    // we have all words related to the document :
     $om = &ObjectManager::getInstance();    
     $db = $om->getDBHandler();    
-    // obtain related ids of index entries to add to question (don't mind the collision / false-positive)
+    // obtain related ids of index entries to add to document (don't mind the collision / false-positive)
 	$res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in ('".implode("','", $hash_list)."');");
     $index_ids = [];
     while($row = $db->fetchArray($res)) {
@@ -94,7 +94,7 @@ function searchFromIndex($query) {
     if(count($index_ids)) {
         $res = $db->sendQuery("SELECT DISTINCT(document_id) FROM resiway_rel_index_document WHERE index_id in ('".implode("','", $index_ids)."');");
         while($row = $db->fetchArray($res)) {
-            $result[] = $row['question_id'];
+            $result[] = $row['document_id'];
         }
     }
     return $result;
@@ -113,9 +113,9 @@ try {
         $params['domain'] = [];
         // adapt domain to restrict results to given channel
         $params['domain'][] = ['channel_id','=', $params['channel']];        
-        $questions_ids = searchFromIndex($params['q']);
-        if(count($questions_ids) > 0) {
-            $params['domain'][] = ['id','in', $questions_ids];
+        $documents_ids = searchFromIndex($params['q']);
+        if(count($documents_ids) > 0) {
+            $params['domain'][] = ['id','in', $documents_ids];
         }
         else $params['domain'][] = ['id','=', -1];        
     }
@@ -126,7 +126,7 @@ try {
         // adapt domain to restrict results to given channel
         $params['domain'] = QNLib::domain_condition_add($params['domain'], ['channel_id','=', $params['channel']]);
 
-// we shouldn't request questions by categories using the domain, but rather use a specific syntax for the query
+// we shouldn't request documents by categories using the domain, but rather use a specific syntax for the query
 // quick and dirty workaround: 
         foreach($params['domain'] as $clause_id => $clause) {
             foreach($clause as $condition_id => $condition) {
@@ -211,7 +211,7 @@ try {
         }
         $user_id = ResiAPI::userId();
         if($user_id > 0) {
-            // retrieve actions performed by the user on each question
+            // retrieve actions performed by the user on each document
             $documents_history = ResiAPI::retrieveHistory($user_id, 'resilib\Document', array_keys($documents));            
             foreach($res as $document_id => $document_data) {
                 $documents[$document_id]['history'] = $documents_history[$document_id];        
