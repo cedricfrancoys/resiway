@@ -2302,20 +2302,7 @@ body {
     user-select: none;
 }
 
-.topbar .notify-btn {
-    float: right;
-    height: 34px;
-    width: 36px;
-    line-height: 34px;
-    color: lightgrey;
-    cursor: pointer;
-    user-select: none;
-    text-align: center;
-}
 
-.topbar .notify-btn.on {
-    color: red;
-}
 
 .topbar .help-btn {
     float: left;
@@ -2357,7 +2344,7 @@ body {
     right: 0;
     vertical-align: top;
     height: 34px;
-    width: 185px;
+    width: 200px;
     line-height: 34px;
     color: lightgrey;
     padding-left: 10px;
@@ -2419,25 +2406,6 @@ body {
     text-decoration: none;
 }
 
-.topbar .notify-dialog {
-    position: absolute;
-    display: block;
-    z-index: 1000;
-    top: 34px;
-    left: 0;
-    width: 255px;
-    height: auto;
-    max-height: 200px;
-    overflow-y: scroll;
-    background-color: #eff0f1;
-    border-left: 1px solid #e4e6e8;
-    border-right: 1px solid #e4e6e8;
-    border-bottom: 1px solid #e4e6e8;
-    color: rgb(0, 119, 204);
-    font-size: 11px;
-}
-
-
 .topbar .help-dialog {
     position: absolute;
     display: block;
@@ -2460,7 +2428,7 @@ body {
     z-index: 1000;
     top: 34px;
     right: 0;
-    width: 185px;
+    width: 200px;
     height: auto;
     background-color: #eff0f1;
     border-left: 1px solid #e4e6e8;
@@ -2531,6 +2499,40 @@ body {
     vertical-align: top;
 }
 
+
+.topbar .notify-btn {
+    position: absolute;
+    right: 205px;
+    height: 34px;
+    width: 36px;
+    line-height: 34px;
+    color: lightgrey;
+    cursor: pointer;
+    user-select: none;
+    text-align: center;
+}
+
+.topbar .notify-btn.on {
+    color: red;
+}
+.topbar .notify-dialog {
+    position: absolute;
+    display: block;
+    z-index: 1000;
+    top: 34px;
+    right: 205px;
+    width: 255px;
+    height: auto;
+    max-height: 200px;
+    overflow-y: scroll;
+    background-color: #eff0f1;
+    border-left: 1px solid #e4e6e8;
+    border-right: 1px solid #e4e6e8;
+    border-bottom: 1px solid #e4e6e8;
+    color: rgb(0, 119, 204);
+    font-size: 11px;
+}
+
 .topbar .notify-btn .unread-count {
     position: absolute;
     background-color: #F00;
@@ -2559,7 +2561,7 @@ body {
 }
 
 .topbar .platform-dialog .head, .topbar .notify-dialog .head {
-    padding: 7px 10px 4px 10px;
+   padding: 7px 10px 4px 10px;
    line-height: 16px;
 }
 .topbar .platform-dialog .head {
