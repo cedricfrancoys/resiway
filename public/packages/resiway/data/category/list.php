@@ -82,7 +82,7 @@ try {
 
     if(!empty($tags_ids)) {    
         // retrieve categories
-        $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path', 'count_questions']);
+        $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path', 'count_questions', 'count_documents']);
         if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
         $result = array_values($res);
     }

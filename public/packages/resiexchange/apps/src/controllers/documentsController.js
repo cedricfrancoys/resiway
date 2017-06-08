@@ -77,7 +77,7 @@ angular.module('resiexchange')
                 }
             );
             angular.forEach(ctrl.categories, function(category_id, j) {
-                $http.get('index.php?get=resiway_category_related&category_id='+category_id)
+                $http.get('index.php?get=resiway_category_related-document&category_id='+category_id)
                 .then(
                     function successCallback(response) {
                         var data = response.data;
@@ -93,7 +93,7 @@ angular.module('resiexchange')
         /*
         * async load and inject $scope.categories and $scope.featured_categories
         */
-        $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&limit=15&order=count_questions&sort=desc')
+        $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&limit=15&order=count_documents&sort=desc')
         .then(
             function successCallback(response) {
                 var data = response.data;

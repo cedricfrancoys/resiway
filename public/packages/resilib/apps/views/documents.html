@@ -127,7 +127,7 @@
                     <span class="small"><b>Catégories similaires:</b></span><br />
                     <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
                         <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" title="{{category.path}}">{{category.title}}</a>
-                        <div class="category-count">x {{category.count_questions}}&nbsp;</div>
+                        <div class="category-count">x {{category.count_documents}}&nbsp;</div>
                     </div>
                 </div>
 
@@ -135,7 +135,7 @@
                     <span class="small"><b>Categories populaires:</b></span><br />
                     <div class="featured-categories categories" ng-repeat="category in featured_categories" style="display: inline-block;">
                         <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" title="{{category.path}}">{{category.title}}</a>
-                        <div class="category-count">x {{category.count_questions}}&nbsp;</div>
+                        <div class="category-count">x {{category.count_documents}}&nbsp;</div>
                     </div>                
                 </div>                
 

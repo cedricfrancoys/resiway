@@ -78,7 +78,7 @@ angular.module('resiexchange')
                 }
             );
             angular.forEach(ctrl.categories, function(category_id, j) {
-                $http.get('index.php?get=resiway_category_related&category_id='+category_id)
+                $http.get('index.php?get=resiway_category_related-question&category_id='+category_id)
                 .then(
                     function successCallback(response) {
                         var data = response.data;
