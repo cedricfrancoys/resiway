@@ -312,6 +312,8 @@ var translations = {
     "category_missing_description": "Penses à préciser une description pour cette catégorie",
     "category_unknown": "Catégorie inconnue",
     "category_title_length_invalid": "Pour des raisons de clareté, le titre des catégories ne peut excéder 64 caractères",
-    "category_description_length_invalid": "Assures-toi que la description de la catégorie ne soit pas trop longue (max. 255 caractères)"
-                    
+    "category_description_length_invalid": "Assures-toi que la description de la catégorie ne soit pas trop longue (max. 255 caractères)",
+
+    // errors related to documents    
+    "document_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes soumissions (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)"
 };
