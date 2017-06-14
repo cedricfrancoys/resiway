@@ -265,7 +265,7 @@ class ResiAPI {
         return $result;
     }
 
-    public static function repositorySet($key, $value) {
+    public static function repositorySet($key_mask, $value) {
         $om = &ObjectManager::getInstance(); 
         $db = $om->getDBHandler();      
         $db->sendQuery("UPDATE `resiway_repository` SET `value` = '$value' WHERE `key` like '$key_mask';");        
@@ -595,7 +595,6 @@ class ResiAPI {
                               'reputation_update', 
                               self::getUserNotification('notification_reputation_update', $author_data['language'], $data)
                              );
-                              
         }
         
         return true;
@@ -893,8 +892,9 @@ class ResiAPI {
             $result = $undo($om, $user_id, $object_class, $object_id);                    
         }
         else {
-            self::registerAction($user_id, $action_name, $object_class, $object_id);        
-            $result = $do($om, $user_id, $object_class, $object_id);            
+            $result = $do($om, $user_id, $object_class, $object_id);
+            if($object_id == 0 && isset($result['id'])) $object_id = $result['id'];
+            self::registerAction($user_id, $action_name, $object_class, $object_id);            
         }
   
         return $result;

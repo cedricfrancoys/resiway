@@ -1553,7 +1553,7 @@ angular.module('resiexchange')
         * async load and inject $scope.related_questions
         */
         $scope.related_questions = [];
-        $http.get('index.php?get=resiexchange_question_related&question_id='+question.id)
+        $http.get('index.php?get=resiexchange_question_related&limit=7&question_id='+question.id)
         .then(
             function (response) {
                 $scope.related_questions = response.data.result;
