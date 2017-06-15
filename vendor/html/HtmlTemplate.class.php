@@ -27,8 +27,9 @@ class HtmlTemplate {
             // inside conditional statement, replace matching strings with values defined in params
             foreach($this->params as $param => $value) {
                 if(is_string($value)) {
-                    $condition = str_replace($param, "'{$value}'", $condition);                
+                    $condition = str_replace($param, "'{$value}'", $condition);
                 }
+                else $condition = str_replace($param, $value, $condition);
             }
             $condition = html_entity_decode($condition);
             $res = eval('return ('.$condition.');');
@@ -88,7 +89,7 @@ class HtmlTemplate {
 		$previous_pos = 0;
 		$html = '';
 		// use regular expression to locate all 'var' tags in the template
-		preg_match_all("/<var([^>]*)>(.*)<\/var>/iU", $this->template, $matches, PREG_OFFSET_CAPTURE);
+		preg_match_all("/<var([^>]*)>(.*)<\/var>/iUs", $this->template, $matches, PREG_OFFSET_CAPTURE);
 		// replace each 'var' tags with its associated content
 		for($i = 0, $j = count($matches[1]); $i < $j; ++$i) {
 			// 0) get inner HTML

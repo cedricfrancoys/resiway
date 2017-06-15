@@ -217,7 +217,8 @@ class ResiAPI {
                 'notify_question_answer',
                 'notify_post_edit',
                 'notify_post_flag',
-                'notify_post_delete'
+                'notify_post_delete',
+                'notify_updates'
                ];
     }
     
@@ -296,7 +297,7 @@ class ResiAPI {
     * @param string     $title     short title describing the notice
     * @param string     $content   html to be displayed (whatever the media)
     */
-    private static function userNotify($user_id, $type, $notification) {
+    public static function userNotify($user_id, $type, $notification) {
         $om = &ObjectManager::getInstance();
         $user_data = self::loadUserPrivate($user_id);
         // if notification has to be sent by email, store message in spool

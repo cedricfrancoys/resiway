@@ -76,11 +76,18 @@ class User extends \easyobject\orm\Object {
             'notify_post_edit'          => array('type' => 'boolean'),
             'notify_post_flag'          => array('type' => 'boolean'),
             'notify_post_delete'        => array('type' => 'boolean'),
-            
+
+            'notify_updates'            => array('type' => 'boolean'),            
             
             'notifications_ids'	=> array(
                                     'type'		    => 'one2many', 
                                     'foreign_object'=> 'resiway\UserNotification', 
+                                    'foreign_field'	=> 'user_id'
+                                   ),
+
+            'favorites_ids'	    => array(
+                                    'type'		    => 'one2many', 
+                                    'foreign_object'=> 'resiway\UserFavorite', 
                                     'foreign_field'	=> 'user_id'
                                    ),
                                    
