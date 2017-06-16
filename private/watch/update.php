@@ -17,7 +17,7 @@ require_once('../qn.lib.php');
 require_once('../resi.api.php');
 config\export_config();
 
-set_silent(false);
+set_silent(true);
 
 list($result, $error_message_ids) = [true, []];
 
@@ -74,14 +74,14 @@ try {
         $admin_ids = $om->search('resiway\User', [['role', '=', 'a']]);
         $users_ids = array_unique(array_merge($users_ids, $admin_ids));
                
-        $users = $om->read('resiway\User', $users_ids, ['last_login', 'role', 'favorites_ids', 'language']);
+        $users = $om->read('resiway\User', $users_ids, ['firstname', 'last_login', 'role', 'favorites_ids', 'language']);
 
         foreach($users as $user_id => $user) {
             if(true or strtotime($user['last_login']) < strtotime($last_run)) {
                 // reset user specific data
                 $list_documents = [];
                 $list_questions = [];
-                $data = ['count_categories' => 0, 'count_questions' => 0, 'count_documents' => 0, 'list_questions' => '', 'list_documents' => ''];
+                $data = ['user' => $user, 'count_categories' => 0, 'count_questions' => 0, 'count_documents' => 0, 'list_questions' => '', 'list_documents' => ''];
                 $user_categories_ids = array_intersect($usersfavorites_ids, $user['favorites_ids']);
                 foreach($objects_by_category as $category_id => $objects) {
                     if(in_array($category_id, $user_categories_ids) || $user['role'] == 'a') {
@@ -105,13 +105,13 @@ try {
                     $i = 0;
                     foreach($list_questions as $question_id => $question_name) {
                         if($i == 3) break;                        
-                        $data['list_questions'] .= '<a href="https://www.resiway.org/question/'.$question_id.'">'.$question_name.'</a><br />'.PHP_EOL;
+                        $data['list_questions'] .= '<a href="https://www.resiway.org/resiexchange.fr#/question/'.$question_id.'">'.$question_name.'</a><br />'.PHP_EOL;
                         ++$i;
                     }
                     $i = 0;
                     foreach($list_documents as $document_id => $document_name) {
                         if($i == 3) break;
-                        $data['list_documents'] .= '<a href="https://www.resiway.org/question/'.$document_id.'">'.$document_name.'</a><br />'.PHP_EOL;
+                        $data['list_documents'] .= '<a href="https://www.resiway.org/resilib.fr#/document/'.$document_id.'">'.$document_name.'</a><br />'.PHP_EOL;
                         ++$i;
                     }                    
                     $notification = resiAPI::getUserNotification('notification_updates', $user['language'], $data);
@@ -124,7 +124,7 @@ try {
         
     }
     
-    //resiAPI::repositorySet('script.watch.last_run', date("Y-m-d H:i:s"));
+    resiAPI::repositorySet('script.watch.last_run', date("Y-m-d H:i:s"));
 }
 catch(Exception $e) {
     $result = $e->getCode();
