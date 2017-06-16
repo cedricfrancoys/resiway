@@ -17,7 +17,7 @@ require_once('../qn.lib.php');
 require_once('../resi.api.php');
 config\export_config();
 
-set_silent(false);
+set_silent(true);
 
 list($result, $error_message_ids) = [true, []];
 
