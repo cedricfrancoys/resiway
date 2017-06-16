@@ -94,6 +94,7 @@ if($object_id == 0) $action_name = 'resilib_document_post';
 
 
 try {
+    print_r($params);
     
     // reset file fields if no data have been received
     if(empty($params['content']) || !isset($params['content']['tmp_name'])) unset($params['content']);
