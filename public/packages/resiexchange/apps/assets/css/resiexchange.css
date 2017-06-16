@@ -876,6 +876,7 @@ input[type="text"] {
     float: left;
     width: calc(100% - 187px);
     padding: 0;
+    height: 145px;
 }
 
 .document .summary h3 {
@@ -885,7 +886,8 @@ input[type="text"] {
     font-weight: 400;
     font-size: 15px;
     margin-bottom: 5px;
-    line-height: 1.4;
+    line-height: 21px;
+    max-height: 63px;
 }
 
 .document .summary .excerpt {
