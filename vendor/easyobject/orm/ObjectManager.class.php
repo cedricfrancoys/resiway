@@ -822,7 +822,7 @@ todo : to validate
             // update new object with given fiels values
             
 			// check $fields arg validity			
-			$allowed_fields = $object->getFields();
+			$allowed_fields = array_diff($object->getFields(), ['id']);
 
             foreach($fields as $field => $values) {
                 // handle 'dot' notation (ignore '.' and following chars)

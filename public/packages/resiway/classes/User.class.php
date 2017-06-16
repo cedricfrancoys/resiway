@@ -58,6 +58,9 @@ class User extends \easyobject\orm\Object {
             'count_questions'   => array('type' => 'integer'),
             'count_answers'     => array('type' => 'integer'),
             'count_comments'    => array('type' => 'integer'),    
+
+            'count_documents'   => array('type' => 'integer'),                
+            
             // bronze
             'count_badges_1'    => array('type' => 'integer'),
             // silver
@@ -136,7 +139,8 @@ class User extends \easyobject\orm\Object {
              'count_profile_views'       => function() { return 0; },
              'count_questions'           => function() { return 0; },
              'count_answers'             => function() { return 0; },
-             'count_comments'            => function() { return 0; },             
+             'count_comments'            => function() { return 0; },
+             'count_documents'           => function() { return 0; },             
              'count_badges_1'            => function() { return 0; },
              'count_badges_2'            => function() { return 0; },             
              'count_badges_3'            => function() { return 0; },

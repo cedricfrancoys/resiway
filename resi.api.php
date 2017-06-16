@@ -32,6 +32,10 @@ DataAdapter::setMethod('db', 'orm', 'date', function($value) {
     $dateTime = DateTime::createFromFormat('Y-m-d', $value);
     return date("c", $dateTime->getTimestamp());
 });
+DataAdapter::setMethod('ui', 'orm', 'date', function($value) {
+    // $dateTime = DateTime::createFromFormat(DateTime::ISO8601, $value);
+    return date('Y-m-d', strtotime($value));
+});
 /*
 // override ORM method for datetime formatting (ISO 8601)
 DataAdapter::setMethod('db', 'orm', 'datetime', function($value) {

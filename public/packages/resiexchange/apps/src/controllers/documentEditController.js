@@ -24,7 +24,20 @@ angular.module('resiexchange')
         
 // todo: if user is not identified : redirect to login screen (to prevent risk of losing filled data)
 
-        // @view        
+        // @view       
+        $scope.dateOptions = {
+            formatYear: 'yy',
+            maxDate: new Date(2020, 5, 22),
+            minDate: new Date(),
+            startingDay: 1
+        };        
+        $scope.versionPopup = {
+            opened: false
+        };        
+        $scope.versionPopupOpen = function() {
+            $scope.versionPopup.opened = true;
+        };  
+        
         $scope.addItem = function(query) {
             return {
                 id: null, 
@@ -55,7 +68,7 @@ angular.module('resiexchange')
         // @model
         // description is inside a textarea and do not need sanitize check
         document.description = $sce.valueOf(document.description);
-        
+        document.last_update = new Date(document.last_update);
         $scope.document = angular.merge({
                             id: 0,
                             title: '',
@@ -94,7 +107,7 @@ angular.module('resiexchange')
         // @methods
         $scope.documentPost = function($event) {
             var selector = feedbackService.selector(angular.element($event.target));                   
-            var update = new Date($scope.document.last_update);
+            // var update = new Date($scope.document.last_update);
             
             ctrl.running = true;   
             
@@ -106,7 +119,8 @@ angular.module('resiexchange')
                     id: $scope.document.id,
                     title: $scope.document.title,
                     author: $scope.document.author,                    
-                    last_update: update.getDay()+'/'+update.getMonth()+'/'+update.getFullYear(),  
+                    last_update: $scope.document.last_update.toJSON(),  
+                    original_url: $scope.document.original_url, 
                     license: $scope.document.license,                    
                     description: $scope.document.description,
                     pages: $scope.document.pages,

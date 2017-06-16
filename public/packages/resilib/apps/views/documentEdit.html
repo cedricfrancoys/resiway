@@ -33,13 +33,12 @@
                             <div class="control-group">
                                 <label class="control-label">Version</label>
                                 <div class="controls">
-                                    <input id="last_update" 
-                                           ng-model="document.last_update"
-                                           type="text"
-                                           class="form-control last_update"
-                                           value="" 
-                                           size="54" 
-                                           maxlength="128">
+                                    <p class="input-group">
+                                      <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="document.last_update" is-open="versionPopup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                                      <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="versionPopupOpen()"><i class="fa fa-calendar"></i></button>
+                                      </span>
+                                    </p>                                           
                                     <p class="help-inline">&nbsp;</p>
                                 </div>
                             </div>
@@ -123,6 +122,15 @@
                             <p class="help-inline">Choisissez ou créez une ou plusieurs catégories</p>
                         </div>
                     </div>
+
+                     <div class="control-group" style="clear: both;">
+                        <label class="control-label">URL d'origine</label>
+                        <div class="controls">
+                            <input type="text" ng-model="document.original_url" class="form-control" />        
+                            <p class="help-inline">Emplacement auquel a été trouvé le document</p>
+                        </div>
+                    </div>
+                    
                     <div class="control-group">
                         <label class="control-label">Description</label>
                         <div class="controls">

@@ -30,7 +30,7 @@ $params = QNLib::announce([
                                 'required'      => true
                             ),
         'last_update'		=> array(
-                                'description'   => 'Author of the submitted document.',
+                                'description'   => 'Publication date of the submitted document.',
                                 'type'          => 'date',
                                 'required'      => true
                             ),
@@ -128,8 +128,8 @@ try {
             if($object_id == 0) {
             
                 // create a new document + write given value
-                $object_id = $om->create($object_class, array_merge(['creator' => $user_id], $params));
-
+                $object_id = $om->create($object_class, array_merge(['creator' => $user_id], $params));                
+                
                 if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
                 // update user count_documents
@@ -158,7 +158,7 @@ try {
             }
             
             // read created document as returned value
-            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'author', 'description', 'score', 'categories_ids']);
+            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'author', 'last_update', 'description', 'score', 'categories_ids']);
             if($res > 0) {
                 $result = array(
                                 'id'                => $object_id,
@@ -166,6 +166,7 @@ try {
                                 'created'           => $res[$object_id]['created'], 
                                 'title'             => $res[$object_id]['title'],                             
                                 'author'            => $res[$object_id]['author'],
+                                'last_update'       => $res[$object_id]['last_update'],
                                 'description'       => $res[$object_id]['description'],                                 
                                 'score'             => $res[$object_id]['score'],
                                 'categories_ids'    => $res[$object_id]['categories_ids'],
