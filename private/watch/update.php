@@ -84,7 +84,7 @@ try {
                 $data = ['user' => $user, 'count_categories' => 0, 'count_questions' => 0, 'count_documents' => 0, 'list_questions' => '', 'list_documents' => ''];
                 $user_categories_ids = array_intersect($usersfavorites_ids, $user['favorites_ids']);
                 foreach($objects_by_category as $category_id => $objects) {
-                    if(in_array($category_id, $user_categories_ids) || $user['role'] == 'a') {
+                    if($user['role'] == 'a' || in_array($category_id, $user_categories_ids)) {
                         ++$data['count_categories'];
                         if(isset($objects_by_category[$category_id]['resilib\Document'])) {
                             $data['count_documents'] += count($objects_by_category[$category_id]['resilib\Document']);
@@ -100,7 +100,7 @@ try {
                         }                           
                     }
                 }
-                if($data['count_documents'] > 0 || $data['count_questions']) {
+                if($data['count_documents'] > 0 || $data['count_questions'] > 0) {
                     // build message from template and send mail to spooler                    
                     $i = 0;
                     foreach($list_questions as $question_id => $question_name) {
