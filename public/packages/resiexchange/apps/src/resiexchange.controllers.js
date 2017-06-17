@@ -962,11 +962,17 @@ angular.module('resiexchange')
         
 // todo: if user is not identified : redirect to login screen (to prevent risk of losing filled data)
 
-        // @view       
-        $scope.dateOptions = {
+        // @view
+        $scope.alerts = [];
+        // alerts format : { type: 'danger|warning|success', msg: 'Alert message.' }
+                
+        ctrl.closeAlert = function(index) {
+            $scope.alerts.splice(index, 1);
+        };
+        
+        $scope.dateOptions = {           
             formatYear: 'yy',
-            maxDate: new Date(2020, 5, 22),
-            minDate: new Date(),
+            maxDate: new Date(),
             startingDay: 1
         };        
         $scope.versionPopup = {
@@ -1044,58 +1050,61 @@ angular.module('resiexchange')
 
         // @methods
         $scope.documentPost = function($event) {
-            var selector = feedbackService.selector(angular.element($event.target));                   
-            // var update = new Date($scope.document.last_update);
-            
-            ctrl.running = true;   
-            
-            Upload.upload({
-                url: 'index.php?do=resilib_document_edit', 
-                method: 'POST',                
-                data: {
-                    channel: $rootScope.config.channel,
-                    id: $scope.document.id,
-                    title: $scope.document.title,
-                    author: $scope.document.author,                    
-                    last_update: $scope.document.last_update.toJSON(),  
-                    original_url: $scope.document.original_url, 
-                    license: $scope.document.license,                    
-                    description: $scope.document.description,
-                    pages: $scope.document.pages,
-                    categories_ids: $scope.document.categories_ids,
-                    content: $scope.document.content, 
-                    thumbnail: $scope.document.thumbnail
-                }
-            })
-            .then(function (response) {
-                    ctrl.running = false;   
+            if(typeof $scope.document.last_update !== 'object' || $scope.document.last_update === null) {
+                $scope.alerts.push({ type: 'warning', msg: 'Oups, il manque la date de publication du document (en cas de doute, une approximation suffit).' });                
+            }
+            else {
+                var selector = feedbackService.selector(angular.element($event.target));                               
+                ctrl.running = true;   
+                
+                Upload.upload({
+                    url: 'index.php?do=resilib_document_edit', 
+                    method: 'POST',                
+                    data: {
+                        channel: $rootScope.config.channel,
+                        id: $scope.document.id,
+                        title: $scope.document.title,
+                        author: $scope.document.author,                    
+                        last_update: $scope.document.last_update.toJSON(),  
+                        original_url: $scope.document.original_url, 
+                        license: $scope.document.license,                    
+                        description: $scope.document.description,
+                        pages: $scope.document.pages,
+                        categories_ids: $scope.document.categories_ids,
+                        content: $scope.document.content, 
+                        thumbnail: $scope.document.thumbnail
+                    }
+                })
+                .then(function (response) {
+                        ctrl.running = false;   
 
-                    var data = response.data;
-                    if(typeof data.result != 'object') {
-                        // result is an error code
-                        var error_id = data.error_message_ids[0];                    
-                        // todo : get error_id translation
-                        var msg = error_id;
-                        // in case a field is missing, adapt the generic 'missing_*' message
-                        if(msg.substr(0, 8) == 'missing_') {
-                            msg = 'document_'+msg;
+                        var data = response.data;
+                        if(typeof data.result != 'object') {
+                            // result is an error code
+                            var error_id = data.error_message_ids[0];                    
+                            // todo : get error_id translation
+                            var msg = error_id;
+                            // in case a field is missing, adapt the generic 'missing_*' message
+                            if(msg.substr(0, 8) == 'missing_') {
+                                msg = 'document_'+msg;
+                            }
+                            feedbackService.popover(selector, msg);
                         }
-                        feedbackService.popover(selector, msg);
-                    }
-                    else {
-                        var document_id = data.result.id;
-                        $location.path('/document/'+document_id);
-                    }
+                        else {
+                            var document_id = data.result.id;
+                            $location.path('/document/'+document_id);
+                        }
 
-                }, function (resp) {
-                    ctrl.running = false;
-                    feedbackService.popover(selector, 'network error');
-                    console.log('Error status: ' + resp.status);
-                }, function (evt) {
-                    // var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
-                    // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
-                }
-            );
+                    }, function (resp) {
+                        ctrl.running = false;
+                        feedbackService.popover(selector, 'network error');
+                        console.log('Error status: ' + resp.status);
+                    }, function (evt) {
+                        // var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
+                        // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);
+                    }
+                );
+            }
             return;
             
 

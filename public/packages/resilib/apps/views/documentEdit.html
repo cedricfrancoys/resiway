@@ -34,12 +34,19 @@
                                 <label class="control-label">Version</label>
                                 <div class="controls">
                                     <p class="input-group">
-                                      <input type="text" class="form-control" uib-datepicker-popup="dd/MM/yyyy" ng-model="document.last_update" is-open="versionPopup.opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                                      <input type="text" 
+                                             class="form-control" 
+                                             uib-datepicker-popup="dd/MM/yyyy" 
+                                             datepicker-append-to-body="true"
+                                             ng-model="document.last_update" 
+                                             is-open="versionPopup.opened" 
+                                             datepicker-options="dateOptions"
+                                             close-text="Close" />
                                       <span class="input-group-btn">
                                         <button type="button" class="btn btn-default" ng-click="versionPopupOpen()"><i class="fa fa-calendar"></i></button>
                                       </span>
                                     </p>                                           
-                                    <p class="help-inline">&nbsp;</p>
+                                    <p class="help-inline">Date de publication du document</p>
                                 </div>
                             </div>
                             <div class="control-group">
@@ -151,7 +158,7 @@
                                 ]" 
                                 ></div>
                                 -->
-                                <textarea class="description form-control" style="height: 200px;"
+                                <textarea class="description form-control" style="height: 100px;"
                                           ui-tinymce="rootCtrl.tinymceOptions"
                                           ng-model="document.description">
                                 </textarea>                                
@@ -160,9 +167,11 @@
                      
                         </div>
                     </div>
-                                
+                    
                     <div class="form-actions">            
 
+                        <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeAlert($index)">{{alert.msg | translate}}</div>                                                
+                        
                         <button class="btn btn-default" tabindex="30" onclick="history.go(-1)">Cancel</button>
 
                         <button id="document-post"
