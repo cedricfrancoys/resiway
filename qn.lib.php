@@ -348,11 +348,16 @@ namespace config {
 		* @return	array
 		*/
 		public static function extract_params($url) {
+            $val = parse_url($url, PHP_URL_QUERY);
+            parse_str($val, $result);
+            return $result;
+            /*
 			preg_match_all('/([^?&=#]+)=([^&#]*)/', $url, $matches);
 			return array_combine(
 						array_map(function($arg){return htmlspecialchars(urldecode($arg));}, $matches[1]),
 						array_map(function($arg){return htmlspecialchars(urldecode($arg));}, $matches[2])
 					);
+            */
 		}
 
 		/**

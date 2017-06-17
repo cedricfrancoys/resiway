@@ -11,7 +11,7 @@
                   </button>
 
                   <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
-                    <li class="dropdown-header">Questions...</li>
+                    <li class="dropdown-header">Documents...</li>
                     <li><a href ng-click="rootCtrl.search({order:'count_views', sort: 'desc'});">les plus vues</a></li>
                     <li><a href ng-click="rootCtrl.search({order:'modified', sort: 'desc'});">les plus récentes</a></li>
                     <li><a href ng-click="rootCtrl.search({order:'score', sort: 'desc'});">les plus populaires</a></li>
@@ -25,19 +25,14 @@
 
         <div ng-repeat="document in ctrl.documents.items" class="document narrow col-1-1">
             <div class="counters" >
-                <div class="votes" title="{{document.count_votes}} {{'QUESTIONS_VOTES' | translate}}">
+                <div class="votes" title="{{document.score}} {{'QUESTIONS_VOTES' | translate}}">
                     <div class="mini-counts">                
-                        <i class="fa fa-check-circle" ng-class="{'text-success': document.history['resiexchange_question_voteup']  || document.history['resiexchange_question_votedown']}"aria-hidden="true"></i> {{question.count_votes | humanizeCount}}
+                        <i class="fa fa-check-circle" ng-class="{'text-success': document.history['resilib_document_voteup']  || document.history['resilib_document_votedown']}"aria-hidden="true"></i> {{document.score | humanizeCount}}
                     </div> 
-                </div>
-                <div class="status unanswered" title="{{document.count_answers}} {{'QUESTIONS_ANSWERS' | translate}}">
-                    <div class="mini-counts">                    
-                        <i class="fa fa-comments" ng-class="{'text-success': document.history['resiexchange_question_answer']}" aria-hidden="true"></i> {{document.count_answers | humanizeCount}}
-                    </div>
                 </div>
                 <div class="views" title="{{document.count_views}} {{'QUESTIONS_VIEWS' | translate}}">
                     <div class="mini-counts">
-                        <i class="fa fa-eye" ng-class="{'text-success': document.history['resiexchange_question_view']}" aria-hidden="true"></i> {{document.count_views | humanizeCount}}
+                        <i class="fa fa-eye" ng-class="{'text-success': document.history['resilib_document_view']}" aria-hidden="true"></i> {{document.count_views | humanizeCount}}
                     </div>
                 </div>
             </div>

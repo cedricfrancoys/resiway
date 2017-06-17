@@ -102,7 +102,6 @@ function searchFromIndex($query) {
 
 
 try {
-    
     $om = &ObjectManager::getInstance();
 
     // 0) retrieve matching documents identifiers
@@ -159,7 +158,7 @@ try {
     
     if(!empty($documents_ids)) {
         // retrieve documents
-        $res = $om->read('resilib\Document', $documents_ids, ['creator', 'created', 'title', 'title_url', 'author', 'description', 'count_votes', 'categories_ids']);
+        $res = $om->read('resilib\Document', $documents_ids, ['creator', 'created', 'title', 'title_url', 'author', 'description', 'original_url', 'content_type', 'score', 'count_views', 'categories_ids']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
         $authors_ids = [];        
@@ -175,8 +174,11 @@ try {
                                         'title'         => $document_data['title'],
                                         'title_url'     => $document_data['title_url'],
                                         'author'        => $document_data['author'],
-                                        'description'   => $document_data['description'],                                        
-                                        'count_votes'   => $document_data['count_votes']
+                                        'description'   => $document_data['description'],
+                                        'original_url'  => $document_data['original_url'],
+                                        'content_type'  => $document_data['content_type'],                                        
+                                        'score'         => $document_data['score'],
+                                        'count_views'   => $document_data['count_views']
                                        );
         }    
 
@@ -262,7 +264,7 @@ if( intval($params['api']) > 0 && is_array($result) ) {
     ksort($included);
     echo json_encode((object)[
         'jsonapi'   => (object) ['version' => '1.0'],
-        'meta'      => ['total-pages' => ceil($params['total']/$params['limit'])],
+        'meta'      => ['count' => $params['total'], 'page-size' => $params['limit'], 'total-pages' => ceil($params['total']/$params['limit'])],
         'data'      => $result,
         'included'  => array_values($included),
         ], JSON_PRETTY_PRINT);    
