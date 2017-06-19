@@ -31,8 +31,8 @@ try {
     if($ids > 0 && count($ids) > 0) {
         $documents = $om->read('resilib\Document', $ids, ['id', 'lang', 'author', 'title', 'title_url', 'original_url']);
         foreach($documents as $document) {
-            // $filename = sprintf("../bin/resilib/document/content/%011d.%s", $document['id'], $document['lang']);
-            $filename = sprintf("../bin/resilib/document/content/%011d.%s", $document['id'], 'fr');
+            // $filename = sprintf("../bin/resilib/Document/content/%011d.%s", $document['id'], $document['lang']);
+            $filename = sprintf("../bin/resilib/Document/content/%011d.%s", $document['id'], 'fr');
 
             // parse template and store result in a temporary file
             $url = "http://resilink.io/document/{$document['id']}/{$document['title_url']}";
