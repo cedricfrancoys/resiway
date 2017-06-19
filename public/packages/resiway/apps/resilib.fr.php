@@ -21,7 +21,7 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
 
-        <title>ResiExchange</title>
+        <title>ResiLib</title>
 
         <!-- favicons -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/favicons.html"); ?>
