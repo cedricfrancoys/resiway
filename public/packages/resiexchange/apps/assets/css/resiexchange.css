@@ -888,6 +888,7 @@ input[type="text"] {
     margin-bottom: 5px;
     line-height: 21px;
     max-height: 63px;
+    overflow: hidden;
 }
 
 .document .summary .excerpt {
