@@ -35,7 +35,7 @@ try {
             $filename = sprintf("../bin/resilib/document/content/%011d.%s", $document['id'], 'fr');
 
             // parse template and store result in a temporary file
-            $url = "https://www.resiway.org/document/{$document['id']}/{$document['title_url']}";
+            $url = "http://resilink.io/document/{$document['id']}/{$document['title_url']}";
             $resilink = "<a href=\"$url\">$url</a>";
             $html = str_replace(
             ['{{author}}', '{{title}}', '{{url-origin}}', '{{resilink}}'],
