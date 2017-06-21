@@ -31,48 +31,6 @@
                     <div class="col-1-1 nopad">
                         <div class="col-1-2">
                             <div class="control-group">
-                                <label class="control-label">Version</label>
-                                <div class="controls">
-                                    <p class="input-group">
-                                      <input type="text" 
-                                             class="form-control" 
-                                             uib-datepicker-popup="dd/MM/yyyy" 
-                                             datepicker-append-to-body="true"
-                                             ng-model="document.last_update" 
-                                             is-open="versionPopup.opened" 
-                                             datepicker-options="dateOptions"
-                                             close-text="Close" />
-                                      <span class="input-group-btn">
-                                        <button type="button" class="btn btn-default" ng-click="versionPopupOpen()"><i class="fa fa-calendar"></i></button>
-                                      </span>
-                                    </p>                                           
-                                    <p class="help-inline">Date de publication du document</p>
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label">Licence</label>
-                                <div class="controls">
-                                    <input id="license" 
-                                           ng-model="document.license"
-                                           type="text"
-                                           class="form-control license" 
-                                           value="" 
-                                           size="54" 
-                                           maxlength="128"
-                                           placeholder="CC-by-nc-sa">
-                                    <p class="help-inline">&nbsp;</p>
-                                </div>
-                            </div>
-                            <div class="control-group">
-                                <label class="control-label">Nombre de pages</label>
-                                <div class="controls">
-                                    <input type="text" ng-model="document.pages" class="form-control" />
-                                    <p class="help-inline">&nbsp;</p>
-                                </div>
-                            </div>
-                        </div>                        
-                        <div class="col-1-2">
-                            <div class="control-group">
                                 <label class="control-label">Fichier</label>
                                 <div class="controls">
                                     <div class="btn btn-default" 
@@ -87,6 +45,78 @@
                                     <p class="help-inline">&nbsp;</p>
                                 </div>
                             </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">Version</label>
+                                <div class="controls">
+                                    <div class="input-group">
+                                      <input type="text" 
+                                             class="form-control" 
+                                             uib-datepicker-popup="dd/MM/yyyy" 
+                                             datepicker-append-to-body="true"
+                                             ng-model="document.last_update" 
+                                             is-open="versionPopup.opened" 
+                                             datepicker-options="dateOptions"
+                                             close-text="Close" 
+                                             placeholder="01/01/1970" />
+                                      <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="versionPopupOpen()"><i class="fa fa-calendar"></i></button>
+                                      </span>
+                                    </div>                                           
+                                    <p class="help-inline">Date de publication du document</p>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="control-group">
+                                <label class="control-label">Licence</label>
+                                <div class="controls">
+                                    <input id="license" 
+                                           ng-model="document.license"
+                                           type="text"
+                                           class="form-control license" 
+                                           value="" 
+                                           size="54" 
+                                           maxlength="128"
+                                           placeholder="CC-by-nc-sa">
+                                    <p class="help-inline">&nbsp;</p>
+                                </div>
+                            </div>
+                            -->
+                            <div class="col-8-12 nopad">
+                                <div class="control-group">                            
+                                    <label class="control-label">Licence</label>
+                                    <div class="controls">                                
+                                        <div class="btn-group" uib-dropdown >
+                                            <button type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                                            <span style="min-width: 126px; display: inline-block; text-align: left;">{{document.license}}</span> <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                                                <li role="menuitem"><a title="Creative Commons - attribution" href ng-click="document.license='CC-by'">CC-by</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale" href ng-click="document.license='CC-by-nc'">CC-by-nc</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / partage dans les mêmes conditions" href ng-click="document.license='CC-by-nc-sa'">CC-by-nc-sa</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / pas de modification" href ng-click="document.license='CC-by-nc-nd'">CC-by-nc-nd</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / partage dans les mêmes conditions" href ng-click="document.license='CC-by-sa'">CC-by-sa</a></li>                                                
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas de modification" href ng-click="document.license='CC-by-nd'">CC-by-nd</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>                            
+                            </div>
+                            <div class="col-4-12 nopad">
+                                <div class="control-group">
+                                    <label class="control-label">Nombre de pages</label>
+                                    <div class="controls">
+                                        <input type="text" ng-model="document.pages" class="form-control" />
+                                        <p class="help-inline">&nbsp;</p>
+                                    </div>
+                                </div>                            
+                            </div>
+                            
+    
+
+                        </div>                        
+                        <div class="col-1-2">
+                            
                             <div class="control-group">
                                 <label class="control-label">Vignette</label>
                                 <div class="controls">

@@ -314,6 +314,38 @@ input[type="text"] {
     margin: 2px 0;    
 }
 
+/* licensing */
+.cc-license {
+    line-height: 17px;
+    height: 17px;
+    font-size: 13px;
+    font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
+}
+
+.cc-license a.cc-author, .cc-license a.cc-link {
+    text-decoration: none;
+}
+
+.cc-license a.cc-author {
+    margin-left: 8px;
+    font-weight: bold;
+}
+
+.cc-license a.cc-author:hover {
+    text-decoration: underline;
+}
+
+
+.cc-license img.cc-icon {
+    float: left;
+    margin-right: 1px;
+    width: 17px;
+    height: 17px;
+    border: 0;
+    vertical-align: top;    
+}
+
+
 /* footer */
 
 #footer {

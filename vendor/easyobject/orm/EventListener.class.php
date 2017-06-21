@@ -82,15 +82,7 @@ class EventListener {
         else $error = "$dt, $errtype in $filename@$linenum : $errmsg\n";        
 
         // append to appropriate log file based on error type
-        if(in_array($errno, array(E_NOTICE, E_STRICT))) {
-            file_put_contents(LOG_STORAGE_DIR.'/notice.log', $error, FILE_APPEND);
-        }
-        else if(in_array($errno, array(E_WARNING, E_CORE_WARNING, E_COMPILE_WARNING, E_USER_NOTICE, E_DEPRECATED))) {
-            file_put_contents(LOG_STORAGE_DIR.'/warning.log', $error, FILE_APPEND);
-        }
-        else {        
-            file_put_contents(LOG_STORAGE_DIR.'/error.log', $error, FILE_APPEND);
-        }
+        file_put_contents(LOG_STORAGE_DIR.'/error.log', $error, FILE_APPEND);
         
 		// if we are in debug mode, output error message to stdout
 		if(function_exists('debug_mode') && (debug_mode() & DEBUG_PHP)) {

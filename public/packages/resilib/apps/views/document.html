@@ -68,17 +68,58 @@
                 </div>
 
                 <div class="author">
-                    <span style="font-weight: normal;">par </span>{{document.author}}
+                    <div class="cc-license" ng-switch="document.license">
+                     
+                        <a ng-switch-when="CC-by" class="cc-link" href="http://creativecommons.org/licenses/by/3.0/fr/" title="Creative Commons - attribution">
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/cc.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/by.png" />
+                        </a>
+
+                        <a ng-switch-when="CC-by-nc" class="cc-link" href="http://creativecommons.org/licenses/by-nc/3.0/fr/" title="Creative Commons - attribution / pas d'utilisation commerciale">
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/cc.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/by.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/nc_eu.png" />
+                        </a>
+
+                        <a ng-switch-when="CC-by-nc-sa" class="cc-link" href="http://creativecommons.org/licenses/by-nc-sa/3.0/fr/" title="Creative Commons - attribution / pas d'utilisation commerciale / partage dans les mêmes conditions">
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/cc.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/by.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/nc_eu.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/sa.png" />
+                        </a>
+
+                        <a ng-switch-when="CC-by-nc-nd" class="cc-link" href="http://creativecommons.org/licenses/by-nc-nd/3.0/fr/" title="Creative Commons - attribution / pas d'utilisation commerciale / pas de modification">
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/cc.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/by.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/nc_eu.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/nd.png" />
+                        </a>
+
+                        <a ng-switch-when="CC-by-sa" class="cc-link" href="http://creativecommons.org/licenses/by-sa/3.0/fr/" title="Creative Commons - attribution / partage dans les mêmes conditions">
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/cc.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/by.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/sa.png" />
+                        </a>
+
+                        <a ng-switch-when="CC-by-nd" class="cc-link" href="http://creativecommons.org/licenses/by-nd/3.0/fr/" title="Creative Commons - attribution / pas de modification">
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/cc.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/by.png" />
+                            <img class="cc-icon" src="packages/resiway/apps/assets/img/nd.png" />
+                        </a>
+                        
+                        <a class="cc-author" href="http://resilink.io/document/{{document.id}}/{{document.title_url}}">{{document.author}}</a>        
+                    </div>                
+                    <!-- <span style="font-weight: normal;">par </span>{{document.author}} -->
                 </div>
 
                 <div class="details">
                     Version: {{rootCtrl.humanReadable.month(document.last_update)}}
                 </div>
-
+                <!-- 
                 <div class="details">
                     Licence: {{document.license}}
                 </div>
-
+                -->
                 <div class="details">
                     Langue: {{document.lang}}
                 </div>
