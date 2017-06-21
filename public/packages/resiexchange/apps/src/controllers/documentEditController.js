@@ -82,6 +82,7 @@ angular.module('resiexchange')
                             last_update: '',
                             description: '',
                             categories_ids: [{}],
+                            license: 'CC-by-nc-sa',
                             content: {
                                 name: document.original_filename
                             }
