@@ -83,15 +83,17 @@ class User extends \easyobject\orm\Object {
             'notify_updates'            => array('type' => 'boolean'),            
             
             'notifications_ids'	=> array(
-                                    'type'		    => 'one2many', 
-                                    'foreign_object'=> 'resiway\UserNotification', 
-                                    'foreign_field'	=> 'user_id'
+                                    'type'		        => 'one2many', 
+                                    'foreign_object'    => 'resiway\UserNotification', 
+                                    'foreign_field'	    => 'user_id',
+                                    'order'             => 'created',
+                                    'sort'              => 'desc'
                                    ),
 
             'favorites_ids'	    => array(
-                                    'type'		    => 'one2many', 
-                                    'foreign_object'=> 'resiway\UserFavorite', 
-                                    'foreign_field'	=> 'user_id'
+                                    'type'		        => 'one2many', 
+                                    'foreign_object'    => 'resiway\UserFavorite', 
+                                    'foreign_field'	    => 'user_id'
                                    ),
                                    
             'user_badges_ids'	=> array(
