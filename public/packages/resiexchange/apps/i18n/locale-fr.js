@@ -120,11 +120,11 @@ var translations = {
     // Documents
     "DOCUMENTS_DOCUMENTS": "Documents",    
 
-    "DOCUMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce document fait preuve d'un effort de recherche; il est utile et claire",
-    "DOCUMENT_ACTIONS_VOTEDOWN_TOOLTIP": "Ce document ne fait preuve d'aucun effort de recherche; il est inutile ou peu claire",
-    "DOCUMENT_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter ce document à tes favoris (deux clics pour la retirer)",
+    "DOCUMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce document est utile, merci de l'avoir partagé",
+    "DOCUMENT_ACTIONS_VOTEDOWN_TOOLTIP": "Ce document est inutile ou ne s'intègre pas dans les thématiques de l'autonomie, la transition et la permaculture",
+    "DOCUMENT_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter ce document à tes favoris (deux clics pour le retirer)",
     "DOCUMENT_ACTIONS_SHARE": "Partager",
-    "DOCUMENT_ACTIONS_SHARE_TOOLTIP": "Permalink vers ce document",
+    "DOCUMENT_ACTIONS_SHARE_TOOLTIP": "Liens de partage de ce document",
     "DOCUMENT_ACTIONS_EDIT": "Éditer",
     "DOCUMENT_ACTIONS_FLAG": "Signaler",
     "DOCUMENT_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur ce document pour modération",

@@ -326,6 +326,11 @@ input[type="text"] {
     text-decoration: none;
 }
 
+.cc-license a.cc-link {
+    color: black;
+    font-size: larger;
+}
+
 .cc-license a.cc-author {
     margin-left: 8px;
     font-weight: bold;
@@ -345,6 +350,14 @@ input[type="text"] {
     vertical-align: top;    
 }
 
+.cc-license .cc {
+    vertical-align: text-top;
+}
+
+.dropdown-menu .cc {
+    vertical-align: text-top;
+    font-size: large;
+}
 
 /* footer */
 
