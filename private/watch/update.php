@@ -87,14 +87,14 @@ try {
                     if($user['role'] == 'a' || in_array($category_id, $user_categories_ids)) {
                         ++$data['count_categories'];
                         if(isset($objects_by_category[$category_id]['resilib\Document'])) {
-                            $data['count_documents'] += count($objects_by_category[$category_id]['resilib\Document']);
                             foreach($objects_by_category[$category_id]['resilib\Document'] as $document) {
+                                if(!isset($list_documents[$document['id']])) ++$data['count_documents'];
                                 $list_documents[$document['id']] = $document['name'];
                             }
                         }
                         if(isset($objects_by_category[$category_id]['resiexchange\Question'])) {
-                            $data['count_questions'] += count($objects_by_category[$category_id]['resiexchange\Question']);
                             foreach($objects_by_category[$category_id]['resiexchange\Question'] as $question) {
+                                if(!isset($list_questions[$question['id']])) ++$data['count_questions'];
                                 $list_questions[$question['id']] = $question['name'];
                             }
                         }                           
