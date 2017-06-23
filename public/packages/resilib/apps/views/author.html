@@ -1,0 +1,67 @@
+<div class="grid wrapper">
+
+    <div class="col-1-1">
+
+
+
+        <div class="user-profile col-1-1 nopad" style="padding-top: 10px;">
+
+            <div class="col-8-12" style="min-height: 500px;">
+                <h2>{{ctrl.author.name}}</h2>
+                <div ng-bind-html="ctrl.author.description"></div>
+                
+                <div class="footer">
+                    <div class="meta">
+                        <div class="actions">
+                            <a href
+                               ng-click="showShareModal()"
+                               title="{{'DOCUMENT_ACTIONS_SHARE_TOOLTIP' | translate}}">
+                                <i class="fa fa-share-alt" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_SHARE' | translate}}
+                            </a>&nbsp;
+                            <a ng-href="#/author/edit/{{ctrl.author.id}}">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_EDIT' | translate}}
+                            </a>&nbsp;                            
+                            <a href 
+                               id="author-delete"
+                               title="{{'DOCUMENT_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                               class="delete-post-link"                                
+                               ng-show="user.id==ctrl.author.creator.id || user.role!='u'"
+                               ng-click="authorDelete($event)"
+                               uib-popover-template="'popoverCustom.html'"
+                               popover-trigger="'toggle-popover'"
+                               popover-placement="right"
+                               popover-append-to-body="true">
+                                <i class="fa fa-remove" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_DELETE' | translate}}
+                            </a>                            
+                        </div>
+                        
+
+                    </div>
+                </div>                
+            </div>
+            <div class="col-4-12">
+                <div ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
+                    <a class="btn btn-primary btn-block btn-sm" href="#user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> {{'USER_PROFILE_EDIT' | translate}}</a>
+                </div>
+                <div class="user-stats">
+                    <div class="row">
+                        <div class="stat col-3">
+                            <span class="item-number">{{ctrl.author.count_documents | humanizeCount}}</span>
+                            <span class="item-label">{{'AUTHOR_STATS_DOCUMENTS' | translate}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-facts">
+                    <ul>
+                        <li><i class="fa fa-eye" aria-hidden="true"></i> {{ctrl.author.count_views | humanizeCount}} {{'USER_PROFILE_PROFILE_VIEWS' | translate}}</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div>
+       
+
+
+    </div>
+
+</div>
