@@ -67,6 +67,8 @@ class Author extends \easyobject\orm\Object {
     
     public static function onchangeName($om, $oids, $lang) {
         $om->write('resiway\Author', $oids, ['name_url' => null]);
+        // force immediate computing
+        $om->read('resiway\Author', $oids, ['name_url']);        
     }
         
     

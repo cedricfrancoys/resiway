@@ -3,7 +3,7 @@
         <div class="user-question wrapper">
             <div class="col-1-1 nopad">                
                     <div class="control-group">
-                        <label for="input01" class="control-label">Nom</label>
+                        <label class="control-label">Nom</label>
                         <div class="controls">
                             <input id="title" 
                                    ng-model="author.name"
@@ -18,7 +18,7 @@
                     </div>          
                     
                     <div class="control-group">
-                        <label for="input01" class="control-label">Description</label>
+                        <label class="control-label">Description</label>
                         <div class="controls">
 
                             <div class="wrapper">
@@ -31,7 +31,22 @@
                      
                         </div>
                     </div>
-                                
+
+                    <div class="control-group">
+                        <label class="control-label">WWW</label>
+                        <div class="controls">
+                            <input id="title" 
+                                   ng-model="author.url"
+                                   type="text"
+                                   class="form-control title col-md-4" 
+                                   tabindex="1" 
+                                   value="" 
+                                   size="54" 
+                                   maxlength="355">
+                            <p class="help-inline">URL complète (http://www.example.com/)</p>
+                        </div>
+                    </div>  
+                    
                     <div class="form-actions">            
 
                         <button class="btn btn-default" tabindex="30" onclick="history.go(-1)">Cancel</button>
