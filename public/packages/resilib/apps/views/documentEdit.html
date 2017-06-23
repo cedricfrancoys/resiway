@@ -24,7 +24,12 @@
                                    class="form-control author col-md-4" 
                                    value="" 
                                    size="54" 
-                                   maxlength="128">
+                                   maxlength="128"
+                                   autocomplete="off"
+                                   uib-typeahead="name for name in ctrl.getNames($viewValue)" 
+                                   typeahead-loading="loadingLocations" 
+                                   typeahead-no-results="noMatch">
+                            <div ng-show="noMatch"></div>                                   
                             <p class="help-inline">Prénom et NOM de l'auteur; répétition dans le cas de co-auteurs; SIGLE (Détail De l'Acronyme) pour une personne morale</p>
                         </div>
                     </div>

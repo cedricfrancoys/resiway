@@ -14,9 +14,10 @@ angular.module('resiexchange')
     'actionService', 
     'textAngularManager',
     '$http',
+    '$q',
     '$httpParamSerializerJQLike',
     'Upload',
-    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike, Upload) {
+    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $q, $httpParamSerializerJQLike, Upload) {
         console.log('documentEdit controller');
         
         var ctrl = this;   
@@ -31,7 +32,38 @@ angular.module('resiexchange')
         ctrl.closeAlert = function(index) {
             $scope.alerts.splice(index, 1);
         };
-        
+
+        var getNames_timeout;
+        ctrl.getNames = function(val) {
+            var deferred = $q.defer();
+            
+            if (getNames_timeout) {
+                clearTimeout(getNames_timeout);
+            }
+            
+            getNames_timeout = setTimeout(function() {
+                var str = new String(val);
+                if(str.length < 3) {
+                    deferred.resolve([]);
+                    return;
+                }
+                var domain = [];
+                angular.forEach(str.toURL().split('-'), function(part, index) {
+                    domain.push([['name', 'ilike', '%'+part+'%']]);                
+                });
+                $http.get('index.php?get=resiway_author_list&'+$httpParamSerializerJQLike({domain: domain}))
+                .then(function(response){
+                    deferred.resolve(
+                        response.data.result.map(function(item){
+                            return item.name;
+                        })
+                    );
+                });                
+            }, 300);
+            
+            return deferred.promise;
+        };
+  
         $scope.dateOptions = {           
             formatYear: 'yy',
             maxDate: new Date(),

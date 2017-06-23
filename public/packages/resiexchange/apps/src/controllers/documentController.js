@@ -36,6 +36,10 @@ angular.module('resiexchange')
             }
         );
 
+        ctrl.toURL = function (str) {
+            var output = new String(str);
+            return output.toURL();
+        };
         
         ctrl.openModal = function (title_id, header_id, content, template) {
             return $uibModal.open({

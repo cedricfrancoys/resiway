@@ -1,8 +1,9 @@
 'use strict';
 /**
 * Converts to lower case and strips accents
-* this method is used in myListFilter, a custom filter for dsiplaying categories list
-* using the oi-select angular plugin
+* this method is used by:
+*  - myListFilter, a custom filter for displaying categories list using the oi-select angular plugin
+*  - URL creation based on a string
 *
 * note : this is not valid for non-latin charsets !
 */
@@ -35,6 +36,16 @@ String.prototype.toASCII = function () {
     return result;
 };
 
+String.prototype.toURL = function () {
+    var str = this.toASCII();
+    return str
+        // remove all non-quote-space-alphanum-dash chars
+        .replace(/[^a-z\'\s-]/ig, '')
+        // replace spaces, dashes and quotes with dashes
+        .replace(/[\s-\']+/g, '-')
+        // trim the end of the string
+        .replace(/-*$/, '');
+};
 
 /**
 * Encode / Decode a string to base64url

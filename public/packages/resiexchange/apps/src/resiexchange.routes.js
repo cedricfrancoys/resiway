@@ -290,6 +290,27 @@ angular.module('resiexchange')
             reloadOnSearch: false
         })
         /**
+        * Author routes
+        */                
+        .when('/author/:name', {
+            templateUrl : templatePath+'author.html',
+            controller  : 'authorController as ctrl',
+            resolve     : {
+                author: ['routeAuthorByNameProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })
+        .when('/author/edit/:id', {
+            templateUrl : templatePath+'authorEdit.html',
+            controller  : 'authorEditController as ctrl',
+            resolve     : {
+                author: ['routeAuthorProvider', function (provider) {
+                    return provider.load();
+                }]
+            }        
+        })            
+        /**
         * Resiway routes            
         */        
         .when('/association/soutenir', {

@@ -55,6 +55,103 @@ angular.module('resiexchange')
 ]);
 angular.module('resiexchange')
 
+.controller('authorController', [
+    'author', 
+    '$scope',
+    '$rootScope',    
+    '$http',
+    function(author, $scope, $rootScope, $http) {
+        console.log('author controller');
+
+        var ctrl = this;
+
+        // @data model
+        ctrl.author = angular.merge({
+                            id: 0,
+                            name: '',
+                            description: ''
+                          }, 
+                          author);        
+        
+    }
+]);
+angular.module('resiexchange')
+/**
+* Display given author for edition
+*
+*/
+.controller('authorEditController', [
+    'author',
+    '$scope',
+    '$rootScope',
+    '$window', 
+    '$location', 
+    '$sce', 
+    'feedbackService', 
+    'actionService', 
+    '$http',
+    '$httpParamSerializerJQLike',
+    function(author, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
+        console.log('authorEdit controller');
+        
+        var ctrl = this;        
+        
+        // @model
+        // content is inside a textarea and do not need sanitize check
+        author.description = $sce.valueOf(author.description);
+        
+        $scope.author = angular.merge({
+                            id: 0,
+                            name: '',
+                            description: ''
+                          }, 
+                          author);                          
+
+        // @methods
+        $scope.authorPost = function($event) {
+            ctrl.running = true;
+            var selector = feedbackService.selector(angular.element($event.target));                   
+            actionService.perform({
+                // valid name of the action to perform server-side
+                action: 'resiway_author_edit',
+                // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                data: {
+                    channel: $rootScope.config.channel,
+                    id: $scope.author.id,
+                    name: $scope.author.name,
+                    description: $scope.author.description
+                },
+                // scope in wich callback function will apply 
+                scope: $scope,
+                // callback function to run after action completion (to handle error cases, ...)
+                callback: function($scope, data) {
+                    ctrl.running = false;
+                    // we need to do it this way because current controller might be destroyed in the meantime
+                    // (if route is changed to signin form)
+                    if(typeof data.result != 'object') {
+                        // result is an error code
+                        var error_id = data.error_message_ids[0];                    
+                        // todo : get error_id translation
+                        var msg = error_id;
+                        // in case a field is missing, adapt the generic 'missing_*' message
+                        if(msg.substr(0, 8) == 'missing_') {
+                            msg = 'author_'+msg;
+                        }
+                        feedbackService.popover(selector, msg);
+                    }
+                    else {
+                        var author_id = data.result.id;
+                        var author_name = data.result['name_url'];
+                        $location.path('/author/'+author_name);
+                    }
+                }        
+            });
+        };  
+           
+    }
+]);
+angular.module('resiexchange')
+
 .controller('badgesController', [
     'categories', 
     '$scope',
@@ -302,6 +399,10 @@ angular.module('resiexchange')
             }
         );
 
+        ctrl.toURL = function (str) {
+            var output = new String(str);
+            return output.toURL();
+        };
         
         ctrl.openModal = function (title_id, header_id, content, template) {
             return $uibModal.open({
@@ -952,9 +1053,10 @@ angular.module('resiexchange')
     'actionService', 
     'textAngularManager',
     '$http',
+    '$q',
     '$httpParamSerializerJQLike',
     'Upload',
-    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike, Upload) {
+    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $q, $httpParamSerializerJQLike, Upload) {
         console.log('documentEdit controller');
         
         var ctrl = this;   
@@ -969,7 +1071,38 @@ angular.module('resiexchange')
         ctrl.closeAlert = function(index) {
             $scope.alerts.splice(index, 1);
         };
-        
+
+        var getNames_timeout;
+        ctrl.getNames = function(val) {
+            var deferred = $q.defer();
+            
+            if (getNames_timeout) {
+                clearTimeout(getNames_timeout);
+            }
+            
+            getNames_timeout = setTimeout(function() {
+                var str = new String(val);
+                if(str.length < 3) {
+                    deferred.resolve([]);
+                    return;
+                }
+                var domain = [];
+                angular.forEach(str.toURL().split('-'), function(part, index) {
+                    domain.push([['name', 'ilike', '%'+part+'%']]);                
+                });
+                $http.get('index.php?get=resiway_author_list&'+$httpParamSerializerJQLike({domain: domain}))
+                .then(function(response){
+                    deferred.resolve(
+                        response.data.result.map(function(item){
+                            return item.name;
+                        })
+                    );
+                });                
+            }, 300);
+            
+            return deferred.promise;
+        };
+  
         $scope.dateOptions = {           
             formatYear: 'yy',
             maxDate: new Date(),

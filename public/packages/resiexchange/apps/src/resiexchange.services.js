@@ -182,6 +182,34 @@ angular.module('resiexchange')
         return routeObjectProvider.provide('resiway_user');
     };
 }])
+.service('routeAuthorProvider', ['routeObjectProvider', function(routeObjectProvider) {
+    this.load = function() {
+        return routeObjectProvider.provide('resiway_author');
+    };
+}])
+.service('routeAuthorByNameProvider', ['$http', '$route', '$q', function($http, $route, $q) {
+    this.load = function() {
+        var deferred = $q.defer();
+        // set an empty object as default result
+        deferred.resolve({});
+        
+        var name = new String($route.current.params.name);
+        if(typeof $route.current.params.name == 'undefined'
+        || name.length == 0) return deferred.promise;
+
+        return $http.get('index.php?get=resiway_author&name='+name)
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                return [];
+            }
+        );
+    };
+}])
 
 .service('routeHelpTopicProvider', ['routeObjectProvider', '$sce', function(routeObjectProvider, $sce) {
     this.load = function() {

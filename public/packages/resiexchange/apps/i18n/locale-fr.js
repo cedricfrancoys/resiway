@@ -241,6 +241,10 @@ var translations = {
     "CATEGORY_EDIT_SUBMIT": "Enregistrer les modifications",  
     "CATEGORY_EDIT_CANCEL": "Annuler",
 
+    // Authors
+    "AUTHOR_STATS_DOCUMENTS": "documents",
+    
+    // HELP
     "HELP_CENTER": "Centre d'aide",
         
     "HELP_TOPIC_EDIT_TITLE": "Edition sujet d'Aide",

@@ -52,7 +52,7 @@ class User extends \easyobject\orm\Object {
             'role'		        => array('type' => 'string', 'selection' => ['u', 'm', 'a']),
             
             
-            /* pfofile views */
+            /* profile views */
             'count_views'       => array('type' => 'integer'),
             
             'count_questions'   => array('type' => 'integer'),
