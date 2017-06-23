@@ -79,7 +79,7 @@ try {
     
     if(!empty($authors_ids)) {
         // retrieve questions
-        $authors = $om->read('resiway\Author', $authors_ids, ['id', 'name', 'name_url', 'description']);
+        $authors = $om->read('resiway\Author', $authors_ids, ['id', 'name', 'name_url', 'url', 'description']);
         $result = array_values($authors);
     }
 }
