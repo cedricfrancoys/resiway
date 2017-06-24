@@ -156,6 +156,7 @@ try {
         if($documents_ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
     }
     
+    $documents = [];
     if(!empty($documents_ids)) {
         // retrieve documents
         $res = $om->read('resilib\Document', $documents_ids, ['creator', 'created', 'title', 'title_url', 'author', 'description', 'original_url', 'content_type', 'score', 'count_views', 'categories_ids']);
@@ -163,7 +164,7 @@ try {
 
         $authors_ids = [];        
         $tags_ids = [];
-        $documents = [];
+
         foreach($res as $document_id => $document_data) {    
             $authors_ids = array_merge($authors_ids, (array) $document_data['creator']); 
             $tags_ids = array_merge($tags_ids, (array) $document_data['categories_ids']);                 
