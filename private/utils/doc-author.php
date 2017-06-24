@@ -37,8 +37,10 @@ function extractKeywords($string) {
 try {
     $om = &ObjectManager::getInstance();
     
+    /*
     $authors_ids = $om->search('resiway\Author');    
     $om->read('resiway\Author', $authors_ids, ['name_url']);
+    */
     
     // request a batch of 5 non-treateed documents
     // $documents_ids = $om->search('resilib\Document', ['author_id', '=', 0], 'id', 'asc', 0, 5);
