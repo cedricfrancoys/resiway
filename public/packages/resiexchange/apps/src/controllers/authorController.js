@@ -11,7 +11,7 @@ angular.module('resiexchange')
         var ctrl = this;
 
         // @data model
-        ctrl.author = angular.merge({
+        $scope.author = angular.merge({
                             id: 0,
                             name: '',
                             description: ''

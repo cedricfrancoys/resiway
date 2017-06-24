@@ -44,26 +44,29 @@ angular.module('resiexchange')
         });        
     });
     
-    ctrl.avatars = {
-        libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
-        identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
-        google: ''
-    };
-        
-    // @init
-    // retrieve GMail avatar, if any
-    $http.get('https://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
-    .then(
-        function successCallback(response) {
-            var url = response.data['entry']['gphoto$thumbnail']['$t'];
-            ctrl.avatars.google = url.replace("/s64-c/", "/")+'?sz=@size';
-        },
-        function errorCallback(response) {
+    ctrl.avatars = {};
+    
+    if(typeof ctrl.user.login != 'undefined') {
+        ctrl.avatars = {
+            libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
+            gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
+            identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
+            google: ''
+        };
+            
+        // @init
+        // retrieve GMail avatar, if any
+        $http.get('https://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
+        .then(
+            function successCallback(response) {
+                var url = response.data['entry']['gphoto$thumbnail']['$t'];
+                ctrl.avatars.google = url.replace("/s64-c/", "/")+'?sz=@size';
+            },
+            function errorCallback(response) {
 
-        }
-    );     
-
+            }
+        );     
+    }
     
     $scope.$watchGroup([
             function(){return ctrl.publicity_mode;},
