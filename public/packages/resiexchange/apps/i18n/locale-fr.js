@@ -243,6 +243,7 @@ var translations = {
 
     // Authors
     "AUTHOR_STATS_DOCUMENTS": "documents",
+    "AUTHOR_DOCUMENTS": "Documents",
     
     // HELP
     "HELP_CENTER": "Centre d'aide",

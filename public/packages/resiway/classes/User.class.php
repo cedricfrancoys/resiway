@@ -23,7 +23,10 @@ class User extends \easyobject\orm\Object {
                                    
             /* URL to display user avatar (holding string '<size>' to be replaced with display size) */
             'avatar_url'        => array('type' => 'string'),
-                                    
+
+            /* might be set if user is an author (this act as link toward an Author object) */
+            'author_id'        => array('type' => 'many2one', 'foreign_object' => 'resiway\Author'),
+            
             /*
              Possible values:
              1 : Full name (ex.: Cédric Françoys) [default]

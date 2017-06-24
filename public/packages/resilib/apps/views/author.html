@@ -7,8 +7,8 @@
         <div class="user-profile col-1-1 nopad" style="padding-top: 10px;">
 
             <div class="col-8-12" style="min-height: 500px;">
-                <h2>{{ctrl.author.name}}</h2>
-                <div ng-bind-html="ctrl.author.description"></div>
+                <h2>{{author.name}}</h2>
+                <div ng-bind-html="author.description"></div>
                 
                 <div class="footer">
                     <div class="meta">
@@ -18,14 +18,14 @@
                                title="{{'DOCUMENT_ACTIONS_SHARE_TOOLTIP' | translate}}">
                                 <i class="fa fa-share-alt" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_SHARE' | translate}}
                             </a>&nbsp;
-                            <a ng-href="#/author/edit/{{ctrl.author.id}}">
+                            <a ng-href="#/author/edit/{{author.id}}">
                                 <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_EDIT' | translate}}
                             </a>&nbsp;                            
                             <a href 
                                id="author-delete"
                                title="{{'DOCUMENT_ACTIONS_DELETE_TOOLTIP' | translate}}"
                                class="delete-post-link"                                
-                               ng-show="user.id==ctrl.author.creator.id || user.role!='u'"
+                               ng-show="user.id==author.creator.id || user.role!='u'"
                                ng-click="authorDelete($event)"
                                uib-popover-template="'popoverCustom.html'"
                                popover-trigger="'toggle-popover'"
@@ -37,7 +37,40 @@
                         
 
                     </div>
-                </div>                
+                </div>
+
+                <div class="subheader">
+                    <h1>{{author.documents.length}} {{ 'AUTHOR_DOCUMENTS' | translate}}</h1>
+                </div>
+                <div ng-repeat="document in author.documents" class="document narrower col-1-1 nopad">
+
+                    <div class="document-thumbnail">
+                        <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">
+                            <img width="50" height="66" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
+                        </a>
+                    </div>
+                    <div class="summary">
+                        <h3>
+                            <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
+                        </h3>
+                        <div class="document-author">par <strong>{{document.author}}</strong></div>
+                        <div class="excerpt">{{rootCtrl.htmlToTxt(document.description)}}</div>
+                        
+                        <div class="tags">
+                            <a ng-repeat="tag in document.categories" 
+                            ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" 
+                            class="tag" 
+                            popover-trigger="'mouseenter'"
+                            uib-popover-html="tag.description"
+                            popover-append-to-body="true"
+                            popover-placement="bottom-left"
+                            popover-title="{{tag.path}}"
+                            >{{tag.title}}</a> 
+                        </div>
+
+                    </div>
+                </div>
+                
             </div>
             <div class="col-4-12">
                 <div ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
@@ -46,14 +79,14 @@
                 <div class="user-stats">
                     <div class="row">
                         <div class="stat col-3">
-                            <span class="item-number">{{ctrl.author.count_documents | humanizeCount}}</span>
+                            <span class="item-number">{{author.documents.length | humanizeCount}}</span>
                             <span class="item-label">{{'AUTHOR_STATS_DOCUMENTS' | translate}}</span>
                         </div>
                     </div>
                 </div>
                 <div class="user-facts">
                     <ul>
-                        <li><i class="fa fa-eye" aria-hidden="true"></i> {{ctrl.author.count_views | humanizeCount}} {{'USER_PROFILE_PROFILE_VIEWS' | translate}}</li>
+                        <li><i class="fa fa-eye" aria-hidden="true"></i> {{author.count_views | humanizeCount}} {{'USER_PROFILE_PROFILE_VIEWS' | translate}}</li>
                     </ul>
                 </div>
             </div>

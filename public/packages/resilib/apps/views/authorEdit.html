@@ -18,6 +18,21 @@
                     </div>          
                     
                     <div class="control-group">
+                        <label class="control-label">www</label>
+                        <div class="controls">
+                            <input id="title" 
+                                   ng-model="author.url"
+                                   type="text"
+                                   class="form-control title col-md-4" 
+                                   tabindex="1" 
+                                   value="" 
+                                   size="54" 
+                                   maxlength="355">
+                            <p class="help-inline">URL complète (http://www.example.com/)</p>
+                        </div>
+                    </div> 
+                    
+                    <div class="control-group">
                         <label class="control-label">Description</label>
                         <div class="controls">
 
@@ -32,20 +47,7 @@
                         </div>
                     </div>
 
-                    <div class="control-group">
-                        <label class="control-label">WWW</label>
-                        <div class="controls">
-                            <input id="title" 
-                                   ng-model="author.url"
-                                   type="text"
-                                   class="form-control title col-md-4" 
-                                   tabindex="1" 
-                                   value="" 
-                                   size="54" 
-                                   maxlength="355">
-                            <p class="help-inline">URL complète (http://www.example.com/)</p>
-                        </div>
-                    </div>  
+                     
                     
                     <div class="form-actions">            
 
@@ -70,45 +72,22 @@
     <div class="col-4-12">
         <div ng-if="author.id" class="panel panel-default">
             <div class="container">
-                <div class="module question-stats">
-			        <table id="qinfo">
-			            <tbody>
-                        <tr>
-			                <td>
-			                    <p class="label-key">{{'QUESTION_STATS_ASKED' | translate}}</p>
-			                </td>
-			                <td style="padding-left: 10px">
-			                    <p class="label-key"><b>{{author.created}}</b></p>
-			                </td>
-			            </tr>
-			            <tr>
-			                <td>
-			                    <p class="label-key">{{'QUESTION_STATS_VIEWED' | translate}}</p>
-			                </td>
-
-			                <td style="padding-left: 10px">
-			                    <p class="label-key">
-			                        <b>{{author.count_views}} {{'QUESTION_STATS_TIMES' | translate}}</b>
-			                    </p>
-			                </td>
-			            </tr>
-			            <tr>
-			                <td>
-			                    <p class="label-key">{{'QUESTION_STATS_VIEWED' | translate}}</p>
-			                </td>
-
-			                <td style="padding-left: 10px">
-			                    <p class="label-key">
-			                        <b>{{author.count_documents}} {{'QUESTION_STATS_TIMES' | translate}}</b>
-			                    </p>
-			                </td>
-			            </tr>
-                        </tbody>
-                    </table>
-			    </div>
+                <div class="user-stats">
+                    <div class="row">
+                        <div class="stat col-3">
+                            <span class="item-number">{{author.count_documents | humanizeCount}}</span>
+                            <span class="item-label">{{'AUTHOR_STATS_DOCUMENTS' | translate}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-facts">
+                    <ul>
+                        <li><i class="fa fa-eye" aria-hidden="true"></i> {{author.count_views | humanizeCount}} {{'USER_PROFILE_PROFILE_VIEWS' | translate}}</li>
+                    </ul>
+                </div>
             </div>
         </div>
 
-        <div ng-include="'questionHelp.html'"></div>          
+
     </div>    
 </div>    

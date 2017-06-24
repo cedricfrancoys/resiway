@@ -29,7 +29,13 @@ class Author extends \easyobject\orm\Object {
             'count_views'       => array('type' => 'integer'),
             
             'count_documents'   => array('type' => 'integer'),                
-            
+
+            'documents_ids'     => array(
+                                    'type'              => 'one2many', 
+                                    'foreign_object'    => 'resilib\Document',
+                                    'foreign_field'	    => 'author_id'
+                                    ),
+                                    
             /* related user(s), in any */
             /* should be one person, but there may be several users in case of an organisation */
             'users_ids'         => array(

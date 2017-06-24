@@ -52,10 +52,17 @@ try {
         $author_id = $ids[0];
     }
 
-    $res = $om->read($object_class, $author_id, ['id', 'creator', 'name', 'description']);
+    $res = $om->read($object_class, $author_id, ['id', 'creator', 'name', 'name_url', 'url', 'description', 'documents_ids']);
 
     if($res < 0 || !isset($res[$author_id])) throw new Exception("request_failed", QN_ERROR_UNKNOWN);    
     $author = $res[$author_id];
+
+    $author['documents'] = [];
+    $res = $om->read('resilib\Document', $author['documents_ids'], ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'author', 'pages', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids']);        
+    if($res > 0) {
+        // asign resulting array to returned value
+        $author['documents'] = array_values($res);
+    }
     
     $result = $author;
 }

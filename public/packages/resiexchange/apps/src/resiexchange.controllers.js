@@ -3341,6 +3341,10 @@ angular.module('resiexchange')
     var ctrl = this;
 
     ctrl.user = user;
+
+// todo : check against current user
+// if user has no right : redirect to userView page
+// + we need to ensure user is identified prior to access
     
     if(Object.keys(user).length == 0) {
         console.log('empty object');

@@ -1,5 +1,6 @@
 <?php
 namespace resilib;
+use qinoa\text\TextTransformer as TextTransformer;
 
 class Document extends \easyobject\orm\Object {
 
@@ -29,7 +30,12 @@ class Document extends \easyobject\orm\Object {
                                         'function'          => 'resilib\Document::getTitleURL'
                                        ),
                                        
-            'author'			    => array('type' => 'string'),
+            'author'			    => array('type' => 'string', 'onchange' => 'resilib\Document::onchangeAuthor'),
+            
+
+            /* due to UX strategy, this field is automatically set (user only gives author full name, or picks up among a selection) */
+            'author_id'             => array('type' => 'many2one', 'foreign_object' => 'resiway\Author'),
+            
             
             /* language into which the document is written */
             'lang'			        => array('type' => 'string'),
@@ -122,6 +128,7 @@ class Document extends \easyobject\orm\Object {
              'lang'             => function() { return 'fr'; },
              'channel_id'       => function() { return 1; },
              'editor'           => function() { return 0; },
+             'author_id'        => function() { return 0; },             
              'count_views'      => function() { return 0; },
              'count_votes'      => function() { return 0; },
              'count_stars'      => function() { return 0; },
@@ -154,6 +161,25 @@ class Document extends \easyobject\orm\Object {
                         'content_type'		=> $_FILES['content']['type']
                 ), 
                 $lang);
+        }
+    }
+
+    public static function onchangeAuthor($om, $oids, $lang) {
+        // fetch authors names
+        $res = $om->read('resilib\Document', $oids, ['author']);
+        foreach($res as $oid => $odata) {
+            // resolve author id
+            $author_name = TextTransformer::slugify($odata['author']);
+            $ids = $om->search('resiway\Author', ['name_url', '=', "{$author_name}"], 'id', 'asc', 0, 1);
+            // if found, set author_id
+            if($ids > 0 && count($ids)) {
+                $om->write('resilib\Document', $oid, ['author_id' => $ids[0]]);
+            }
+            else {
+                // create a new author
+                $author_id = $om->create('resiway\Author', ['name' => $author_name]);
+                $om->write('resilib\Document', $oid, ['author_id' => $author_id]);
+            }
         }
     }
     

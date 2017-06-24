@@ -91,7 +91,7 @@ try {
     if($documents_ids > 0 && count($documents_ids)) {
         foreach($documents_ids as $id) {
             // retrieve keywords from document
-            $res = $om->read('resilib\Document', $id, ['title', 'description', 'categories_ids.title']);
+            $res = $om->read('resilib\Document', $id, ['author', 'title', 'description', 'categories_ids.title']);
             $keywords = [];
             foreach($res as $oids => $odata) {
                 foreach($odata as $name => $value) {
