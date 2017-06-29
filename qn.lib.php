@@ -303,7 +303,7 @@ namespace config {
 
 			// 3) build result array and set default values for optional missing parameters
 			foreach($announcement['params'] as $param => $config) {
-				if(in_array($param, $missing_params) || empty($_REQUEST[$param])) {
+				if(in_array($param, $missing_params) /*|| empty($_REQUEST[$param])*/) {
 					if(!isset($config['default'])) $_REQUEST[$param] = null;
 					else $_REQUEST[$param] = $config['default'];
 				}
