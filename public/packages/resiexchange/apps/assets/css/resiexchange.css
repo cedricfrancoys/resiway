@@ -920,6 +920,14 @@ input[type="text"] {
     border-color: rgba(69,161,99,0.5);
 }
 
+.document.narrow .summary {
+    width: calc(100% - 150px);
+}
+
+.document.narrow .summary h3 {
+    white-space: normal;
+}
+
 .document.narrower .summary {
     height: auto;
     width: calc(100% - 67px);
