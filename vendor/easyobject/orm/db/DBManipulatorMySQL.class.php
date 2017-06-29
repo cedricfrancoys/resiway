@@ -128,7 +128,6 @@ class DBManipulatorMySQL extends DBManipulator {
 		$result = '';
         if(gettype($value) == 'string' && strlen($value) == 0) $result = "''";
         else {
-            echo $value;
             if(is_null($value)) $result = 'NULL';
             else {
                 $value = (string) $value;
