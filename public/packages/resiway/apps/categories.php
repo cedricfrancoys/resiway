@@ -166,7 +166,7 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
             if(ctrl.selected_tab != null) {
                 ctrl.load(ctrl.selected_tab);
             }
-            console.log(ctrl.category_id);
+            return true;
         }        
     };
   
@@ -181,7 +181,6 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
 
     ctrl.edit = function (scope) {
         var nodeData = scope.$modelValue;
-        console.log(nodeData);
 
         var modalInstance = $uibModal.open({
             animation: true,            
