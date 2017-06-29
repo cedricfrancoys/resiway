@@ -86,6 +86,7 @@ class Category extends \easyobject\orm\Object {
     
     public static function getDefaults() {
         return array(
+             'parent_id'           => function() { return 0; },
              'channel_id'          => function() { return 1; }
         );
     }

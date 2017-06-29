@@ -129,7 +129,7 @@ try {
         $params['domain'] = QNLib::domain_condition_add($params['domain'], ['channel_id','=', $params['channel']]);
 
 // we shouldn't request questions by categories using the domain, but rather use a specific syntax for the query
-// quick and dirty workaround: 
+// quick and dirty workaround for including sub-categories: 
         foreach($params['domain'] as $clause_id => $clause) {
             foreach($clause as $condition_id => $condition) {
                 if($condition[0] == 'categories_ids') {

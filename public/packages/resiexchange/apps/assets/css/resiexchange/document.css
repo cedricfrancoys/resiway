@@ -389,6 +389,8 @@
     line-height: 21px;
     max-height: 63px;
     overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;    
 }
 
 .document .summary .excerpt {

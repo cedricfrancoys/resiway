@@ -30,12 +30,13 @@ $params = QNLib::announce([
                             ),
         'parent_id'     => array(
                             'description'   => 'Identifier of the parent category.',
-                            'type'          => 'integer'
+                            'type'          => 'integer',
+                            'default'       => 0
                             ),
         'thumbnail'	    => array(
-                                'description'   => 'Thumbnail picture fot the submitted category.',
-                                'type'          => 'file', 
-                                'default'       => []
+                            'description'   => 'Thumbnail picture fot the submitted category.',
+                            'type'          => 'file', 
+                            'default'       => []
                             ),                       
     ]
 ]);
