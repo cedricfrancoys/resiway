@@ -924,8 +924,8 @@ input[type="text"] {
     width: calc(100% - 150px);
 }
 
-.document.narrow .summary h3 {
-    white-space: normal;
+.document.column .summary h3 {
+    white-space: normal !important;
 }
 
 .document.narrower .summary {
