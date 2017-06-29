@@ -289,8 +289,8 @@ namespace config {
             if( count($missing_params) || isset($_REQUEST['announce']) ) {
 				// output json data telling what is expected
 				echo json_encode(array(
-                                    'result'=>MISSING_PARAM,
-                                    'announcement'=>$announcement, 
+                                    'result'            => MISSING_PARAM,
+                                    'announcement'      => $announcement, 
                                     'error_message_ids' => ['missing_'.array_values($missing_params)[0]]
                                  ), JSON_FORCE_OBJECT|JSON_PRETTY_PRINT);
 				// terminate script
@@ -308,7 +308,7 @@ namespace config {
 					else $_REQUEST[$param] = $config['default'];
 				}
 				// handle optional attributes, if any, and prevent some js/php misunderstanding
-				if(in_array($_REQUEST[$param], array('NULL', 'null'))) $_REQUEST[$param] = NULL;
+				if(in_array($_REQUEST[$param], array('NULL', 'null'))) $_REQUEST[$param] = null;
 				switch($config['type']) {
 					case 'bool':
                     case 'boolean':
@@ -321,6 +321,9 @@ namespace config {
 							else $_REQUEST[$param] = explode(',', str_replace(array("'", '"'), '', $_REQUEST[$param]));
 						}
 						break;
+                    case 'string':
+                        if($_REQUEST[$param] == null) $_REQUEST[$param] = '';
+                        break;
 					case 'int':
                     case 'integer':
                         if(in_array($_REQUEST[$param], array('TRUE', 'true'))) $_REQUEST[$param] = 1;
