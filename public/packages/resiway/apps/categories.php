@@ -245,6 +245,9 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
 
     $scope.newSubItem = function (scope) {
         var nodeData = scope.$modelValue;
+        if(typeof nodeData.nodes == 'undefined') {
+            nodeData.nodes = [];
+        }
         nodeData.nodes.push({
           id: nodeData.id * 10 + nodeData.nodes.length,
           title: nodeData.title + '.' + (nodeData.nodes.length + 1),
