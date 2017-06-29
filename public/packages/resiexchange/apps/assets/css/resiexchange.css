@@ -920,7 +920,7 @@ input[type="text"] {
     border-color: rgba(69,161,99,0.5);
 }
 
-.document.narrow .summary {
+.document.column .summary {
     width: calc(100% - 150px);
 }
 
