@@ -1653,7 +1653,7 @@ angular.module('resiexchange')
         // something went wrong server-side
     });
 
-    $http.get('index.php?get=resilib_document_list&order=created&limit=10&sort=desc')
+    $http.get('index.php?get=resilib_document_list&order=count_stars&limit=10&sort=desc')
     .then(
     function successCallback(response) {
         var data = response.data;
