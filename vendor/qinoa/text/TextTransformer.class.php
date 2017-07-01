@@ -28,14 +28,13 @@ class TextTransformer {
         // replace spaces, dashes and quotes with spaces
         $value = preg_replace('/[\s-\']+/', ' ', $value);           
         // trim the end of the string
-        $value = trim($value, '.-_');
-
+        $value = trim($value, ' .-_');
         return strtolower($value); 
     }
 
 
-    /*
-    * tries to convert a word to its most common form
+    /**
+    * Try to convert a word to its most common form (masculin singulier)
     */
     public static function axiomize($word, $locale='fr') {
         static $locales = [

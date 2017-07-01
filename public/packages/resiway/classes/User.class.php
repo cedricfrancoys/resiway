@@ -1,6 +1,8 @@
 <?php
 namespace resiway;
 
+use qinoa\text\TextTransformer as TextTransformer;
+
 
 class User extends \easyobject\orm\Object {
 
@@ -41,7 +43,14 @@ class User extends \easyobject\orm\Object {
                                     'store'         => true, 
                                     'function'      => 'resiway\User::getDisplayName'
                                    ),
-            
+            /* display name URL-formatted (for links) */
+            'name_url'          => array(
+                                    'type'          => 'function',
+                                    'result_type'   => 'string',
+                                    'store'         => true, 
+                                    'function'      => 'resiway\User::getNameURL'
+                                   ),
+                                                   
             
             'language'			=> array('type' => 'string'),
             'country'			=> array('type' => 'string'),
@@ -219,7 +228,7 @@ class User extends \easyobject\orm\Object {
     }    
     
     public static function resetDisplayName($om, $oids, $lang) {
-        $om->write('resiway\User', $oids, ['display_name' => null]);
+        $om->write('resiway\User', $oids, ['display_name' => null, 'name_url' => null]);
     }
     
     public static function getDisplayName($om, $oids, $lang) {
@@ -238,6 +247,16 @@ class User extends \easyobject\orm\Object {
             default:
                 $result[$oid] = $odata['firstname'];           
             }
+        }
+        return $result;        
+    }
+
+    public static function getNameURL($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read('resiway\User', $oids, ['display_name']);
+        foreach($res as $oid => $odata) {
+            // note: final format will be: #/user/{id}/{name}
+            $result[$oid] = TextTransformer::slugify($odata['display_name']);
         }
         return $result;        
     }    

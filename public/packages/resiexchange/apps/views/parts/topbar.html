@@ -72,7 +72,7 @@
         <div class="user-dialog" ng-show="ctrl.userDropdown">
             <ul>
                 <li onclick="window.location.href='/resiexchange.fr#/user/current/profile'">
-                    <a href="/resiexchange.fr#/user/profile/{{user.id}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
+                    <a href="/resiexchange.fr#/user/{{user.id}}/{{user.name_url}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
                 </li>
                 <li ng-click="ctrl.signOut()">
                    <a href ng-click="ctrl.signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion</a>

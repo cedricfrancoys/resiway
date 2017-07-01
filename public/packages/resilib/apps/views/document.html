@@ -180,14 +180,14 @@
                                     <span class="relativetime">{{'DOCUMENT_STATS_EDITED' | translate}} {{document.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#/user/profile/{{document.editor.id}}">
+                                    <a href="#/user/{{document.editor.id}}/{{document.editor.name_url}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="{{rootCtrl.avatarURL(document.editor.avatar_url, 32)}}" title="{{document.editor.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#/user/profile/{{document.editor.id}}">{{document.editor.display_name}}</a>
+                                    <a href="#/user/{{document.editor.id}}/{{document.editor.name_url}}">{{document.editor.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="{{'DOCUMENT_USER_DETAILS_REPUTATION'|translate}}">{{document.editor.reputation}}</span>
                                         <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="document.editor.count_badges_1 > 0">
@@ -212,14 +212,14 @@
                                     <span class="relativetime">{{'DOCUMENT_STATS_ASKED' | translate}} {{document.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#/user/profile/{{document.creator.id}}">
+                                    <a href="#/user/{{document.creator.id}}/{{document.creator.name_url}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="{{rootCtrl.avatarURL(document.creator.avatar_url, 32)}}" title="{{document.creator.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#/user/profile/{{document.creator.id}}">{{document.creator.display_name}}</a>
+                                    <a href="#/user/{{document.creator.id}}/{{document.creator.name_url}}">{{document.creator.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="{{'DOCUMENT_USER_DETAILS_REPUTATION'|translate}}">{{document.creator.reputation}}</span>
                                         <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="document.creator.count_badges_1 > 0">
@@ -315,7 +315,7 @@
                                 <div class="comment-body">
                                     <span btf-markdown="comment.content"></span>
                                     –&nbsp;
-                                    <a class="comment-user" href="#/user/profile/{{comment.creator.id}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                    <a class="comment-user" href="#/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
                                     <span class="comment-date" dir="ltr">
                                         <a class="comment-link" href="#/document/{{document.id}}#comment-{{comment.id}}">
                                             <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>

@@ -190,6 +190,7 @@ class ResiAPI {
                 'verified',
                 'last_login',
                 'display_name',
+                'name_url',                
                 'avatar_url',
                 'about',
                 'language', 

@@ -66,10 +66,10 @@
                                 <span>{{document.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                             </div>
                             <div class="user-avatar">
-                                <a href="#/users/{{document.creator.id}}"><img ng-src="{{rootCtrl.avatarURL(document.creator.avatar_url, 32)}}" title="{{document.creator.display_name}}" width="32" height="32"></a>
+                                <a href="#/user/{{document.creator.id}}/{{document.creator.name_url}}"><img ng-src="{{rootCtrl.avatarURL(document.creator.avatar_url, 32)}}" title="{{document.creator.display_name}}" width="32" height="32"></a>
                             </div>
                             <div class="user-details">
-                                <a href="#/user/profile/{{document.creator.id}}">{{document.creator.display_name}}</a>
+                                <a href="#/user/{{document.creator.id}}/{{document.creator.name_url}}">{{document.creator.display_name}}</a>
                                 <div>
                                     <span class="reputation-score" title="score de reputation" dir="ltr">{{document.creator.reputation}}</span>
                                     <span class="badges" ng-show="document.creator.count_badges_1 > 0">

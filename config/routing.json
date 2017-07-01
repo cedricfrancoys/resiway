@@ -13,6 +13,7 @@
     "/author/:name":"/resilib.fr#/author/:name",    
     "/user/confirm/:code":"/resiexchange.fr#/user/confirm/:code",
     "/user/password/:code":"/resiexchange.fr#/user/password/:code",
+    "/user/:id/:name":"/resiexchange.fr#/user/:id/:name",    
     "/meta.resiexchange.fr":"?show=resiway_meta.resiexchange.fr",
     "/resiexchange.fr":"?show=resiway_resiexchange.fr",
     "/resiway.fr":"?show=resiway_resiway.fr",

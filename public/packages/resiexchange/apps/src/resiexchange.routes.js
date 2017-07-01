@@ -42,12 +42,12 @@ angular.module('resiexchange')
             '/users': '/participants',
             '/user/current/profile': '/participant/courant/profil',
             '/user/current/edit': '/participant/courant/edition',
-            '/user/edit/:id': '/participant/edition/:id',
-            '/user/profile/:id/:name?': '/participant/profil/:id/:name?',
             '/user/password/:code?': '/participant/password/:code?',
             '/user/confirm/:code': '/participant/confirmation/:code',
             '/user/notifications/:id': '/participant/notifications/:id',
             '/user/sign/:mode?': '/participant/sign/:mode?',
+            '/user/edit/:id': '/participant/edition/:id',
+            '/user/:id/:name?': '/participant/:id/:name?',                        
             '/author/:name': '/auteur/:name',
             '/author/edit/:id': '/auteur/edition/:id',
             '/association/soutenir': '/association/soutenir',
@@ -291,24 +291,6 @@ angular.module('resiexchange')
                         });                
                     }]  
         },    
-        '/user/edit/:id': {
-                    templateUrl : templatePath+'userEdit.html',
-                    controller  : 'userEditController as ctrl',
-                    resolve     : {
-                        user: ['routeUserProvider', function (provider) {
-                            return provider.load();
-                        }]
-                    }        
-        },      
-        '/user/profile/:id/:name?': {
-                    templateUrl : templatePath+'userProfile.html',
-                    controller  : 'userProfileController as ctrl',
-                    resolve     : {
-                        user:  ['routeUserProvider', function (provider) {
-                            return provider.load();
-                        }]
-                    }             
-        },
         '/user/password/:code?': {
                     templateUrl : templatePath+'userPassword.html',
                     controller  : 'userPasswordController as ctrl'          
@@ -326,6 +308,27 @@ angular.module('resiexchange')
                     controller  : 'userSignController as ctrl',
                     reloadOnSearch: false
         },
+        '/user/profile/:id/:name?': {
+                    redirectTo: '/user/:id/:name?',
+        },
+        '/user/edit/:id': {
+                    templateUrl : templatePath+'userEdit.html',
+                    controller  : 'userEditController as ctrl',
+                    resolve     : {
+                        user: ['routeUserProvider', function (provider) {
+                            return provider.load();
+                        }]
+                    }        
+        },      
+        '/user/:id/:name?': {
+                    templateUrl : templatePath+'userProfile.html',
+                    controller  : 'userProfileController as ctrl',
+                    resolve     : {
+                        user:  ['routeUserProvider', function (provider) {
+                            return provider.load();
+                        }]
+                    }             
+        },        
         /**
         * Author routes
         */                
@@ -388,11 +391,10 @@ angular.module('resiexchange')
             $routeProvider.when(translation, routes[path]);
         });
         
-        
-        $routeProvider
         /**
         * Default route
-        */    
+        */           
+        $routeProvider 
         .otherwise({
             templateUrl : templatePath+'home.html',
             controller  : 'homeController as ctrl'
