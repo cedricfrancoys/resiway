@@ -352,7 +352,7 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
     </a>    
   </div>
   <ol ui-tree-nodes="" ng-model="node.nodes" ng-class="{hidden: collapsed}">
-    <li ng-repeat="node in node.nodes" ui-tree-node data-collapsed="true" data-expand-on-hover="true" ng-include="'nodes_renderer.html'"></li>
+    <li ng-repeat="node in node.nodes" ui-tree-node data-collapsed="true" data-expand-on-hover="300" ng-include="'nodes_renderer.html'"></li>
   </ol>
 </script>
 
@@ -360,7 +360,7 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
 <div class="container col-md-6" style="height: 750px; overflow-y: scroll;">
     <div ui-tree="treeOptions">
       <ol ui-tree-nodes="" ng-model="data" id="tree-root">
-        <li ng-repeat="node in data" ui-tree-node data-collapsed="true" data-expand-on-hover="true" ng-include="'nodes_renderer.html'"></li>
+        <li ng-repeat="node in data" ui-tree-node data-collapsed="true" data-expand-on-hover="300" ng-include="'nodes_renderer.html'"></li>
       </ol>
     </div>
 </div>
@@ -375,7 +375,7 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
         <div class="user-profile col-1-1 nopad" style="padding-top: 10px;">
             <div ui-tree="treeOptions">
               <ol ui-tree-nodes="" ng-model="data" id="tree-root">
-                <li ng-repeat="node in data" ui-tree-node data-collapsed="true" data-expand-on-hover="true" ng-include="'nodes_renderer.html'"></li>
+                <li ng-repeat="node in data" ui-tree-node data-collapsed="true" data-expand-on-hover="300" ng-include="'nodes_renderer.html'"></li>
               </ol>
             </div>                
         </div>
