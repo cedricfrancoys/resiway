@@ -28,7 +28,15 @@ class Author extends \easyobject\orm\Object {
             /* profile views */
             'count_views'       => array('type' => 'integer'),
             
-            'count_documents'   => array('type' => 'integer'),                
+            'count_documents'   => array('type' => 'integer'),
+            
+            'count_pages'       => array(
+                                    'type'          => 'function',                                    
+                                    'result_type'   => 'integer',
+                                    'store'         => true, 
+                                    'function'      => 'resiway\Author::getCountPages'                                    
+                                   ),
+            
 
             'documents_ids'     => array(
                                     'type'              => 'one2many', 
@@ -69,6 +77,15 @@ class Author extends \easyobject\orm\Object {
                 $result[$oid] = TextTransformer::slugify($odata['name']);
         }
         return $result;    
+    }
+
+    public static function getCountPages($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read('resiway\Author', $oids, ['documents_ids.pages']);
+        foreach($res as $oid => $odata) {
+            $result[$oid] = array_sum($odata['documents_ids.pages']);
+        }
+        return $result;
     }
     
     public static function onchangeName($om, $oids, $lang) {

@@ -141,8 +141,10 @@ try {
                 // update categories count_documents
                 $om->write('resiway\Category', $params['categories_ids'], ['count_documents' => null]);
                 
-                // update global counter
+                // update global counters
                 ResiAPI::repositoryInc('resilib.count_documents');
+                $pages_count = ResiAPI::repositoryGet('resilib.count_pages');
+                ResiAPI::repositorySet('resilib.count_pages', $pages_count+$params['pages']);
             }
             else {
                 /*

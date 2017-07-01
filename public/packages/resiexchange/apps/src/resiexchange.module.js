@@ -219,7 +219,12 @@ var resiway = angular.module('resiexchange', [
         * Global config
         * make global configuration accessible through rootScope
         */
-        $rootScope.config = angular.extend({application: 'resiway', locale: 'fr', channel: 1}, global_config);
+        $rootScope.config = angular.extend({
+                                        application: 'resiway', 
+                                        locale:      'fr', 
+                                        channel:     1        // default values
+                                    }, 
+                                    global_config);
         
         /**
         * Object of signed in user (if authenticated)

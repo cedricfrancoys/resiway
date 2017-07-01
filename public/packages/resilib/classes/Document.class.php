@@ -174,6 +174,8 @@ class Document extends \easyobject\orm\Object {
             // if found, set author_id
             if($ids > 0 && count($ids)) {
                 $om->write('resilib\Document', $oid, ['author_id' => $ids[0]]);
+                // force re-compute pages counter
+                $om->write('resiway\Author', $ids[0], ['count_pages' => null]);
             }
             else {
                 // create a new author

@@ -52,7 +52,7 @@ try {
         $author_id = $ids[0];
     }
 
-    $res = $om->read($object_class, $author_id, ['id', 'creator', 'name', 'name_url', 'url', 'description', 'count_views', 'count_documents', 'documents_ids']);
+    $res = $om->read($object_class, $author_id, ['id', 'creator', 'name', 'name_url', 'url', 'description', 'count_views', 'count_documents', 'count_pages', 'documents_ids']);
 
     if($res < 0 || !isset($res[$author_id])) throw new Exception("request_failed", QN_ERROR_UNKNOWN);    
     $author = $res[$author_id];
