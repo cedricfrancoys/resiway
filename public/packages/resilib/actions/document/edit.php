@@ -127,7 +127,7 @@ try {
             
             if($object_id == 0) {
             
-                // create a new document + write given value
+                // create a new document + write given value                
                 $object_id = $om->create($object_class, array_merge(['creator' => $user_id], $params));                
                 
                 if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
@@ -143,8 +143,8 @@ try {
                 
                 // update global counters
                 ResiAPI::repositoryInc('resilib.count_documents');
-                $pages_count = ResiAPI::repositoryGet('resilib.count_pages');
-                ResiAPI::repositorySet('resilib.count_pages', $pages_count+$params['pages']);
+                $pages_count = intval(ResiAPI::repositoryGet('resilib.count_pages'));
+                ResiAPI::repositorySet('resilib.count_pages', $pages_count+intval($params['pages']));
             }
             else {
                 /*
