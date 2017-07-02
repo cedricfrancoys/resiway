@@ -38,7 +38,7 @@ try {
    
     // 3) retrieve answer
     $result = [];
-    $res = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'question_id', 'content', 'score']);
+    $res = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'question_id', 'content', 'source_author', 'source_license', 'source_url', 'score']);
     
     if($res < 0 || !isset($res[$object_id])) throw new Exception("answer_unknown", QN_ERROR_INVALID_PARAM);
     $result = $res[$object_id];    

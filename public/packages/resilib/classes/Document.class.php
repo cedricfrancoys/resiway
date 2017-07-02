@@ -45,7 +45,7 @@ class Document extends \easyobject\orm\Object {
             
             'last_update'		    => array('type' => 'date'),				
             
-            'description'		    => array('type' => 'html'),
+            'description'		    => array('type' => 'html', 'onchange' => 'resilib\Document::onchangeDescription'),
 
             'thumbnail'			    => array('type' => 'file'),
             
@@ -183,12 +183,17 @@ class Document extends \easyobject\orm\Object {
                 $om->write('resilib\Document', $oid, ['author_id' => $author_id]);
             }
         }
+        $om->write('resilib\Document', $oids, ['indexed' => false]);
     }
     
     public static function onchangeTitle($om, $oids, $lang) {
         // force re-compute title_url
-        $om->write('resilib\Document', $oids, ['title_url' => null], $lang);        
+        $om->write('resilib\Document', $oids, ['title_url' => null, 'indexed' => false], $lang);
     }    
+    
+    public static function onchangeDescription($om, $oids, $lang) {
+        $om->write('resilib\Document', $oids, ['indexed' => false], $lang);                
+    }
     
     public static function getTitleURL($om, $oids, $lang) {
         $result = [];

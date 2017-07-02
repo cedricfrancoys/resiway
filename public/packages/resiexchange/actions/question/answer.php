@@ -12,7 +12,7 @@ set_silent(true);
 
 // announce script and fetch parameters values
 $params = QNLib::announce([
-    'description'	=>	"Registers a question as favorite for current user",
+    'description'	=>	"Submit a new answer to a given question",
     'params' 		=>	[
         'question_id'	=> array(
                             'description'   => 'Identifier of the question the answer refers to.',
@@ -23,7 +23,23 @@ $params = QNLib::announce([
                             'description'   => 'Content of the submitted answer.',
                             'type'          => 'string', 
                             'required'      => true
+                            ),
+        'source_author'	=> array(
+                            'description'   => 'Author of the submitted answer, if any.',
+                            'type'          => 'string', 
+                            'default'       => ''
+                            ),
+        'source_license'=> array(
+                            'description'   => 'License of the submitted answer.',
+                            'type'          => 'string', 
+                            'default'       => 'CC-by-nc-sa'
+                            ),
+        'source_url'	=> array(
+                            'description'   => 'Content of the submitted answer.',
+                            'type'          => 'string', 
+                            'default'       => ''
                             )
+                            
     ]
 ]);
 
@@ -57,7 +73,10 @@ try {
             $answer_id = $om->create('resiexchange\Answer', [ 
                             'creator'           => $user_id,     
                             'question_id'       => $object_id,
-                            'content'           => $params['content']
+                            'content'           => $params['content'],
+                            'source_author'     => $params['source_author'],
+                            'source_license'    => $params['source_license'],
+                            'source_url'        => $params['source_url']                            
                           ]);
 
             if($answer_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);

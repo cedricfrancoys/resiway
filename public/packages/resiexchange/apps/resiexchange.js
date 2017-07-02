@@ -1922,9 +1922,11 @@ angular.module('resiexchange')
       
         // @model
         $scope.answer = answer;
+        $scope.noExternalSource = (answer.source_author.length <= 0);
         
         // @methods
         $scope.answerPost = function($event) {
+            ctrl.running = true;
             var selector = feedbackService.selector($event.target);
             actionService.perform({
                 // valid name of the action to perform server-side
@@ -1932,12 +1934,16 @@ angular.module('resiexchange')
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
                     answer_id: $scope.answer.id,
-                    content: $scope.answer.content
+                    content: $scope.answer.content,
+                    source_author: $scope.answer.source_author,
+                    source_license: $scope.answer.source_license,
+                    source_url: $scope.answer.source_url
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
                 // callback function to run after action completion (to handle error cases, ...)
                 callback: function($scope, data) {
+                    ctrl.running = false;
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // (if route is changed to signin form)
                     if(typeof data.result != 'object') {
@@ -3780,7 +3786,7 @@ angular.module('resiexchange')
         };
 
         $scope.questionAnswer = function($event) {
-
+            ctrl.running = true;
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);                   
             
@@ -3790,12 +3796,16 @@ angular.module('resiexchange')
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
                     question_id: $scope.question.id,
-                    content: $scope.question.newAnswerContent
+                    content: $scope.question.newAnswerContent,
+                    source_author: $scope.question.newAnswerSource_author,
+                    source_url: $scope.question.newAnswerSource_url,
+                    source_license: $scope.question.newAnswerSource_license,                    
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
                 // callback function to run after action completion (to handle error cases, ...)
                 callback: function($scope, data) {
+                    ctrl.running = false;
                     // we need to do it this way because current controller might be destroyed in the meantime
                     // (if route is changed to signin form)
                     if(typeof data.result != 'object') {

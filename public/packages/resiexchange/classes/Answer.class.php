@@ -29,7 +29,11 @@ class Answer extends \easyobject\orm\Object {
                                         'store'             => false,
                                         'function'          => 'resiexchange\Answer::getTitle'
                                         ),
-                                        
+
+            'source_author'         => array('type' => 'string'),
+            'source_license'        => array('type' => 'string'),
+            'source_url'            => array('type' => 'string'),            
+            
             /* identifier of the question to which the answer refers to */
             'question_id'           => array('type' => 'many2one', 'foreign_object'=> 'resiexchange\Question'),
 

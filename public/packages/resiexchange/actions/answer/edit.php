@@ -24,6 +24,21 @@ $params = QNLib::announce([
                             'type'          => 'string', 
                             'required'      => true
                             ),
+        'source_author'	=> array(
+                            'description'   => 'Author of the submitted answer, if any.',
+                            'type'          => 'string', 
+                            'default'       => ''
+                            ),
+        'source_license'=> array(
+                            'description'   => 'License of the submitted answer.',
+                            'type'          => 'string', 
+                            'default'       => 'CC-by-nc-sa'
+                            ),
+        'source_url'	=> array(
+                            'description'   => 'Content of the submitted answer.',
+                            'type'          => 'string', 
+                            'default'       => ''
+                            )                            
     ]
 ]);
 
@@ -58,7 +73,10 @@ try {
             $om->write($object_class, $object_id, [
                             'editor'            => $user_id, 
                             'edited'            => date("Y-m-d H:i:s"),
-                            'content'           => $params['content']
+                            'content'           => $params['content'],
+                            'source_author'     => $params['source_author'],
+                            'source_license'    => $params['source_license'],
+                            'source_url'        => $params['source_url']                            
                        ]);
             
             // read updated answer as returned value       

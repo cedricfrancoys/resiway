@@ -14,6 +14,7 @@
                     <div class="control-group">
                         <div class="controls">
                             <div class="wrapper">
+                            <!--
                                 <div class="content" 
                                      text-angular="text-angular" 
                                      ng-model="answer.content" 
@@ -26,6 +27,60 @@
                                         ['wordcount', 'charcount']
                                 ]" 
                                 ></div>
+                                -->
+                                <textarea class="content form-control" style="height: 200px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="answer.content">
+                                </textarea>
+                                Source : 
+                                <div class="checkbox" style="display: inline-block;">
+                                    <label>
+                                        <input type="checkbox" ng-model="noExternalSource" style="top: -1px;">
+                                        Je suis l'auteur de cette réponse
+                                    </label>
+                                </div>
+                                <div ng-hide="noExternalSource">
+
+                                    <div class="col-3-12">
+                                        <div class="control-group">
+                                            <label class="control-label">Auteur</label>
+                                            <div class="controls">
+                                                <input type="text" ng-model="answer.source_author" class="form-control" />
+                                                <p class="help-inline">&nbsp;</p>
+                                            </div>
+                                        </div>                            
+                                    </div>
+                                    <div class="col-4-12">
+                                        <div class="control-group">
+                                            <label class="control-label">URL</label>
+                                            <div class="controls">
+                                                <input type="text" ng-model="answer.source_url" class="form-control" />
+                                                <p class="help-inline">&nbsp;</p>
+                                            </div>
+                                        </div>                            
+                                    </div>                       
+                                    <div class="col-5-12">
+                                        <div class="control-group">                            
+                                            <label class="control-label">Licence</label>
+                                            <div class="controls">                                
+                                                <div class="btn-group" uib-dropdown dropdown-append-to-body>
+                                                    <button id="source-license" type="button" class="btn btn-default" uib-dropdown-toggle  ng-disabled="disabled">
+                                                    <span style="min-width: 126px; display: inline-block; text-align: left;">{{answer.source_license}}</span> <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="source-license">
+                                                        <li role="menuitem"><a title="Creative Commons - attribution" href ng-click="answer.source_license='CC-by'"><i class="cc cc-BY" aria-hidden="true"></i> CC-by</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale" href ng-click="answer.source_license='CC-by-nc'"><i class="cc cc-by-nc" aria-hidden="true"></i> CC-by-nc</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / partage dans les mêmes conditions" href ng-click="answer.source_license='CC-by-nc-sa'"><i class="cc cc-by-nc-sa" aria-hidden="true"></i> CC-by-nc-sa</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / pas de modification" href ng-click="answer.source_license='CC-by-nc-nd'"><i class="cc cc-by-nc-nd" aria-hidden="true"></i> CC-by-nc-nd</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / partage dans les mêmes conditions" href ng-click="answer.source_license='CC-by-sa'"><i class="cc cc-by-sa" aria-hidden="true"></i> CC-by-sa</a></li>                                                
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas de modification" href ng-click="answer.source_license='CC-by-nd'"><i class="cc cc-by-nd" aria-hidden="true"></i> CC-by-nd</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>                            
+                                    </div>
+                                </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -42,7 +97,7 @@
                                 uib-popover-template="'popoverCustom.html'" 
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="right">
-                            {{'ANSWER_EDIT_SUBMIT' | translate}}</button>                          
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> {{'ANSWER_EDIT_SUBMIT' | translate}}</button>                          
                     </div>
 
                 
