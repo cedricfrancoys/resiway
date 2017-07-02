@@ -1528,12 +1528,7 @@ angular.module('resiexchange')
         */
         '/categories': {
                     templateUrl : templatePath+'categories.html',
-                    controller  : 'categoriesController as ctrl',
-                    resolve     : {
-                        categories: ['routeCategoriesProvider', function (provider) {
-                            return provider.load();
-                        }]
-                    }
+                    controller  : 'categoriesController as ctrl'
         },
         '/category/edit/:id': {
                     templateUrl : templatePath+'categoryEdit.html',
@@ -2118,18 +2113,17 @@ angular.module('resiexchange')
 angular.module('resiexchange')
 
 .controller('categoriesController', [
-    'categories', 
     '$scope',
     '$rootScope',    
     '$http',
-    function(categories, $scope, $rootScope, $http) {
+    function($scope, $rootScope, $http) {
         console.log('categories controller');
 
         var ctrl = this;
 
         // @data model
         ctrl.config = {
-            items: categories,
+            items: [],
             total: -1,
             currentPage: 1,
             previousPage: -1,
@@ -2137,6 +2131,15 @@ angular.module('resiexchange')
             domain: [],
             loading: false
         };
+
+        switch($rootScope.config.application) {
+        case 'resiexchange':
+            ctrl.config.domain = ['count_questions', '>', '0'];
+            break;
+        case 'resilib':
+            ctrl.config.domain = ['count_documents', '>', '0'];            
+            break;
+        }
         
         ctrl.load = function(config) {
             if(config.currentPage != config.previousPage) {

@@ -136,12 +136,7 @@ angular.module('resiexchange')
         */
         '/categories': {
                     templateUrl : templatePath+'categories.html',
-                    controller  : 'categoriesController as ctrl',
-                    resolve     : {
-                        categories: ['routeCategoriesProvider', function (provider) {
-                            return provider.load();
-                        }]
-                    }
+                    controller  : 'categoriesController as ctrl'
         },
         '/category/edit/:id': {
                     templateUrl : templatePath+'categoryEdit.html',
