@@ -2121,6 +2121,8 @@ angular.module('resiexchange')
 
         var ctrl = this;
 
+        config.loading = true;
+        
         // @data model
         ctrl.config = {
             items: [],
