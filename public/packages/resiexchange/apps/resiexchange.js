@@ -2120,8 +2120,6 @@ angular.module('resiexchange')
         console.log('categories controller');
 
         var ctrl = this;
-
-        config.loading = true;
         
         // @data model
         ctrl.config = {
@@ -2131,7 +2129,7 @@ angular.module('resiexchange')
             previousPage: -1,
             limit: 30,
             domain: [],
-            loading: false
+            loading: true
         };
 
         switch($rootScope.config.application) {
