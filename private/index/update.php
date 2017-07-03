@@ -42,7 +42,7 @@ try {
     if($questions_ids > 0 && count($questions_ids)) {
         foreach($questions_ids as $id) {
             // retrieve keywords from question
-            $res = $om->read('resiexchange\Question', $id, ['title', 'content', 'categories_ids.title']);
+            $res = $om->read('resiexchange\Question', $id, ['title', 'content', 'categories_ids.title', 'answers_ids.content']);
             $keywords = [];
             foreach($res as $oids => $odata) {
                 foreach($odata as $name => $value) {

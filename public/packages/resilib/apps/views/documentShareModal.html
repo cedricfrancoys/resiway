@@ -25,11 +25,11 @@
         <a href="https://www.facebook.com/dialog/feed?
 app_id=1786954014889199
 &display=page
-&redirect_uri=https%3A//www.resiway.org/resiexchange.fr
+&redirect_uri=https%3A//www.resiway.org/resilib.fr
 &caption={{ document.title }}
 &link=https%3A//www.resiway.org/document/{{document.id}}/{{document.title_url}}
 &picture=https%3A//www.resiway.org/index.php%3Fget%3Dresilib_document_thumbnail%26id%3D{{document.id}}
-&description={{ rootCtrl.htmlToURL(document.description) }}" target="_blank">{{ 'MODAL_DOCUMENT_SHARE_SHARE' | translate }}</a>
+&description={{ rootCtrl.htmlToURL('<p style=\"white-space: normal;\">'+document.description+'</p>') }}" target="_blank">{{ 'MODAL_DOCUMENT_SHARE_SHARE' | translate }}</a>
 
 </div>
 <div class="modal-footer">
