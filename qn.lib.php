@@ -328,6 +328,7 @@ namespace config {
                     case 'integer':
                         if(in_array($_REQUEST[$param], array('TRUE', 'true'))) $_REQUEST[$param] = 1;
                         else if(in_array($_REQUEST[$param], array('FALSE', 'false'))) $_REQUEST[$param] = 0;
+                        else $_REQUEST[$param] = intval($_REQUEST[$param]);
                         if(isset($config['min'])) {
                             $min = $config['min'];
                             if($_REQUEST[$param] < $min) $_REQUEST[$param] = $min;

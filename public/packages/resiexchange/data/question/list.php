@@ -150,7 +150,7 @@ try {
     if($params['total'] < 0) {        
         $ids = $om->search('resiexchange\Question', $params['domain'], $params['order'], $params['sort']);
         if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
-        $total = count($ids);
+        $params['total'] = count($ids);
 		$questions_ids = array_slice($ids, $params['start'], $params['limit']);
     }
     else {
@@ -229,11 +229,54 @@ catch(Exception $e) {
     $error_message_ids = array($e->getMessage());
 }
 
+// determine output format
+if( intval($params['api']) > 0 && is_array($result) ) {
+    // JSON API RFC7159
+    header('Content-type: application/vnd.api+json');
+    $result = [];
+    $included = [];
+    foreach($questions as $id => $question) {
+        $author_id = $question['creator']['id'];
+        unset($question['creator']['id']);
+        if(!isset($included['creator_'.$author_id])) {
+            $included['creator_'.$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $question['creator']];
+        }        
+        foreach($question['tags'] as $category) {        
+            $category_id = $category['id'];
+            unset($category['id']);        
+            if(!isset($included['category_'.$category_id])) {
+                $included['category_'.$category_id] = ['type' => 'category', 'id' => $category_id, 'attributes' => (object) $category];
+            }        
+        }
+        $categories = $question['tags'];
+        unset($question['id']);        
+        unset($question['creator']);        
+        unset($question['tags']);                
+        $result[] = [
+            'type'          => 'question', 
+            'id'            => $id, 
+            'attributes'    => (object) $question, 
+            'relationships' => (object) [
+                'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
+                'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
+            ]
+        ];       
+    }
+    ksort($included);
+    echo json_encode((object)[
+        'jsonapi'   => (object) ['version' => '1.0'],
+        'meta'      => ['count' => $params['total'], 'page-size' => $params['limit'], 'total-pages' => ceil($params['total']/$params['limit'])],
+        'data'      => $result,
+        'included'  => array_values($included),
+        ], JSON_PRETTY_PRINT);    
+    exit();
+}
+
 // send json result
 header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
                     'result'            => $result, 
-                    'total'             => $total,                     
+                    'total'             => $params['total'],                     
                     'error_message_ids' => $error_message_ids
                  ], 
                  JSON_PRETTY_PRINT);

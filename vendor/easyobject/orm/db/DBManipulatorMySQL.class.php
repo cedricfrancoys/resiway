@@ -127,17 +127,16 @@ class DBManipulatorMySQL extends DBManipulator {
 	private function escapeString($value) {
 		$result = '';
         if(gettype($value) == 'string' && strlen($value) == 0) $result = "''";
+        else if(gettype($value) == 'integer') $result = $value;
+        else if(is_null($value)) $result = 'NULL';
         else {
-            if(is_null($value)) $result = 'NULL';
-            else {
-                $value = (string) $value;
-                // value is a field name
-                if(strlen($value) && $value{0} == '`') $result = DBManipulatorMySQL::escapeFieldName($value);
-                 // value represents NULL SQL value
-                else if($value == 'null' || $value == 'NULL') $result = 'NULL';
-                // value is any other kind of string
-                else $result = "'".mysqli_real_escape_string($this->dbms_handler, $value)."'";
-            }
+            $value = (string) $value;
+            // value is a field name
+            if(strlen($value) && $value{0} == '`') $result = DBManipulatorMySQL::escapeFieldName($value);
+             // value represents NULL SQL value
+            else if($value == 'null' || $value == 'NULL') $result = 'NULL';
+            // value is any other kind of string
+            else $result = "'".mysqli_real_escape_string($this->dbms_handler, $value)."'";
         }
 		return $result;
 	}

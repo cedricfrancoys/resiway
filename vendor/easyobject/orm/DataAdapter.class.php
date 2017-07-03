@@ -43,7 +43,10 @@ class DataAdapter {
                     if($value) $value = '1';
                     else $value = '0';
                     return $value;
-            };                   
+            };
+            $adapter['integer']['orm']['db'] =	function($value, $class, $oid, $field, $lang) {
+                    return intval($value);
+            };            
             $adapter['date']['orm']['ui'] =	function($value, $class, $oid, $field, $lang) {
                     if($value == '0000-00-00') $value = '';
                     else {
@@ -126,7 +129,10 @@ class DataAdapter {
             };
             $adapter['boolean']['db']['orm'] = function($value, $class, $oid, $field, $lang) {
                 return (intval($value) > 0);
-            };                
+            };
+            $adapter['integer']['db']['orm'] = function($value, $class, $oid, $field, $lang) {
+                return intval($value);
+            };            
             $adapter['file']['db']['orm'] = function($value, $class, $oid, $field, $lang) {
                     $res = '';
                     if(FILE_STORAGE_MODE == 'DB') {
@@ -142,8 +148,7 @@ class DataAdapter {
             };        
             $adapter['file']['orm']['ui'] = function($value, $class, $oid, $field, $lang) {
                     return base64_encode($value);
-            };        
-            
+            };            
             $adapter['one2many']['ui']['orm'] =	function($value, $class, $oid, $field, $lang) {
                     if(is_string($value)) $value = explode(',', $value);
                     return $value;

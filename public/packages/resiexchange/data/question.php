@@ -138,7 +138,7 @@ try {
     // retreive answers
     // output JSON type has to be Array
     $result['answers'] = [];
-    $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score', 'comments_ids']);    
+    $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'source_author', 'source_license', 'source_url', 'score', 'comments_ids']);    
     if($res > 0) {
         // memorize answers authors identifiers for later load
         $answers_authors_ids = [];
@@ -152,7 +152,10 @@ try {
                                     'id'                => $answer_id,
                                     'created'           => $answer_data['created'], 
                                     'content'           => $answer_data['content'], 
-                                    'content_excerpt'   => $answer_data['content_excerpt'],                                     
+                                    'content_excerpt'   => $answer_data['content_excerpt'],
+                                    'source_author'     => $answer_data['source_author'],
+                                    'source_url'        => $answer_data['source_url'],
+                                    'source_license'    => $answer_data['source_license'],                                    
                                     'score'             => $answer_data['score'],
                                     'comments_ids'      => $answer_data['comments_ids'],
                                     'comments'          => [],

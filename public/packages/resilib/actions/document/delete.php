@@ -45,10 +45,15 @@ try {
                         'deleted' => 1
                       ]);
             // update categories count_documents
-            $object = $om->read($object_class, $object_id, ['categories_ids'])[$object_id];
+            $object = $om->read($object_class, $object_id, ['categories_ids', 'pages', 'author_id'])[$object_id];
             $om->write('resiway\Category', $object['categories_ids'], ['count_documents' => null]);
+            $om->write('resiway\Author', $object['author_id'], ['count_pages' => null]);
             // update global documents-counter
             ResiAPI::repositoryDec('resilib.count_documents');
+            
+            $pages_count = intval(ResiAPI::repositoryGet('resilib.count_pages'));
+            ResiAPI::repositorySet('resilib.count_pages', $pages_count-intval($object['pages']));
+            
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
@@ -57,10 +62,15 @@ try {
                         'deleted' => 0
                       ]);            
             // update categories count_documents
-            $object = $om->read($object_class, $object_id, ['categories_ids'])[$object_id];
+            $object = $om->read($object_class, $object_id, ['categories_ids', 'pages', 'author_id'])[$object_id];
             $om->write('resiway\Category', $object['categories_ids'], ['count_documents' => null]);
+            $om->write('resiway\Author', $object['author_id'], ['count_pages' => null]);            
             // update global documents-counter
             ResiAPI::repositoryInc('resilib.count_documents');                      
+
+            $pages_count = intval(ResiAPI::repositoryGet('resilib.count_pages'));
+            ResiAPI::repositorySet('resilib.count_pages', $pages_count+intval($object['pages']));
+
             return false;
         },
         [                                                           // $limitations     

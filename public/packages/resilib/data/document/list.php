@@ -253,7 +253,7 @@ if( intval($params['api']) > 0 && is_array($result) ) {
         unset($document['creator']);        
         unset($document['categories']);                
         $result[] = [
-            'type'          => 'documents', 
+            'type'          => 'document', 
             'id'            => $id, 
             'attributes'    => (object) $document, 
             'relationships' => (object) [
