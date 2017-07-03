@@ -13,7 +13,7 @@ set_silent(true);
 // announce script and fetch parameters values
 $params = QNLib::announce(	
 	array(	
-    'description'	=>	"Returns raw content of a document",
+    'description'	=>	"Returns raw content of a document (pdf)",
     'params' 		=>	array(                                         
                         'id'	        => array(
                                             'description'   => 'Identifier of the document to retrieve.',
