@@ -18,7 +18,17 @@ $params = QNLib::announce(
                                             'description' => 'Identifier of the question to retrieve.',
                                             'type' => 'integer', 
                                             'required'=> true
-                                            ),                                            
+                                            ),
+                        'title'	        => array(
+                                            'description'   => 'URL formatted title',
+                                            'type'          => 'string', 
+                                            'required'      => false
+                                            ),
+                        'bot'	        => array(
+                                            'description'   => 'View output as a bot',
+                                            'type'          => 'boolean', 
+                                            'default'       => false
+                                            )                                            
                         )
 	)
 );
@@ -31,8 +41,9 @@ list($question_id) = [
 ];
 
 
-function isGoogleBot() {
+function isBot() {
     $res = false;
+    /* Google */
     // $_SERVER['HTTP_USER_AGENT'] = 'Googlebot';
     if(stripos($_SERVER['HTTP_USER_AGENT'], 'Google') !== false) {
         $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
@@ -43,6 +54,15 @@ function isGoogleBot() {
         if(!$res) {
             $res = preg_match('/\.google\.com$/i', $hostname);        
         }        
+    }
+    /* Facebook */
+    else if(stripos($_SERVER["HTTP_USER_AGENT"], "facebookexternalhit/") !== false 
+        || stripos($_SERVER["HTTP_USER_AGENT"], "Facebot") !== false ) {
+        $res = true;
+    }
+    /* Twitter */
+    else if(stripos($_SERVER["HTTP_USER_AGENT"], "Twitterbot") !== false) {
+        $res = true;    
     }
     return $res;
 }
@@ -57,7 +77,7 @@ try {
     if($res < 0 || !isset($res[$question_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
     $question_data = $res[$question_id];
     
-    if( !isGoogleBot() ) {
+    if( !$params['bot'] && !isBot() ) {
         // redirect to JS application
         header('Location: '.'/resiexchange.fr#/question/'.$question_data['id'].'/'.$question_data['title_url']);
         exit();

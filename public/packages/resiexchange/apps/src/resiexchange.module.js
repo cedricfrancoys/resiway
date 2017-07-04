@@ -400,6 +400,7 @@ var resiway = angular.module('resiexchange', [
 
         rootCtrl.htmlToURL = function(html) {
             var str = new String(html);
+            // remove all html tags and URI encode 
             return encodeURIComponent(str.replace(/<[^>]*>/g, '').replace(/\./, ".\n"));
         };
         
