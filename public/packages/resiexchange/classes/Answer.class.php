@@ -22,6 +22,8 @@ class Answer extends \easyobject\orm\Object {
             (we need this field to make a distinction with ORM writes using special field 'modified' */
             'edited'				=> array('type' => 'datetime'),
             
+            'indexed'				=> array('type' => 'boolean'),
+            
             /* subject of related question */
             'title'				    => array(
                                         'type'              => 'function',
@@ -68,7 +70,8 @@ class Answer extends \easyobject\orm\Object {
 
     public static function getDefaults() {
         return array(
-             'editor'           => function() { return 0; },              
+             'editor'           => function() { return 0; },
+             'indexed'          => function() { return false; }, 
              'count_votes'      => function() { return 0; },
              'score'            => function() { return 0; },             
              'count_flags'      => function() { return 0; },                          
@@ -92,13 +95,17 @@ class Answer extends \easyobject\orm\Object {
     
     public static function onchangeContent($om, $oids, $lang) {
         // force re-compute content_excerpt
-        $om->write('resiexchange\Answer', $oids, ['content_excerpt' => null], $lang);        
+        $om->write(__CLASS__, $oids, ['content_excerpt' => null, 'indexed' => false], $lang);
+        // force re-index related question
+        $res = $om->read(__CLASS__, $oids, ['question_id']);
+        $questions_ids = array_map(function($a){return $a['question_id'];}, $res);
+        $om->write('resiexchange\Question', $questions_ids, ['indexed' => false], $lang);
     }
     
     // Returns excerpt of the content of max 200 chars cutting on a word-basis
     public static function getContentExcerpt($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiexchange\Answer', $oids, ['content']);
+        $res = $om->read(__CLASS__, $oids, ['content']);
         foreach($res as $oid => $odata) {
             $result[$oid] = self::excerpt($odata['content'], RESIEXCHANGE_ANSWER_CONTENT_EXCERPT_LENGTH_MAX);
         }
@@ -107,7 +114,7 @@ class Answer extends \easyobject\orm\Object {
     
     public static function getTitle($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiexchange\Answer', $oids, ['question_id']);
+        $res = $om->read(__CLASS__, $oids, ['question_id']);
         $questions_ids = array_map(function($a){return $a['question_id'];}, $res);
         $questions = $om->read('resiexchange\Question', $questions_ids, ['title']);
         foreach($res as $oid => $odata) {

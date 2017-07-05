@@ -104,8 +104,13 @@ try {
         $mailer = Swift_Mailer::newInstance($transport);
 
         $mailer->send($message);
+        
+        // append info to activity log
+        $log = sprintf("%s @ %s, mail sent to user %011d (%s) : %s\n", date('Y-m-d'), date('H:i:s'), $user_id, $user_data['login'], $params['subject']);
+        file_put_contents(LOG_STORAGE_DIR.'/mail.log', $log, FILE_APPEND);
+        
         foreach($filenames as $filename) {
-            // remove files once processed                
+            // once processed, remove files               
             unlink($filename);    
         }
     }

@@ -166,38 +166,40 @@ class Document extends \easyobject\orm\Object {
 
     public static function onchangeAuthor($om, $oids, $lang) {
         // fetch authors names
-        $res = $om->read('resilib\Document', $oids, ['author']);
+        $res = $om->read(__CLASS__, $oids, ['author']);
         foreach($res as $oid => $odata) {
             // resolve author id
             $author_name = TextTransformer::slugify($odata['author']);
             $ids = $om->search('resiway\Author', ['name_url', '=', "{$author_name}"], 'id', 'asc', 0, 1);
             // if found, set author_id
             if($ids > 0 && count($ids)) {
-                $om->write('resilib\Document', $oid, ['author_id' => $ids[0]]);
+                $om->write(__CLASS__, $oid, ['author_id' => $ids[0]]);
                 // force re-compute pages counter
                 $om->write('resiway\Author', $ids[0], ['count_pages' => null]);
             }
             else {
                 // create a new author
                 $author_id = $om->create('resiway\Author', ['name' => $author_name]);
-                $om->write('resilib\Document', $oid, ['author_id' => $author_id]);
+                $om->write(__CLASS__, $oid, ['author_id' => $author_id]);
             }
         }
-        $om->write('resilib\Document', $oids, ['indexed' => false]);
+        // force re-indexing the document
+        $om->write(__CLASS__, $oids, ['indexed' => false]);
     }
     
     public static function onchangeTitle($om, $oids, $lang) {
-        // force re-compute title_url
-        $om->write('resilib\Document', $oids, ['title_url' => null, 'indexed' => false], $lang);
+        // force re-compute title_url and re-indexing the document
+        $om->write(__CLASS__, $oids, ['title_url' => null, 'indexed' => false], $lang);
     }    
     
     public static function onchangeDescription($om, $oids, $lang) {
-        $om->write('resilib\Document', $oids, ['indexed' => false], $lang);                
+        // force re-indexing the document
+        $om->write(__CLASS__, $oids, ['indexed' => false], $lang);                
     }
     
     public static function getTitleURL($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resilib\Document', $oids, ['title']);
+        $res = $om->read(__CLASS__, $oids, ['title']);
         foreach($res as $oid => $odata) {
             // note: final format will be: #/document/{id}/{title}
             $result[$oid] = self::slugify($odata['title'], 200);

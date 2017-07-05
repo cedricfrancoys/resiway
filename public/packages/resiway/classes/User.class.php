@@ -21,6 +21,7 @@ class User extends \easyobject\orm\Object {
             'password'			=> array('type' => 'string'),
             
             'firstname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
+            
             'lastname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
                                    
             /* URL to display user avatar (holding string '<size>' to be replaced with display size) */
@@ -125,6 +126,8 @@ class User extends \easyobject\orm\Object {
                                     ),
                                     
             /* identifiers of the tags marked by user as favorite */
+/*
+// deprecated : use favorites_ids            
             'categories_ids'	=> array(
                                     'type' 			    => 'many2many', 
                                     'foreign_object'	=> 'resiway\Category', 
@@ -133,6 +136,7 @@ class User extends \easyobject\orm\Object {
                                     'rel_foreign_key'	=> 'category_id', 
                                     'rel_local_key'		=> 'user_id'
                                     ),                                    
+*/                                    
                                     
                                    
         );

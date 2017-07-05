@@ -160,7 +160,7 @@ class Question extends \easyobject\orm\Object {
     
     public static function onchangeContent($om, $oids, $lang) {
         // force re-compute content_excerpt
-        $om->write('resiexchange\Question', $oids, ['content_excerpt' => null], $lang);        
+        $om->write('resiexchange\Question', $oids, ['content_excerpt' => null, 'indexed' => false], $lang);        
     }
 
     public static function onchangeTitle($om, $oids, $lang) {
