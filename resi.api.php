@@ -77,8 +77,9 @@ class ResiAPI {
 
     // add a message to the spool
     public static function spool($user_id, $subject, $body) {
-// todo : script run by cron to send emails every ? minutes        
-        // message files format is: 11 digits (user unique identifier) with 3 digits extension in case of multiple files
+        // spool_flush script is run by cron to send emails every 5 minutes        
+        // message files format : 
+        // 11 digits with leading zeros (user unique identifier) with 3 digits extension in case of multiple files for same user
         $temp = sprintf("%011d", $user_id);
         $filename = $temp;
         $i = 0;
@@ -223,7 +224,9 @@ class ResiAPI {
                 'notify_post_edit',
                 'notify_post_flag',
                 'notify_post_delete',
-                'notify_updates'
+                'notify_updates',
+                'notice_delay',
+                'last_notice'
                ];
     }
     
@@ -280,19 +283,21 @@ class ResiAPI {
     /*
     * increments by one the value of the records having key matching given mask
     */
-    public static function repositoryInc($key_mask) {
+    public static function repositoryInc($key_mask, $diff=1) {
+        $diff = intval($diff);
         $om = &ObjectManager::getInstance(); 
         $db = $om->getDBHandler();       
-        $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`+1 WHERE `key` like '$key_mask';");
+        $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`+{$diff} WHERE `key` like '$key_mask';");
     }
 
     /*
     * decrements by one the value of the records having key matching given mask
     */
-    public static function repositoryDec($key_mask) {
+    public static function repositoryDec($key_mask, $diff=1) {
+        $diff = intval($diff);
         $om = &ObjectManager::getInstance(); 
         $db = $om->getDBHandler();       
-        $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`-1 WHERE `key` like '$key_mask';");
+        $db->sendQuery("UPDATE `resiway_repository` SET `value` = `value`-{$diff} WHERE `key` like '$key_mask';");
     }
     
 
@@ -306,7 +311,7 @@ class ResiAPI {
         $om = &ObjectManager::getInstance();
         $user_data = self::loadUserPrivate($user_id);
         // if notification has to be sent by email, store message in spool
-        if(isset($user_data['notify_'.$type]) && $user_data['notify_'.$type]) {
+        if( isset($user_data['notify_'.$type]) && $user_data['notify_'.$type] ) {
             self::spool($user_id, $notification['subject'], $notification['body']);  
         }
         // in case we decide to send emails, here is the place to add something to user queue

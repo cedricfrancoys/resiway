@@ -143,8 +143,7 @@ try {
                 
                 // update global counters
                 ResiAPI::repositoryInc('resilib.count_documents');
-                $pages_count = intval(ResiAPI::repositoryGet('resilib.count_pages'));
-                ResiAPI::repositorySet('resilib.count_pages', $pages_count+intval($params['pages']));
+                ResiAPI::repositoryInc('resilib.count_pages', $params['pages']);
             }
             else {
                 /*

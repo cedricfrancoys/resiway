@@ -22,12 +22,19 @@ set_silent(true);
 list($result, $error_message_ids) = [true, []];
 
 try {
+
+/*
+    This script is intended to be run on a daily basis
+    to update users about content they're following
+*/
+
     
     $om = &ObjectManager::getInstance();
 
     $res = resiAPI::repositoryGet('script.watch.last_run');
     if(isset($res['script.watch.last_run'])) {
         $last_run = $res['script.watch.last_run'];
+        $now = strtotime("now");
         
         $actions_ids = $om->search('resiway\Action', [
                                 [['name', '=', 'resiexchange_question_post']],
@@ -77,7 +84,9 @@ try {
         $users = $om->read('resiway\User', $users_ids, ['firstname', 'last_login', 'role', 'favorites_ids', 'language']);
 
         foreach($users as $user_id => $user) {
-            if(true or strtotime($user['last_login']) < strtotime($last_run)) {
+            // check if we need to give the user an update
+            if( strtotime($user['last_login']) <= strtotime($last_run)) {            
+            // if(true or strtotime($user['last_login']) < strtotime($last_run)) {
                 // reset user specific data
                 $list_documents = [];
                 $list_questions = [];

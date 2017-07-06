@@ -9,26 +9,27 @@ class User extends \easyobject\orm\Object {
     public static function getColumns() {
         return array(
             /* all objects must define a 'name' column (default is id) */
-            'name'				 => array('type' => 'alias', 'alias' => 'display_name'),
+            'name'                      => array('type' => 'alias', 'alias' => 'display_name'),
             
-            'verified'           => array('type' => 'boolean'),
-
-            'last_login'         => array('type' => 'datetime'),
+            'verified'                  => array('type' => 'boolean'),
+        
+            /* last time user signed in */
+            'last_login'                => array('type' => 'datetime'),
             
             /* valid email of the user */
-            'login'			    => array('type' => 'string'),
+            'login'                     => array('type' => 'string'),
             
-            'password'			=> array('type' => 'string'),
+            'password'                  => array('type' => 'string'),
             
-            'firstname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
+            'firstname'                 => array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
             
-            'lastname'			=> array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
+            'lastname'                  => array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
                                    
             /* URL to display user avatar (holding string '<size>' to be replaced with display size) */
-            'avatar_url'        => array('type' => 'string'),
+            'avatar_url'                => array('type' => 'string'),
 
             /* might be set if user is an author (this act as link toward an Author object) */
-            'author_id'        => array('type' => 'many2one', 'foreign_object' => 'resiway\Author'),
+            'author_id'                 => array('type' => 'many2one', 'foreign_object' => 'resiway\Author'),
             
             /*
              Possible values:
@@ -36,105 +37,116 @@ class User extends \easyobject\orm\Object {
              2 : Firstname and lastname initial (ex.: Cédric F.)
              3 : Firstname only (ex.: Cédric)
             */
-            'publicity_mode'    => array('type' => 'integer', 'onchange' => 'resiway\User::resetDisplayName'),
+            'publicity_mode'            => array('type' => 'integer', 'onchange' => 'resiway\User::resetDisplayName'),
             
-            'display_name'      => array(
-                                    'type'          => 'function',
-                                    'result_type'   => 'string',
-                                    'store'         => true, 
-                                    'function'      => 'resiway\User::getDisplayName'
-                                   ),
+            'display_name'              => array(
+                                            'type'          => 'function',
+                                            'result_type'   => 'string',
+                                            'store'         => true, 
+                                            'function'      => 'resiway\User::getDisplayName'
+                                           ),
             /* display name URL-formatted (for links) */
-            'name_url'          => array(
-                                    'type'          => 'function',
-                                    'result_type'   => 'string',
-                                    'store'         => true, 
-                                    'function'      => 'resiway\User::getNameURL'
-                                   ),
-                                                   
+            'name_url'                  => array(
+                                            'type'          => 'function',
+                                            'result_type'   => 'string',
+                                            'store'         => true, 
+                                            'function'      => 'resiway\User::getNameURL'
+                                           ),
             
-            'language'			=> array('type' => 'string'),
-            'country'			=> array('type' => 'string'),
-            'location'			=> array('type' => 'string'),
+            'language'                  => array('type' => 'string'),
+            'country'                   => array('type' => 'string'),
+            'location'                  => array('type' => 'string'),
 
-            'about'			    => array('type' => 'html'),
+            'about'                     => array('type' => 'html'),
             
-            'reputation'		=> array('type' => 'integer'),
+            'reputation'                => array('type' => 'integer'),
 
-            // user role: 'u'->user, 'm'->moderator, 'a'->admin (these roles are mutually exclusive)
-            'role'		        => array('type' => 'string', 'selection' => ['u', 'm', 'a']),
+            // user role (roles are mutually exclusive): 
+            // 'u'->user
+            // 'm'->moderator
+            // 'a'->admin 
+            'role'                      => array('type' => 'string', 'selection' => ['u', 'm', 'a']),
             
             
             /* profile views */
-            'count_views'       => array('type' => 'integer'),
+            'count_views'               => array('type' => 'integer'),
             
-            'count_questions'   => array('type' => 'integer'),
-            'count_answers'     => array('type' => 'integer'),
-            'count_comments'    => array('type' => 'integer'),    
+            'count_questions'           => array('type' => 'integer'),
+            'count_answers'             => array('type' => 'integer'),
+            'count_comments'            => array('type' => 'integer'),    
 
-            'count_documents'   => array('type' => 'integer'),                
+            'count_documents'           => array('type' => 'integer'),                
             
             // bronze
-            'count_badges_1'    => array('type' => 'integer'),
+            'count_badges_1'            => array('type' => 'integer'),
             // silver
-            'count_badges_2'    => array('type' => 'integer'),
+            'count_badges_2'            => array('type' => 'integer'),
             // gold
-            'count_badges_3'    => array('type' => 'integer'),
+            'count_badges_3'            => array('type' => 'integer'),
             
+
             'notify_reputation_update'  => array('type' => 'boolean'),
             'notify_badge_awarded'      => array('type' => 'boolean'),
-
-            'notify_question_answer'    => array('type' => 'boolean'),
-            
+            'notify_question_answer'    => array('type' => 'boolean'),            
             'notify_question_comment'   => array('type' => 'boolean'),
             'notify_answer_comment'     => array('type' => 'boolean'),
-
             'notify_post_edit'          => array('type' => 'boolean'),
             'notify_post_flag'          => array('type' => 'boolean'),
             'notify_post_delete'        => array('type' => 'boolean'),
-
-            'notify_updates'            => array('type' => 'boolean'),            
+            'notify_updates'            => array('type' => 'boolean'),
             
-            'notifications_ids'	=> array(
-                                    'type'		        => 'one2many', 
-                                    'foreign_object'    => 'resiway\UserNotification', 
-                                    'foreign_field'	    => 'user_id',
-                                    'order'             => 'created',
-                                    'sort'              => 'desc'
-                                   ),
+            /* notifications delay (in days):
+                0 : instant notify 
+                1 : daily report
+                7 : weekly report
+               30 : monthly report
+            */
+            'notice_delay'              => array('type' => 'integer'),
 
-            'favorites_ids'	    => array(
-                                    'type'		        => 'one2many', 
-                                    'foreign_object'    => 'resiway\UserFavorite', 
-                                    'foreign_field'	    => 'user_id'
-                                   ),
+
+            /* last time we sent a mail notice to the user */
+            'last_notice'               => array('type' => 'datetime'),            
+            
+            'notifications_ids'         => array(
+                                            'type'              => 'one2many', 
+                                            'foreign_object'    => 'resiway\UserNotification', 
+                                            'foreign_field'     => 'user_id',
+                                            'order'             => 'created',
+                                            'sort'              => 'desc'
+                                           ),
+
+            'favorites_ids'             => array(
+                                            'type'              => 'one2many', 
+                                            'foreign_object'    => 'resiway\UserFavorite', 
+                                            'foreign_field'     => 'user_id'
+                                           ),
                                    
-            'user_badges_ids'	=> array(
-                                    'type'		        => 'one2many', 
-                                    'foreign_object'    => 'resiway\UserBadge', 
-                                    'foreign_field'	    => 'user_id'
-                                   ),
+            'user_badges_ids'           => array(
+                                            'type'              => 'one2many', 
+                                            'foreign_object'    => 'resiway\UserBadge', 
+                                            'foreign_field'     => 'user_id'
+                                           ),
                                    
           
-            'badges_ids'	    => array(
-                                    'type' 			    => 'many2many', 
-                                    'foreign_object'	=> 'resiway\Badge', 
-                                    'foreign_field'		=> 'users_ids', 
-                                    'rel_table'		    => 'resiway_userbadge', 
-                                    'rel_foreign_key'	=> 'badge_id', 
-                                    'rel_local_key'		=> 'user_id'
-                                    ),
+            'badges_ids'                => array(
+                                            'type'              => 'many2many', 
+                                            'foreign_object'    => 'resiway\Badge', 
+                                            'foreign_field'     => 'users_ids', 
+                                            'rel_table'         => 'resiway_userbadge', 
+                                            'rel_foreign_key'   => 'badge_id', 
+                                            'rel_local_key'     => 'user_id'
+                                            ),
                                     
             /* identifiers of the tags marked by user as favorite */
 /*
 // deprecated : use favorites_ids            
-            'categories_ids'	=> array(
-                                    'type' 			    => 'many2many', 
-                                    'foreign_object'	=> 'resiway\Category', 
-                                    'foreign_field'		=> 'users_ids', 
-                                    'rel_table'		    => 'resiway_rel_user_category', 
-                                    'rel_foreign_key'	=> 'category_id', 
-                                    'rel_local_key'		=> 'user_id'
+            'categories_ids'    => array(
+                                    'type'                 => 'many2many', 
+                                    'foreign_object'    => 'resiway\Category', 
+                                    'foreign_field'        => 'users_ids', 
+                                    'rel_table'            => 'resiway_rel_user_category', 
+                                    'rel_foreign_key'    => 'category_id', 
+                                    'rel_local_key'        => 'user_id'
                                     ),                                    
 */                                    
                                     
@@ -169,13 +181,14 @@ class User extends \easyobject\orm\Object {
              'notify_question_answer'    => function() { return true; },
              'notify_post_edit'          => function() { return true; },
              'notify_post_flag'          => function() { return true; },
-             'notify_post_delete'        => function() { return true; }
+             'notify_post_delete'        => function() { return true; },
+             'notice_delay'              => function() { return 0; }
         );
     }
     
     public static function getConstraints() {
         return array(
-            'login'			    => array(
+            'login'                => array(
                                     /* login must be a valid email address */
 // todo : check taht this regexp still covers all domain names                                    
                                     'error_message_id' => 'user_invalid_login',
@@ -183,7 +196,7 @@ class User extends \easyobject\orm\Object {
                                             return (bool) (preg_match('/^([_a-z0-9-]+)(\.[_a-z0-9-]+)*@([a-z0-9-]+)(\.[a-z0-9-]+)*(\.[a-z]{2,8})$/i', $login, $matches));
                                     }
                                 ),
-            'password'		    => array(
+            'password'            => array(
                                     /* password must be a 32 bytes string in hexadecimal notation (MD5 hash) */
                                     'error_message_id' => 'user_invalid_password',
                                     'function' => function ($password) {
@@ -191,7 +204,7 @@ class User extends \easyobject\orm\Object {
                                     }
                                 ),
                                 
-            'firstname'			=> array(
+            'firstname'            => array(
                                     /* firstname must contain only letters or dashes */
                                     'error_message_id' => 'user_invalid_firstname',
                                     'function' => function ($firstname) {
@@ -201,7 +214,7 @@ class User extends \easyobject\orm\Object {
                                             return (bool) (preg_match("/^[a-z -.]+$/i", $value, $matches));
                                     }            
                                 ),
-            'lastname'			=> array(
+            'lastname'            => array(
                                     /* lastname must contain only letters or spaces */
                                     'error_message_id' => 'user_invalid_lastname',
                                     'function' => function ($lastname) {
@@ -213,14 +226,14 @@ class User extends \easyobject\orm\Object {
                                     }            
                                 ),
             
-            'language'		    => array(
+            'language'            => array(
                                     /* language must be a valid ISO 639-1 code */
                                     'error_message_id' => 'user_invalid_language',
                                     'function' => function ($language) {
                                             return (bool) (preg_match('/^[a-z]{2}$/', $language, $matches));
                                     }
                                 ),
-            'country'		    => array(
+            'country'            => array(
                                     /* country must be a valid ISO 3166 code */
                                     'error_message_id' => 'user_invalid_country',
                                     'function' => function ($country) {

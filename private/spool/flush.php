@@ -25,7 +25,7 @@ set_silent(false);
 
 try {
     $files = scandir($messages_folder);
-
+        
     // first pass: group messages by user_id (to send all notifications since last flush at once)
     $spool = [];
     
@@ -45,19 +45,16 @@ try {
         $spool[$user_id][] = $filename;
     }
 
-
+    $now = time();
     foreach($spool as $user_id => $filenames) { 
-
-
         // retrieve user data
         $user_data = ResiAPI::loadUserPrivate($user_id);
         if($user_data < 0) throw new Exception(sprintf("user_unidentified (%d, %s)", $user_id, $file), QN_ERROR_NOT_ALLOWED);   
         
-        // send daily report after 7 PM
+        // skip users for whom we haven't reached custom delay since last sending
+        if( ($now - strtotime($user_data['last_notice'])) < ($user_data['notice_delay'] * 24 * 60 * 60) ) continue;
         
-        // send weekly report friday (after 7 PM)
-
-        
+        // group content from all files        
         $subject = '';
         $content = '';
         $count_notifications = count($filenames);
@@ -105,12 +102,16 @@ try {
 
         $mailer->send($message);
         
+        // update user last_notice field
+        $om = &ObjectManager::getInstance();  
+        $om->write('resiway\User', $user_id, [ 'last_notice' => date("Y-m-d H:i:s") ]);
+        
         // append info to activity log
         $log = sprintf("%s @ %s, mail sent to user %011d (%s) : %s\n", date('Y-m-d'), date('H:i:s'), $user_id, $user_data['login'], $params['subject']);
-        file_put_contents(LOG_STORAGE_DIR.'/mail.log', $log, FILE_APPEND);
+        file_put_contents(LOG_STORAGE_DIR.'/mail.log', $log, FILE_APPEND);        
         
-        foreach($filenames as $filename) {
-            // once processed, remove files               
+        // remove processed files   
+        foreach($filenames as $filename) {                        
             unlink($filename);    
         }
     }
