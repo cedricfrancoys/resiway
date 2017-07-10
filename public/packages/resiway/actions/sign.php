@@ -27,7 +27,7 @@ try {
     
     if(!$params['user_id']) {
         // set identity as one of the random test-user
-        $res = $om->search('resiway\User', [['login', 'like', 'resiway_u%']], 'reputation', 'asc', rand(0, 10), 1);
+        $res = $om->search('resiway\User', [['login', 'like', 'resiway_u%']], 'count_questions', 'asc', rand(0, 10), 1);
         $user_id = $res[0];
     }
     else $user_id = $params['user_id'];
