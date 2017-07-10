@@ -179,7 +179,7 @@ class Document extends \easyobject\orm\Object {
             }
             else {
                 // create a new author
-                $author_id = $om->create('resiway\Author', ['name' => $author_name]);
+                $author_id = $om->create('resiway\Author', ['name' => $odata['author']]);
                 $om->write(__CLASS__, $oid, ['author_id' => $author_id]);
             }
         }
