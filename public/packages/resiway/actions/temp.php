@@ -71,6 +71,7 @@ foreach( glob('C:\Users\User\Desktop\RL - contenu à importer\nouveaux docs resil
             $params['language']="fr";
             $params['license']="CC-by-nc-sa";
             $params['description']="";
+            $params['url-origin']="";
 
             $content = '';
             foreach($params as $param => $value) {
