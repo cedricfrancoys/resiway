@@ -211,6 +211,7 @@ var translations = {
     "NOTIFY_QUESTION_COMMENT": "quelqu'un laisse un commentaire sur une de mes questions",
     "NOTIFY_ANSWER_COMMENT": "quelqu'un laisse un commentaire sur une de mes réponses",    
     "NOTIFY_QUESTION_ANSWER": "quelqu'un répond à une de mes questions",
+    "NOTIFY_FAVORITE_UPDATE": "il y a un changement sur un de mes favoris",
     
     "USER_EDIT_SUBMIT": "Mettre mon profil à jour",        
     "USER_EDIT_UPDATE_PASSWORD": "Modifier mon mot de passe", 

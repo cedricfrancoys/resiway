@@ -18,7 +18,7 @@ angular.module('resiexchange')
     var ctrl = this;
 
     ctrl.user = user;
-
+console.log(ctrl.user);
 // todo : check against current user
 // if user has no right : redirect to userView page
 // + we need to ensure user is identified prior to access
@@ -96,6 +96,7 @@ angular.module('resiexchange')
     });  
     
     ctrl.userPost = function($event) {
+        ctrl.running = true;        
         var selector = feedback.selector(angular.element($event.target));                   
         action.perform({
             // valid name of the action to perform server-side
@@ -115,12 +116,15 @@ angular.module('resiexchange')
                 notify_badge_awarded: ctrl.user.notify_badge_awarded,
                 notify_question_comment: ctrl.user.notify_question_comment,
                 notify_answer_comment: ctrl.user.notify_answer_comment,
-                notify_question_answer: ctrl.user.notify_question_answer
+                notify_question_answer: ctrl.user.notify_question_answer,
+                notify_updates: ctrl.user.notify_updates,
+                notice_delay: ctrl.user.notice_delay            
             },
             // scope in wich callback function will apply 
             scope: $scope,
             // callback function to run after action completion (to handle error cases, ...)
             callback: function($scope, data) {
+                ctrl.running = false;                
                 // we need to do it this way because current controller might be destroyed in the meantime
                 // (if route is changed to signin form)
                 if(typeof data.result != 'object') {

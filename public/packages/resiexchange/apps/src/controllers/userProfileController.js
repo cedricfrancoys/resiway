@@ -76,6 +76,7 @@ angular.module('resiexchange')
                 domain: ['creator', '=', ctrl.user.id],
                 provider: 'resiexchange_answer_list'
             },
+/*            
             favorites: {
                 items: -1,
                 total: -1,
@@ -83,17 +84,27 @@ angular.module('resiexchange')
                 previousPage: -1,                
                 limit: 5,
                 // 'resiexchange_question_star' == action (id=4)
-// todo : how to de-hardcode this                
+                // todo : how to de-hardcode this                
                 domain: [['user_id', '=', ctrl.user.id], ['action_id','=','4']],
                 provider: 'resiway_actionlog_list'
             },
+*/
+            favorites: {
+                items: -1,
+                total: -1,
+                currentPage: 1,
+                previousPage: -1,                
+                limit: 5,
+                domain: ['user_id', '=', ctrl.user.id],
+                provider: 'resiway_userfavorite_list'
+            },            
             actions: {
                 items: -1,
                 total: -1,
                 currentPage: 1,
                 previousPage: -1,                
                 limit: 5,
-                domain: [['user_id', '=', ctrl.user.id]],
+                domain: ['user_id', '=', ctrl.user.id],
                 provider: 'resiway_actionlog_list'
             },        
         });   

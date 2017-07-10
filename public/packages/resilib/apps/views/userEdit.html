@@ -169,6 +169,7 @@
                                                   ng-model="ctrl.user.about">
                                         </textarea>
                                         -->
+                                        <!--
                                         <div class="content" 
                                              text-angular="text-angular" 
                                              ng-model="ctrl.user.about" 
@@ -180,7 +181,13 @@
                                                 ['insertLink'],
                                                 ['wordcount', 'charcount']
                                         ]" 
-                                        ></div>                                
+                                        ></div>
+                                        -->
+                                        <textarea class="content form-control" style="height: 200px;"
+                                                  ui-tinymce="rootCtrl.tinymceOptions"
+                                                  ng-model="ctrl.user.about"
+                                                  placeholder="{{'USER_EDIT_PLACEHOLDER_ABOUT'|translate}}">
+                                        </textarea>                                        
                                     </div>
                   
                                 </div>
@@ -227,19 +234,33 @@
                                       {{'NOTIFY_QUESTION_ANSWER'|translate}}
                                     </label>
                                 </div>
-                            </fieldset>
-                        </div>
-                    </uib-tab>
+                                
+                                <div class="checkbox" style="margin-top: 20px;">
+                                    <label>
+                                      <input type="checkbox" ng-model="ctrl.user.notify_updates">                                  
+                                      {{'NOTIFY_FAVORITE_UPDATE'|translate}}
+                                    </label>
+                                </div>
+                                
 
-                    <uib-tab index="2" >
-                        <uib-tab-heading>
-                            <i class="fa fa-star"></i> {{'USER_PROFILE_TAB_FAVORITES' | translate}}
-                        </uib-tab-heading>
-                        <div style="padding-top: 15px; min-height: 200px;"> 
-                           
+                            </fieldset>
+                            
+                            <fieldset>
+                                <legend>Délai entre les emails</legend>
+                                <div>
+                                    <label for="notice_delay">Délai:</label>
+                                    <select class="form-control" id="notice_delay" ng-model="ctrl.user.notice_delay">
+                                        <option value="0">notification immédiate</option>
+                                        <option value="1">1 email par jour</option>
+                                        <option value="7">1 email par semaine</option>
+                                        <option value="30">1 email par mois</option>
+                                    </select>                                
+                                </div>
+                            </fieldset>
+                            
                         </div>
                     </uib-tab>
-                    
+                   
                 </uib-tabset>
 
 

@@ -230,12 +230,12 @@
 
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
                 <div ng-hide="ctrl.favorites.items == -1" style="min-height: 250px;">
-                    <div ng-repeat="action in ctrl.favorites.items" class="post-summary col-1-1">
+                    <div ng-repeat="item in ctrl.favorites.items" class="post-summary col-1-1">
                         <div class="col-9-12" style="overflow: hidden">
-                            <h3 class="post-title"><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                            <h3 class="post-title"><a href="{{rootCtrl.makeLink(item.object_class, item.object_id)}}">{{item.name}}</a></h3>
                         </div>
                         <div class="col-3-12 text-right">
-                            {{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
+                            {{item.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
                         </div>
                     </div>
                 </div>

@@ -44,7 +44,6 @@ $params = QNLib::announce([
                             'type'          => 'string',
                             'default'       => ''
                             ),
-
         'location'	    => array(
                             'description'   => 'Description of the submitted category.',
                             'type'          => 'string',
@@ -60,7 +59,6 @@ $params = QNLib::announce([
                             'type'          => 'string',
                             'required'      => true
                             ),
-                            
         'notify_reputation_update'  => array(
                             'description'   => 'Flag to receive reputation updates.',
                             'type'          => 'boolean',
@@ -85,7 +83,18 @@ $params = QNLib::announce([
                             'description'   => 'Flag to receive answers notifications.',
                             'type'          => 'boolean',
                             'default'       => true
-                            )                            
+                            ),
+        'notify_updates'             => array(
+                            'description'   => 'Flag to receive favorites change notifications.',
+                            'type'          => 'boolean',
+                            'default'       => true
+                            ),
+        'notice_delay'               => array(
+                            'description'   => 'Minimum delay (in days) between 2 notices (emails).',
+                            'type'          => 'integer',
+                            'default'       => 0
+                            )    
+                            
     ]
 ]);
 
@@ -114,7 +123,10 @@ try {
         'verified', 
         'firstname', 'lastname', 'about', 'avatar_url',
         'publicity_mode', 'language', 'country', 'location',
-        'notify_reputation_update', 'notify_badge_awarded', 'notify_question_comment', 'notify_answer_comment', 'notify_question_answer'
+        'notify_reputation_update', 'notify_badge_awarded', 
+        'notify_question_comment', 'notify_answer_comment', 
+        'notify_question_answer', 'notify_updates',
+        'notice_delay'
         ],                                                       
         false,                                                    // $toggle
         function ($om, $user_id, $object_class, $object_id)       // $do
@@ -132,7 +144,9 @@ try {
                             'notify_badge_awarded'      => $params['notify_badge_awarded'],
                             'notify_question_comment'   => $params['notify_question_comment'],
                             'notify_answer_comment'     => $params['notify_answer_comment'],
-                            'notify_question_answer'    => $params['notify_question_answer']
+                            'notify_question_answer'    => $params['notify_question_answer'],
+                            'notify_updates'            => $params['notify_updates'],
+                            'notice_delay'              => $params['notice_delay']
                        ]);
             
             // read updated user as returned value

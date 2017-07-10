@@ -169,6 +169,7 @@
                                                   ng-model="ctrl.user.about">
                                         </textarea>
                                         -->
+                                        <!--
                                         <div class="content" 
                                              text-angular="text-angular" 
                                              ng-model="ctrl.user.about" 
@@ -180,7 +181,13 @@
                                                 ['insertLink'],
                                                 ['wordcount', 'charcount']
                                         ]" 
-                                        ></div>                                
+                                        ></div>
+                                        -->
+                                        <textarea class="content form-control" style="height: 200px;"
+                                                  ui-tinymce="rootCtrl.tinymceOptions"
+                                                  ng-model="ctrl.user.about"
+                                                  placeholder="{{'USER_EDIT_PLACEHOLDER_ABOUT'|translate}}">
+                                        </textarea>                                        
                                     </div>
                   
                                 </div>
@@ -209,7 +216,7 @@
                                       {{'NOTIFY_BADGE_AWARDED'|translate}}
                                     </label>
                                 </div>
-                                <div class="checkbox">
+                                <div class="checkbox" style="margin-top: 20px;">
                                     <label>
                                       <input type="checkbox" ng-model="ctrl.user.notify_question_comment">                                  
                                       {{'NOTIFY_QUESTION_COMMENT'|translate}}
@@ -227,35 +234,45 @@
                                       {{'NOTIFY_QUESTION_ANSWER'|translate}}
                                     </label>
                                 </div>
-                            </fieldset>
-                        </div>
-                    </uib-tab>
+                                
+                                <div class="checkbox" style="margin-top: 20px;">
+                                    <label>
+                                      <input type="checkbox" ng-model="ctrl.user.notify_updates">                                  
+                                      {{'NOTIFY_FAVORITE_UPDATE'|translate}}
+                                    </label>
+                                </div>
+                                
 
-                    <uib-tab index="2" >
-                        <uib-tab-heading>
-                            <i class="fa fa-star"></i> {{'USER_PROFILE_TAB_FAVORITES' | translate}}
-                        </uib-tab-heading>
-                        <div style="padding-top: 15px; min-height: 200px;"> 
-                           
+                            </fieldset>
+                            
+                            <fieldset style="margin-top: 25px;">
+                                <legend>Délai entre les emails</legend>
+                                <div class="form-group col-sm-4 nopad">
+                                    <select class="form-control checkbox" 
+                                            ng-model="ctrl.user.notice_delay">
+                                        <option value="0" ng-selected="ctrl.user.notice_delay==0">notification immédiate</option>
+                                        <option value="1" ng-selected="ctrl.user.notice_delay==1">un jour (max 1 email par jour)</option>
+                                        <option value="7" ng-selected="ctrl.user.notice_delay==7">une semaine (max 1 email par semaine)</option>
+                                        <option value="30" ng-selected="ctrl.user.notice_delay==30">un mois (max 1 email par mois)</option>
+                                    </select>                                
+                                </div>
+                            </fieldset>
+                            
                         </div>
                     </uib-tab>
-                    
+                   
                 </uib-tabset>
 
-
-                                
                 <div class="form-actions col-1-1">
-
                     <button id="user-post"
                             class="user-profile-submit btn btn-primary" 
                             ng-click="ctrl.userPost($event)"
                             uib-popover-template="'popoverCustom.html'" 
                             popover-trigger="'toggle-popover'" 
                             popover-placement="right">
-                        {{'USER_EDIT_SUBMIT'|translate}}</button>                          
+                        <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> {{'USER_EDIT_SUBMIT'|translate}}</button>
                 </div>
 
-                
             </div>
 
         </div>
@@ -265,7 +282,7 @@
         <div class="panel panel-default">
             <div class="container">
                 <a class="btn btn-primary btn-block btn-sm" href="#/user/password"><i class="fa fa-lock" aria-hidden="true"></i> {{'USER_EDIT_UPDATE_PASSWORD'|translate}}</a>
-                <a class="btn btn-primary btn-block btn-sm" href="#/user/profile/{{user.id}}"><i class="fa fa-eye" aria-hidden="true"></i> {{'USER_EDIT_VIEW_PROFILE'|translate}}</a>
+                <a class="btn btn-primary btn-block btn-sm" href="#/user/{{user.id}}/{{user.name_url}}"><i class="fa fa-eye" aria-hidden="true"></i> {{'USER_EDIT_VIEW_PROFILE'|translate}}</a>
             </div>
         </div>
     </div>
