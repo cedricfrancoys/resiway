@@ -271,8 +271,8 @@ if( intval($params['api']) > 0 && is_array($result) ) {
                         'page-size' => $params['limit'], 
                         'total-pages' => ceil($params['total']/$params['limit'])
                        ],
-        'links'     => ['self' => get_url(false, false).'/api/documents?start='.$params['start'].'&limit='.$params['limit'], 
-                        'next' => get_url(false, false).'/api/documents?start='.($params['start']+$params['limit']).'&limit='.$params['limit']
+        'links'     => ['self' => QNLib::get_url(false, false).'/api/documents?start='.$params['start'].'&limit='.$params['limit'], 
+                        'next' => QNLib::get_url(false, false).'/api/documents?start='.($params['start']+$params['limit']).'&limit='.$params['limit']
                        ],
         'data'      => $result,
         'included'  => array_values($included),
