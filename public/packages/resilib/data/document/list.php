@@ -259,13 +259,21 @@ if( intval($params['api']) > 0 && is_array($result) ) {
             'relationships' => (object) [
                 'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
                 'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
-            ]
+            ],
+            'links'         => (object) ['self' => "/document/{$id}/{$document['title_url']}"]
         ];       
     }
     ksort($included);
     echo json_encode((object)[
         'jsonapi'   => (object) ['version' => '1.0'],
-        'meta'      => ['count' => $params['total'], 'page-size' => $params['limit'], 'total-pages' => ceil($params['total']/$params['limit'])],
+        'meta'      => [
+                        'count' => $params['total'], 
+                        'page-size' => $params['limit'], 
+                        'total-pages' => ceil($params['total']/$params['limit'])
+                       ],
+        'links'     => ['self' => '/api/documents?start='.$params['start'].'&limit='.$params['limit'], 
+                        'next' => '/api/documents?start='.($params['start']+$params['limit']).'&limit='.$params['limit']
+                       ],
         'data'      => $result,
         'included'  => array_values($included),
         ], JSON_PRETTY_PRINT);    
