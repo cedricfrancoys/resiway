@@ -251,7 +251,8 @@ if( intval($params['api']) > 0 && is_array($result) ) {
         $categories = $document['categories'];
         unset($document['id']);        
         unset($document['creator']);        
-        unset($document['categories']);                
+        unset($document['categories']);
+        unset($document['original_url']);        
         $result[] = [
             'type'          => 'document', 
             'id'            => $id, 
@@ -260,17 +261,20 @@ if( intval($params['api']) > 0 && is_array($result) ) {
                 'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
                 'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
             ],
-            'links'         => (object) ['self' => QNLib::get_url(false, false)."document/{$id}/{$document['title_url']}"]
+            'links'         => (object) [
+                'self'          => QNLib::get_url(false, false)."document/{$id}/{$document['title_url']}",
+                'resilink'      => sprintf("http://resilink.io/document/%011d/%s", $id, $document['title_url']);
+            ]
         ];       
     }
     ksort($included);
     echo json_encode((object)[
         'jsonapi'   => (object) ['version' => '1.0'],
         'meta'      => [
-                        'count' => $params['total'], 
-                        'page' => floor($params['start']/$params['limit'])+1,
-                        'page-size' => $params['limit'], 
-                        'total-pages' => ceil($params['total']/$params['limit'])
+                        'count'         => $params['total'], 
+                        'page-index'    => floor($params['start']/$params['limit'])+1,
+                        'page-size'     => $params['limit'], 
+                        'total-pages'   => ceil($params['total']/$params['limit'])
                        ],
         'links'     => ['self' => QNLib::get_url(false, false).'api/documents?start='.$params['start'].'&limit='.$params['limit'], 
                         'next' => QNLib::get_url(false, false).'api/documents?start='.($params['start']+$params['limit']).'&limit='.$params['limit']
