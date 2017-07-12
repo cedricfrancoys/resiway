@@ -249,10 +249,12 @@ if( intval($params['api']) > 0 && is_array($result) ) {
             }        
         }
         $categories = $document['categories'];
+        $title_url = $document['title_url'];
         unset($document['id']);        
         unset($document['creator']);        
         unset($document['categories']);
-        unset($document['original_url']);        
+        // unset($document['original_url']);
+        // unset($document['title_url']);
         $result[] = [
             'type'          => 'document', 
             'id'            => $id, 
@@ -262,8 +264,8 @@ if( intval($params['api']) > 0 && is_array($result) ) {
                 'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
             ],
             'links'         => (object) [
-                'self'          => QNLib::get_url(false, false)."document/{$id}/{$document['title_url']}",
-                'resilink'      => sprintf("http://resilink.io/document/%011d/%s", $id, $document['title_url'])
+                'self'          => QNLib::get_url(false, false)."document/{$id}/{$title_url}",
+                'resilink'      => sprintf("http://resilink.io/document/%011d/%s", $id, $title_url)
             ]
         ];       
     }
