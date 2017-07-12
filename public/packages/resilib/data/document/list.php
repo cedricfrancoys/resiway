@@ -271,12 +271,12 @@ if( intval($params['api']) > 0 && is_array($result) ) {
                         'page-size' => $params['limit'], 
                         'total-pages' => ceil($params['total']/$params['limit'])
                        ],
-        'links'     => ['self' => '/api/documents?start='.$params['start'].'&limit='.$params['limit'], 
-                        'next' => '/api/documents?start='.($params['start']+$params['limit']).'&limit='.$params['limit']
+        'links'     => ['self' => get_url(false, false).'/api/documents?start='.$params['start'].'&limit='.$params['limit'], 
+                        'next' => get_url(false, false).'/api/documents?start='.($params['start']+$params['limit']).'&limit='.$params['limit']
                        ],
         'data'      => $result,
         'included'  => array_values($included),
-        ], JSON_PRETTY_PRINT);    
+        ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);    
     exit();
 }
 
