@@ -263,7 +263,7 @@ if( intval($params['api']) > 0 && is_array($result) ) {
             ],
             'links'         => (object) [
                 'self'          => QNLib::get_url(false, false)."document/{$id}/{$document['title_url']}",
-                'resilink'      => sprintf("http://resilink.io/document/%011d/%s", $id, $document['title_url']);
+                'resilink'      => sprintf("http://resilink.io/document/%011d/%s", $id, $document['title_url'])
             ]
         ];       
     }
