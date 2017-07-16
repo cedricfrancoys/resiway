@@ -253,19 +253,20 @@ if( intval($params['api']) > 0 && is_array($result) ) {
         unset($document['id']);        
         unset($document['creator']);        
         unset($document['categories']);
-        // unset($document['original_url']);
+        // removing original_url from result to avoid confusion about actual ressource location (original_url might be broken)       
+        unset($document['original_url']);
         // unset($document['title_url']);
         $result[] = [
             'type'          => 'document', 
             'id'            => $id, 
+            'links'         => (object) [
+                'self'          => QNLib::get_url(false, false)."document/{$id}/{$title_url}",
+                'resilink'      => "http://resilink.io/document/{$id}/{$title_url}"
+            ],            
             'attributes'    => (object) $document, 
             'relationships' => (object) [
                 'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
                 'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
-            ],
-            'links'         => (object) [
-                'self'          => QNLib::get_url(false, false)."document/{$id}/{$title_url}",
-                'resilink'      => sprintf("http://resilink.io/document/%011d/%s", $id, $title_url)
             ]
         ];       
     }

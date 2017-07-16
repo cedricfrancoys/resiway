@@ -85,7 +85,7 @@ var translations = {
     "QUESTION_USER_DETAILS_BADGES_SILVER": "Badges d'argent",
     "QUESTION_USER_DETAILS_BADGES_BRONZE": "Badges de bronze",
     
-    "QUESTION_USER_ANSWER": "Votre Réponse",
+    "QUESTION_USER_ANSWER": "Ta réponse",
     "QUESTION_USER_ANSWER_SUBMIT": "Répondre",  
 
     "QUESTION_STATS_ASKED": "posée",
@@ -131,7 +131,7 @@ var translations = {
     "DOCUMENT_ACTIONS_DELETE": "Supprimer",
     "DOCUMENT_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les documents que si on a une bonne raison de le faire",
 
-    "DOCUMENT_ACTIONS_VOTEUP_OK": "Votre vote a bien été pris en compte.<br />Merci pour votre participation !",
+    "DOCUMENT_ACTIONS_VOTEUP_OK": "Ton vote a bien été pris en compte.<br />Merci pour ta participation !",
     
     "DOCUMENT_COMMENT_SCORE_TOOLTIP": "Nombre de votes 'commentaire utile' reçus",
     "DOCUMENT_COMMENT_ACTIONS_VOTEUP_TOOLTIP": "Ce commentaire ajoute quelque chose d'utilie à cette publication",
@@ -143,7 +143,7 @@ var translations = {
 
     "DOCUMENT_COMMENTS_ADD": "Ajouter un commentaire",
     "DOCUMENT_COMMENTS_ADD_TOOLTIP": "Utilisez les commentaires pour demander plus d'info ou pour suggérer des clarifications. Il est préférable d'éviter de répondre aux questions dans les commentaires.",
-    "DOCUMENT_COMMENTS_ADD_PLACEHOLDER": "Faites votre commentaire ici",
+    "DOCUMENT_COMMENTS_ADD_PLACEHOLDER": "Laisse un commentaire ici",
     "DOCUMENT_COMMENTS_SHOW_ALL": "Voir tous les commentaires",  
     "DOCUMENT_COMMENTS_SHOW_ALL_TOOLTIP": "Cliquez pour étendre la liste à tous les commentaires",
     "DOCUMENT_COMMENTS_ADD_BUTTON": "Ajouter",
@@ -279,7 +279,7 @@ var translations = {
     
     // errors related to users
     "user_unknown": "Utilisateur inconnu",
-    "user_is_owner": "Les consultations de votre propre profil ne sont pas prises en compte",
+    "user_is_owner": "Les consultations de son propre profil ne sont pas prises en compte",
     "user_not_verified": "Merci de valider ton compte avant d'effectuer cette action",
     "user_already_registered": "Cette adresse email est déjà enregistrée",
     "confirm_no_match": "Le mot de passe et la confirmation sont différents",
@@ -292,21 +292,21 @@ var translations = {
 
     // errors related to questions
     "question_missing_title": "Oups, il manque un titre à la question",
-    "question_missing_content": "Précisez l'objet de votre question en indiquant une description la plus claire possible (min. 128 caractères)",
-    "question_missing_tags_ids": "Pour que votre question puisse être retrouvée facilement, indiquez au moins une catégorie",
+    "question_missing_content": "Précisez l'objet de la question en indiquant une description la plus claire possible (min. 128 caractères)",
+    "question_missing_tags_ids": "Pour que la question puisse être retrouvée facilement, indiquez au moins une catégorie",
     
     "question_unknown": "Question inconnue",
     "question_author_unknown": "Impossible de retrouver l'auteur de la question",
     "question_editor_unknown": "Impossible de retrouver le dernier éditeur de la question",  
     "question_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes questions (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
     
-    "question_title_length_invalid": "Assures-toi que le titre soit suffisamment explicite (min. 25 caractères)",
+    "question_title_length_invalid": "Assure-toi que le titre soit suffisamment explicite (min. 25 caractères)",
     "question_content_length_invalid": "Contenu trop long (max. 4096 caractères)",
     "question_tags_count_invalid": "Pensez à associer la question à une ou plusieurs catégories (max. 5)",
 
     // errors related to answers                    
     "answer_unknown": "Réponse inconnue",
-    "answer_missing_content": "Indiquez votre réponse (min. 128 caractères)",
+    "answer_missing_content": "Ne pas oublier d'indiquer... la réponse (min. 128 caractères)",
     "answer_content_length_invalid": "Assures-toi que ta réponse soit suffisamment explicite, sans être trop longue (min. 128, max. 4096 caractères)",
     "answer_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes réponses (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
       

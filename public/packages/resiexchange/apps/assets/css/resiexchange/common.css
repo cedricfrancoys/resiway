@@ -362,6 +362,92 @@ input[type="text"] {
     font-size: large;
 }
 
+
+/* comments */
+.comments {
+    width: 100%;
+    margin-top: 10px;
+    padding-bottom: 10px;
+    border-top: 1px solid #e4e6e8;
+}
+
+
+.comments .comment {
+    padding: 6px 6px 6px 0;
+    vertical-align: top;
+    line-height: 1.3;
+    border-bottom: 1px solid #eff0f1;
+}
+
+
+.comments .comment .comment-text {
+
+}
+
+.comments .comment .comment-text p {
+    display: inline;
+    margin: 0;
+}
+
+.comments .comment .comment-vote {
+    display: block;
+}
+
+.comments .comment .comment-vote a, .comments .comment .comment-vote a:hover{
+    text-decoration: none;
+}
+
+.comments .comment .comment-vote .on a, .comments .comment .comment-vote .on a:hover {
+    color: #ec971f;
+    text-decoration: none;
+}
+
+.comments .comment .comment-vote .comment-score {
+    display: inline-block;
+    float: left;
+    font-size: 13px;
+    font-weight: normal;
+    padding-right: 4px;
+    min-width: 21px;
+}
+
+.comments .comment .comment-vote .comment-actions  {
+    display: inline-block;
+    float: left;
+    padding-left: 3px;
+    width: 25px;
+    margin-top: -5px;
+}
+
+.comments .comment .comment-vote .comment-actions .comment-voteup {
+    font-size: 20px;
+}
+.comments .comment .comment-vote .comment-actions .comment-voteup, 
+.comments .comment .comment-vote .comment-actions .comment-flag {
+    display: inline-block;
+    line-height: 25px;
+    height: 15px;
+    width: 16px;
+}
+
+.comments .comment .comment-vote a.on, .comments .comment .comment-vote a.on:hover {
+    color: #ec971f;
+}
+
+.comments .comment a.comment-link {
+    color: #8a939c;
+    font-weight: bold;
+}
+
+.comments .comment a.comment-link:hover{
+    color: #6a737c;     
+}
+
+/* carousel */
+#home-carousel, #home-carousel .row {
+    min-height: 250px;
+}
+
 /* footer */
 
 #footer {

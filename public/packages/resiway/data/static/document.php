@@ -143,8 +143,7 @@ try {
             echo '<meta name="twitter:title" content="'.$title.'" />'.PHP_EOL;
             echo '<meta name="twitter:url" content="'.$url.'" />'.PHP_EOL;
             echo '<meta name="twitter:description" content="'.$description.'" />'.PHP_EOL;
-            echo '<meta name="twitter:image" content="'.$image.'" />'.PHP_EOL;
-            
+            echo '<meta name="twitter:image" content="'.$image.'" />'.PHP_EOL;            
             echo '</head>'.PHP_EOL;
             echo '<body>'.PHP_EOL;        
             echo '<div class="document wrapper"'.PHP_EOL;
@@ -154,8 +153,7 @@ try {
             echo '<div itemprop="description">'.$description.'</div>'.PHP_EOL;        
             echo '<div itemprop="dateCreated">'.$document_data['last_update'].'</div>'.PHP_EOL;
             echo '<div itemprop="author">'.$document_data['author'].'</div>'.PHP_EOL;        
-            echo '<div itemprop="url">'.$url.'</div>'.PHP_EOL;                    
-            
+            echo '<div itemprop="url">'.$url.'</div>'.PHP_EOL;                                
             echo '</div>'.PHP_EOL;        
             echo '</body>'.PHP_EOL;        
             echo '</html>'.PHP_EOL;            

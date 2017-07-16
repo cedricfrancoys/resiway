@@ -64,7 +64,7 @@
             <div class="content col-11-12 nopad">
             
                 <div class="document-thumbnail nopad">
-                    <a href="http://resilink.io/document/{{document.id}}/{{document.title_url}}" target="_blank">
+                    <a href="/document/{{document.id}}/{{document.title_url}}?view=1" target="_blank">
                         <img width="100" height="133" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
                     </a>
                 </div>
@@ -137,7 +137,7 @@
                 <div class="footer">
                     <div class="meta">
                         <div class="actions">
-                            <a href="http://resilink.io/document/{{document.id}}/{{document.title_url}}" 
+                            <a href="/document/{{document.id}}/{{document.title_url}}?view=1" 
                                type="application/pdf" 
                                target="_blank">
                               <i class="fa fa-eye" aria-hidden="true"></i> {{ 'MODAL_DOCUMENT_SHARE_VIEW' | translate }}

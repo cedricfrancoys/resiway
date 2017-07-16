@@ -3525,7 +3525,10 @@ angular.module('resiexchange')
         });
     }
     */
-
+    
+    // note : maintain item count with number of .row children in #home-carousel
+    var slides = $scope.slides = [{}, {}, {}];
+    
     
     $http.get('index.php?get=resiway_stats')
     .then(
