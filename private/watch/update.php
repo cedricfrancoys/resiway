@@ -85,7 +85,7 @@ try {
 
         foreach($users as $user_id => $user) {
             // check if we need to give the user an update
-            if( strtotime($user['last_login']) <= strtotime($last_run) ) {            
+            if( $user['role'] == 'a' || strtotime($user['last_login']) <= strtotime($last_run) ) {            
             // if(true or strtotime($user['last_login']) < strtotime($last_run)) {
                 // reset user specific data
                 $list_documents = [];
