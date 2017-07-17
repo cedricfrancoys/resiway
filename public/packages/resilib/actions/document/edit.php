@@ -113,6 +113,7 @@ try {
             // check categories_ids consistency (we might have received a request for new categories)
             foreach($params['categories_ids'] as $key => $value) {
                 if(intval($value) == 0 && strlen($value) > 0) {
+// todo : check if a category by that name already exists                    
                     // create a new category + write given value
                     $tag_id = $om->create('resiway\Category', [ 
                                     'creator'           => $user_id,     
@@ -127,7 +128,8 @@ try {
             
             if($object_id == 0) {
             
-                // create a new document + write given value                
+                // create a new document + write given value
+                unset($params['id']);
                 $object_id = $om->create($object_class, array_merge(['creator' => $user_id], $params));                
                 
                 if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);

@@ -49,7 +49,9 @@ angular.module('resiexchange')
                 }
                 var domain = [];
                 angular.forEach(str.toURL().split('-'), function(part, index) {
-                    domain.push([['name', 'ilike', '%'+part+'%']]);                
+                    if(part.length > 2) {
+                        domain.push([['name', 'ilike', '%'+part+'%']]);
+                    }
                 });
                 $http.get('index.php?get=resiway_author_list&'+$httpParamSerializerJQLike({domain: domain}))
                 .then(function(response){

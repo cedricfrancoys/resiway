@@ -30,6 +30,10 @@ require_once('qn.lib.php');
 // override ORM method for date formatting (ISO 8601)
 DataAdapter::setMethod('db', 'orm', 'date', function($value) {
     $dateTime = DateTime::createFromFormat('Y-m-d', $value);
+    if($dateTime === false) {
+        // set current time as default value
+        $dateTime = DateTime::createFromFormat('Y-m-d', date('Y-m-d H:i:s'));
+    }
     return date("c", $dateTime->getTimestamp());
 });
 DataAdapter::setMethod('ui', 'orm', 'date', function($value) {

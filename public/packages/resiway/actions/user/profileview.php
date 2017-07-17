@@ -44,7 +44,7 @@ try {
         use ($params) {
             // read count_views
             $res = $om->read($object_class, $object_id, ['count_views']);
-            if($res < 0 || !isset($res[$object_id]) throw new Exception("user_unknown", QN_ERROR_UNKNOWN_OBJECT);
+            if($res < 0 || !isset($res[$object_id])) throw new Exception("user_unknown", QN_ERROR_UNKNOWN_OBJECT);
             // update count_view
             $om->write($object_class, $object_id, [ 'count_views' => $res[$object_id]['count_views'] + 1 ]);            
             // use previous count_view as returned value

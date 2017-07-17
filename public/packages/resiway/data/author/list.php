@@ -53,7 +53,7 @@ $params = QNLib::announce(
 /*
  @actions   this is a data provider: no change is made to the stored data
  @rights    everyone has read access on these data
- @returns   list of questions matching given criteria
+ @returns   list of authors matching given criteria
 */
 
 
@@ -63,7 +63,7 @@ try {
     
     $om = &ObjectManager::getInstance();
 
-    // 0) retrieve matching questions identifiers
+    // 0) retrieve matching authors identifiers
     
     // total is not knwon yet
     if($params['total'] < 0) {        
@@ -78,7 +78,7 @@ try {
     }
     
     if(!empty($authors_ids)) {
-        // retrieve questions
+        // retrieve authors
         $authors = $om->read('resiway\Author', $authors_ids, ['id', 'name', 'name_url', 'url', 'description']);
         $result = array_values($authors);
     }
