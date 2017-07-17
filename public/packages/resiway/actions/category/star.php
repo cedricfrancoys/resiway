@@ -12,10 +12,10 @@ set_silent(true);
 
 // announce script and fetch parameters values
 $params = QNLib::announce([
-    'description'	=>	"Registers a document as favorite for current user",
+    'description'	=>	"Registers a category as favorite for current user",
     'params' 		=>	[
-        'document_id'	=> [
-            'description'   => 'Identifier of the document to star.',
+        'category_id'	=> [
+            'description'   => 'Identifier of the category to star.',
             'type'          => 'integer', 
             'required'      => true
         ]
@@ -25,9 +25,9 @@ $params = QNLib::announce([
 list($result, $error_message_ids, $notifications) = [true, [], []];
 
 list($action_name, $object_class, $object_id) = [ 
-    'resilib_document_star',                         
-    'resilib\Document',                                   
-    $params['document_id']
+    'resiway_category_star',                         
+    'resiway\Category',                                   
+    $params['category_id']
 ];
 
 try {
@@ -41,7 +41,7 @@ try {
         true,                                                       // $toggle
         function ($om, $user_id, $object_class, $object_id) {       // $do
             $objects = $om->read($object_class, $object_id, ['count_stars']);  
-            // update document star count
+            // update category star count
             $om->write($object_class, $object_id, [
                         'count_stars' => $objects[$object_id]['count_stars']+1
                       ]);
@@ -49,12 +49,12 @@ try {
                                                     'object_class' => $object_class,
                                                     'object_id' => $object_id,
                                                     'user_id' => $user_id
-                                                ]);                      
+                                                ]);                  
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
             $objects = $om->read($object_class, $object_id, ['count_stars']);  
-            // update document star count
+            // update category star count
             $om->write($object_class, $object_id, [
                         'count_stars' => $objects[$object_id]['count_stars']-1
                       ]);

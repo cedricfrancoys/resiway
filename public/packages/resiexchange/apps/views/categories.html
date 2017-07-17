@@ -24,8 +24,20 @@
 
         <div class="loader" ng-show="ctrl.config.loading"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
         
-        <div ng-show="!ctrl.config.loading" ng-repeat="category in ctrl.config.items" class="col-1-4 categories category-container" >
-        
+        <div ng-show="!ctrl.config.loading" ng-repeat="(index, category) in ctrl.config.items" class="col-1-4 categories category-container" >
+            <a href 
+               style="text-decoration: none;"
+               ng-class="{on: category.history['resiway_category_star']}"
+               id="category-star"
+               title="{{'CATEGORY_ACTIONS_STAR_TOOLTIP' | translate}}"
+               class="fa fa-star star"
+               ng-click="categoryStar($event, index)" 
+               uib-popover-template="'popoverCustom.html'" 
+               popover-trigger="'toggle-popover'" 
+               popover-placement="right"
+               popover-append-to-body="true"
+               aria-hidden="true">
+            </a>        
             <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" title="{{category.path}}">{{category.title}}</a>
             <div class="category-count">x {{category.count_questions | humanizeCount}}</div>
             <!-- <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div> -->

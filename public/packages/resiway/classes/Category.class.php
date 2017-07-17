@@ -39,7 +39,10 @@ class Category extends \easyobject\orm\Object {
                                     'store'             => true, 
                                     'function'          => 'resiway\Category::getCountDocuments',
                                     'onchange'          => 'resiway\Category::onchangeCountDocuments'
-                                   ),                                   
+                                   ),
+
+            /* number of times this category has been marked as favorite */
+            'count_stars'		=> array('type' => 'integer'),
             
             'path'				=> array(
                                     'type'              => 'function', 
@@ -86,7 +89,8 @@ class Category extends \easyobject\orm\Object {
     
     public static function getDefaults() {
         return array(
-             'parent_id'           => function() { return 0; },
+             'parent_id'           => function() { return 0; },             
+             'count_stars'         => function() { return 0; },
              'channel_id'          => function() { return 1; }
         );
     }

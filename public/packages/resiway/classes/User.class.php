@@ -127,6 +127,11 @@ class User extends \easyobject\orm\Object {
                                             'foreign_field'     => 'user_id'
                                            ),
                                    
+            'user_favorites_ids'        => array(
+                                            'type'              => 'one2many', 
+                                            'foreign_object'    => 'resiway\UserFavorite', 
+                                            'foreign_field'     => 'user_id'
+                                           ),
           
             'badges_ids'                => array(
                                             'type'              => 'many2many', 

@@ -28,12 +28,21 @@ console.log(ctrl.user);
         return;
     }
     ctrl.publicity_mode = {id: 1, text: 'Fullname'};
+
+    ctrl.delays = [
+        {delay: 0,  label: 'notification immédiate'},
+        {delay: 1,  label: 'un jour (max 1 email par jour)'},
+        {delay: 7,  label: 'une semaine (max 1 email par semaine)'},
+        {delay: 30, label: 'un mois (max 1 email par mois)'}
+    ];
     
     ctrl.modes = [ 
         {id: 1, text: 'Fullname'}, 
         {id: 2, text: 'Firstname + Lastname inital'}, 
         {id: 3, text: 'Firstname only'}
     ];
+    
+    // translate labels
     $translate(['USER_EDIT_PUBLICITY_MODE_FULLNAME','USER_EDIT_PUBLICITY_MODE_FIRSTNAME_L','USER_EDIT_PUBLICITY_MODE_FIRSTNAME'])
     .then(function (translations) {
         ctrl.modes[0].text = translations['USER_EDIT_PUBLICITY_MODE_FULLNAME'];

@@ -21,7 +21,11 @@ class UserBadge extends \easyobject\orm\Object {
             'awarded'			=> array('type' => 'boolean'),
             
             // percentages of achivement (float value from 0 to 1)
-            'status'		    => array('type' => 'function', 'result_type' => 'float', 'store' => true, 'function' => 'resiway\UserBadge::getStatus'),
+            'status'		    => array('type'         => 'function', 
+                                         'result_type'  => 'float', 
+                                         'store'        => true, 
+                                         'function'     => 'resiway\UserBadge::getStatus'
+                                         )
         );
     }
     

@@ -62,6 +62,10 @@ list($result, $error_message_ids, $total) = [true, [], $params['total']];
 try {
 
     $om = &ObjectManager::getInstance();
+
+    // 0) retrieve parameters
+    $user_id = ResiAPI::userId();
+    if($user_id < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
     
     $params['domain'] = QNLib::domain_normalize($params['domain']);
     if(!QNLib::domain_check($params['domain'])) $params['domain'] = [];
@@ -73,17 +77,25 @@ try {
         $ids = $om->search('resiway\Category', $params['domain'], $params['order'], $params['sort']);
         if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
         $total = count($ids);
-		$tags_ids = array_slice($ids, $params['start'], $params['limit']);
+		$categories_ids = array_slice($ids, $params['start'], $params['limit']);
     }
     else {
-        $tags_ids = $om->search('resiway\Category', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
-        if($tags_ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
+        $categories_ids = $om->search('resiway\Category', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
+        if($categories_ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
     }
 
-    if(!empty($tags_ids)) {    
+    if(!empty($categories_ids)) {    
         // retrieve categories
-        $res = $om->read('resiway\Category', $tags_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path', 'count_questions', 'count_documents']);
+        $res = $om->read('resiway\Category', $categories_ids, ['id', 'title', 'description', 'path', 'parent_id', 'parent_path', 'count_questions', 'count_documents']);
         if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
+
+        if($user_id > 0) {        
+            $favorites_ids = $om->search('resiway\UserFavorite', [['user_id', '=', $user_id], ['object_class', '=', 'resiway\Category'], ['object_id', 'in', $categories_ids]]);
+            $categories_favorites = $om->read('resiway\UserFavorite', $favorites_ids, ['object_id']);
+            foreach($categories_favorites as $oid => $odata) {
+                $res[$odata['object_id']]['history']['resiway_category_star'] = true;
+            }
+        }
         $result = array_values($res);
     }
 }

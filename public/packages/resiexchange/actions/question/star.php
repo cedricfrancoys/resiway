@@ -45,6 +45,11 @@ try {
             $om->write($object_class, $object_id, [
                         'count_stars' => $objects[$object_id]['count_stars']+1
                       ]);
+            $om->create('resiway\UserFavorite', [
+                                                    'object_class' => $object_class,
+                                                    'object_id' => $object_id,
+                                                    'user_id' => $user_id
+                                                ]);                      
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
@@ -53,6 +58,12 @@ try {
             $om->write($object_class, $object_id, [
                         'count_stars' => $objects[$object_id]['count_stars']-1
                       ]);
+            $ids = $om->search('resiway\UserFavorite', [ 
+                                                    ['user_id','=', $user_id], 
+                                                    ['object_class','=',$object_class], 
+                                                    ['object_id', '=', $object_id] 
+                                                ]);
+            if($ids > 0) $om->remove('resiway\UserFavorite', $ids, true);                      
             return false;
         }
     );

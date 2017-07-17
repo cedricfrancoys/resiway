@@ -232,6 +232,8 @@ var translations = {
     // Categories  
     "CATEGORIES_TITLE": "Catégories",
 
+    "CATEGORY_ACTIONS_STAR_TOOLTIP": "Ajouter cette catégorie dans tes favoris, pour suivre ses nouvelles publications",
+    
     "CATEGORY_EDIT_TITLE": "Édition catégorie", 
     "CATEGORY_EDIT_FIELDS_TITLE_HELP": "Indiquez un titre aussi clair et concis que possible pour la catégorie. (max 64 caractères)",  
     "CATEGORY_EDIT_FIELDS_TITLE": "Titre",
