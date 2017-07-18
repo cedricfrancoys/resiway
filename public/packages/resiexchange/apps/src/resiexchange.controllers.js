@@ -3818,7 +3818,12 @@ angular.module('resiexchange')
                 domain: ['user_id', '=', ctrl.user.id],
                 provider: 'resiway_actionlog_list'
             },        
-        });   
+        });
+        
+        $scope.removeFavorite = function($event, index) {            
+            $http.post('index.php?do=resiway_userfavorite_delete&userfavorite_id='+ctrl.favorites.items[index].id);
+            ctrl.favorites.items.splice(index, 1); 
+        };
     }
 ]);
 angular.module('resiexchange')

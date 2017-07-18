@@ -96,6 +96,7 @@ try {
         
         // force download 
         if( $params['download'] ) {
+// todo : increment count-download
             // disable compression whatever default option is
             ini_set('zlib.output_compression','0');
 
@@ -115,6 +116,7 @@ try {
         }
         // force view 
         else if( $params['view'] ) {
+// todo : increment count-download            
             header("Content-Disposition: inline; filename=".$document_data['title_url'].".pdf;");    
             header("Content-Type: application/pdf");
             header("Content-Length: ".strlen($document_data['content']));

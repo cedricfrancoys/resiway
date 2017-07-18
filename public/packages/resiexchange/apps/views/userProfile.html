@@ -230,8 +230,9 @@
 
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
                 <div ng-hide="ctrl.favorites.items == -1" style="min-height: 250px;">
-                    <div ng-repeat="item in ctrl.favorites.items" class="post-summary col-1-1">
+                    <div ng-repeat="(index, item) in ctrl.favorites.items" class="post-summary col-1-1">
                         <div class="col-9-12" style="overflow: hidden">
+                            <a class="star on" ng-click="removeFavorite($event, index)"><i class="fa fa-star" aria-hidden="true"></i></a>
                             <i class="fa" ng-class="{'fa-tags': item.object_class=='resiway\\Category', 'fa-comments': item.object_class=='resiexchange\\Question', 'fa-book': item.object_class=='resilib\\Document'}" aria-hidden="true"></i>
                             <h3 class="post-title"><a href="{{rootCtrl.makeLink(item.object_class, item.object_id)}}">{{item.name}}</a></h3>
                         </div>

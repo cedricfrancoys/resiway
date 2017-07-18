@@ -324,5 +324,6 @@ var translations = {
     "category_description_length_invalid": "Assures-toi que la description de la catégorie ne soit pas trop longue (max. 255 caractères)",
 
     // errors related to documents    
-    "document_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes soumissions (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)"
+    "document_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes soumissions (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
+    "document_missing_pages": "Oups, il manque le nombre de pages du document"
 };

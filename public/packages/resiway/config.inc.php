@@ -58,6 +58,7 @@ define('RESIEXCHANGE_ANSWER_CONTENT_EXCERPT_LENGTH_MAX', 200);
 /*
 *
 */
+// note: binary data upload max size is defined in root config\config.inc.php
 define('RESILIB_DOCUMENT_DAILY_MAX', 200);
 
 define('RESILIB_DOCUMENT_CATEGORIES_COUNT_MIN', 0);
