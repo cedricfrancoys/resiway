@@ -337,6 +337,11 @@ var resiway = angular.module('resiexchange', [
                     'Heading 1=h3;' +
                     'Heading 2=h4;' +
                     'Heading 3=h5;',
+            formats: {
+                bold : {inline : 'b' },  
+                italic : {inline : 'i' },
+                underline : {inline : 'u'}
+            },                    
             menu : {
                 edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
                 format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | charmap | removeformat'}

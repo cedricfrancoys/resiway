@@ -187,6 +187,8 @@ var translations = {
     "USER_PROFILE_PROFILE_VIEWS": "vues du profil",
     "USER_PROFILE_LAST_SEEN": "Dernière connexion",
     
+    "USER_PROFILE_FAVORITE_REMOVE": "Retirer de mes favoris",
+    
     "USER_EDIT_TITLE": "Profil utilisateur",
     "USER_EDIT_UPDATE_SCCESSFUL": "Modifications réalisées avec succès",
     "USER_EDIT_PLACEHOLDER_EMAIL": "email",
