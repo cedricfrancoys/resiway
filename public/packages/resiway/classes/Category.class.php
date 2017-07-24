@@ -142,7 +142,8 @@ class Category extends \easyobject\orm\Object {
     
     public static function onchangeParentId($om, $oids, $lang) {
         self::onchangeTitle($om, $oids, $lang);
-        self::onchangeCountQuestions($om, $oids, $lang);        
+        self::onchangeCountQuestions($om, $oids, $lang);
+        self::onchangeCountDocuments($om, $oids, $lang);        
     }    
 
     public static function getRelatedQuestionsIds($om, $oids, $lang) {
