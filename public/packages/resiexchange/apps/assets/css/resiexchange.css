@@ -905,6 +905,7 @@ input[type="text"] {
 .document .summary .started {
     float: right;
     width: 200px;
+    width: auto;
     font-size: 12px;
     line-height: inherit;
     padding-top: 4px;
@@ -1442,6 +1443,7 @@ input[type="text"] {
 .question .summary .started {
     float: right;
     width: 200px;
+    width: auto;
     font-size: 12px;
     line-height: inherit;
     padding-top: 4px;

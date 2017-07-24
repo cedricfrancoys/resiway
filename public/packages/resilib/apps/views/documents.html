@@ -48,7 +48,7 @@
                 <div class="document-author">par <strong>{{document.author}}</strong></div>
                 <div class="excerpt">{{rootCtrl.htmlToTxt(document.description)}}</div>
                 
-                <div class="tags">
+                <div class="tags col-4-12 nopad">
                     <a ng-repeat="tag in document.categories" 
                     ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" 
                     class="tag" 
@@ -59,7 +59,7 @@
                     popover-title="{{tag.path}}"
                     >{{tag.title}}</a> 
                 </div>
-                <div class="started">
+                <div class="started col-4-12 nopad">
                     <div class="signature owner">
                         <div class="user-info">
                             <div class="user-action-time">

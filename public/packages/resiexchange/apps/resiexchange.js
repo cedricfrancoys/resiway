@@ -1443,7 +1443,8 @@ angular.module('resiexchange')
             '/user/password/:code?': '/participant/password/:code?',
             '/user/confirm/:code': '/participant/confirmation/:code',
             '/user/notifications/:id': '/participant/notifications/:id',
-            '/user/sign/:mode?': '/participant/sign/:mode?',
+// translating sign page means non-unique id and therefore makes it difficult to manage pending actions process
+            // '/user/sign/:mode?': '/participant/sign/:mode?',
             '/user/edit/:id': '/participant/edition/:id',
             '/user/:id/:name?': '/participant/:id/:name?',                        
             '/author/:name': '/auteur/:name',

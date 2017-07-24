@@ -63,7 +63,7 @@
                 </h3>
                 <div class="excerpt">{{question.content_excerpt}}</div>
                 
-                <div class="tags">
+                <div class="tags col-8-12 nopad">
                     <a ng-repeat="tag in question.tags" 
                     ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" 
                     class="tag" 
@@ -74,7 +74,7 @@
                     popover-title="{{tag.path}}"
                     >{{tag.title}}</a> 
                 </div>
-                <div class="started">
+                <div class="started col-4-12 nopad">
                     <div class="signature owner">
                         <div class="user-info">
                             <div class="user-action-time">
