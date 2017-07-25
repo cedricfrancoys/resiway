@@ -390,6 +390,7 @@ var resiway = angular.module('resiexchange', [
             case 'resiexchange\\Answer': return 'resiexchange.'+$rootScope.config.locale+'#/answer/'+object_id;
             case 'resiexchange\\QuestionComment': return 'resiexchange.'+$rootScope.config.locale+'#/questionComment/'+object_id;               
             case 'resiexchange\\AnswerComment': return 'resiexchange.'+$rootScope.config.locale+'#/answerComment/'+object_id;
+            case 'resilib\\Document': return 'resilib.'+$rootScope.config.locale+'#/document/'+object_id;            
             }
         };
 
