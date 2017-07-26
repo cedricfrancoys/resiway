@@ -11,7 +11,7 @@ $token = md5($rev.rand(1, 100));
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta name="title" content="ResiWay - La plateforme pour la résilience">        
-        <meta name="description" content="L'association ResiWay offre des outils collaboratifs pour le partage et la diffusion de savoirs libres vers l'autonomie et la résilience">
+        <meta name="description" content="L'association ResiWay supporte des outils collaboratifs pour le partage et la diffusion de savoirs libres vers l'autonomie et la résilience">
 
         <link rel="alternate" href="https://www.resiway.org/resiway.fr" hreflang="fr"/>
         

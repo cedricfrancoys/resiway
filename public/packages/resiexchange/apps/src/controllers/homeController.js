@@ -83,7 +83,7 @@ angular.module('resiexchange')
         switch(value) {
             case '5EUR/mois': $scope.amount_dedication = "Aidez une famille à savoir comment manger sain et local";
             break;
-            case '10EUR/mois': $scope.amount_dedication = "Offrez aux agriculteurs le moyen de savoir absorber du CO2 au lieu d'en émettre trop";
+            case '10EUR/mois': $scope.amount_dedication = "Offrez aux agriculteurs les moyens d'absorber du CO2 au lieu d'en émettre trop";
             break;
             case '25EUR/mois': $scope.amount_dedication = "Participez à la résilience de l'humain vivant en harmonie avec l'environnement dont il dépend";
             break;
