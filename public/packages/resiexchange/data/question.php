@@ -26,9 +26,8 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids) = [true, []];
 
-list($question_id) = [
-    $params['id']
-];
+list($object_class, $object_id) = ['resiexchange\Question', $params['id']];
+
 
 try {
     
@@ -48,40 +47,41 @@ try {
     
     // retrieve question    
     $result = [];
-    $res = $om->read('resiexchange\Question', $question_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
-    if($res < 0 || !isset($res[$question_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
-    $question_data = $res[$question_id];
+    $objects = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'answers_ids', 'comments_ids']);
+    if($objects < 0 || !isset($objects[$object_id])) throw new Exception("question_unknown", QN_ERROR_INVALID_PARAM);
+    $object_data = $objects[$object_id];
 
-    $result = $question_data;
+    $result = $object_data;
 
     
     // retreive author data
-    $author_data = ResiAPI::loadUserPublic($question_data['creator']);
+    $author_data = ResiAPI::loadUserPublic($object_data['creator']);
     if($author_data < 0) throw new Exception("question_author_unknown", QN_ERROR_UNKNOWN_OBJECT);
     $result['creator'] = $author_data;
 
     // retrieve editor data
-    if($question_data['editor'] > 0) {
-        $editor_data = ResiAPI::loadUserPublic($question_data['editor']);
+    if($object_data['editor'] > 0) {
+        $editor_data = ResiAPI::loadUserPublic($object_data['editor']);
         if($editor_data < 0) throw new Exception("question_editor_unknown", QN_ERROR_UNKNOWN_OBJECT);        
         $result['editor'] = $editor_data;
     }    
       
     // retrieve actions performed by the user on this question
-    $question_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Question', $question_id);
-    $result['history'] = $question_history[$question_id];
+    $question_history = ResiAPI::retrieveHistory($user_id, $object_class, $object_id);
+    $result['history'] = $question_history[$object_id];
 
     
+// todo: should we record view activity for non-users ?
+    // update question's count_views 
+    $om->write($object_class, $object_id, [ 'count_views' => $object_data['count_views']+1 ]);
     if($user_id > 0 && !isset($result['history']['resiexchange_question_view'])) {
-        // update question's count_views 
-        $om->write('resiexchange\Question', $question_id, [ 'count_views' => $question_data['count_views']+1 ]);
         // add question view to user history
-        ResiAPI::registerAction($user_id, 'resiexchange_question_view', 'resiexchange\Question', $question_id);  
+        ResiAPI::registerAction($user_id, 'resiexchange_question_view', $object_class, $object_id);  
     }
     
     // retrieve tags
     $result['tags'] = [];
-    $res = $om->read('resiway\Category', $question_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
+    $res = $om->read('resiway\Category', $object_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
     if($res > 0) {
         $tags = [];
         foreach($res as $tag_id => $tag_data) {           
@@ -101,7 +101,7 @@ try {
     // retrieve comments
     // output JSON type has to be Array
     $result['comments'] = [];
-    $res = $om->read('resiexchange\QuestionComment', $question_data['comments_ids'], ['creator', 'created', 'content', 'score']);        
+    $res = $om->read('resiexchange\QuestionComment', $object_data['comments_ids'], ['creator', 'created', 'content', 'score']);        
     if($res > 0) {
         // memorize comments authors identifiers for later load
         $comments_authors_ids = [];
@@ -126,7 +126,7 @@ try {
         }
         
         // retrieve actions performed by the user on these comments
-        $comments_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\QuestionComment', $question_data['comments_ids']);
+        $comments_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\QuestionComment', $object_data['comments_ids']);
         foreach($comments_history as $comment_id => $history) {
             $comments[$comment_id]['history'] = $history;
         }        
@@ -138,7 +138,7 @@ try {
     // retreive answers
     // output JSON type has to be Array
     $result['answers'] = [];
-    $res = $om->read('resiexchange\Answer', $question_data['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'source_author', 'source_license', 'source_url', 'score', 'comments_ids']);    
+    $res = $om->read('resiexchange\Answer', $object_data['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'source_author', 'source_license', 'source_url', 'score', 'comments_ids']);    
     if($res > 0) {
         // memorize answers authors identifiers for later load
         $answers_authors_ids = [];
@@ -172,7 +172,7 @@ try {
         }        
         
         // retrieve actions performed by the user on these answers
-        $answers_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Answer', $question_data['answers_ids']);
+        $answers_history = ResiAPI::retrieveHistory($user_id, 'resiexchange\Answer', $object_data['answers_ids']);
         foreach($answers_history as $answer_id => $history) {
             $answers[$answer_id]['history'] = $history;
         }
