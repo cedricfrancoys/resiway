@@ -24,9 +24,10 @@ $params = QNLib::announce(
 );
 
 
+list($result, $error_message_ids) = [true, []];
+
 list($object_class, $object_id) = ['resilib\Document', $params['id']];
 
-list($result, $error_message_ids) = [true, []];
 
 try {
     
@@ -46,40 +47,41 @@ try {
 
     // retrieve document
     $result = [];
-    $res = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'author', 'pages', 'original_url', 'original_filename', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'comments_ids']);    
+    $objects = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'author', 'pages', 'original_url', 'original_filename', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'comments_ids']);    
     
-    if($res < 0 || !isset($res[$object_id])) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
-    $document_data = $res[$object_id];
+    if($objects < 0 || !isset($objects[$object_id])) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
+    $object_data = $objects[$object_id];
 
-    $result = $document_data;
+    $result = $object_data;
     
     // retreive author data
-    $author_data = ResiAPI::loadUserPublic($document_data['creator']);
+    $author_data = ResiAPI::loadUserPublic($object_data['creator']);
     if($author_data < 0) throw new Exception("document_author_unknown", QN_ERROR_UNKNOWN_OBJECT);
     $result['creator'] = $author_data;
     
     // retrieve editor data
-    if($document_data['editor'] > 0) {
-        $editor_data = ResiAPI::loadUserPublic($document_data['editor']);
+    if($object_data['editor'] > 0) {
+        $editor_data = ResiAPI::loadUserPublic($object_data['editor']);
         if($editor_data < 0) throw new Exception("document_editor_unknown", QN_ERROR_UNKNOWN_OBJECT);        
         $result['editor'] = $editor_data;
     }    
 
-    // retrieve actions performed by the user on this question
+    // retrieve actions performed by the user on this document
     $document_history = ResiAPI::retrieveHistory($user_id, $object_class, $object_id);
     $result['history'] = $document_history[$object_id];
 
-    
+
+// todo: should we record view activity for non-users ?
+    // update document's count_views 
+    $om->write($object_class, $object_id, [ 'count_views' => $object_data['count_views']+1 ]);
     if($user_id > 0 && !isset($result['history']['resilib_document_view'])) {
-        // update question's count_views 
-        $om->write($object_class, $object_id, [ 'count_views' => $document_data['count_views']+1 ]);
-        // add question view to user history
+        // add document view to user history
         ResiAPI::registerAction($user_id, 'resilib_document_view', 'resilib\Document', $object_id);  
     }
     
     // retrieve tags
     $result['categories'] = [];
-    $res = $om->read('resiway\Category', $document_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
+    $res = $om->read('resiway\Category', $object_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
     if($res > 0) {
         $categories = [];
         foreach($res as $cat_id => $cat_data) {           
@@ -99,7 +101,7 @@ try {
     // retrieve comments
     // output JSON type has to be Array
     $result['comments'] = [];
-    $res = $om->read('resilib\DocumentComment', $document_data['comments_ids'], ['creator', 'created', 'content', 'score']);        
+    $res = $om->read('resilib\DocumentComment', $object_data['comments_ids'], ['creator', 'created', 'content', 'score']);        
     if($res > 0) {
         // memorize comments authors identifiers for later load
         $comments_authors_ids = [];
@@ -124,7 +126,7 @@ try {
         }
         
         // retrieve actions performed by the user on these comments
-        $comments_history = ResiAPI::retrieveHistory($user_id, 'resilib\DocumentComment', $document_data['comments_ids']);
+        $comments_history = ResiAPI::retrieveHistory($user_id, 'resilib\DocumentComment', $object_data['comments_ids']);
         foreach($comments_history as $comment_id => $history) {
             $comments[$comment_id]['history'] = $history;
         }        
