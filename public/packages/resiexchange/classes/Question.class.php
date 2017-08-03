@@ -100,6 +100,16 @@ class Question extends \easyobject\orm\Object {
                                         'foreign_field'	=> 'question_id'
                                         ),
 
+            /* list of keywords indexes related to this document */
+            'indexes_ids'	        => array(
+                                        'type' 			    => 'many2many', 
+                                        'foreign_object'	=> 'resiway\Index', 
+                                        'foreign_field'		=> 'questions_ids', 
+                                        'rel_table'		    => 'resiway_rel_index_question', 
+                                        'rel_foreign_key'	=> 'index_id', 
+                                        'rel_local_key'		=> 'question_id'
+                                       ),
+                                       
             /* identifiers of other questions to which current question has been linked */
             'related_questions_ids'	 => array(
                                         'type' 			    => 'many2many', 

@@ -1148,6 +1148,7 @@ angular.module('resiexchange')
         
 
         $scope.answerDelete = function ($event, index) {
+            
             // remember selector for popover location             
             var selector = feedbackService.selector($event.target);            
             

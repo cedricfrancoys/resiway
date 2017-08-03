@@ -96,6 +96,11 @@ class ObjectManager {
 
 
 	private function __construct() {
+        // make sure mandatory constants are defined
+        if(!defined('EXPORT_FLAG')) {
+            if(!function_exists('\config\export_config')) die('mandatory config namespace or function export_config is missing');
+            \config\export_config();
+        }
         $this->cache = array();
 		$this->instances = array();
 		// initialize error handler
@@ -802,7 +807,7 @@ todo : to validate
             
 			// list ids of records having creation date older than DRAFT_VALIDITY
             // $ids = $this->search($uid, $class, array(array(array('state', '=', 'draft'),array('created', '<', date("Y-m-d H:i:s", time()-(3600*24*DRAFT_VALIDITY))))), 'id', 'asc'); 
-            $ids = $this->search($class, array(array(array('state', '=', 'draft'),array('created', '<', date("Y-m-d H:i:s", time()-(3600*24*DRAFT_VALIDITY))))), 'id', 'asc');            
+            $ids = $this->search($class, [['state', '=', 'draft'],['created', '<', date("Y-m-d H:i:s", time()-(3600*24*DRAFT_VALIDITY))]], 'id', 'asc');            
 			// use the oldest expired draft, if any            
 			if(!count($ids)) $oid = 0;
             else $oid = $ids[0];

@@ -177,6 +177,7 @@ $allowed_associations = array(
 	'string' 		=> array('char', 'varchar', 'tinytext', 'text', 'mediumtext', 'longtext', 'blob', 'mediumblob'),
 	'short_text' 	=> array('char', 'varchar', 'tinytext', 'text', 'mediumtext', 'longtext', 'blob', 'mediumblob'),
 	'text' 			=> array('tinytext', 'text', 'mediumtext', 'longtext', 'blob'),
+	'html' 			=> array('tinytext', 'text', 'mediumtext', 'longtext', 'blob'),    
 	'date' 			=> array('date', 'datetime'),
 	'time' 			=> array('time'),
 	'datetime' 		=> array('datetime'),

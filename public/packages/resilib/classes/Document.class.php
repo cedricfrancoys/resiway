@@ -103,6 +103,16 @@ class Document extends \easyobject\orm\Object {
                                         'foreign_object'=> 'resilib\DocumentComment', 
                                         'foreign_field'	=> 'document_id'
                                         ),
+
+            /* list of keywords indexes related to this document */
+            'indexes_ids'	        => array(
+                                        'type' 			    => 'many2many', 
+                                        'foreign_object'	=> 'resiway\Index', 
+                                        'foreign_field'		=> 'documents_ids', 
+                                        'rel_table'		    => 'resiway_rel_index_document', 
+                                        'rel_foreign_key'	=> 'index_id', 
+                                        'rel_local_key'		=> 'document_id'
+                                       )
                                         
         );
     }

@@ -1425,7 +1425,7 @@ angular.module('resiexchange')
             '/help/topic/edit/:id': '/aide/sujet/edition/:id',
             '/help/topic/:id/:title?': '/aide/sujet/:id/:title?',
             '/category/edit/:id': '/categorie/edition/:id',
-            '/category/:id': '/categorie/:id',
+            '/category/:id/:title?': '/categorie/:id/:title?',
             '/categories': '/categories',
             '/badges': '/badges',
             '/document/edit/:id': '/document/edition/:id',
@@ -1548,14 +1548,27 @@ angular.module('resiexchange')
                         }]
                     }        
         },
-        '/category/:id': {
+        '/category/:id/:title?': {
                     templateUrl : templatePath+'category.html',
-                    controller  : 'categoryController as ctrl',
-                    resolve     : {
-                        category: ['routeCategoryProvider', function (provider) {
-                            return provider.load();
-                        }]
-                    }            
+                    controller  : ['$location', '$route', '$rootScope', function($location, $route, $rootScope) {
+                        var criteria = angular.extend({}, $rootScope.search.default, {domain: [['categories_ids', 'contains', $route.current.params.id]]});
+                        angular.copy(criteria, $rootScope.search.criteria);
+                        
+                        var list_page = '';
+                        switch($rootScope.config.application) {
+                            case 'resiway':
+                            case 'resiexchange':
+                                list_page = '/questions';
+                                break;
+                            case 'resilib':
+                                list_page = '/documents';
+                                break;
+                        }
+
+// todo : we shoud define a dedicated viw (template) for category                            
+                        // temp solution
+                        $location.path(list_page);          
+                    }]      
         },        
         /**
         * Document related routes
@@ -4845,6 +4858,7 @@ angular.module('resiexchange')
         
 
         $scope.answerDelete = function ($event, index) {
+            
             // remember selector for popover location             
             var selector = feedbackService.selector($event.target);            
             

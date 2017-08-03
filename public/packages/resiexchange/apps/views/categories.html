@@ -38,7 +38,10 @@
                popover-append-to-body="true"
                aria-hidden="true">
             </a>        
-            <a class="category" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" title="{{category.path}}">{{category.title}}</a>
+            <a 
+                href="#/category/{{category.id}}/{{category.title_url}}"
+                class="category"
+                title="{{category.path}}">{{category.title}}</a>
             <div class="category-count">x {{category.count_questions | humanizeCount}}</div>
             <!-- <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div> -->
             <div>

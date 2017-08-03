@@ -1,5 +1,6 @@
 <?php
 namespace resiway;
+use qinoa\text\TextTransformer as TextTransformer;
 
 
 class Category extends \easyobject\orm\Object {
@@ -13,13 +14,22 @@ class Category extends \easyobject\orm\Object {
             'channel_id'        => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
             
             'title'             => array('type' => 'string', 'multilang' => true, 'onchange' => 'resiway\Category::onchangeTitle'),
+
+            /* title URL-formatted (for links) */
+            'title_url'         => array(
+                                    'type'              => 'function',
+                                    'result_type'       => 'string',
+                                    'store'             => true, 
+                                    'function'          => 'resiway\Category::getTitleURL'
+                                   ),
             
             'description'		=> array('type' => 'text', 'multilang' => true),
             
             'parent_id'			=> array(
                                     'type'              => 'many2one', 
                                     'foreign_object'    => 'resiway\Category', 
-                                    'onchange'          => 'resiway\Category::onchangeParentId'),
+                                    'onchange'          => 'resiway\Category::onchangeParentId'
+                                   ),
                                     
             'thumbnail'			=> array('type' => 'file'),
 
@@ -95,49 +105,34 @@ class Category extends \easyobject\orm\Object {
         );
     }
     
-    public static function slugify($value) {
-        // remove accentuated chars
-        $value = htmlentities($value, ENT_QUOTES, 'UTF-8');
-        $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
-        $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
-        // remove all non-space-alphanum-dash chars
-        $value = preg_replace('/[^\s-a-z0-9]/i', '', $value);
-        // replace spaces with dashes
-        // $value = preg_replace('/[\s-]+/', '-', $value);     
-        // replace spaces, dashes and quotes with dashes        
-        $value = preg_replace('/[\s-\']+/', '-', $value);        
-        // trim the end of the string
-        $value = trim($value, '.-_');
-        return strtolower($value);
-    }
-    
+   
     /*
     * Handler to be run either when title of the tag is changed or it is reassigned to another parent tag
     */
     public static function onchangeTitle($om, $oids, $lang) {
         // invalidate path (force re-compute)
-        $om->write('resiway\Category', $oids, ['path' => null], $lang);
+        $om->write(__CLASS__, $oids, ['path' => null, 'title_url' => null], $lang);
         // find children tags and force to re-compute path
-        $tags_ids = $om->search('resiway\Category', ['parent_id', 'in', $oids]);
+        $tags_ids = $om->search(__CLASS__, ['parent_id', 'in', $oids]);
         if($tags_ids > 0 && count($tags_ids)) self::onchangeTitle($om, $tags_ids, $lang);
     }
     
     public static function onchangeCountQuestions($om, $oids, $lang) {
         // invalidate parent questions-counter (force re-compute)
-        $res = $om->read('resiway\Category', $oids, ['parent_id']);
+        $res = $om->read(__CLASS__, $oids, ['parent_id']);
         $parents_ids = array_map(function($a) { return $a['parent_id']; }, $res);
-        $om->write('resiway\Category', $parents_ids, ['count_questions' => null]);
+        $om->write(__CLASS__, $parents_ids, ['count_questions' => null]);
         // we assume counter has been set to null, and force immediate recomputing
-        $om->read('resiway\Category', $oids, ['count_questions']);
+        $om->read(__CLASS__, $oids, ['count_questions']);
     }
 
     public static function onchangeCountDocuments($om, $oids, $lang) {
         // invalidate parent documents-counter (force re-compute)
-        $res = $om->read('resiway\Category', $oids, ['parent_id']);
+        $res = $om->read(__CLASS__, $oids, ['parent_id']);
         $parents_ids = array_map(function($a) { return $a['parent_id']; }, $res);
-        $om->write('resiway\Category', $parents_ids, ['count_documents' => null]);
+        $om->write(__CLASS__, $parents_ids, ['count_documents' => null]);
         // we assume counter has been set to null, and force immediate recomputing
-        $om->read('resiway\Category', $oids, ['count_documents']);
+        $om->read(__CLASS__, $oids, ['count_documents']);
     }
     
     public static function onchangeParentId($om, $oids, $lang) {
@@ -149,7 +144,7 @@ class Category extends \easyobject\orm\Object {
     public static function getRelatedQuestionsIds($om, $oids, $lang) {
         $result = [];
         // cyclic dependency: remember that this approach only works if all involved categories paths are set !       
-        $res = $om->read('resiway\Category', $oids, ['questions_ids', 'children_ids']);
+        $res = $om->read(__CLASS__, $oids, ['questions_ids', 'children_ids']);
         foreach($oids as $oid) {
             $result[$oid] = [];
             if(isset($res[$oid])) {
@@ -169,7 +164,7 @@ class Category extends \easyobject\orm\Object {
     public static function getRelatedDocumentsIds($om, $oids, $lang) {
         $result = [];
         // cyclic dependency: remember that this approach only works if all involved categories paths are set !       
-        $res = $om->read('resiway\Category', $oids, ['documents_ids', 'children_ids']);
+        $res = $om->read(__CLASS__, $oids, ['documents_ids', 'children_ids']);
         foreach($oids as $oid) {
             $result[$oid] = [];
             if(isset($res[$oid])) {
@@ -212,15 +207,15 @@ class Category extends \easyobject\orm\Object {
     
     public static function getPath($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiway\Category', $oids, ['title', 'parent_id', 'parent_id.path'], $lang);        
+        $res = $om->read(__CLASS__, $oids, ['title', 'parent_id', 'parent_id.path'], $lang);        
         foreach($oids as $oid) {
             $result[$oid] = '';
             if(isset($res[$oid])) {
                 $object_data = $res[$oid];
                 if(isset($object_data['parent_id']) && $object_data['parent_id'] > 0) {
-                    $result[$oid] = $object_data['parent_id.path'].'/'.self::slugify($object_data['title']);
+                    $result[$oid] = $object_data['parent_id.path'].'/'.TextTransformer::slugify($object_data['title']);
                 }
-                else $result[$oid] = self::slugify($object_data['title']);
+                else $result[$oid] = TextTransformer::slugify($object_data['title']);
             }
         }
         return $result;        
@@ -228,7 +223,7 @@ class Category extends \easyobject\orm\Object {
 
     public static function getParentPath($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiway\Category', $oids, ['parent_id.path'], $lang);
+        $res = $om->read(__CLASS__, $oids, ['parent_id.path'], $lang);
         foreach($oids as $oid) {
             $result[$oid] = '';
             if(isset($res[$oid]) && isset($res[$oid]['parent_id.path'])) { 
@@ -236,5 +231,15 @@ class Category extends \easyobject\orm\Object {
             }
         }
         return $result;        
-    }  
+    }
+    
+    public static function getTitleURL($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read(__CLASS__, $oids, ['title']);
+        foreach($res as $oid => $odata) {
+            // note: final format will be: #/question/{id}/{title}
+            $result[$oid] = TextTransformer::slugify($odata['title'], 200);
+        }
+        return $result;        
+    }    
 }
