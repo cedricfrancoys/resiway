@@ -94,34 +94,58 @@ try {
         $document_data = $res[$document_id];
 
         
-        // force download 
-        if( $params['download'] ) {
-// todo : increment count-download
-            // disable compression whatever default option is
-            ini_set('zlib.output_compression','0');
+        if( $params['download'] || $params['view'] ) {
+            // increment count-download
 
-            // tell the browser to download resource
-            header("Content-Description: File Transfer");
-            header("Content-Disposition: attachment; filename=".$document_data['title_url'].".pdf;");
-            header("Content-Transfer-Encoding: binary");
+            if(ResiAPI::userId() == 0) {
+                // (we don't call the performAction method since the user is unidentified
+                $objects = $om->read('resilib\Document', $document_id, ['count_downloads']);  
+                // update category star count
+                $om->write('resilib\Document', $document_id, [
+                            'count_downloads' => $objects[$document_id]['count_downloads']+1
+                          ]);
+            }
+            else {            
+                $result = ResiAPI::performAction(
+                    'resilib_document_download',                                // $action_name
+                    'resilib\Document',                                         // $object_class
+                    $document_id,                                               // $object_id
+                    ['count_downloads'],                                        // $object_fields
+                    false,                                                      // $toggle
+                    function ($om, $user_id, $object_class, $object_id) {       // $do
+                        return true;
+                    },
+                    function ($om, $user_id, $object_class, $object_id) {       // $undo
+                    }
+                );
+            }
+            // force view
+            if($params['view']) {
+                header("Content-Disposition: inline; filename=".$document_data['title_url'].".pdf;");    
+                header("Content-Type: application/pdf");
+                header("Content-Length: ".strlen($document_data['content']));
 
-            header("Pragma: public");
-            header("Expires: 0");
-            header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
-            header("Cache-Control: public");
-            header("Content-Type: application/pdf");
-            header("Content-Length: ".strlen($document_data['content']));
+                print($document_data['content']);                
+            }
+            // force download
+            else {    
+                // disable compression whatever default option is
+                ini_set('zlib.output_compression','0');
 
-            print($document_data['content']);            
-        }
-        // force view 
-        else if( $params['view'] ) {
-// todo : increment count-download            
-            header("Content-Disposition: inline; filename=".$document_data['title_url'].".pdf;");    
-            header("Content-Type: application/pdf");
-            header("Content-Length: ".strlen($document_data['content']));
+                // tell the browser to download resource
+                header("Content-Description: File Transfer");
+                header("Content-Disposition: attachment; filename=".$document_data['title_url'].".pdf;");
+                header("Content-Transfer-Encoding: binary");
 
-            print($document_data['content']);            
+                header("Pragma: public");
+                header("Expires: 0");
+                header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
+                header("Cache-Control: public");
+                header("Content-Type: application/pdf");
+                header("Content-Length: ".strlen($document_data['content']));
+
+                print($document_data['content']);            
+            }
         }
         // bot
         else {

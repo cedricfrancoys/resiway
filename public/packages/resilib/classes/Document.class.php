@@ -81,6 +81,9 @@ class Document extends \easyobject\orm\Object {
             
             /* number of times this document has been displayed */
             'count_views'			=> array('type' => 'integer'),
+
+            /* number of times this document has been downloaded */
+            'count_downloads'		=> array('type' => 'integer'),
             
             /* number of times this document has been voted (up and down) */
             'count_votes'			=> array('type' => 'integer'),
