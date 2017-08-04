@@ -100,7 +100,7 @@ try {
             if(ResiAPI::userId() == 0) {
                 // (we don't call the performAction method since the user is unidentified
                 $objects = $om->read('resilib\Document', $document_id, ['count_downloads']);  
-                // update category star count
+                // update document downloads count
                 $om->write('resilib\Document', $document_id, [
                             'count_downloads' => $objects[$document_id]['count_downloads']+1
                           ]);
@@ -113,6 +113,11 @@ try {
                     ['count_downloads'],                                        // $object_fields
                     false,                                                      // $toggle
                     function ($om, $user_id, $object_class, $object_id) {       // $do
+                        $objects = $om->read($object_class, $object_id, ['count_downloads']);  
+                        // update document downloads count
+                        $om->write('resilib\Document', $object_id, [
+                                    'count_downloads' => $objects[$object_id]['count_downloads']+1
+                                  ]);                    
                         return true;
                     },
                     function ($om, $user_id, $object_class, $object_id) {       // $undo
