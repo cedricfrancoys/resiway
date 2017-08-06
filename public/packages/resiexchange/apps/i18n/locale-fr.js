@@ -155,6 +155,7 @@ var translations = {
     "DOCUMENT_STATS_EDITED": "édité",
     "DOCUMENT_STATS_EDITED_ON": "édité le",
     "DOCUMENT_STATS_VIEWED": "vu",
+    "DOCUMENT_STATS_DOWNLOADED": "téléchargé",
     "DOCUMENT_STATS_ACTIVE": "actif",  
     "DOCUMENT_STATS_TIMES": "fois",
     

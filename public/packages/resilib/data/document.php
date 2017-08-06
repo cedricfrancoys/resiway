@@ -47,7 +47,7 @@ try {
 
     // retrieve document
     $result = [];
-    $objects = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'author', 'pages', 'original_url', 'original_filename', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids', 'comments_ids']);    
+    $objects = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'author', 'pages', 'original_url', 'original_filename', 'count_stars', 'count_views', 'count_downloads', 'count_votes', 'score', 'categories_ids', 'comments_ids']);    
     
     if($objects < 0 || !isset($objects[$object_id])) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
     $object_data = $objects[$object_id];
