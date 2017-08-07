@@ -82,14 +82,14 @@ try {
                 
                 // log in as selected user
                 $pdm->set('user_id', $bot_id);
-                echo "log as {$bot_id}\n";
+                // echo "log as {$bot_id}\n";
                 
                 // perform action
                 list($package, $class, $action) = explode('_', $action_name);
                 $_REQUEST['document_id'] = $object_id;
                 $_REQUEST['question_id'] = $object_id;
 
-                echo "perform {$action} on {$class} {$object_id}\n";                
+                // echo "perform {$action} on {$class} {$object_id}\n";                
                 $json = get_include_contents("packages/{$package}/actions/{$class}/{$action}.php");
                 print($json);
                 // exit
@@ -105,7 +105,6 @@ catch(Exception $e) {
 }
 
 // send json result
-header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
                     'result'            => $result, 
                     'error_message_ids' => $error_message_ids
