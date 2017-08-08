@@ -61,9 +61,8 @@ try {
         
         if($objects_ids < 0 || !count($objects_ids)) throw new Exception("no_match", QN_ERROR_UNKNOWN);
 
-        $count = count($actions_names);
         // pick up a random action
-        $action_name = $actions_names[rand(0, $count-1)];
+        $action_name = $actions_names[array_rand($actions_names)];
         $action_id = ResiAPI::actionId($action_name);
         
         foreach($objects_ids as $object_id) {
@@ -77,8 +76,7 @@ try {
             $missing_bots_ids = array_diff($bots_ids, array_map(function ($a) { return $a['user_id']; }, $res));
             if(count($missing_bots_ids) > 0) {
                 // pick up a random user among available bots
-                $count = count($missing_bots_ids);
-                $bot_id = $missing_bots_ids[rand(0, $count-1)];
+                $bot_id = $missing_bots_ids[array_rand($missing_bots_ids)];
                 
                 // log in as selected user
                 $pdm->set('user_id', $bot_id);
