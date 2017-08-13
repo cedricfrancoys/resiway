@@ -93,13 +93,18 @@ class ResiAPI {
         // data consists of parsed template and subject (JSON formatted)
         return file_put_contents(EMAIL_SPOOL_DIR."/$filename", json_encode(array("subject" => $subject, "body" => $body), JSON_PRETTY_PRINT));
     }
-        
+    
+    // returns an array holding decoded login and password
     public static function credentialsDecode($code) {
         // convert base64url to base64
-        $code = str_replace(['-', '_'], ['+','/'], $code);
-        return explode(';', base64_decode($code));
+        $decoded = base64_decode(str_replace(['-', '_'], ['+','/'], $code));
+        if(strpos($decoded, ';') === false) return ['', ''];
+        return explode(';', $decoded);
     }
     
+    // create a URL-safe linear version of the credentials 
+    // $login       string  user email address
+    // $password    string  md5 hash of user password
     public static function credentialsEncode($login, $password) {
         $code = base64_encode($login.";".$password);
         // convert base64 to url safe-encoded
