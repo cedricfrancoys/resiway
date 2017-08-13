@@ -89,7 +89,9 @@ try {
 
                 // echo "perform {$action} on {$class} {$object_id}\n";                
                 $json = get_include_contents("packages/{$package}/actions/{$class}/{$action}.php");
-                print($json);
+                $res = json_decode($json, true);
+                $result = $res['result'];
+
                 // exit
                 break 2;
             }
