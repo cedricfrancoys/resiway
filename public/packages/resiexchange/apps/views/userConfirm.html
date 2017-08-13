@@ -1,15 +1,15 @@
 <div class="grid wrapper" ng-show="ctrl.verified" class="ng-hide">
     <div class="col-4-12">
-        <div class="panel-heading">
-            <div class="panel-title"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Félicitations</div>
+        <div class="bd-callout bd-callout-success ">
+            <div class="panel-title text-success"><i class="fa fa-thumbs-o-up" aria-hidden="true"></i> Félicitations {{user.firstname}}</div>
             <div style="padding-top: 10px;"> 
-                Votre compte est maintenant validé.<br />
-                A présent vous pourrez:
+                Ton compte est maintenant validé.<br />
+                A présent tu peux:
                 <ul>
                     <li>encourager les autres pour leurs contributions</li>
-                    <li>être reconnu pour la qualité de votre participation</li>
+                    <li>être reconnu pour la qualité de ta participation</li>
                 </ul>
-                Plus vous montrerez de l’intérêt, plus vous aurez la possibilité de prendre part au fonctionnement.
+                Plus tu montreras ton intérêt et tes qualités, plus tu auras la possibilité de prendre part au fonctionnement.
             </div>      
         </div>
     </div>
@@ -18,18 +18,18 @@
             <div class="panel-heading">
                 <div class="panel-title"><i class="fa fa-check-circle-o" aria-hidden="true"></i> Changement effectué</div>
                 <div style="padding-top: 10px;"> 
-                    Votre nouveau mot de passe a bien été pris en compte.<br /><br />
-                    Désormais vous pourrez vous connecter en l'utilisant avec votre identifiant: <strong>{{user.login}}</strong><br />
+                    Ton nouveau mot de passe a bien été pris en compte.<br /><br />
+                    Désormais tu pourras te connecter en l'utilisant avec ton identifiant: <strong>{{user.login}}</strong><br />
                     <br />
-                    <a class="btn btn-success" href="#/user/profile/{{user.id}}">Consulter votre profil</a>
+                    <a class="btn btn-success" href="#/user/profile/{{user.id}}">Consulter ton profil</a>
                 </div>      
             </div>        
         </div>
         <div ng-hide="ctrl.password_updated">
             <div class="panel-heading">
-                <div class="panel-title"><i class="fa fa-warning" aria-hidden="true"></i> Mot de passe</div>                
+                <div class="panel-title text-danger"><i class="fa fa-warning" aria-hidden="true"></i> Mot de passe</div>                
                 <div style="padding-top: 10px;">
-                    Pour pouvoir vous connecter ultérieurement, veuillez définir le mot de passe de votre choix.
+                    Pour pouvoir te connecter ultérieurement,<br /> choisis ton mot de passe:
                 </div>                   
             </div>
             <div style="padding-top:20px" class="panel-body" >
