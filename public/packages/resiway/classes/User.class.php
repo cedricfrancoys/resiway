@@ -187,6 +187,7 @@ class User extends \easyobject\orm\Object {
              'notify_post_edit'          => function() { return true; },
              'notify_post_flag'          => function() { return true; },
              'notify_post_delete'        => function() { return true; },
+             'notify_updates'            => function() { return true; },
              'notice_delay'              => function() { return 0; }
         );
     }
