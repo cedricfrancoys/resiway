@@ -1,10 +1,9 @@
 <?php
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
+require_once('../resi.api.php');
 
 use config\QNlib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
-
-require_once('../resi.api.php');
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -24,25 +23,41 @@ $params = QNLib::announce(
 );
 
 list($result, $error_message_ids) = [true, []];
-list($code) = [$params['code']];
+
+list($action_name, $object_class, $object_id) = [
+    'resiway_user_confirm',
+    'resiway\User',
+    0
+];
 
 try {
-    list($login, $password) = ResiAPI::credentialsDecode($code);
+    list($login, $password) = ResiAPI::credentialsDecode($params['code']);
+    $object_id = ResiAPI::userSign($login, $password);
     
-    $user_id = ResiAPI::userSign($login, $password);
-    
-    if($user_id < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);    
-    
-    // update 'verified' field
-    $om = &ObjectManager::getInstance();    
-    $om->write('resiway\User', $user_id, [ 'verified' => 1 ]);
-    
-    // update badges
-    ResiAPI::updateBadges(
-        'resiway_user_confirm',
-        'resiway\User',
-        $user_id
-    );      
+    if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);    
+
+    $result = ResiAPI::performAction(
+        $action_name,                                             // $action_name
+        $object_class,                                            // $object_class
+        $object_id,                                               // $object_id
+        ['verified'],                                                       
+        false,                                                    // $toggle
+        function ($om, $user_id, $object_class, $object_id)       // $do
+        use ($params) {
+            $res = $om->write($object_class, $object_id, [ 'verified' => 1 ]);
+            if($res <0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);    
+            // update badges
+            ResiAPI::updateBadges(
+                'resiway_user_confirm',
+                'resiway\User',
+                $user_id
+            );      
+            return true;
+        },
+        null,                                                      // $undo
+        [                                                          // $limitations
+        ]
+    );
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());
