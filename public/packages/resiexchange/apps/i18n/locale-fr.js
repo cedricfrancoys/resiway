@@ -168,7 +168,7 @@ var translations = {
     "DOCUMENTS_STATS_USERS": "participants",
     
     // Users
-    "USERS_TITLE": "Liste des participants",
+    "USERS_TITLE": "ResiWay.org, la plateforme de ...",
     
     "USER_PROFILE_TAB_PROFILE": "Profil",    
     "USER_PROFILE_TAB_REPUTATION": "Réputation",
