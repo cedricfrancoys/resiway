@@ -854,7 +854,7 @@ todo : to validate
 	
 	/*
 todo: signature differs from other methods	(returned value)
-		updates specifield fields of seleced objects
+		Updates specifield fields of seleced objects
 		and stores changes into database
 	*/
 	public function write($class, $ids=NULL, $fields=NULL, $lang=DEFAULT_LANG) {
@@ -921,7 +921,7 @@ todo: signature differs from other methods	(returned value)
 			$this->store($class, $ids, array_keys($fields), $lang);
 
 			// second pass : handle onchange events, if any 
-			// note : this must be done afer modifications otherwise object values might be outdated
+			// note : this must be done after modifications otherwise object values might be outdated
 			if(count($onchange_fields)) {				
                 // remember which methods have been invoked (to trigger each only once)
                 $onchange_methods = [];
