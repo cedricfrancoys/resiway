@@ -6,6 +6,7 @@ use config\QNlib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
 use html\HtmlTemplate as HtmlTemplate;
+use maxmind\geoip\GeoIP as GeoIP;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -68,10 +69,22 @@ try {
     for($i = 0; $i < 24; ++$i) {
         $password .= sprintf("%x", rand(0, 15)) ;
     }
+    
     // generate avatar URL using identicon with a random hash
     $avatar_url = 'https://www.gravatar.com/avatar/'.md5($firstname.rand()).'?d=identicon&s=@size';
-    
-    $user_id = $om->create('resiway\User', ['login'=>$login, 'password'=>$password, 'firstname' => $firstname, 'language' => $language, 'avatar_url' => $avatar_url]);
+    // get requesting IP geo location
+    $location = GeoIP::getLocationFromIP($_SERVER['REMOTE_ADDR']);
+    // create a new user account
+    $user_id = $om->create('resiway\User', [
+                                            'login'         => $login, 
+                                            'password'      => $password, 
+                                            'firstname'     => $firstname, 
+                                            'language'      => $language, 
+                                            'avatar_url'    => $avatar_url,
+                                            'country'       => $location->country_code,
+                                            'location'      => $location->city
+                                           ]);
+                                           
     if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
     // initialize list of awarded badges
