@@ -29,7 +29,12 @@ class GeoIP {
             // request translation
             $html = file_get_contents($url);
             if(stripos($http_response_header[0], 'OK') === false) throw new \Exception('http error');
+            // set error level
+            $internalErrors = libxml_use_internal_errors(true);
+            // parse HTML doc
             $doc = phpQuery::newDocumentHTML($html);
+            // restore error level
+            libxml_use_internal_errors($internalErrors);            
             // fetch target DOM node (@see http://www.geonames.org/search.html?q=BE for HTML response schema)
             // (table with class 'restable', first row, second column, first link inner text)
             $nodes = $doc->find('table.restable > tr:eq(2) > td:eq(1)')->find('a');
