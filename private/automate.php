@@ -92,8 +92,8 @@ try {
                 $res = json_decode($json, true);
                 $result = $res['result'];
 
-                // exit
-                break 2;
+                // process next class
+                break 1;
             }
         }
 
