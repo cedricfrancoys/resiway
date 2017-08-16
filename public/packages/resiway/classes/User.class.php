@@ -166,10 +166,13 @@ class User extends \easyobject\orm\Object {
     }
     
     public static function getDefaults() {
-        return array(
+        return array(        
              'verified'                  => function() { return false; },             
              'reputation'                => function() { return 1; },
-             'role'                      => function() { return 'u'; },             
+             'role'                      => function() { return 'u'; },
+             'language'                  => function() { return 'fr'; },
+             'country'                   => function() { return ''; },
+             'location'                  => function() { return ''; },
              'publicity_mode'            => function() { return 1; },             
              'count_profile_views'       => function() { return 0; },
              'count_questions'           => function() { return 0; },
