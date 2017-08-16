@@ -28,7 +28,7 @@ class GeoIP {
             }
             // request translation
             $html = file_get_contents($url);
-            if(stripos($http_response_header[0], 'OK') === false) throw new \Exception('http error');
+            if(stripos($http_response_header[0], 'OK') === false) throw new \Exception('HTTP error');
             // set error level
             $internalErrors = libxml_use_internal_errors(true);
             // parse HTML doc
@@ -57,7 +57,13 @@ class GeoIP {
     public static function getLocationFromIP($ip) {
         $gi = geoip_open(GEOIP_DB_PATH, GEOIP_STANDARD);
         $location = GeoIP_record_by_addr($gi, $ip);
-        if(!($location instanceof \geoiprecord)) $location = new \geoiprecord();
+        // normalize $location : if error, create an empty instance
+        if( !($location instanceof \geoiprecord) ) {
+            $location = new \geoiprecord();
+            $location->country_name = '';
+            $location->country_code = '';
+            $location->city = '';
+        }
         // translate country name
         $location->country_name = self::geoNames($location->country_name, 'fr', '', 'UTF8');
         // translate city name, if given
