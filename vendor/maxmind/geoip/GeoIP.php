@@ -57,13 +57,11 @@ class GeoIP {
     public static function getLocationFromIP($ip) {
         $gi = geoip_open(GEOIP_DB_PATH, GEOIP_STANDARD);
         $location = GeoIP_record_by_addr($gi, $ip);
-        // normalize $location : if error, create an empty instance
-        if( !($location instanceof \geoiprecord) ) {
-            $location = new \geoiprecord();
-            $location->country_name = '';
-            $location->country_code = '';
-            $location->city = '';
-        }
+        // normalize $location : make sure $location is an object and set default values to empty string instead of NULL
+        if( !($location instanceof \geoiprecord) ) $location = new \geoiprecord();
+        if(is_null($location->country_name)) $location->country_name = '';
+        if(is_null($location->country_code)) $location->country_code = '';
+        if(is_null($location->city)) $location->city = '';
         // translate country name
         $location->country_name = self::geoNames($location->country_name, 'fr', '', 'UTF8');
         // translate city name, if given
