@@ -1190,7 +1190,7 @@ todo: signature differs from other methods	(returned value)
 				'boolean'		=> array('=', '<>', '<', '>'),
 				'integer'		=> array('in', 'not in', '=', '<>', '<', '>', '<=', '>='),
 				'float'			=> array('=', '<>', '<', '>', '<=', '>='),
-				'string'		=> array('like', 'ilike', '=', '<>'),
+				'string'		=> array('like', 'ilike', 'in', '=', '<>'),
 				'short_text'	=> array('like', 'ilike', '='),
 				'text'			=> array('like', 'ilike', '='),
 				'html'			=> array('like', 'ilike', '='),                
