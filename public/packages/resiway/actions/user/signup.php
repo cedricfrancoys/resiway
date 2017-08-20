@@ -85,7 +85,10 @@ try {
                    ];
     // assign returned country code only if consistent              
     if( strlen($location->country_code) == 2) $user_data['country'] = strtoupper($location->country_code);
-        
+    
+    // internal consistency check 
+    $errors = $om->validate('resiway\User', $user_data);
+    if($errors < 0 || count($errors)) throw new Exception("action_failed", QN_ERROR_INVALID_PARAM);
     // create a new user account
     $user_id = $om->create('resiway\User', $user_data);
                                            
