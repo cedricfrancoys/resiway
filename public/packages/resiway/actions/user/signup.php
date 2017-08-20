@@ -74,29 +74,23 @@ try {
     $avatar_url = 'https://www.gravatar.com/avatar/'.md5($firstname.rand()).'?d=identicon&s=@size';
     // get requesting IP geo location
     $location = GeoIP::getLocationFromIP($_SERVER['REMOTE_ADDR']);
+    // init creation array with new user info
+    $user_data = [
+                    'login'         => $login, 
+                    'password'      => $password, 
+                    'firstname'     => $firstname, 
+                    'language'      => $language, 
+                    'avatar_url'    => $avatar_url,                    
+                    'location'      => $location->city
+                   ];
+    // assign returned country code only if consistent              
+    if( strlen($location->country_code) == 2) $user_data['country'] = strtoupper($location->country_code);
+        
     // create a new user account
-    $user_id = $om->create('resiway\User', [
-                                            'login'         => $login, 
-                                            'password'      => $password, 
-                                            'firstname'     => $firstname, 
-                                            'language'      => $language, 
-                                            'avatar_url'    => $avatar_url,
-                                            'country'       => $location->country_code,
-                                            'location'      => $location->city
-                                           ]);
+    $user_id = $om->create('resiway\User', $user_data);
                                            
     if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
-
-    // initialize list of awarded badges
-    // not necessary : a test is made in ResAPI::updateBadges to add missing badges
-    /*
-    $badges_ids = $om->search('resiway\Badge');
-    $badges = $om->read('resiway\Badge', $badges_ids, ['id']);    
-    foreach($badges as $badge_id => $badge_data) {
-        $om->create('resiway\UserBadge', ['user_id' => $user_id, 'badge_id' => $badge_id]);
-    }
-    */
-    
+   
     // update global counter
     ResiAPI::repositoryInc('resiway.count_users');     
     
