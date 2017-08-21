@@ -5,6 +5,7 @@
 namespace maxmind\geoip;
 
 use html\phpQuery as phpQuery;
+use qinoa\text\TextTransformer as TextTransformer;
 
 include(dirname(__FILE__).'/geoipcity.inc');
 include(dirname(__FILE__).'/geoipregionvars.php');
@@ -40,8 +41,8 @@ class GeoIP {
             $nodes = $doc->find('table.restable > tr:eq(2) > td:eq(1)')->find('a');
             foreach ($nodes as $node)  {
                 $translation = pq($node)->text();
-                if(strlen($translation) > 0) {
-                    $result = $translation;
+                if(strlen($translation) > 0) {                    
+                    $result = ucfirst(TextTransformer::normalize($translation));
                     break;
                 }
             }
