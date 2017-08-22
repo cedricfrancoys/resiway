@@ -60,6 +60,15 @@ try {
                 $om->write('resiway\User', $user_id, [ 'count_comments'=> $res[$user_id]['count_comments']+1 ]);
             }
 
+            // register related post action
+            $actionlog_id = $om->create('resiway\ActionLog', [
+                            'user_id'               => $user_id,
+                            'author_id'             => $user_id,
+                            'action_id'             => ResiAPI::actionId('resilib_documentcomment_post'), 
+                            'object_class'          => 'resilib\DocumentComment', 
+                            'object_id'             => $comment_id
+                           ]);
+            
             // update global counter
             ResiAPI::repositoryInc('resilib.count_comments');
             
