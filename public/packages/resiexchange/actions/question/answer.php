@@ -87,6 +87,16 @@ try {
                 $om->write('resiway\User', $user_id, [ 'count_answers'=> $res[$user_id]['count_answers']+1 ]);
             }
 
+            // register related post action
+            $actionlog_id = $om->create('resiway\ActionLog', [
+                            'user_id'               => $user_id,
+                            'author_id'             => $user_id,
+                            'action_id'             => ResiAPI::actionId('resiexchange_answer_post'), 
+                            'object_class'          => 'resiexchange\Answer', 
+                            'object_id'             => $answer_id
+                           ]);
+
+                           
             // update question count_answers
             $object = $om->read($object_class, $object_id, ['count_answers'])[$object_id];       
             $om->write($object_class, $object_id, [
