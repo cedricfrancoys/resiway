@@ -38,6 +38,13 @@ class ActionLog extends \easyobject\orm\Object {
         );
     }
 
+    public static function getDefaults() {
+        return array(
+             'user_increment'           => function() { return 0; },
+             'author_increment'         => function() { return 0; }
+        );
+    }
+             
     public static function getObjectName($om, $oids, $lang) {
         $result = [];
         $objects_ids = [];
