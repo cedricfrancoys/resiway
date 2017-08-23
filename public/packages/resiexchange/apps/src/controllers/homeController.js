@@ -22,6 +22,171 @@ angular.module('resiexchange')
     // note : maintain item count with number of .row children in #home-carousel
     var slides = $scope.slides = [{}, {}, {}];
     
+    $scope.recent_activity = {
+        actions: [
+                    {
+                        created: '2017-01-01 00:00:00',
+                        name: 'resiway_user_signup',
+                        object_class: 'resiway\\User',
+                        object_id: 411,
+                        object: {
+                            id: 411,
+                            created: '2017-01-01 00:00:00',
+                            display_name: 'Laurent M.',
+                            country: 'FR',
+                            location: 'Paris', 
+                            about: 'Lorem ipsum sympathisant écolo de la première heure loret sit amet ec nerum loriposet quid negatur est',
+                            avatar_url: 'https://www.gravatar.com/avatar/5192e7cbcf2f72a847d6fb0d1552f049?s=@size'
+                        },
+                        user: {
+                            id: 3,
+                            display_name: 'Julie M.',
+                            name_url: 'julie-m',
+                            avatar_url: 'https://www.gravatar.com/avatar/5192e7cbcf2f72a847d6fb0d1552f049?s=@size'
+                        }
+                    },        
+                    {
+                        created: '2017-01-01 00:00:00',
+                        name: 'resiexchange_question_post',
+                        object_class: 'resiexchange\\Question',
+                        object_id: 10,
+                        object: {
+                            id: 10,
+                            created: '2017-01-01 00:00:00',
+                            creator: {
+                                id: 3,
+                                display_name: 'Julie M.',
+                                name_url: 'julie-m'
+                            },
+                            title: 'C\'est pour quoi faire ?',
+                            title_url: 'c-est-pour-quoi-faire',
+                            categories_ids: [1, 2, 3],
+                            'categories_ids.name': ['test1', 'test2', 'test3']
+                        },
+                        user_id: 3,
+                        user: {
+                            id: 3,
+                            display_name: 'Julie M.',
+                            name_url: 'julie-m',
+                            avatar_url: 'https://www.gravatar.com/avatar/5192e7cbcf2f72a847d6fb0d1552f049?s=@size'
+                        }
+                    },
+                    {
+                        created: '2017-01-01 00:00:00',                        
+                        name: 'resilib_document_post',
+                        object_class: 'resilib\\Document',
+                        object_id: 10,
+                        object: {
+                            id: 10,
+                            created: '2017-01-01 00:00:00',
+                            creator: {
+                                id: 3,
+                                display_name: 'Julie M.',
+                                name_url: 'julie-m'
+                            },
+                            title: 'Tout sur tout',
+                            title_url: 'tout-sur-tout',
+                            categories_ids: [1, 2, 3],
+                            'categories_ids.name': ['test1', 'test2', 'test3']
+                        },
+                        user_id: 3,
+                        user: {
+                            id: 3,
+                            display_name: 'Julie M.',
+                            name_url: 'julie-m',
+                            avatar_url: 'https://www.gravatar.com/avatar/5192e7cbcf2f72a847d6fb0d1552f049?s=@size'
+                        }
+                        
+                    },                    
+                    {
+                        created: '2017-01-01 00:00:00',                        
+                        name: 'resiexchange_question_answer',
+                        object_class: 'resiexchange\\Answer',
+                        object_id: 411,
+                        object: {
+                            id: 411,
+                            created: '2017-01-01 00:00:00',
+                            creator : {
+                                id: 4,
+                                display_name: 'Jacques',
+                                name_url: 'jacques'
+                            },
+                            question_id: 13,
+                            question: {                                
+                                id: 13,
+                                created: '2017-01-01 00:00:00',
+                                creator: {
+                                    id: 4,
+                                    display_name: 'Michel P.',
+                                    name_url: 'michel-p'                                    
+                                },                                    
+                                title: 'Pourquoi pas ?',
+                                title_url: ''
+                            }
+                        },
+                        user_id: 3,
+                        user: {
+                            id: 3,
+                            display_name: 'Julie M.',
+                            name_url: 'julie-m',
+                            avatar_url: 'https://www.gravatar.com/avatar/5192e7cbcf2f72a847d6fb0d1552f049?s=@size'
+                        }
+                    },
+                    {
+                        created: '2017-01-01 00:00:00',                        
+                        name: 'resiexchange_answer_comment',
+                        object_class: 'resiexchange\\AnswerComment',
+                        object_id: 411,
+                        object: {
+                            id: 411,
+                            created: '2017-01-01 00:00:00',
+                            creator : {
+                                id: 4,
+                                display_name: 'Jacques',
+                                name_url: 'jacques'
+                            },
+                            answer_id: 13,
+                            answer: {
+                                id: 13,
+                                created: '2017-01-01 00:00:00',
+                                creator: {
+                                    id: 4,
+                                    display_name: 'Michel P.',
+                                    name_url: 'michel-p'                                    
+                                },
+                                question_id: 13,
+                                'question_id.creator': {
+                                        id: 5,
+                                        display_name: 'Stéhane J.',
+                                        name_url: 'stephane-j'
+                                },
+                                'question_id.title': 'Pourquoi pas ?'
+                            }
+                        },
+                        user_id: 3,
+                        user: {
+                            id: 3,
+                            display_name: 'Julie M.',
+                            name_url: 'julie-m',
+                            avatar_url: 'https://www.gravatar.com/avatar/5192e7cbcf2f72a847d6fb0d1552f049?s=@size'
+                        }
+                    }                      
+                    
+        ]
+    };
+
+    $http.get('index.php?get=resiway_actionlog_recent')
+    .then(
+    function successCallback(response) {
+        var data = response.data;
+        if(typeof response.data.result == 'object') {
+            $scope.recent_activity.actions = response.data.result;
+        }
+    },
+    function errorCallback() {
+        // something went wrong server-side
+    });
+
     
     $http.get('index.php?get=resiway_stats')
     .then(

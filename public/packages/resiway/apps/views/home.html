@@ -83,11 +83,18 @@
         </div>    
     
 
-
+        <div class="col-md-12 panel panel-default">
+            <div class="panel-body" style="text-align: center; margin-top: 10px;">
+                <div class="col-4-12"><span style="font-size: 30px; font-weight: bold;">+ de 6000</span><br/>contributeurs</div>
+                <div class="col-4-12"><span style="font-size: 30px; font-weight: bold;">+ de 2500</span><br/>articles pour éco-agir</div>
+                <div class="col-4-12"><span style="font-size: 30px; font-weight: bold;">+ de 3800</span><br/>pages pour faire soi-même</div>
+            </div>
+        </div>
+        
         <div class="row col-md-12">
             <article>
-                <h2>Outils par tous et pour tous</h2>
-                <h4>Les outils proposés par RésiWay</h4>
+                <h2>des outils par tous et pour tous</h2>
+                <h4>développés par la communauté RésiWay</h4>
                 <table>
                     <tr style="height: 40px;">
                         <td valign="top"><a target="_blank" href="/resilib.fr"><img width="100" src="packages/resiway/apps/assets/img/resilib.jpg"></a></td>
@@ -105,13 +112,25 @@
             </article>
         </div>       
         
-        
+        <div class="row col-md-12">
+            <div class="col-1-2">
+                <iframe style="margin-top: 15px; width: 100%" height="170" title="Résiway - Deux minutes pour tout savoir" src="https://www.youtube.com/embed/tW3O6Yb480o" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="col-1-2">            
+                <iframe style="margin-top: 15px; width: 100%" height="170" title="Résiway - Deux minutes pour tout savoir" src="https://www.youtube.com/embed/OjwD_eS5UiQ" frameborder="0" allowfullscreen></iframe>
+            </div>
+            <div class="col-1-2">            
+                <iframe style="margin-top: 15px; width: 100%" height="170" title="Résiway - Deux minutes pour tout savoir" src="https://www.youtube.com/embed/R723iG-L-uI" frameborder="0" allowfullscreen></iframe>
+            </div>        
+        </div>
         
 
     </div>
 
 
     <div class="col-4-12">
+
+    
         <div style="width: 100%; height: 35px; margin-bottom: 20px;">
             <div class="col-1-1 btn-group btn-group-justified nopad">        
             <a class="btn btn-md btn-primary hidden-xs hidden-sm" href="resiway.fr#/">Accueil</a>
@@ -125,22 +144,91 @@
             <!--<div class="fb-like" data-href="https://www.resiway.org/" data-layout="standard"  data-action="like" data-show-faces="false" data-colorscheme="dark"></div>        -->
             <div class="fb-follow" style="margin-top: 5px;" data-href="https://www.facebook.com/resiway" data-layout="standard" data-size="small" data-show-faces="false" data-colorscheme="dark"></div>
         </div>
-        <div class="panel panel-default">
-            <div class="panel-heading bg-info">
-                <h1 class="panel-title text-white"><i class="fa fa-bar-chart" aria-hidden="true"></i> RésiWay en chiffres</h1>
-            </div>
+        
+            <div ng-repeat="action in recent_activity.actions | limitTo: 10" style="margin-bottom: 5px;">
+            
+                <div ng-switch="action['action_id.name']">
 
-            <div class="panel-body">
-                <ul class="list-unstyled">
-                <li><strong class="lead">6.110</strong><br/> contributeurs</li>
-                <li><strong class="lead">2.462</strong><br/> <a href="/ekopedia.fr">articles pour éco-agir</a></li>
-                <li><strong class="lead">2.586</strong><br/> <a href="/resilib.fr">pages pour faire soi-même</a></li>
-                </ul>
+                    <div style="display: table;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell; width: 45px;">
+                                <img ng-src="{{rootCtrl.avatarURL(action.user.avatar_url, 40)}}" border="0" title="" width="40" height="40">
+                            </div>
 
-                <iframe style="margin-top: 15px; width: 100%" height="170" title="Résiway - Deux minutes pour tout savoir" src="https://www.youtube.com/embed/tW3O6Yb480o" frameborder="0" allowfullscreen></iframe>
 
-            </div>
-        </div>
+
+                            <div ng-switch-when="resiway_user_signup" style="display: table-cell; vertical-align: top;">
+                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> vient de s'inscrire
+                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <span style="font-style: italic; color: grey;">
+                                    {{action.user.location}}, {{action.user.country}} | {{action.user.about | limitTo : 60}} ...
+                                    <a class="btn btn-link btn-xs">voir son profil</a> 
+                                </span>
+                            </div>                            
+                                                            
+                            <div ng-switch-when="resiexchange_question_post" style="display: table-cell; vertical-align: top;">
+                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a posé une nouvelle question dans la catégorie <a href="#/category/{{action.object['categories_ids'][0]}}">{{action.object['categories_ids.name'][0]}}</a>
+                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <span style="font-style: italic; color: grey;">
+                                    {{action.object.title | limitTo : 100}}
+                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">répondre</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
+                                </span>
+                            </div>
+                            
+                            <div ng-switch-when="resilib_document_post" style="display: table-cell; vertical-align: top;">
+                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a partagé un nouveau document dans la catégorie <a href="#/category/{{action.object['categories_ids'][0]}}">{{action.object['categories_ids.name'][0]}}</a>
+                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <span style="font-style: italic; color: grey;">
+                                    {{action.object.title | limitTo : 100}}
+                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
+                                </span>
+                            </div>                            
+
+                            <div ng-switch-when="resiexchange_answer_post" style="display: table-cell; vertical-align: top;">
+                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a répondu à la question <a href="#/question/{{action.object['question_id']}}/{{action.object['question_id.title_url']}}">{{action.object['question_id.title']}}</a> de <a href="#/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}">{{action.object['question_id.creator'].display_name}}</a>
+                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <span style="font-style: italic; color: grey;">
+                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
+                                </span>
+                            </div>
+                            
+                            <div ng-switch-when="resiexchange_questioncomment_post" style="display: table-cell; vertical-align: top;">
+                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté la question <a href="#/question/{{action.object.question_id}}/{{action.object.question.title_url}}">{{action.object.question.title]}}</a> de <a href="#/user/{{action.object.question.creator.id}}/action.object.question.creator.name_url">{{action.object.question.creator.display_name}}</a>
+                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <span style="font-style: italic; color: grey;">
+                                    {{action.object.content | limitTo : 60}}
+                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
+                                </span>
+                            </div>
+                            
+                            <div ng-switch-when="resiexchange_answercomment_post" style="display: table-cell; vertical-align: top;">
+                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> 
+                                a commenté la réponse de <a href="#/user/{{action.object.answer.creator.id}}/{{action.object.answer.creator.name_url}}">{{action.object.answer.creator.display_name}}</a> 
+                                à la question <a href="resiexchange.fr#/question/{{action.object.answer['question_id']}}/{{action.object.answer['question_id.title_url']}}">{{action.object.answer['question_id.title']}}</a> 
+                                de <a href="#/user/{{action.object.answer['question_id.creator'].id}}/{{action.object.answer['question_id.creator'].name_url}}">{{action.object.answer['question_id.creator'].display_name}}</a>
+                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <span style="font-style: italic; color: grey;">
+                                    {{action.object.content | limitTo : 60}}
+                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
+                                </span>
+                            </div>
+
+                            <div ng-switch-when="resilib_documentcomment_post" style="display: table-cell; vertical-align: top;">
+                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté le document <a href="#/document/{{action.object.document.id}}/{{action.object.document.title_url}}">{{action.object.document.title}}</a> de <a href="#/user/{{action.object.document.creator.id}}/{{action.object.document.creator.name_url}}">{{action.object.document.creator.display_name}}</a>
+                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <span style="font-style: italic; color: grey;">
+                                    {{action.object.content | limitTo : 60}}
+                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">commenter</a>&middot;<a class="btn btn-link btn-xs">répondre</a>
+                                </span>
+                            </div>
+
+                            
+                        </div>
+                    </div>            
+                </div>
+        
+            </div>        
+        
     </div>
 
 </div>

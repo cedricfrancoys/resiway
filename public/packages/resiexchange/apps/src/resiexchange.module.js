@@ -229,8 +229,8 @@ var resiway = angular.module('resiexchange', [
         /**
         * Object of signed in user (if authenticated)
         * This value is set by the authentification service
-        * and is used to know if session auto-restore is complete
-        *
+        * It is used to know if session auto-restore is complete
+        * and allows access to current user data across all views
         */
         $rootScope.user = {id: 0};
      
