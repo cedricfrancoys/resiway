@@ -52,6 +52,7 @@ list($document_id) = [
    
 function isBot() {
     $res = false;
+    if(empty($_SERVER['HTTP_USER_AGENT'])) return false;
     /* Google */    
     if(stripos($_SERVER['HTTP_USER_AGENT'], 'Google') !== false) { // HTTP_USER_AGENT should be 'Googlebot'
         $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);

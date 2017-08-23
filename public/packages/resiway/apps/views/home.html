@@ -151,11 +151,10 @@
 
                     <div style="display: table;">
                         <div style="display: table-row;">
+
                             <div style="display: table-cell; width: 45px;">
                                 <img ng-src="{{rootCtrl.avatarURL(action.user.avatar_url, 40)}}" border="0" title="" width="40" height="40">
                             </div>
-
-
 
                             <div ng-switch-when="resiway_user_signup" style="display: table-cell; vertical-align: top;">
                                 <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> vient de s'inscrire
