@@ -161,7 +161,9 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.user.location}}, {{action.user.country}} | {{action.user.about | limitTo : 60}} ...
-                                    <a class="btn btn-link btn-xs">voir son profil</a> 
+                                    <a 
+                                        class="btn btn-link btn-xs"
+                                        href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">voir son profil</a> 
                                 </span>
                             </div>                            
                                                             
@@ -170,7 +172,9 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.title | limitTo : 100}}
-                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">répondre</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
+                                    <a 
+                                        class="btn btn-link btn-xs"
+                                        href="resiexchange.fr#/question/{{action.object.id}}/{{action.object.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">répondre</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
                                 </span>
                             </div>
                             
@@ -179,7 +183,9 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.title | limitTo : 100}}
-                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
+                                    <a 
+                                        class="btn btn-link btn-xs"
+                                        href="resilib.fr#/document/{{action.object.id}}/{{action.object.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
                                 </span>
                             </div>                            
 
@@ -187,7 +193,9 @@
                                 <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a répondu à la question <a href="#/question/{{action.object['question_id']}}/{{action.object['question_id.title_url']}}">{{action.object['question_id.title']}}</a> de <a href="#/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}">{{action.object['question_id.creator'].display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
-                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
+                                    <a 
+                                        class="btn btn-link btn-xs"
+                                        href="resiexchange.fr#/question/{{action.object.question_id}}/{{action.object['question_id.title_url']}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
                                 </span>
                             </div>
                             
@@ -196,7 +204,9 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
-                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
+                                    <a 
+                                        class="btn btn-link btn-xs"
+                                        href="resiexchange.fr#/question/{{action.object.question_id}}/{{action.object['question_id.title_url']}}">voir</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
                                 </span>
                             </div>
                             
@@ -208,7 +218,9 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
-                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
+                                    <a 
+                                        class="btn btn-link btn-xs"
+                                        href="resiexchange.fr#/question/{{action.object.answer['question_id']}}/{{action.object.answer['question_id.title_url']}}">voir</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
                                 </span>
                             </div>
 
@@ -217,7 +229,9 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
-                                    <a class="btn btn-link btn-xs">lire</a>&middot;<a class="btn btn-link btn-xs">commenter</a>&middot;<a class="btn btn-link btn-xs">répondre</a>
+                                    <a 
+                                        class="btn btn-link btn-xs"
+                                        href="resilib.fr#/document/{{action.object.document.id}}/{{action.object.document.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>&middot;<a class="btn btn-link btn-xs">répondre</a>
                                 </span>
                             </div>
 
