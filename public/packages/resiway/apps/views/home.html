@@ -136,7 +136,7 @@
             <a class="btn btn-md btn-primary hidden-xs hidden-sm" href="resiway.fr#/">Accueil</a>
             <a class="btn btn-md btn-primary" href="resiway.fr#/association">Découvrir</a>
             <a class="btn btn-md btn-primary" href="resiway.fr#/association/soutenir">Soutenir</a>                
-            <a class="btn btn-md btn-success" href="/resiway.fr#/association/participer">Participer</a>             
+            <a class="btn btn-md btn-success" href="resiway.fr#/association/participer">Participer</a>             
             </div> 
         </div>
         <div style="width: 100%; height: 90px;">
@@ -157,7 +157,7 @@
                             </div>
 
                             <div ng-switch-when="resiway_user_signup" style="display: table-cell; vertical-align: top;">
-                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> vient de s'inscrire
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> vient de s'inscrire
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.user.location}}, {{action.user.country}} | {{action.user.about | limitTo : 60}} ...
@@ -168,7 +168,7 @@
                             </div>                            
                                                             
                             <div ng-switch-when="resiexchange_question_post" style="display: table-cell; vertical-align: top;">
-                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a posé une nouvelle question dans la catégorie <a href="#/category/{{action.object['categories_ids'][0]}}">{{action.object['categories_ids.name'][0]}}</a>
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a posé une nouvelle question dans la catégorie <a href="resiexchange.fr#/category/{{action.object['categories_ids'][0]}}">{{action.object['categories_ids.name'][0]}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.title | limitTo : 100}}
@@ -179,7 +179,7 @@
                             </div>
                             
                             <div ng-switch-when="resilib_document_post" style="display: table-cell; vertical-align: top;">
-                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a partagé un nouveau document dans la catégorie <a href="#/category/{{action.object['categories_ids'][0]}}">{{action.object['categories_ids.name'][0]}}</a>
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a partagé un nouveau document dans la catégorie <a href="resilib.fr#/category/{{action.object['categories_ids'][0]}}">{{action.object['categories_ids.name'][0]}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.title | limitTo : 100}}
@@ -190,7 +190,7 @@
                             </div>                            
 
                             <div ng-switch-when="resiexchange_answer_post" style="display: table-cell; vertical-align: top;">
-                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a répondu à la question <a href="#/question/{{action.object['question_id']}}/{{action.object['question_id.title_url']}}">{{action.object['question_id.title']}}</a> de <a href="#/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}">{{action.object['question_id.creator'].display_name}}</a>
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a répondu à la question <a href="resiexchange.fr#/question/{{action.object['question_id']}}/{{action.object['question_id.title_url']}}">{{action.object['question_id.title']}}</a> de <a href="resiexchange.fr#/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}">{{action.object['question_id.creator'].display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     <a 
@@ -200,7 +200,7 @@
                             </div>
                             
                             <div ng-switch-when="resiexchange_questioncomment_post" style="display: table-cell; vertical-align: top;">
-                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté la question <a href="#/question/{{action.object.question_id}}/{{action.object.question.title_url}}">{{action.object.question.title]}}</a> de <a href="#/user/{{action.object.question.creator.id}}/action.object.question.creator.name_url">{{action.object.question.creator.display_name}}</a>
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté la question <a href="resiexchange.fr#/question/{{action.object.question_id}}/{{action.object.question.title_url}}">{{action.object.question.title]}}</a> de <a href="resiexchange.fr#/user/{{action.object.question.creator.id}}/action.object.question.creator.name_url">{{action.object.question.creator.display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
@@ -211,10 +211,10 @@
                             </div>
                             
                             <div ng-switch-when="resiexchange_answercomment_post" style="display: table-cell; vertical-align: top;">
-                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> 
-                                a commenté la réponse de <a href="#/user/{{action.object.answer.creator.id}}/{{action.object.answer.creator.name_url}}">{{action.object.answer.creator.display_name}}</a> 
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> 
+                                a commenté la réponse de <a href="resiexchange.fr#/user/{{action.object.answer.creator.id}}/{{action.object.answer.creator.name_url}}">{{action.object.answer.creator.display_name}}</a> 
                                 à la question <a href="resiexchange.fr#/question/{{action.object.answer['question_id']}}/{{action.object.answer['question_id.title_url']}}">{{action.object.answer['question_id.title']}}</a> 
-                                de <a href="#/user/{{action.object.answer['question_id.creator'].id}}/{{action.object.answer['question_id.creator'].name_url}}">{{action.object.answer['question_id.creator'].display_name}}</a>
+                                de <a href="resiexchange.fr#/user/{{action.object.answer['question_id.creator'].id}}/{{action.object.answer['question_id.creator'].name_url}}">{{action.object.answer['question_id.creator'].display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
@@ -225,7 +225,7 @@
                             </div>
 
                             <div ng-switch-when="resilib_documentcomment_post" style="display: table-cell; vertical-align: top;">
-                                <a href="#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté le document <a href="#/document/{{action.object.document.id}}/{{action.object.document.title_url}}">{{action.object.document.title}}</a> de <a href="#/user/{{action.object.document.creator.id}}/{{action.object.document.creator.name_url}}">{{action.object.document.creator.display_name}}</a>
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté le document <a href="resilib.fr#/document/{{action.object.document.id}}/{{action.object.document.title_url}}">{{action.object.document.title}}</a> de <a href="resiexchange.fr#/user/{{action.object.document.creator.id}}/{{action.object.document.creator.name_url}}">{{action.object.document.creator.display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
