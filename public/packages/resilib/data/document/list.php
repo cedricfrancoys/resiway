@@ -253,8 +253,6 @@ if( intval($params['api']) > 0 && is_array($result) ) {
         unset($document['id']);        
         unset($document['creator']);        
         unset($document['categories']);
-        // removing original_url from result to avoid confusion about actual ressource location (original_url might be broken)       
-        unset($document['original_url']);
         // unset($document['title_url']);
         $result[] = [
             'type'          => 'document', 

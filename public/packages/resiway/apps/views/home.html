@@ -200,7 +200,7 @@
                             </div>
                             
                             <div ng-switch-when="resiexchange_questioncomment_post" style="display: table-cell; vertical-align: top;">
-                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté la question <a href="resiexchange.fr#/question/{{action.object.question_id}}/{{action.object.question.title_url}}">{{action.object.question.title]}}</a> de <a href="resiexchange.fr#/user/{{action.object.question.creator.id}}/action.object.question.creator.name_url">{{action.object.question.creator.display_name}}</a>
+                                <a href="resiexchange.fr#/user/{{action.user.id}}/{{action.user.name_url}}">{{action.user.display_name}}</a> a commenté la question <a href="resiexchange.fr#/question/{{action.object.question_id}}/{{action.object['question_id.title_url']}}">{{action.object['question_id.title']}}</a> de <a href="resiexchange.fr#/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}">{{action.object['question_id.creator'].display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
