@@ -5,7 +5,6 @@
 namespace maxmind\geoip;
 
 use html\phpQuery as phpQuery;
-use qinoa\text\TextTransformer as TextTransformer;
 
 include(dirname(__FILE__).'/geoipcity.inc');
 include(dirname(__FILE__).'/geoipregionvars.php');
@@ -16,7 +15,7 @@ define('GEOIP_DB_PATH', dirname(__FILE__).'/GeoLiteCity.dat');
 class GeoIP {
     /* Fetch translation of the specified name for given language
     */
-    public static function geoNames($name, $lang='fr', $country_code='', $charset='UTF8') {
+    public static function geoNames($name, $lang='fr', $country_code='', $charset='UTF-8') {
         // set default (if not found) to non-translated value
         $result = $name;
         try {
@@ -42,7 +41,7 @@ class GeoIP {
             foreach ($nodes as $node)  {
                 $translation = pq($node)->text();
                 if(strlen($translation) > 0) {                    
-                    $result = ucfirst(TextTransformer::normalize($translation));
+                    $result = $translation;
                     break;
                 }
             }
@@ -63,10 +62,12 @@ class GeoIP {
         if(is_null($location->country_name)) $location->country_name = '';
         if(is_null($location->country_code)) $location->country_code = '';
         if(is_null($location->city)) $location->city = '';
+        // some cities are not translated to english and GeoLiteCity.dat uses ANSI encoding
+        $location->city = mb_convert_encoding($location->city, 'UTF-8');
         // translate country name
-        $location->country_name = self::geoNames($location->country_name, 'fr', '', 'UTF8');
+        $location->country_name = self::geoNames($location->country_name, 'fr');
         // translate city name, if given
-        $location->city = self::geoNames($location->city, 'fr', $location->country_code, 'UTF8');
+        $location->city = self::geoNames($location->city, 'fr', $location->country_code);
         geoip_close($gi);    
         return $location;
     }
