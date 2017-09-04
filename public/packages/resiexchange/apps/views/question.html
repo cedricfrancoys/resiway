@@ -659,19 +659,6 @@
                 <h2>{{'QUESTION_USER_ANSWER' | translate}}</h2>
             </div>
             <div class="wrapper">
-                <!--
-                <div class="content" text-angular="text-angular" 
-                ng-model="question.newAnswerContent" 
-                ta-toolbar="[
-                        ['fullScreen', 'html'], ['redo', 'undo'],
-                        ['bold', 'italics'],
-                        ['h3', 'h4', 'h5'],                    
-                        ['ul', 'ol', 'indent','outdent'],
-                        ['insertImage', 'insertLink'],
-                        ['wordcount', 'charcount']
-                ]" 
-                ></div>
-                -->
                 <textarea class="content form-control" style="height: 200px;"
                           ui-tinymce="rootCtrl.tinymceOptions"
                           ng-model="question.newAnswerContent">
@@ -773,7 +760,7 @@
                             Auteur
                         </div>
                         <div class="content">
-                            <b>{{question.creator.display_name}}</b>
+                            <b><a href="#/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a></b>
                         </div>
                     </div>                        
                     <div class="stat-row">                        
