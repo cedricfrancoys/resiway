@@ -24,6 +24,10 @@ $params = QNLib::announce([
                             'type'          => 'string', 
                             'required'      => true
                             ),
+        'url'	        => array(
+                            'description'   => 'Author official website.',
+                            'type'          => 'string'
+                            ),                            
         'description'   => array(
                             'description'   => 'Author short description.',
                             'type'          => 'string',
@@ -68,7 +72,8 @@ try {
             }
             else {                
                 $om->write($object_class, $object_id, [
-                                'name'                 => $params['name'], 
+                                'name'                 => $params['name'],
+                                'url'                  => $params['url'],                                
                                 'description'          => $params['description']
                            ]);
             }

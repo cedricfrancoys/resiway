@@ -65,7 +65,7 @@ angular.module('resiexchange')
                     else {
                         var author_id = data.result.id;
                         var author_name = data.result['name_url'];
-                        $location.path('/author/'+author_name);
+                        $location.path('/author/'+author_id+'/'+author_name);
                     }
                 }        
             });
