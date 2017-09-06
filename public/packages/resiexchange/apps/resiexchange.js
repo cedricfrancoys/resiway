@@ -2062,6 +2062,7 @@ angular.module('resiexchange')
                     channel: $rootScope.config.channel,
                     id: $scope.author.id,
                     name: $scope.author.name,
+                    url: $scope.author.url,                    
                     description: $scope.author.description
                 },
                 // scope in wich callback function will apply 
