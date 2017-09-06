@@ -39,7 +39,7 @@
                                 <h3>
                                     <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
                                 </h3>
-                                <div class="document-author">par <strong>{{document.author}}</strong></div>
+                                <div class="document-author">par <strong ng-repeat="author in document.authors">{{author.name}}{{$last?'':' &bull; '}}</strong></div>
                                 
                                 <div class="tags">
                                     <a ng-repeat="tag in document.categories" 
@@ -67,7 +67,7 @@
                                 <h3>
                                     <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
                                 </h3>
-                                <div class="document-author">par <strong>{{document.author}}</strong></div>
+                                <div class="document-author">par <strong ng-repeat="author in document.authors">{{author.name}}{{$last?'':' &bull; '}}</strong></div>
                                 
                                 <div class="tags">
                                     <a ng-repeat="tag in document.categories" 

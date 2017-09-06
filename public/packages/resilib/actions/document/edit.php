@@ -24,11 +24,12 @@ $params = QNLib::announce([
                                 'type'          => 'string', 
                                 'required'      => true
                             ),
-        'author'            => array(
-                                'description'   => 'Author of the submitted document.',
-                                'type'          => 'string', 
+        'authors_ids'       => array(
+                                'description'   => 'List of names of the authors of the document.',
+                                'type'          => 'array',
                                 'required'      => true
                             ),
+                            
         'last_update'		=> array(
                                 'description'   => 'Publication date of the submitted document.',
                                 'type'          => 'date',
@@ -68,8 +69,7 @@ $params = QNLib::announce([
                                 'description'   => 'Thumbnail picture fot the submitted document.',
                                 'type'          => 'file', 
                                 'default'       => []
-                            ),
-                            
+                            ),                            
         'categories_ids'    => array(
                                 'description'   => 'List of tags assigned to the document.',
                                 'type'          => 'array',
@@ -109,20 +109,33 @@ try {
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {    
 
+            // check authors_ids consistency (we might have received a request for new authors)            
+            foreach($params['authors_ids'] as $key => $value) {
+                if(intval($value) == 0 && strlen($value) > 0) {
+// todo : check if an author by that name already exists                    
+                    // create a new category + write given value
+                    $author_id = $om->create('resiway\Author', [ 
+                                    'creator'           => $user_id,     
+                                    'name'              => $value
+                                  ]);
+                    // update entry
+                    $params['authors_ids'][$key] = sprintf("+%d", $author_id);
+                }
+            }
             
             // check categories_ids consistency (we might have received a request for new categories)
             foreach($params['categories_ids'] as $key => $value) {
                 if(intval($value) == 0 && strlen($value) > 0) {
 // todo : check if a category by that name already exists                    
                     // create a new category + write given value
-                    $tag_id = $om->create('resiway\Category', [ 
+                    $cat_id = $om->create('resiway\Category', [ 
                                     'creator'           => $user_id,     
                                     'title'             => $value,
                                     'description'       => '',
                                     'parent_id'         => 0
                                   ]);
                     // update entry
-                    $params['categories_ids'][$key] = sprintf("+%d", $tag_id);
+                    $params['categories_ids'][$key] = sprintf("+%d", $cat_id);
                 }
             }        
             
@@ -161,23 +174,23 @@ try {
             }
             
             // read created document as returned value
-            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'author', 'last_update', 'description', 'score', 'categories_ids']);
+            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'authors_ids', 'last_update', 'description', 'score', 'categories_ids']);
             if($res > 0) {
                 $result = array(
                                 'id'                => $object_id,
                                 'creator'           => ResiAPI::loadUserPublic($user_id), 
                                 'created'           => $res[$object_id]['created'], 
                                 'title'             => $res[$object_id]['title'],                             
-                                'author'            => $res[$object_id]['author'],
                                 'last_update'       => $res[$object_id]['last_update'],
                                 'description'       => $res[$object_id]['description'],                                 
                                 'score'             => $res[$object_id]['score'],
+                                'authors_ids'       => $res[$object_id]['authors_ids'],                                
                                 'categories_ids'    => $res[$object_id]['categories_ids'],
                                 'comments'          => [],                                
                                 'history'           => []
                           );
             }
-            else $result = $res;            
+            else $result = $res;
             return $result;
         },
         null,                                                      // $undo

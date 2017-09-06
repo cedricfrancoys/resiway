@@ -109,7 +109,10 @@
                             <i class="cc cc-nd" aria-hidden="true"></i>
                         </a>
                         
-                        <a class="cc-author" ng-href="#/author/{{ctrl.toURL(document.author)}}" title="{{document.author}}">{{document.author}}</a>        
+                        <!-- <a class="cc-author" ng-href="#/author/{{ctrl.toURL(document.author)}}" title="{{document.author}}">{{document.author}}</a>         -->
+                        
+                        <span ng-repeat="author in document.authors"><a class="cc-author" ng-href="#/author/{{author.id}}/{{author.name_url}}" title="{{author.name}}">{{author.name}}</a>{{$last ? '' : '&bull;'}}</span>
+                        
                     </div>                
                     <!-- <span style="font-weight: normal;">par </span>{{document.author}} -->
                 </div>

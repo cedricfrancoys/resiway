@@ -1173,7 +1173,7 @@ angular.module('resiexchange')
         ctrl.closeAlert = function(index) {
             $scope.alerts.splice(index, 1);
         };
-
+/*
         var getNames_timeout;
         ctrl.getNames = function(val) {
             var deferred = $q.defer();
@@ -1206,7 +1206,7 @@ angular.module('resiexchange')
             
             return deferred.promise;
         };
-  
+*/  
         $scope.dateOptions = {           
             formatYear: 'yy',
             maxDate: new Date(),
@@ -1219,7 +1219,7 @@ angular.module('resiexchange')
             $scope.versionPopup.opened = true;
         };  
         
-        $scope.addItem = function(query) {
+        $scope.addCategory = function(query) {
             return {
                 id: null, 
                 title: query, 
@@ -1228,11 +1228,36 @@ angular.module('resiexchange')
                 parent_path: ''
             };
         };
+
+        $scope.addAuthor = function(query) {
+            return {
+                id: null, 
+                name: query
+            };
+        };
+
         
-        $scope.loadMatches = function(query) {
+        $scope.loadCategoriesMatches = function(query) {
             if(query.length < 2) return [];
             
             return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result != 'object') return [];
+                    return data.result;
+                },
+                function errorCallback(response) {
+                    // something went wrong server-side
+                    return [];
+                }
+            );                
+        };
+
+        $scope.loadAuthorsMatches = function(query) {
+            if(query.length < 2) return [];
+            
+            return $http.get('index.php?get=resiway_author_list&channel='+$rootScope.config.channel+'&order=name&'+$httpParamSerializerJQLike({domain: ['name', 'ilike', '%'+query+'%']}))
             .then(
                 function successCallback(response) {
                     var data = response.data;
@@ -1253,7 +1278,8 @@ angular.module('resiexchange')
         $scope.document = angular.merge({
                             id: 0,
                             title: '',
-                            author: '',
+                            //author: '',
+                            authors_ids: [{}],                            
                             last_update: '',
                             description: '',
                             categories_ids: [{}],
@@ -1266,12 +1292,18 @@ angular.module('resiexchange')
                           
 
         /**
-        * categories_ids is a many2many field, so as initial setting we mark all ids to be removed
+        * for many2many field, as initial setting we mark all ids to be removed
         */
         // save initial categories_ids
         $scope.initial_cats_ids = [];
         angular.forEach($scope.document.categories, function(cat, index) {
             $scope.initial_cats_ids.push('-'+cat.id);
+        });
+
+        // save initial authors_ids
+        $scope.initial_authors_ids = [];
+        angular.forEach($scope.document.authors, function(author, index) {
+            $scope.initial_authors_ids.push('-'+author.id);
         });
         
         // @events
@@ -1285,6 +1317,18 @@ angular.module('resiexchange')
                 else $scope.document.categories_ids.push('+'+cat.id);
             });
         });
+
+
+        $scope.$watch('document.authors', function() {
+            // reset selection
+            $scope.document.authors_ids = angular.copy($scope.initial_authors_ids);
+            angular.forEach($scope.document.authors, function(author, index) {
+                if(author.id == null) {
+                    $scope.document.authors_ids.push(author.name);
+                }
+                else $scope.document.authors_ids.push('+'+author.id);
+            });
+        });        
 
         // @methods
         $scope.documentPost = function($event) {
@@ -1302,7 +1346,8 @@ angular.module('resiexchange')
                         channel: $rootScope.config.channel,
                         id: $scope.document.id,
                         title: $scope.document.title,
-                        author: $scope.document.author,                    
+                        // author: $scope.document.author,                
+                        authors_ids: $scope.document.authors_ids,                        
                         last_update: $scope.document.last_update.toJSON(),  
                         original_url: $scope.document.original_url, 
                         license: $scope.document.license,                    

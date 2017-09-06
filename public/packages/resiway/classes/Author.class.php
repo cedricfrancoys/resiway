@@ -37,12 +37,22 @@ class Author extends \easyobject\orm\Object {
                                     'function'      => 'resiway\Author::getCountPages'                                    
                                    ),
             
-
+/*
             'documents_ids'     => array(
                                     'type'              => 'one2many', 
                                     'foreign_object'    => 'resilib\Document',
                                     'foreign_field'	    => 'author_id'
                                     ),
+*/
+                                    
+            'documents_ids'	    => array(
+                                    'type'              => 'many2many', 
+                                    'foreign_object'    => 'resilib\Document', 
+                                    'foreign_field'     => 'authors_ids', 
+                                    'rel_table'         => 'resilib_rel_document_author', 
+                                    'rel_foreign_key'   => 'document_id', 
+                                    'rel_local_key'     => 'author_id'
+                                    ),                                    
                                     
             /* related user(s), in any */
             /* should be one person, but there may be several users in case of an organisation */
@@ -65,6 +75,8 @@ class Author extends \easyobject\orm\Object {
     
     public static function getDefaults() {
         return array(
+             'description'              => function() { return ''; },        
+             'url'                      => function() { return ''; },                     
              'count_views'              => function() { return 0; },        
              'count_documents'          => function() { return 0; }
         );

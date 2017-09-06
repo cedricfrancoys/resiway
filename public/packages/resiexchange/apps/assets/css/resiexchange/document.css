@@ -284,6 +284,9 @@
 }
 
 .document .document-author {
+    white-space: nowrap;
+    overflow:hidden;
+    text-overflow: ellipsis;
     margin-bottom: 8px;
 }
 

@@ -47,14 +47,31 @@ try {
 
     // retrieve document
     $result = [];
-    $objects = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'author', 'pages', 'original_url', 'original_filename', 'count_stars', 'count_views', 'count_downloads', 'count_votes', 'score', 'categories_ids', 'comments_ids']);    
+    $objects = $om->read($object_class, $object_id, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'authors_ids', 'pages', 'original_url', 'original_filename', 'count_stars', 'count_views', 'count_downloads', 'count_votes', 'score', 'categories_ids', 'comments_ids']);    
     
     if($objects < 0 || !isset($objects[$object_id])) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
     $object_data = $objects[$object_id];
 
     $result = $object_data;
+  
+    // retrieve authors
+    $result['authors'] = [];
+    $res = $om->read('resiway\Author', $object_data['authors_ids'], ['id', 'name', 'name_url']);        
+    if($res > 0) {
+        $authors = [];
+        foreach($res as $author_id => $author_data) {           
+            $authors[$author_id] = array(
+                                        'id'            => $author_id,
+                                        'name'          => $author_data['name'], 
+                                        'name_url'      => $author_data['name_url']
+                                    );
+        }      
+        
+        // asign resulting array to returned value
+        $result['authors'] = array_values($authors);
+    }    
     
-    // retreive author data
+    // retreive creator data
     $author_data = ResiAPI::loadUserPublic($object_data['creator']);
     if($author_data < 0) throw new Exception("document_author_unknown", QN_ERROR_UNKNOWN_OBJECT);
     $result['creator'] = $author_data;
@@ -78,8 +95,10 @@ try {
         // add document view to user history
         ResiAPI::registerAction($user_id, 'resilib_document_view', 'resilib\Document', $object_id);  
     }
+
+
     
-    // retrieve tags
+    // retrieve categories
     $result['categories'] = [];
     $res = $om->read('resiway\Category', $object_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
     if($res > 0) {

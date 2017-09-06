@@ -49,8 +49,9 @@ angular.module('resiexchange')
             // '/user/sign/:mode?': '/participant/sign/:mode?',
             '/user/edit/:id': '/participant/edition/:id',
             '/user/:id/:name?': '/participant/:id/:name?',                        
-            '/author/:name': '/auteur/:name',
+            // '/author/:name': '/auteur/:name',
             '/author/edit/:id': '/auteur/edition/:id',
+            '/author/:id/:name?': '/auteur/:id/:name?',
             '/association/soutenir': '/association/soutenir',
             '/association/contact': '/association/contact',
             '/association/participer': '/association/participer',
@@ -340,16 +341,7 @@ angular.module('resiexchange')
         },        
         /**
         * Author routes
-        */                
-        '/author/:name': {
-                    templateUrl : templatePath+'author.html',
-                    controller  : 'authorController as ctrl',
-                    resolve     : {
-                        author: ['routeAuthorByNameProvider', function (provider) {
-                            return provider.load();
-                        }]
-                    }        
-        },
+        */
         '/author/edit/:id': {
                     templateUrl : templatePath+'authorEdit.html',
                     controller  : 'authorEditController as ctrl',
@@ -359,6 +351,26 @@ angular.module('resiexchange')
                         }]
                     }        
         },            
+        '/author/:id/:name?': {
+                    templateUrl : templatePath+'author.html',
+                    controller  : 'authorController as ctrl',
+                    resolve     : {
+                        author: ['routeAuthorProvider', function (provider) {
+                            return provider.load();
+                        }]
+                    }        
+        },        
+/*        
+        '/author/:name': {
+                    templateUrl : templatePath+'author.html',
+                    controller  : 'authorController as ctrl',
+                    resolve     : {
+                        author: ['routeAuthorByNameProvider', function (provider) {
+                            return provider.load();
+                        }]
+                    }        
+        },
+*/        
         /**
         * Resiway routes            
         */        

@@ -16,8 +16,21 @@
                         </div>
                     </div>
                     <div class="control-group">
-                        <label class="control-label">Auteur</label>
+                        <label class="control-label">Auteur(s)</label>
                         <div class="controls">
+                        
+                            <oi-select
+                                        oi-options="item.name for item in loadAuthorsMatches($query)"
+                                        ng-model="document.authors"
+                                        multiple
+                                        multiple-limit="8"
+                                        oi-select-options="{
+                                            newItem: true,
+                                            saveTrigger: 'enter blur . , ;',
+                                            newItemFn: 'addAuthor($query)'
+                                        }"                                        
+                                        placeholder="Auteurs"></oi-select>
+<!--                                        
                             <input id="author" 
                                    ng-model="document.author"
                                    type="text"
@@ -30,6 +43,7 @@
                                    typeahead-loading="loadingLocations" 
                                    typeahead-no-results="noMatch">
                             <div ng-show="noMatch"></div>                                   
+-->
                             <p class="help-inline">Prénom et NOM de l'auteur; répétition dans le cas de co-auteurs; SIGLE (Détail De l'Acronyme) pour une personne morale</p>
                         </div>
                     </div>
@@ -145,9 +159,10 @@
                      <div class="control-group" style="clear: both;">
                         <label class="control-label">Catégories</label>
                         <div class="controls">
+
                         <!-- alternate display (but sorting before grouping): oi-options="item.path group by item.parent_path for item in categories" -->
                             <oi-select
-                                        oi-options="item.path for item in loadMatches($query)"
+                                        oi-options="item.path for item in loadCategoriesMatches($query)"
                                         ng-model="document.categories"
                                         multiple
                                         multiple-limit="8"
@@ -157,10 +172,10 @@
                                             listFilter: 'customListFilter',
                                             newItem: true,
                                             saveTrigger: 'enter blur . , ;',
-                                            newItemFn: 'addItem($query)'
+                                            newItemFn: 'addCategory($query)'
                                         }"                                        
                                         placeholder="Catégories"></oi-select>
-                                        
+
                             <p class="help-inline">Choisissez ou créez une ou plusieurs catégories</p>
                         </div>
                     </div>

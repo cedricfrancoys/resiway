@@ -58,7 +58,7 @@ try {
     $author = $res[$author_id];
 
     $author['documents'] = [];
-    $res = $om->read('resilib\Document', $author['documents_ids'], ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'author', 'pages', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids']);        
+    $res = $om->read('resilib\Document', $author['documents_ids'], ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'last_update', 'license', 'title', 'title_url', 'lang', 'description', 'pages', 'count_stars', 'count_views', 'count_votes', 'score', 'categories_ids']);        
     if($res > 0) {
         // asign resulting array to returned value
         $author['documents'] = array_values($res);

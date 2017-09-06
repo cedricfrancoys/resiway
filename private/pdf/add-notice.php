@@ -29,7 +29,7 @@ try {
     $ids = $om->search('resilib\Document', ['notice', '=', '0']);
     
     if($ids > 0 && count($ids) > 0) {
-        $documents = $om->read('resilib\Document', $ids, ['id', 'lang', 'author', 'title', 'title_url', 'original_url']);
+        $documents = $om->read('resilib\Document', $ids, ['id', 'lang', 'authors_ids.name', 'title', 'title_url', 'original_url']);
         foreach($documents as $document) {
             // $filename = sprintf("../bin/resilib/Document/content/%011d.%s", $document['id'], $document['lang']);
             $filename = sprintf("../bin/resilib/Document/content/%011d.%s", $document['id'], 'fr');
@@ -39,7 +39,7 @@ try {
             $resilink = "<a href=\"$url\">$url</a>";
             $html = str_replace(
             ['{{author}}', '{{title}}', '{{url-origin}}', '{{resilink}}'],
-            [$document['author'], $document['title'], $document['original_url'], $resilink]
+            [implode(', ', $document['authors_ids.name']), $document['title'], $document['original_url'], $resilink]
             , $template);
             $dompdf = new DOMPDF();
             $dompdf->load_html($html, 'UTF-8');

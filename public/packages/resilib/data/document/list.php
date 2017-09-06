@@ -159,22 +159,23 @@ try {
     $documents = [];
     if(!empty($documents_ids)) {
         // retrieve documents
-        $res = $om->read('resilib\Document', $documents_ids, ['creator', 'created', 'title', 'title_url', 'author', 'description', 'original_url', 'content_type', 'score', 'count_views', 'categories_ids']);
+        $res = $om->read('resilib\Document', $documents_ids, ['creator', 'created', 'title', 'title_url', 'authors_ids', 'description', 'original_url', 'content_type', 'score', 'count_views', 'categories_ids']);
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
-        $authors_ids = [];        
-        $tags_ids = [];
+        $creators_ids = [];        
+        $authors_ids = [];
+        $categories_ids = [];
 
         foreach($res as $document_id => $document_data) {    
-            $authors_ids = array_merge($authors_ids, (array) $document_data['creator']); 
-            $tags_ids = array_merge($tags_ids, (array) $document_data['categories_ids']);                 
+            $creators_ids = array_merge($creators_ids, (array) $document_data['creator']); 
+            $authors_ids = array_merge($authors_ids, (array) $document_data['authors_ids']);                 
+            $categories_ids = array_merge($categories_ids, (array) $document_data['categories_ids']);                 
             $documents[$document_id] = array(
                                         'id'            => $document_id,
                                         'creator'       => $document_data['creator'],
                                         'created'       => $document_data['created'],
                                         'title'         => $document_data['title'],
                                         'title_url'     => $document_data['title_url'],
-                                        'author'        => $document_data['author'],
                                         'description'   => $document_data['description'],
                                         'original_url'  => $document_data['original_url'],
                                         'content_type'  => $document_data['content_type'],                                        
@@ -183,32 +184,49 @@ try {
                                        );
         }    
 
-        // retreive authors data
-        $documents_authors = $om->read('resiway\User', $authors_ids, ResiAPI::userPublicFields());        
-        if($documents_authors < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);   
+        // retreive creators data
+        $documents_creators = $om->read('resiway\User', $creators_ids, ResiAPI::userPublicFields());        
+        if($documents_creators < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);   
 
         foreach($res as $document_id => $document_data) {
             $author_id = $document_data['creator'];
-            if(isset($documents_authors[$author_id])) {
-                $documents[$document_id]['creator'] = $documents_authors[$author_id];
+            if(isset($documents_creators[$author_id])) {
+                $documents[$document_id]['creator'] = $documents_creators[$author_id];
             }
             else unset($res[$document_id]);
         }
-               
-        // retrieve tags
-        $documents_tags = $om->read('resiway\Category', $tags_ids, ['title', 'path', 'parent_path', 'description']);        
-        if($documents_tags < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
+
+        // retrieve authors
+        $documents_authors = $om->read('resiway\Author', $authors_ids, ['name', 'name_url', 'description']);        
+        if($documents_authors < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
+
+        foreach($res as $document_id => $document_data) {
+            $documents[$document_id]['authors'] = [];
+            foreach($document_data['authors_ids'] as $author_id) {
+                $author_data = $documents_authors[$author_id];
+                $documents[$document_id]['authors'][] = array(
+                                            'id'            => $author_id,
+                                            'name'          => $author_data['name'], 
+                                            'name_url'      => $author_data['name_url'],
+                                            'description'   => $author_data['description']
+                                        );            
+            }
+        }
+        
+        // retrieve categories
+        $documents_categories = $om->read('resiway\Category', $categories_ids, ['title', 'path', 'parent_path', 'description']);        
+        if($documents_categories < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
 
         foreach($res as $document_id => $document_data) {
             $documents[$document_id]['categories'] = [];
-            foreach($document_data['categories_ids'] as $tag_id) {
-                $tag_data = $documents_tags[$tag_id];
+            foreach($document_data['categories_ids'] as $category_id) {
+                $category_data = $documents_categories[$category_id];
                 $documents[$document_id]['categories'][] = array(
-                                            'id'            => $tag_id,
-                                            'title'         => $tag_data['title'], 
-                                            'path'          => $tag_data['path'],
-                                            'parent_path'   => $tag_data['parent_path'],
-                                            'description'   => $tag_data['description']
+                                            'id'            => $category_id,
+                                            'title'         => $category_data['title'], 
+                                            'path'          => $category_data['path'],
+                                            'parent_path'   => $category_data['parent_path'],
+                                            'description'   => $category_data['description']
                                         );            
             }
         }
@@ -253,7 +271,7 @@ if( intval($params['api']) > 0 && is_array($result) ) {
         unset($document['id']);        
         unset($document['creator']);        
         unset($document['categories']);
-        // unset($document['title_url']);
+        unset($document['title_url']);
         $result[] = [
             'type'          => 'document', 
             'id'            => $id, 

@@ -89,7 +89,7 @@ try {
         $om = &ObjectManager::getInstance();
             
         // retrieve document
-        $res = $om->read('resilib\Document', $document_id, ['id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 'author', 'title', 'title_url', 'description', 'content', 'last_update', 'count_views', 'count_votes', 'score', 'categories_ids.title']);
+        $res = $om->read('resilib\Document', $document_id, ['id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 'authors_ids.name', 'title', 'title_url', 'description', 'content', 'last_update', 'count_views', 'count_votes', 'score', 'categories_ids.title']);
         
         if($res < 0 || !isset($res[$document_id])) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
         $document_data = $res[$document_id];
@@ -184,7 +184,7 @@ try {
             echo '<h1 itemprop="name">'.$title.'</h1>'.PHP_EOL;
             echo '<div itemprop="description">'.$description.'</div>'.PHP_EOL;        
             echo '<div itemprop="dateCreated">'.$document_data['last_update'].'</div>'.PHP_EOL;
-            echo '<div itemprop="author">'.$document_data['author'].'</div>'.PHP_EOL;        
+            echo '<div itemprop="author">'.implode(', ', $document_data['authors_ids.name']).'</div>'.PHP_EOL;        
             echo '<div itemprop="url">'.$url.'</div>'.PHP_EOL;                                
             echo '</div>'.PHP_EOL;        
             echo '</body>'.PHP_EOL;        

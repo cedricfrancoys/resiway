@@ -29,13 +29,16 @@ class Document extends \easyobject\orm\Object {
                                         'store'             => true, 
                                         'function'          => 'resilib\Document::getTitleURL'
                                        ),
-                                       
-            'author'			    => array('type' => 'string', 'onchange' => 'resilib\Document::onchangeAuthor'),
-            
-
-            /* due to UX strategy, this field is automatically set (user only gives author full name, or picks up among a selection) */
-            'author_id'             => array('type' => 'many2one', 'foreign_object' => 'resiway\Author'),
-            
+                                                  
+            'authors_ids'	        => array(
+                                        'type'              => 'many2many', 
+                                        'foreign_object'    => 'resiway\Author', 
+                                        'foreign_field'     => 'documents_ids', 
+                                        'rel_table'         => 'resilib_rel_document_author', 
+                                        'rel_foreign_key'   => 'author_id', 
+                                        'rel_local_key'     => 'document_id',
+                                        'onchange'          => 'resilib\Document::onchangeAuthorsIds'
+                                       ),
             
             /* language into which the document is written */
             'lang'			        => array('type' => 'string'),
@@ -141,7 +144,6 @@ class Document extends \easyobject\orm\Object {
              'lang'             => function() { return 'fr'; },
              'channel_id'       => function() { return 1; },
              'editor'           => function() { return 0; },
-             'author_id'        => function() { return 0; },             
              'count_views'      => function() { return 0; },
              'count_votes'      => function() { return 0; },
              'count_stars'      => function() { return 0; },
@@ -177,25 +179,7 @@ class Document extends \easyobject\orm\Object {
         }
     }
 
-    public static function onchangeAuthor($om, $oids, $lang) {
-        // fetch authors names
-        $res = $om->read(__CLASS__, $oids, ['author']);
-        foreach($res as $oid => $odata) {
-            // resolve author id
-            $author_name = TextTransformer::slugify($odata['author']);
-            $ids = $om->search('resiway\Author', ['name_url', '=', "{$author_name}"], 'id', 'asc', 0, 1);
-            // if found, set author_id
-            if($ids > 0 && count($ids)) {
-                $om->write(__CLASS__, $oid, ['author_id' => $ids[0]]);
-                // force re-compute pages counter
-                $om->write('resiway\Author', $ids[0], ['count_pages' => null]);
-            }
-            else {
-                // create a new author
-                $author_id = $om->create('resiway\Author', ['name' => $odata['author']]);
-                $om->write(__CLASS__, $oid, ['author_id' => $author_id]);
-            }
-        }
+    public static function onchangeAuthorsIds($om, $oids, $lang) {
         // force re-indexing the document
         $om->write(__CLASS__, $oids, ['indexed' => false]);
     }
