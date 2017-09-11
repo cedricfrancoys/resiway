@@ -182,6 +182,13 @@ class Document extends \easyobject\orm\Object {
     public static function onchangeAuthorsIds($om, $oids, $lang) {
         // force re-indexing the document
         $om->write(__CLASS__, $oids, ['indexed' => false]);
+        $res = $om->read(__CLASS__, $oids, ['authors_ids']);
+        $authors_ids = [];
+        foreach($res as $oid => $odata) {
+            $authors_ids = array_merge($authors_ids, $odata['authors_ids']);
+        }
+        // force re-compute author count-pages
+        $om->write('resiway\Author', $authors_ids, ['count_pages' => null]);
     }
     
     public static function onchangeTitle($om, $oids, $lang) {
