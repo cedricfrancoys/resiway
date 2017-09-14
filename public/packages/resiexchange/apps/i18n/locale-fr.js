@@ -38,7 +38,7 @@ var translations = {
     "TOOLBAR_SEARCH_AMONG_QUESTION_PLACEHOLDER": "Rechercher parmi les Questions",   
 
     // Questions  
-    "QUESTION_ACTIONS_VOTEUP_TOOLTIP": "Cette question fait preuve d'un effort de recherche; elle est utile et claire",
+    "QUESTION_ACTIONS_VOTEUP_TOOLTIP": "Cette question utile et claire, merci de l'avoir posée !",
     "QUESTION_ACTIONS_VOTEDOWN_TOOLTIP": "Cette question ne fait preuve d'aucun effort de recherche; elle est inutile ou peu claire",
     "QUESTION_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter cette question à tes favoris (deux clics pour la retirer)",
     "QUESTION_ACTIONS_SHARE": "Partager",
@@ -70,7 +70,7 @@ var translations = {
     
     "QUESTION_ANSWERS_COUNT_LABEL": "Réponses",
 
-    "QUESTION_ANSWER_ACTIONS_VOTEUP_TOOLTIP": "Cette réponse fait preuve d'un effort de recheche; elle est utile et claire",
+    "QUESTION_ANSWER_ACTIONS_VOTEUP_TOOLTIP": "Cette réponse fait preuve d'un effort de recheche; elle est utile et claire, merci de l'avoir partagée !",
     "QUESTION_ANSWER_ACTIONS_VOTEDOWN_TOOLTIP": "Cette réponse ne fait preuve d'aucun effort de recherche; elle est inutile ou peu claire",
     "QUESTION_ANSWER_ACTIONS_SHARE": "Partage",
     "QUESTION_ANSWER_ACTIONS_SHARE_TOOLTIP": "Permalink vers cette réponse",
