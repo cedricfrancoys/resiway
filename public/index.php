@@ -14,6 +14,7 @@ function getAppOutput() {
 // handle the '_escaped_fragment_' parameter in case page is requested by a crawler
 if(isset($_REQUEST['_escaped_fragment_'])) {
     $uri = $_REQUEST['_escaped_fragment_'];
+    header('Status: 200 OK');
     header('Location: '.$uri);
     exit();
 }
