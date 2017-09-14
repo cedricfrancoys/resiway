@@ -36,9 +36,17 @@ try {
         $action_name,                                               // $action_name
         $object_class,                                              // $object_class
         $object_id,                                                 // $object_id
-        ['creator', 'deleted'],                   // $object_fields
+        ['creator', 'deleted', 'answer_id'],                        // $object_fields
         true,                                                       // $toggle
         function ($om, $user_id, $object_class, $object_id) {       // $do
+            // retreive related answer id
+            $objects = $om->read($object_class, $object_id, ['answer_id']);            
+            // retrieve related action object                      
+            $related_object_class = 'resiexchange\Answer';
+            $related_object_id = $objects[$object_id]['answer_id'];
+            // undo related action            
+            ResiAPI::unregisterAction($user_id, 'resiexchange_answercomment_post', $object_class, $object_id);
+            ResiAPI::unregisterAction($user_id, 'resiexchange_answer_comment', $related_object_class, $related_object_id);                        
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 1
@@ -49,6 +57,14 @@ try {
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
+            // retreive related answer id
+            $objects = $om->read($object_class, $object_id, ['answer_id']);            
+            // retrieve related action object                      
+            $related_object_class = 'resiexchange\Answer';
+            $related_object_id = $objects[$object_id]['answer_id'];
+            // perform related action            
+            ResiAPI::registerAction($user_id, 'resiexchange_answercomment_post', $object_class, $object_id);
+            ResiAPI::registerAction($user_id, 'resiexchange_answer_comment', $related_object_class, $related_object_id);                        
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 0

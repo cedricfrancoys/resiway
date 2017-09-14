@@ -40,6 +40,8 @@ try {
         ['creator', 'deleted', 'categories_ids'],                   // $object_fields
         true,                                                       // $toggle
         function ($om, $user_id, $object_class, $object_id) {       // $do
+            // undo related action
+            ResiAPI::unregisterAction($user_id, 'resilib_document_post', $object_class, $object_id);
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 1
@@ -56,6 +58,8 @@ try {
             return true;
         },
         function ($om, $user_id, $object_class, $object_id) {       // $undo
+            // perform related action
+            ResiAPI::registerAction($user_id, 'resilib_document_post', $object_class, $object_id);
             // update deletion status
             $om->write($object_class, $object_id, [
                         'deleted' => 0
