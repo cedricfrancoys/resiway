@@ -109,9 +109,9 @@
                             <i class="cc cc-nd" aria-hidden="true"></i>
                         </a>
                         
-                        <!-- <a class="cc-author" ng-href="#/author/{{ctrl.toURL(document.author)}}" title="{{document.author}}">{{document.author}}</a>         -->
+                        <!-- <a class="cc-author" ng-href="#!/author/{{ctrl.toURL(document.author)}}" title="{{document.author}}">{{document.author}}</a>         -->
                         
-                        <span ng-repeat="author in document.authors"><a class="cc-author" ng-href="#/author/{{author.id}}/{{author.name_url}}" title="{{author.name}}">{{author.name}}</a>{{$last ? '' : '&bull;'}}</span>
+                        <span ng-repeat="author in document.authors"><a class="cc-author" ng-href="#!/author/{{author.id}}/{{author.name_url}}" title="{{author.name}}">{{author.name}}</a>{{$last ? '' : '&bull;'}}</span>
                         
                     </div>                
                     <!-- <span style="font-weight: normal;">par </span>{{document.author}} -->
@@ -150,7 +150,7 @@
                                title="{{'DOCUMENT_ACTIONS_SHARE_TOOLTIP' | translate}}">
                                 <i class="fa fa-share-alt" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_SHARE' | translate}}
                             </a>&nbsp;
-                            <a href="#/document/edit/{{document.id}}">
+                            <a href="#!/document/edit/{{document.id}}">
                                 <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_EDIT' | translate}}
                             </a>&nbsp;                            
                             <a href                                         
@@ -183,14 +183,14 @@
                                     <span class="relativetime">{{'DOCUMENT_STATS_EDITED' | translate}} {{document.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#/user/{{document.editor.id}}/{{document.editor.name_url}}">
+                                    <a href="#!/user/{{document.editor.id}}/{{document.editor.name_url}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="{{rootCtrl.avatarURL(document.editor.avatar_url, 32)}}" title="{{document.editor.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#/user/{{document.editor.id}}/{{document.editor.name_url}}">{{document.editor.display_name}}</a>
+                                    <a href="#!/user/{{document.editor.id}}/{{document.editor.name_url}}">{{document.editor.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="{{'DOCUMENT_USER_DETAILS_REPUTATION'|translate}}">{{document.editor.reputation}}</span>
                                         <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="document.editor.count_badges_1 > 0">
@@ -215,14 +215,14 @@
                                     <span class="relativetime">{{'DOCUMENT_STATS_ASKED' | translate}} {{document.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#/user/{{document.creator.id}}/{{document.creator.name_url}}">
+                                    <a href="#!/user/{{document.creator.id}}/{{document.creator.name_url}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="{{rootCtrl.avatarURL(document.creator.avatar_url, 32)}}" title="{{document.creator.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#/user/{{document.creator.id}}/{{document.creator.name_url}}">{{document.creator.display_name}}</a>
+                                    <a href="#!/user/{{document.creator.id}}/{{document.creator.name_url}}">{{document.creator.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="{{'DOCUMENT_USER_DETAILS_REPUTATION'|translate}}">{{document.creator.reputation}}</span>
                                         <span class="badges" title="{{'DOCUMENT_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="document.creator.count_badges_1 > 0">
@@ -318,9 +318,9 @@
                                 <div class="comment-body">
                                     <span btf-markdown="comment.content"></span>
                                     –&nbsp;
-                                    <a class="comment-user" href="#/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                    <a class="comment-user" href="#!/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
                                     <span class="comment-date" dir="ltr">
-                                        <a class="comment-link" href="#/document/{{document.id}}#comment-{{comment.id}}">
+                                        <a class="comment-link" href="#!/document/{{document.id}}#comment-{{comment.id}}">
                                             <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                         </a>
                                     </span>
@@ -473,7 +473,7 @@
                     <table>
                         <tr>
                             <td><span class="mini-counts btn btn-success btn-xs">{{document.score | humanizeCount}}</span></td>
-                            <td><a href="#/document/{{document.id}}/{{document.title_url}}" title="{{document.title}}">{{document.title}}</a></td>
+                            <td><a href="#!/document/{{document.id}}/{{document.title_url}}" title="{{document.title}}">{{document.title}}</a></td>
                         </tr>
                     </table>
                 </div>

@@ -13,7 +13,7 @@
             </div>
             <div>
                 <ul>
-                    <li ng-repeat="topic in ctrl.category.topics"><a href="#/help/topic/{{topic.id}}/{{topic.title_url}}">{{topic.title}}</a></li>
+                    <li ng-repeat="topic in ctrl.category.topics"><a href="#!/help/topic/{{topic.id}}/{{topic.title_url}}">{{topic.title}}</a></li>
                 </ul>
             </div>
         </div>            
@@ -23,9 +23,9 @@
             <div class="container help-toc">
                 <ul>
                     <li ng-repeat="category in ctrl.categories">
-                        <a ng-class="{active: (category.id == ctrl.topic.category_id)}" href="#/help/category/{{category.id}}/{{category.title_url}}">{{category.title}}</a>
+                        <a ng-class="{active: (category.id == ctrl.topic.category_id)}" href="#!/help/category/{{category.id}}/{{category.title_url}}">{{category.title}}</a>
                         <ul ng-if="category.id == ctrl.topic.category_id">
-                            <li ng-repeat="topic in category.topics"><a ng-class="{active: (topic.id == ctrl.topic.id)}" href="#/help/topic/{{topic.id}}/{{topic.title_url}}">{{topic.title}}</a></li>
+                            <li ng-repeat="topic in category.topics"><a ng-class="{active: (topic.id == ctrl.topic.id)}" href="#!/help/topic/{{topic.id}}/{{topic.title_url}}">{{topic.title}}</a></li>
                         </ul>
                     </li>
                 </ul>

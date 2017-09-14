@@ -82,7 +82,7 @@ try {
     
     if( !$params['bot'] && !$params['download'] && !$params['view'] ) {
         // redirect to JS application
-        header('Location: '.'/resilib.fr#/document/'.$params['id'].'/'.$params['title']);
+        header('Location: '.'/resilib.fr#!/document/'.$params['id'].'/'.$params['title']);
         exit();
     }    
     else {

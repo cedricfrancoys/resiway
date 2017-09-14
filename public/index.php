@@ -11,7 +11,13 @@ function getAppOutput() {
     return ob_get_clean();
 };
 
-        
+// handle the '_escaped_fragment_' parameter in case page is requested by a crawler
+if(isset($_REQUEST['_escaped_fragment_'])) {
+    $uri = $_REQUEST['_escaped_fragment_'];
+    header('Location: '.$uri);
+    exit();
+}
+
 // This script is used to cache result of 'show' requests (that should return static HTML, and expect no params)
 if(isset($_REQUEST['show'])) {
     $cache_filename = '../cache/'.$_REQUEST['show'];

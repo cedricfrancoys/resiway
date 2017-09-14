@@ -28,6 +28,7 @@ class Author extends \easyobject\orm\Object {
             /* profile views */
             'count_views'       => array('type' => 'integer'),
             
+// todo : auto-compute this field (similar to getCountPages)
             'count_documents'   => array('type' => 'integer'),
             
             'count_pages'       => array(

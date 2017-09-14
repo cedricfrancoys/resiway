@@ -159,10 +159,10 @@ var resiway = angular.module('resiexchange', [
     function($locationProvider) {
         // ensure we're in Hashbang mode
         $locationProvider.html5Mode(false);
+        $locationProvider.hashPrefix('!');
         // $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false}).hashPrefix('!');
     }
 ])
-
 
 
 .run( [

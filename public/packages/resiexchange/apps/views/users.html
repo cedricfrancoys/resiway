@@ -28,14 +28,14 @@
         
             <div class="user-info">
                 <div class="user-avatar">
-                    <a href="#/user/{{user.id}}/{{user.name_url}}">
+                    <a href="#!/user/{{user.id}}/{{user.name_url}}">
                         <div class="avatar-wrapper">
                             <img ng-src="{{rootCtrl.avatarURL(user.avatar_url, 32)}}" title="{{user.display_name}}" width="32" height="32">
                         </div>                                        
                     </a>                                        
                 </div>
                 <div class="user-details">
-                    <a href="#/user/{{user.id}}/{{user.name_url}}">{{user.display_name}}</a>
+                    <a href="#!/user/{{user.id}}/{{user.name_url}}">{{user.display_name}}</a>
                     <div>
                         <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}" dir="ltr">{{user.reputation}}</span>
                         <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="user.count_badges_3 > 0">

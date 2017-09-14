@@ -79,7 +79,7 @@ try {
     
     if( !$params['bot'] && !isBot() ) {
         // redirect to JS application
-        header('Location: '.'/resiexchange.fr#/question/'.$question_data['id'].'/'.$question_data['title_url']);
+        header('Location: '.'/resiexchange.fr#!/question/'.$question_data['id'].'/'.$question_data['title_url']);
         exit();
     } 
     else {

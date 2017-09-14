@@ -390,7 +390,7 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
         <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
             <div ng-repeat="question in ctrl.questions.items" class="post-summary col-1-1">
                 <div class="col-9-12">
-                    &bull; <a href="/resiexchange.fr#/question/{{question.id}}">{{question.title}}</a>
+                    &bull; <a href="/resiexchange.fr#!/question/{{question.id}}">{{question.title}}</a>
                 </div>
             </div>
         </div>
@@ -418,7 +418,7 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
         <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
             <div ng-repeat="document in ctrl.documents.items" class="post-summary col-1-1">
                 <div class="col-9-12">
-                    &bull; <a href="/resilib.fr#/document/{{document.id}}">{{document.title}}</a>
+                    &bull; <a href="/resilib.fr#!/document/{{document.id}}">{{document.title}}</a>
                 </div>
             </div>
 

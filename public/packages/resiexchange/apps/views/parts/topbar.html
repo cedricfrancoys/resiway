@@ -44,35 +44,35 @@
         <!-- notifications dialog -->        
         <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
             <div class="head">
-                <a href="/resiexchange.fr#/user/notifications/{{user.id}}">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
+                <a href="/resiexchange.fr#!/user/notifications/{{user.id}}">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
                 <a href class="pull-right" ng-click="ctrl.notificationsDismissAll()">tout supprimer</a>
             </div>
             <ul>
                 <li ng-repeat="(notification_index, notification) in user.notifications">
-                    <div class="title"><a href="/resiexchange.fr#/user/notifications/{{user.id}}">{{notification.title}}</a></div>
+                    <div class="title"><a href="/resiexchange.fr#!/user/notifications/{{user.id}}">{{notification.title}}</a></div>
                     <div class="descr" ng-bind-html="notification.content"></div>
                 </li>
             </ul>
-            <div class="foot"><a href="/resiexchange.fr#/user/notifications/{{user.id}}">+ Voir toutes les notifications</a></div>
+            <div class="foot"><a href="/resiexchange.fr#!/user/notifications/{{user.id}}">+ Voir toutes les notifications</a></div>
         </div>
         <!-- help dialog -->
         <div class="help-dialog" ng-show="ctrl.helpDropdown">
             <ul>
                 <li>
                     <div class="title">Centre d'Aide</div>
-                    <div class="descr small"><a href="/resiexchange.fr#/help/categories">Des réponses à toutes vos questions sur le fonctionnement de la plateforme</a></div>
+                    <div class="descr small"><a href="/resiexchange.fr#!/help/categories">Des réponses à toutes vos questions sur le fonctionnement de la plateforme</a></div>
                 </li>
                 <li>
                     <div class="title">Meta</div>
-                    <div class="descr small"><a href="/meta.resiexchange.fr#/questions">Discussions sur le fonctionnement et les règles de la plateforme</a></div>
+                    <div class="descr small"><a href="/meta.resiexchange.fr#!/questions">Discussions sur le fonctionnement et les règles de la plateforme</a></div>
                 </li>
             </ul>
         </div>
         <!-- user dialog -->
         <div class="user-dialog" ng-show="ctrl.userDropdown">
             <ul>
-                <li onclick="window.location.href='/resiexchange.fr#/user/current/profile'">
-                    <a href="/resiexchange.fr#/user/{{user.id}}/{{user.name_url}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
+                <li onclick="window.location.href='/resiexchange.fr#!/user/current/profile'">
+                    <a href="/resiexchange.fr#!/user/{{user.id}}/{{user.name_url}}"><i class="fa fa-user" aria-hidden="true"></i> Profil</a>
                 </li>
                 <li ng-click="ctrl.signOut()">
                    <a href ng-click="ctrl.signOut()"><i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion</a>
@@ -94,13 +94,13 @@
                     <i class="fa fa-caret-down" aria-hidden="true"></i>          
                 </div>
                 <div id="rw-donation" class="visible-lg-block visible-md-block visible-sm-block">
-                    <a class="btn btn-danger" href="/resiway.fr#/association/soutenir"><i class="fa fa-heart" aria-hidden="true"></i> Faire un don</a>
+                    <a class="btn btn-danger" href="/resiway.fr#!/association/soutenir"><i class="fa fa-heart" aria-hidden="true"></i> Faire un don</a>
                 </div>                    
             </div>
             
             <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">
-                    <a href="/resiexchange.fr#/user/sign/in"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
-                    <a href="/resiexchange.fr#/user/sign/up"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
+                    <a href="/resiexchange.fr#!/user/sign/in"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
+                    <a href="/resiexchange.fr#!/user/sign/up"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
             </div>
             
             <div id="notify-btn" class="notify-btn ng-hide hidden-xs" ng-class="{open: ctrl.notifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user.id">

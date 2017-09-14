@@ -19,7 +19,7 @@
                                title="{{'DOCUMENT_ACTIONS_SHARE_TOOLTIP' | translate}}">
                                 <i class="fa fa-share-alt" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_SHARE' | translate}}
                             </a>&nbsp;
-                            <a ng-href="#/author/edit/{{author.id}}">
+                            <a ng-href="#!/author/edit/{{author.id}}">
                                 <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_EDIT' | translate}}
                             </a>&nbsp;                            
                             <a href 
@@ -44,13 +44,13 @@
                 <div ng-repeat="document in author.documents" class="document narrower col-1-1 nopad">
 
                     <div class="document-thumbnail">
-                        <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">
+                        <a class="document-hyperlink" href="#!/document/{{document.id}}/{{document.title_url}}">
                             <img width="50" height="66" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
                         </a>
                     </div>
                     <div class="summary">
                         <h3>
-                            <a class="document-hyperlink" href="#document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
+                            <a class="document-hyperlink" href="#!/document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
                         </h3>
                         <div class="excerpt">{{rootCtrl.htmlToTxt(document.description)}}</div>
                         
@@ -72,7 +72,7 @@
             </div>
             <div class="col-4-12">
                 <div ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
-                    <a class="btn btn-primary btn-block btn-sm" href="#user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> {{'USER_PROFILE_EDIT' | translate}}</a>
+                    <a class="btn btn-primary btn-block btn-sm" href="#!/user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> {{'USER_PROFILE_EDIT' | translate}}</a>
                 </div>
                 <div class="user-stats">
                     <div class="row">

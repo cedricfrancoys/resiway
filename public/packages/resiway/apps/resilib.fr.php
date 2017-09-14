@@ -14,7 +14,8 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <meta name="description" content="ResiLib bibliothèque collaborative de documents open source pour la diffusion et la réappropriation des savoirs-faires.">
 
         <link rel="alternate" href="https://www.resiway.org/resilib.fr" hreflang="fr"/>
-        
+
+        <meta name="fragment" content="!">        
         <meta itemscope itemtype="https://schema.org/WebApplication" />        
         <meta itemprop="image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
 
