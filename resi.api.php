@@ -116,30 +116,30 @@ class ResiAPI {
         $link = '';
         switch($object_class) {
             case 'resiway\User':                    
-                return '#/user/'.$object_id;
+                return '#!/user/'.$object_id;
                 
             case 'resiway\Category':                
-                return '#/category/'.$object_id;
+                return '#!/category/'.$object_id;
                 
             case 'resiway\Badge':    
             
             case 'resiexchange\Question':          
-                return '#/question/'.$object_id;
+                return '#!/question/'.$object_id;
                 
             case 'resiexchange\Answer':
                 $om = &ObjectManager::getInstance(); 
                 $res = $om->read($object_class, $object_id, ['question_id']);
-                return '#/question/'.$res[$object_id]['question_id'];
+                return '#!/question/'.$res[$object_id]['question_id'];
                 
             case 'resiexchange\QuestionComment':
                 $om = &ObjectManager::getInstance(); 
                 $res = $om->read($object_class, $object_id, ['question_id']);
-                return '#/question/'.$res[$object_id]['question_id'];
+                return '#!/question/'.$res[$object_id]['question_id'];
                 
             case 'resiexchange\AnswerComment':                        
                 $om = &ObjectManager::getInstance(); 
                 $res = $om->read($object_class, $object_id, ['answer_id.question_id']);
-                return '#/question/'.$res[$object_id]['answer_id.question_id'];            
+                return '#!/question/'.$res[$object_id]['answer_id.question_id'];            
         }
         return $link;
     }
@@ -365,10 +365,10 @@ class ResiAPI {
                                                 return "<a href=\"https://www.resiway.org/resiexchange.fr{$link}\">{$attributes['title']}</a>";
                                         },                                                        
                                         'url_profile'	    =>	function ($params, $attributes) {
-                                                return "<a href=\"https://www.resiway.org/resiexchange.fr#/user/profile/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                                return "<a href=\"https://www.resiway.org/resiexchange.fr#!/user/profile/{$params['user']['id']}\">{$attributes['title']}</a>";
                                         },
                                         'url_profile_edit'	=>	function ($params, $attributes) {
-                                                return "<a href=\"https://www.resiway.org/resiexchange.fr#/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
+                                                return "<a href=\"https://www.resiway.org/resiexchange.fr#!/user/edit/{$params['user']['id']}\">{$attributes['title']}</a>";
                                         }                                        
                                         ], 
                                         // remaining data is given in the $data parameter
