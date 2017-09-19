@@ -232,15 +232,15 @@
 
                             <div ng-switch-when="resilib_documentcomment_post" style="display: table-cell; vertical-align: top;">
                                 <a href="/resiexchange.fr#!/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> 
-                                a commenté le document <a href="/resilib.fr#!/document/{{action.object.document.id}}/{{action.object.document.title_url}}" target="_self">{{action.object.document.title}}</a> 
-                                de <a href="/resiexchange.fr#!/user/{{action.object.document.creator.id}}/{{action.object.document.creator.name_url}}" target="_self">{{action.object.document.creator.display_name}}</a>
+                                a commenté le document <a href="/resilib.fr#!/document/{{action.object.document_id}}/{{action.object.document_id.title_url}}" target="_self">{{action.object.document_id.title}}</a> 
+                                de <a href="/resiexchange.fr#!/user/{{action.object.document_id.creator.id}}/{{action.object.document_id.creator.name_url}}" target="_self">{{action.object.document_id.creator.display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
                                     <a 
                                         class="btn btn-link btn-xs"
                                         target="_self"
-                                        href="/resilib.fr#!/document/{{action.object.document.id}}/{{action.object.document.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>&middot;<a class="btn btn-link btn-xs">répondre</a>
+                                        href="/resilib.fr#!/document/{{action.object.document_id}}/{{action.object.document_id.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>&middot;<a class="btn btn-link btn-xs">répondre</a>
                                 </span>
                             </div>
 
