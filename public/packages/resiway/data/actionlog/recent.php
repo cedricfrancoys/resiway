@@ -86,7 +86,7 @@ try {
 
             case 'resilib_documentcomment_post':
                 $comment_id = $logs[$oid]['object_id'];
-                $logs[$oid]['object'] = $om->read('resilib\DocumentComment', $comment_id, ['id', 'description', 'document_id', 'document_id.creator', 'document_id.title', 'document_id.title_url'])[$comment_id];
+                $logs[$oid]['object'] = $om->read('resilib\DocumentComment', $comment_id, ['id', 'content', 'document_id', 'document_id.creator', 'document_id.title', 'document_id.title_url'])[$comment_id];
                 $logs[$oid]['object']['document_id.creator'] = ResiAPI::loadUserPublic($logs[$oid]['object']['document_id.creator']);
                 break;
 
