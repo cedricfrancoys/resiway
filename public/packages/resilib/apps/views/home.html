@@ -10,9 +10,9 @@
                 <br />
                 Avec l'aide de chacun, l'objectif est de constituer une bibliothèque de réponses détaillées aux questions relatives à l'autonomie, la transition, la permaculture et la résilience.<br />
                 <br />
-                <a href="#!/help/categories" class="btn btn-info" style="margin-bottom: 5px;">Découvrir les fonctionnalités</a>
-                <a href="#!/questions" class="btn btn-info" style="margin-bottom: 5px;">Consulter les question-réponses</a>
-                <a href="#!/question/edit/0" class="btn btn-primary" style="margin-bottom: 5px;">Poser votre première question</a>
+                <a href="/help/categories" class="btn btn-info" style="margin-bottom: 5px;">Découvrir les fonctionnalités</a>
+                <a href="/questions" class="btn btn-info" style="margin-bottom: 5px;">Consulter les question-réponses</a>
+                <a href="/question/edit/0" class="btn btn-primary" style="margin-bottom: 5px;">Poser votre première question</a>
             </p>            
         </div>
         -->
@@ -31,13 +31,13 @@
                     <div class="col-1-2 nopad">
                         <div ng-repeat="document in ctrl.last_documents | limitTo : 4 : 0" class="document narrow column col-1-1" style="float: left !important;">
                             <div class="document-thumbnail">
-                                <a class="document-hyperlink" href="#!/document/{{document.id}}/{{document.title_url}}">
+                                <a class="document-hyperlink" href="/document/{{document.id}}/{{document.title_url}}">
                                     <img width="100" height="133" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
                                 </a>
                             </div>
                             <div class="summary">
                                 <h3>
-                                    <a class="document-hyperlink" href="#!/document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
+                                    <a class="document-hyperlink" href="/document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
                                 </h3>
                                 <div class="document-author">par <strong ng-repeat="author in document.authors">{{author.name}}{{$last?'':' &bull; '}}</strong></div>
                                 
@@ -59,13 +59,13 @@
                     <div class="col-1-2 nopad">
                         <div ng-repeat="document in ctrl.last_documents | limitTo : 4 : 4" class="document narrow column col-1-1" style="float: left !important;">
                             <div class="document-thumbnail">
-                                <a class="document-hyperlink" href="#!/document/{{document.id}}/{{document.title_url}}">
+                                <a class="document-hyperlink" href="/document/{{document.id}}/{{document.title_url}}">
                                     <img width="100" height="133" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" border="0" >
                                 </a>
                             </div>
                             <div class="summary">
                                 <h3>
-                                    <a class="document-hyperlink" href="#!/document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
+                                    <a class="document-hyperlink" href="/document/{{document.id}}/{{document.title_url}}">{{document.title}}</a>
                                 </h3>
                                 <div class="document-author">par <strong ng-repeat="author in document.authors">{{author.name}}{{$last?'':' &bull; '}}</strong></div>
                                 

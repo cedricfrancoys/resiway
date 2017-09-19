@@ -39,7 +39,7 @@
                 </div>
                 <div class="col-4-12">
                     <div ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
-                        <a class="btn btn-primary btn-block btn-sm" href="#!/user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> {{'USER_PROFILE_EDIT' | translate}}</a>
+                        <a class="btn btn-primary btn-block btn-sm" href="/user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> {{'USER_PROFILE_EDIT' | translate}}</a>
                     </div>
                     <div class="user-stats">
                         <div class="row">
@@ -162,7 +162,7 @@
                     <div ng-repeat="question in ctrl.questions.items" class="post-summary col-1-1">
                         <div class="col-9-12">
                             <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(question.count_votes > 0), 'btn-danger':(question.count_votes < 0), 'btn-info':(question.count_votes == 0)}">{{question.count_votes | humanizeCount}}</span>
-                            <h3 class="post-title"><a href="#!/question/{{question.id}}">{{question.title}}</a></h3>
+                            <h3 class="post-title"><a href="/question/{{question.id}}">{{question.title}}</a></h3>
                         </div>
                         <div class="col-3-12 text-right">
                             {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
@@ -198,7 +198,7 @@
                     <div ng-repeat="answer in ctrl.answers.items" class="post-summary col-1-1">
                         <div class="col-9-12">
                             <span class="mini-counts btn btn-xs" ng-class="{'btn-success':(answer.count_votes > 0), 'btn-danger':(answer.count_votes < 0), 'btn-info':(answer.count_votes == 0)}">{{answer.count_votes | humanizeCount}}</span>
-                            <h3 class="post-title"><a href="#!/question/{{answer.question_id}}">{{answer.title}}</a></h3>
+                            <h3 class="post-title"><a href="/question/{{answer.question_id}}">{{answer.title}}</a></h3>
                         </div>
                         <div class="col-3-12 text-right">
                             {{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}

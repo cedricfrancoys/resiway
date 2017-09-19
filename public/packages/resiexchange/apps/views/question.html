@@ -79,7 +79,7 @@
                                class="short-link">
                                 <i class="fa fa-share-alt" aria-hidden="true"></i> {{'QUESTION_ACTIONS_SHARE' | translate}}
                             </a>&nbsp;
-                            <a href="#!/question/edit/{{question.id}}">
+                            <a href="/question/edit/{{question.id}}">
                                 <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_ACTIONS_EDIT' | translate}}
                             </a>&nbsp;                            
                             <a href                                         
@@ -112,14 +112,14 @@
                                     <span class="relativetime">{{'QUESTION_STATS_EDITED' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#!/user/{{question.editor.id}}/{{question.editor.name_url}}">
+                                    <a href="/user/{{question.editor.id}}/{{question.editor.name_url}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="{{rootCtrl.avatarURL(question.editor.avatar_url, 32)}}" title="{{question.editor.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#!/user/{{question.editor.id}}/{{question.editor.name_url}}">{{question.editor.display_name}}</a>
+                                    <a href="/user/{{question.editor.id}}/{{question.editor.name_url}}">{{question.editor.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}">{{question.editor.reputation}}</span>
                                         <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="question.editor.count_badges_1 > 0">
@@ -144,14 +144,14 @@
                                     <span class="relativetime">{{'QUESTION_STATS_ASKED' | translate}} {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
-                                    <a href="#!/user/{{question.creator.id}}/{{question.creator.name_url}}">
+                                    <a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">
                                         <div class="avatar-wrapper">
                                             <img ng-src="{{rootCtrl.avatarURL(question.creator.avatar_url, 32)}}" title="{{question.creator.display_name}}" width="32" height="32">
                                         </div>
                                     </a>
                                 </div>
                                 <div class="user-details">
-                                    <a href="#!/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a>
+                                    <a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a>
                                     <div>
                                         <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}">{{question.creator.reputation}}</span>
                                         <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="question.creator.count_badges_1 > 0">
@@ -247,9 +247,9 @@
                                 <div class="comment-body">
                                     <span btf-markdown="comment.content"></span>
                                     –&nbsp;
-                                    <a class="comment-user" href="#!/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                    <a class="comment-user" href="/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
                                     <span class="comment-date" dir="ltr">
-                                        <a class="comment-link" href="#!/question/{{question.id}}#comment-{{comment.id}}">
+                                        <a class="comment-link" href="/question/{{question.id}}#comment-{{comment.id}}">
                                             <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                         </a>
                                     </span>
@@ -423,11 +423,11 @@
                     <div class="footer">
                         <div class="meta">
                             <div class="actions">
-                                <a href="#!/question/{{question.id}}#answer-{{answer.id}}"
+                                <a href="/question/{{question.id}}#answer-{{answer.id}}"
                                    title="{{'QUESTION_ANSWER_ACTIONS_SHARE_TOOLTIP' | translate}}">
                                     <i class="fa fa-share-alt" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_SHARE' | translate}}
                                 </a>&nbsp;
-                                <a href="#!/answer/edit/{{answer.id}}">
+                                <a href="/answer/edit/{{answer.id}}">
                                     <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_EDIT' | translate}}
                                 </a>&nbsp;                               
                                 <a href                                         
@@ -481,14 +481,14 @@
                                         <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{'ANSWER_STATS_ANSWERED' | translate}} {{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                     </div>
                                     <div class="user-avatar">
-                                        <a href="#!/user/{{answer.creator.id}}/{{answer.creator.name_url}}">
+                                        <a href="/user/{{answer.creator.id}}/{{answer.creator.name_url}}">
                                             <div class="avatar-wrapper">
                                                 <img ng-src="{{rootCtrl.avatarURL(answer.creator.avatar_url, 32)}}" title="{{answer.creator.display_name}}" width="32" height="32">
                                             </div>                                        
                                         </a>                                        
                                     </div>
                                     <div class="user-details">
-                                        <a href="#!/user/{{answer.creator.id}}/{{answer.creator.name_url}}">{{answer.creator.display_name}}</a>
+                                        <a href="/user/{{answer.creator.id}}/{{answer.creator.name_url}}">{{answer.creator.display_name}}</a>
                                         <div>
                                             <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}" dir="ltr">{{answer.creator.reputation}}</span>
                                             <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="answer.creator.count_badges_3 > 0">
@@ -583,9 +583,9 @@
                                     <div class="comment-body">
                                         <span btf-markdown="comment.content"></span>
                                         –&nbsp;
-                                        <a class="comment-user" href="#!/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                        <a class="comment-user" href="/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
                                         <span class="comment-date" dir="ltr">
-                                            <a class="comment-link" href="#!/question/{{question.id}}#comment-{{answer.id}}-{{comment.id}}">
+                                            <a class="comment-link" href="/question/{{question.id}}#comment-{{answer.id}}-{{comment.id}}">
                                                 <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                             </a>
                                         </span>
@@ -760,7 +760,7 @@
                             Auteur
                         </div>
                         <div class="content">
-                            <b><a href="#!/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a></b>
+                            <b><a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a></b>
                         </div>
                     </div>                        
                     <div class="stat-row">                        
@@ -786,7 +786,7 @@
                         <div class="title">
                         </div>
                         <div class="content"> 
-                            <b><a href="#!/user/{{answer.creator.id}}/{{answer.creator.name_url}}">{{answer.creator.display_name}}</a></b>                            
+                            <b><a href="/user/{{answer.creator.id}}/{{answer.creator.name_url}}">{{answer.creator.display_name}}</a></b>                            
                         </div>
                     </div>
                     <div class="stat-row" ng-repeat-end>
@@ -810,7 +810,7 @@
                     <table>
                         <tr>
                             <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
-                            <td><a href="#!/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                            <td><a href="/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
                         </tr>
                     </table>
                 </div>

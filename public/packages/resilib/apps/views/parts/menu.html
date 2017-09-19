@@ -14,12 +14,12 @@
             </div>
             <div class="collapse navbar-collapse" uib-collapse="isNavCollapsed">
                 <ul class="nav navbar-nav">
-                    <li><a href="#!/question/edit/0">Ajouter un document</a></li>
-                    <li><a href="#!/documents">Documents</a></li>
-                    <li><a href="#!/users">Participants</a></li>                    
-                    <li><a href="#!/categories">Catégories</a></li>
-                    <li><a href="#!/badges">Badges</a></li>
-                    <li><a href="#!/help">Aide</a></li>                    
+                    <li><a href="/document/edit/0">Ajouter un document</a></li>
+                    <li><a href="/documents">Documents</a></li>
+                    <li><a href="/users">Participants</a></li>                    
+                    <li><a href="/categories">Catégories</a></li>
+                    <li><a href="/badges">Badges</a></li>
+                    <li><a href="/help">Aide</a></li>                    
                 </ul>            
             </div>		
 		</nav>
@@ -27,7 +27,7 @@
     
         <div class="breadcrumb visible-lg-block visible-md-block">
             <div class="btn-group">
-                <a href="#!/document/edit/0" class="btn btn-success">Ajouter un document</a>
+                <a href="/document/edit/0" class="btn btn-success">Ajouter un document</a>
             </div>
             <div class="search-input form-group-sm hidden-xs">
                 <form ng-submit="rootCtrl.search({q: search.criteria.q})">
@@ -55,10 +55,10 @@
                 </form>
             </div>            
             <div class="btn-group pull-right">
-                <a href="#!/documents" ng-click="rootCtrl.search()" class="btn btn-info">Documents</a>
-                <a href="#!/users" class="btn btn-info">Participants</a>                
-                <a href="#!/categories" class="btn btn-info">Catégories</a>
-                <a href="#!/badges" class="btn btn-info">Badges</a>                
+                <a href="/documents" ng-click="rootCtrl.search()" class="btn btn-info">Documents</a>
+                <a href="/users" class="btn btn-info">Participants</a>                
+                <a href="/categories" class="btn btn-info">Catégories</a>
+                <a href="/badges" class="btn btn-info">Badges</a>                
             </div>
         </div>
 

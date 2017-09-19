@@ -59,7 +59,7 @@
             </div>
             <div class="summary">
                 <h3>
-                    <a class="question-hyperlink" href="#!/question/{{question.id}}/{{question.title_url}}">{{question.title}}</a>
+                    <a class="question-hyperlink" href="/question/{{question.id}}/{{question.title_url}}">{{question.title}}</a>
                 </h3>
                 <div class="excerpt">{{question.content_excerpt}}</div>
                 
@@ -81,10 +81,10 @@
                                 <span>{{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                             </div>
                             <div class="user-avatar">
-                                <a href="#!/users/{{question.creator.id}}"><img ng-src="{{rootCtrl.avatarURL(question.creator.avatar_url, 32)}}" title="{{question.creator.display_name}}" width="32" height="32"></a>
+                                <a href="/users/{{question.creator.id}}"><img ng-src="{{rootCtrl.avatarURL(question.creator.avatar_url, 32)}}" title="{{question.creator.display_name}}" width="32" height="32"></a>
                             </div>
                             <div class="user-details">
-                                <a href="#!/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a>
+                                <a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a>
                                 <div>
                                     <span class="reputation-score" title="score de reputation" dir="ltr">{{question.creator.reputation}}</span>
                                     <span class="badges" ng-show="question.creator.count_badges_1 > 0">
@@ -131,7 +131,7 @@
                     <div ng-show="categories.length > 0" class="categories container fade-in-out" style="display: inline-block; padding: 0;">
                         dans 
                         <a 
-                            href="#!/category/{{category.id}}/{{category.title_url}}"
+                            href="/category/{{category.id}}/{{category.title_url}}"
                             class="category"                          
                             ng-repeat="category in categories" 
                             title="{{category.path}}">{{category.title}}</a>
@@ -144,7 +144,7 @@
                         <table>
                             <tr>
                                 <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
-                                <td><a href="#!/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                                <td><a href="/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
                             </tr>
                         </table>
                     </div>
@@ -154,7 +154,7 @@
                     <span class="small"><b>Catégories similaires:</b></span><br />
                     <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
                         <a 
-                            href="#!/category/{{category.id}}/{{category.title_url}}"
+                            href="/category/{{category.id}}/{{category.title_url}}"
                             class="category"
                             title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_questions}}&nbsp;</div>
@@ -165,7 +165,7 @@
                     <span class="small"><b>Categories populaires:</b></span><br />
                     <div class="featured-categories categories" ng-repeat="category in featured_categories" style="display: inline-block;">
                         <a 
-                            href="#!/category/{{category.id}}/{{category.title_url}}"
+                            href="/category/{{category.id}}/{{category.title_url}}"
                             class="category"                            
                             title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_questions}}&nbsp;</div>
