@@ -54,7 +54,6 @@ input[type="text"] {
 }
     
 /* bootstrap customizations */
-
 .navbar-collapse.in {
     overflow-y: hidden;
 }
