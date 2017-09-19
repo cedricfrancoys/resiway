@@ -299,9 +299,9 @@ var resiway = angular.module('resiexchange', [
     '$locationProvider', 
     function($locationProvider) {
         // ensure we're in Hashbang mode
-        $locationProvider.html5Mode(false);
-        $locationProvider.hashPrefix('!');
-        // $locationProvider.html5Mode({enabled: true, requireBase: false, rewriteLinks: false}).hashPrefix('!');
+        // $locationProvider.html5Mode(false);
+        //$locationProvider.hashPrefix('!');
+        $locationProvider.html5Mode({enabled: true, requireBase: true, rewriteLinks: true}).hashPrefix('!');
     }
 ])
 
@@ -409,6 +409,7 @@ var resiway = angular.module('resiexchange', [
             // - check if we have to scroll
             // - perform pending action, if any
             $timeout(function() {
+/*
                 if( $location.hash().length) {
                     console.log('scroll to element');
                     var elem = angular.element(document.querySelector( '#'+$location.hash() ))
@@ -420,6 +421,10 @@ var resiway = angular.module('resiexchange', [
                     // scroll to top
                     $window.scrollTo(0, 0);
                 }                
+*/
+                console.log('scroll to top');
+                // scroll to top
+                $window.scrollTo(0, 0);
 
                 if($rootScope.user.id == 0
                 && $rootScope.previousPath.substring(0, signPath.length) == signPath
@@ -1456,6 +1461,7 @@ angular.module('resiexchange')
             '/association/contact': '/association/contact',
             '/association/participer': '/association/participer',
             '/association/mentions-legales': '/association/mentions-legales',
+            '/association/ils-nous-soutiennent': '/association/ils-nous-soutiennent',
             '/association': '/association'      
         };
 
@@ -1790,6 +1796,10 @@ angular.module('resiexchange')
                     templateUrl : templatePath+'legal.html',
                     controller  : 'emptyController as ctrl'
         },     
+        '/association/ils-nous-soutiennent': {
+                    templateUrl : templatePath+'supporters.html',
+                    controller  : 'emptyController as ctrl'
+        },         
         '/association': {
                     templateUrl : templatePath+'organisation.html',
                     controller  : 'emptyController as ctrl'

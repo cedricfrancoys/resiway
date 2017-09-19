@@ -56,6 +56,7 @@ angular.module('resiexchange')
             '/association/contact': '/association/contact',
             '/association/participer': '/association/participer',
             '/association/mentions-legales': '/association/mentions-legales',
+            '/association/ils-nous-soutiennent': '/association/ils-nous-soutiennent',
             '/association': '/association'      
         };
 
@@ -390,6 +391,10 @@ angular.module('resiexchange')
                     templateUrl : templatePath+'legal.html',
                     controller  : 'emptyController as ctrl'
         },     
+        '/association/ils-nous-soutiennent': {
+                    templateUrl : templatePath+'supporters.html',
+                    controller  : 'emptyController as ctrl'
+        },         
         '/association': {
                     templateUrl : templatePath+'organisation.html',
                     controller  : 'emptyController as ctrl'
