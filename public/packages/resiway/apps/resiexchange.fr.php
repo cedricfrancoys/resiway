@@ -16,6 +16,8 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <link rel="alternate" href="https://www.resiway.org/resiexchange.fr" hreflang="fr"/>
         
         <meta name="fragment" content="!">
+        <base href="/resiexchange.fr">
+        
         <meta itemscope itemtype="https://schema.org/WebApplication" />        
         <meta itemprop="image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
 

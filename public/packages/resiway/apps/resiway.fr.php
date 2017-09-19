@@ -15,7 +15,9 @@ $token = md5($rev.rand(1, 100));
 
         <link rel="alternate" href="https://www.resiway.org/resiway.fr" hreflang="fr"/>
 
-        <meta name="fragment" content="!">        
+        <meta name="fragment" content="!">
+        <base href="/resiway.fr">
+        
         <meta itemscope itemtype="https://schema.org/WebApplication" />        
         <meta itemprop="image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
 
@@ -33,7 +35,7 @@ $token = md5($rev.rand(1, 100));
 
         <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
         <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
-        <script src="packages/resiexchange/apps/resiexchange.min.js?v=<?php echo $token; ?>"></script>        
+        <script src="packages/resiexchange/apps/resiexchange.js?v=<?php echo $token; ?>"></script>        
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css?v=<?php echo $token; ?>" />
 
         <script>
