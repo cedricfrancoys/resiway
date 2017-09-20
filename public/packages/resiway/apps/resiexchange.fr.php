@@ -25,7 +25,11 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <meta property="og:image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
 
         <title>ResiExchange</title>
-
+        <script>
+        if(location.href.indexOf("#/") > 0) {
+            location.href = location.href.replace(location.hash,'#!'+location.hash.substr(1));
+        }
+        </script>
         <!-- favicons -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/favicons.html"); ?>
         <!-- scripts -->
