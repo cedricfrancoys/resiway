@@ -8,6 +8,8 @@
         <meta name="description" content="Ékopédia est une encyclopédie pratique gratuite pour intégrer l'écologie à son quotidien.">
 
         <link rel="alternate" href="https://www.resiway.org/ekopedia.fr" hreflang="fr"/>
+        <meta name="fragment" content="!">
+        <base href="/ekopedia.fr">
         
         <meta itemscope itemtype="https://schema.org/WebApplication" />        
         <meta itemprop="image" content="https://www.ekopedia.fr/resources/assets/wiki.png?17a3b" />
