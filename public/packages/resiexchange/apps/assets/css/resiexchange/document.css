@@ -96,7 +96,7 @@
 
 .document-stats .content.about p {
     max-width: 280px;
-    max-height: 120px;
+    max-height: 126px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
