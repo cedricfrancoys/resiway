@@ -161,10 +161,6 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.user.location}}, {{action.user.country}} | {{action.user.about | limitTo : 60}} ...
-                                    <a 
-                                        class="btn btn-link btn-xs"
-                                        target="_self"
-                                        href="/resiexchange.fr#!/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">voir son profil</a> 
                                 </span>
                             </div>                            
                                                             
@@ -173,10 +169,6 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.title | limitTo : 100}}
-                                    <a 
-                                        class="btn btn-link btn-xs"
-                                        target="_self"
-                                        href="/resiexchange.fr#!/question/{{action.object.id}}/{{action.object.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">répondre</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
                                 </span>
                             </div>
                             
@@ -185,10 +177,6 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.title | limitTo : 100}}
-                                    <a 
-                                        class="btn btn-link btn-xs"
-                                        target="_self"
-                                        href="/resilib.fr#!/document/{{action.object.id}}/{{action.object.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
                                 </span>
                             </div>                            
 
@@ -196,22 +184,16 @@
                                 <a href="/resiexchange.fr#!/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> a répondu à la question <a href="/resiexchange.fr#!/question/{{action.object['question_id']}}/{{action.object['question_id.title_url']}}" target="_self">{{action.object['question_id.title']}}</a> de <a href="/resiexchange.fr#!/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}" target="_self">{{action.object['question_id.creator'].display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
-                                    <a 
-                                        class="btn btn-link btn-xs"
-                                        target="_self"
-                                        href="/resiexchange.fr#!/question/{{action.object.question_id}}/{{action.object['question_id.title_url']}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>
                                 </span>
                             </div>
                             
                             <div ng-switch-when="resiexchange_questioncomment_post" style="display: table-cell; vertical-align: top;">
-                                <a href="/resiexchange.fr#!/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> a commenté la question <a href="/resiexchange.fr#!/question/{{action.object.question_id}}/{{action.object['question_id.title_url']}}" target="_self">{{action.object['question_id.title']}}</a> de <a href="/resiexchange.fr#!/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}" target="_self">{{action.object['question_id.creator'].display_name}}</a>
+                                <a href="/resiexchange.fr#!/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> 
+                                a commenté la question <a href="/resiexchange.fr#!/question/{{action.object.question_id}}/{{action.object['question_id.title_url']}}" target="_self">{{action.object['question_id.title']}}</a> 
+                                de <a href="/resiexchange.fr#!/user/{{action.object['question_id.creator'].id}}/{{action.object['question_id.creator'].name_url}}" target="_self">{{action.object['question_id.creator'].display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
-                                    <a 
-                                        class="btn btn-link btn-xs"
-                                        target="_self"
-                                        href="/resiexchange.fr#!/question/{{action.object.question_id}}/{{action.object['question_id.title_url']}}">voir</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
                                 </span>
                             </div>
                             
@@ -223,24 +205,16 @@
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
-                                    <a 
-                                        class="btn btn-link btn-xs"
-                                        target="_self"
-                                        href="/resiexchange.fr#!/question/{{action.object.answer['question_id']}}/{{action.object.answer['question_id.title_url']}}">voir</a>&middot;<a class="btn btn-link btn-xs">répondre</a>                            
                                 </span>
                             </div>
 
                             <div ng-switch-when="resilib_documentcomment_post" style="display: table-cell; vertical-align: top;">
                                 <a href="/resiexchange.fr#!/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> 
-                                a commenté le document <a href="/resilib.fr#!/document/{{action.object.document_id}}/{{action.object.document_id.title_url}}" target="_self">{{action.object.document_id.title}}</a> 
-                                de <a href="/resiexchange.fr#!/user/{{action.object.document_id.creator.id}}/{{action.object.document_id.creator.name_url}}" target="_self">{{action.object.document_id.creator.display_name}}</a>
+                                a commenté le document <a href="/resilib.fr#!/document/{{action.object.document_id}}/{{action.object['document_id.title_url']}}" target="_self">{{action.object['document_id.title']}}</a> 
+                                de <a href="/resiexchange.fr#!/user/{{action.object['document_id.creator'].id}}/{{action.object['document_id.creator'].name_url}}" target="_self">{{action.object['document_id.creator'].display_name}}</a>
                                 <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
                                 <span style="font-style: italic; color: grey;">
                                     {{action.object.content | limitTo : 60}}
-                                    <a 
-                                        class="btn btn-link btn-xs"
-                                        target="_self"
-                                        href="/resilib.fr#!/document/{{action.object.document_id}}/{{action.object.document_id.title_url}}">voir</a>&middot;<a class="btn btn-link btn-xs">commenter</a>&middot;<a class="btn btn-link btn-xs">répondre</a>
                                 </span>
                             </div>
 
