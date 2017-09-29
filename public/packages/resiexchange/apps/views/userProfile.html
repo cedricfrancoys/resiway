@@ -85,7 +85,7 @@
                             {{action.description}}
                             </div>
                             <div class="col-7-12" style="overflow: hidden">
-                                <h3 class="post-title"><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                                <h3 class="post-title"><a target="_self" href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
                             </div>
                         </div>
                         <div class="col-3-12 text-right">
@@ -234,7 +234,7 @@
                         <div class="col-9-12" style="overflow: hidden">
                             <a class="star on" ng-click="removeFavorite($event, index)" title="{{'USER_PROFILE_FAVORITE_REMOVE' | translate}}><i class="fa fa-star" aria-hidden="true"></i></a>
                             <i class="fa" ng-class="{'fa-tags': item.object_class=='resiway\\Category', 'fa-comments': item.object_class=='resiexchange\\Question', 'fa-book': item.object_class=='resilib\\Document'}" aria-hidden="true"></i>
-                            <h3 class="post-title"><a href="{{rootCtrl.makeLink(item.object_class, item.object_id)}}">{{item.name}}</a></h3>
+                            <h3 class="post-title"><a target="_self" href="{{rootCtrl.makeLink(item.object_class, item.object_id)}}">{{item.name}}</a></h3>
                         </div>
                         <div class="col-3-12 text-right">
                             {{item.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
@@ -272,7 +272,7 @@
                             {{action.description}}
                             </div>
                             <div class="col-8-12" style="overflow: hidden">
-                                <h3 class="post-title"><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                                <h3 class="post-title"><a target="_self" href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
                             </div>
                         </div>
                         <div class="col-3-12 text-right">

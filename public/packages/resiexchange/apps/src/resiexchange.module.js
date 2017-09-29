@@ -390,13 +390,13 @@ var resiway = angular.module('resiexchange', [
         
         rootCtrl.makeLink = function(object_class, object_id) {
             switch(object_class) {    
-            case 'resiway\\Author': return '#/author/'+object_id;            
-            case 'resiway\\Category': return '#/category/'+object_id;
-            case 'resiexchange\\Question': return 'resiexchange.'+$rootScope.config.locale+'#/question/'+object_id;
-            case 'resiexchange\\Answer': return 'resiexchange.'+$rootScope.config.locale+'#/answer/'+object_id;
-            case 'resiexchange\\QuestionComment': return 'resiexchange.'+$rootScope.config.locale+'#/questionComment/'+object_id;               
-            case 'resiexchange\\AnswerComment': return 'resiexchange.'+$rootScope.config.locale+'#/answerComment/'+object_id;
-            case 'resilib\\Document': return 'resilib.'+$rootScope.config.locale+'#/document/'+object_id;            
+            case 'resiway\\Author': return '#!/author/'+object_id;            
+            case 'resiway\\Category': return '#!/category/'+object_id;
+            case 'resiexchange\\Question': return 'resiexchange.'+$rootScope.config.locale+'#!/question/'+object_id;
+            case 'resiexchange\\Answer': return 'resiexchange.'+$rootScope.config.locale+'#!/answer/'+object_id;
+            case 'resiexchange\\QuestionComment': return 'resiexchange.'+$rootScope.config.locale+'#!/questionComment/'+object_id;               
+            case 'resiexchange\\AnswerComment': return 'resiexchange.'+$rootScope.config.locale+'#!/answerComment/'+object_id;
+            case 'resilib\\Document': return 'resilib.'+$rootScope.config.locale+'#!/document/'+object_id;            
             }
         };
 
