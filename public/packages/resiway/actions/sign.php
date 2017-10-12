@@ -27,8 +27,14 @@ try {
     
     if(!$params['user_id']) {
         // set identity as one of the random test-user
-        $res = $om->search('resiway\User', [['login', 'like', 'resiway_u%']], 'count_questions', 'asc', rand(0, 10), 1);
-        $user_id = $res[0];
+        $users_ids = $om->search('resiway\User', [['login', 'like', 'resiway_u%']]);
+        $users = $om->read('resiway\User', $users_ids, ['id', 'count_questions', 'count_answers', 'count_comments', 'count_documents']);
+        $scores = [];
+        foreach($users as $user) {
+            $scores[$user['id']] = $user['count_questions'] + $user['count_answers'] + $user['count_comments'] + $user['count_documents'];
+        }
+        asort($scores);
+        $user_id = array_keys($scores)[0];
     }
     else $user_id = $params['user_id'];
     $pdm->set('user_id', $user_id);
