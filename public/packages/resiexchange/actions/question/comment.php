@@ -49,7 +49,7 @@ try {
             $comment_id = $om->create('resiexchange\QuestionComment', [ 
                             'creator'       => $user_id,     
                             'question_id'   => $object_id,
-                            'content'       => $params['content']
+                            'content'       => strip_tags($params['content'])
                           ]);
 
             if($comment_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
