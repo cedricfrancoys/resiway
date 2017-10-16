@@ -3033,6 +3033,49 @@ angular.module('resiexchange')
                 }
             );     
         };
+
+        $scope.answerConvert = function ($event, index) {
+            
+            // remember selector for popover location             
+            var selector = feedbackService.selector($event.target);            
+            
+            ctrl.openModal('MODAL_ANSWER_CONVERT_TITLE', 'MODAL_ANSWER_CONVERT_HEADER', $scope.question.answers[index].content_excerpt)
+            .then(
+                function () {
+                    actionService.perform({
+                        // valid name of the action to perform server-side
+                        action: 'resiexchange_answer_convert',
+                        // string representing the data to submit to action handler (i.e.: serialized value of a form)
+                        data: {answer_id: $scope.question.answers[index].id},
+                        // scope in wich callback function will apply 
+                        scope: $scope,
+                        // callback function to run after action completion (to handle error cases, ...)
+                        callback: function($scope, data) {
+                            // we need to do it this way because current controller might be destroyed in the meantime
+                            // (if route is changed to signin form)
+                            if(typeof data.result != 'object') {
+                                // result is an error code
+                                var error_id = data.error_message_ids[0];                    
+                                // todo : get error_id translation
+                                var msg = error_id;
+                                feedbackService.popover(selector, msg);
+                            }
+                            else {
+                                var comment_id = data.result.id;
+                                $scope.question.answers.splice(index, 1);
+                                // add new comment to the list
+                                $scope.question.comments.push(data.result);
+                                // wait for next digest cycle
+                                $timeout(function() {
+                                    // scroll to newly created comment
+                                    feedbackService.popover('#comment-'+comment_id, '');
+                                });
+                            }
+                        }        
+                    });
+                }
+            );     
+        };        
         
         $scope.showShareModal = function() {
 

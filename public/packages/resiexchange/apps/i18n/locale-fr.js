@@ -13,6 +13,9 @@ var translations = {
     "MODAL_QUESTION_DELETE_HEADER": "Supprimer cette question ?",  
     "MODAL_ANSWER_DELETE_TITLE": "Suppression d'une réponse",
     "MODAL_ANSWER_DELETE_HEADER": "Supprimer cette réponse ?",
+    "MODAL_ANSWER_CONVERT_TITLE": "Conversion d'une réponse",
+    "MODAL_ANSWER_CONVERT_HEADER": "Convertir cette réponse en commentaire ?",
+    
     "MODAL_COMMENT_DELETE_TITLE": "Suppression d'un commentaire",
     "MODAL_COMMENT_DELETE_HEADER": "Supprimer ce commentaire ?",  
 
@@ -79,7 +82,10 @@ var translations = {
     "QUESTION_ANSWER_ACTIONS_FLAG_TOOLTIP": "Attirer l'attention sur cette réponse pour modération",
     "QUESTION_ANSWER_ACTIONS_DELETE": "Supprimer",
     "QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les réponses que si on a une bonne raison de le faire",
+    "QUESTION_ANSWER_ACTIONS_CONVERT": "Convertir",
+    "QUESTION_ANSWER_ACTIONS_CONVERT_TOOLTIP": "Cette réponse doit être convertie en commentaire",
 
+   
     "QUESTION_USER_DETAILS_REPUTATION": "Réputation",
     "QUESTION_USER_DETAILS_BADGES_GOLD": "Badges d'or",
     "QUESTION_USER_DETAILS_BADGES_SILVER": "Badges d'argent",

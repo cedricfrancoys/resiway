@@ -444,13 +444,24 @@
                                 <a href
                                    id="answer-{{answer.id}}-delete"
                                    title="{{'QUESTION_ANSWER_ACTIONS_DELETE_TOOLTIP' | translate}}"
-                                   ng-show="user.id==answer.creator.id"
+                                   ng-show="user.id==answer.creator.id || user.role!='u'"
                                    ng-click="answerDelete($event, answer_index)"
                                    uib-popover-template="'popoverCustom.html'" 
                                    popover-trigger="'toggle-popover'" 
                                    popover-placement="right"
                                    popover-append-to-body="true">
                                     <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_DELETE' | translate}}
+                                </a>
+                                <a href
+                                   id="answer-{{answer.id}}-convert"
+                                   title="{{'QUESTION_ANSWER_ACTIONS_CONVERT_TOOLTIP' | translate}}"
+                                   ng-show="user.id==answer.creator.id || user.role=='a'"
+                                   ng-click="answerConvert($event, answer_index)"
+                                   uib-popover-template="'popoverCustom.html'" 
+                                   popover-trigger="'toggle-popover'" 
+                                   popover-placement="right"
+                                   popover-append-to-body="true">
+                                    <i class="fa fa-exchange" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_CONVERT' | translate}}
                                 </a>                                 
                             </div>
                             <!--                            
