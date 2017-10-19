@@ -207,56 +207,57 @@ class Question extends \easyobject\orm\Object {
         $html = [];
 
         $questions = $om->read(__CLASS__, $oid, ['id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'content_excerpt', 'count_views', 'count_votes', 'score', 'answers_ids', 'categories_ids.title']);
-        // merge all answers_ids
-        $answers_ids = array_reduce($questions, function($result, $question) { return array_merge($result, $question['answers_ids']); }, []);
-        // pre-load all answers at once
-        $answers = $om->read('resiexchange\Answer', $answers_ids, ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score']);    
+        if($questions > 0 && isset($questions[$oid])) {
+            // merge all answers_ids
+            $answers_ids = array_reduce($questions, function($result, $question) { return array_merge($result, $question['answers_ids']); }, []);
+            // pre-load all answers at once
+            $answers = $om->read('resiexchange\Answer', $answers_ids, ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score']);    
 
-        $odata = $questions[$oid];
+            $odata = $questions[$oid];
 
-        $html[] = '<!DOCTYPE html>'.PHP_EOL;
-        $html[] = '<html lang="'.$question_data['lang'].'">'.PHP_EOL;
-        $html[] = '<head>'.PHP_EOL;    
-        $html[] = '<meta charset="utf-8">'.PHP_EOL;
-        $html[] = '<meta name="title" content="'.$question_data['title'].' - ResiExchange - Des réponses pour la résilience">'.PHP_EOL;
-        $html[] = '<meta name="description" content="'.$question_data['content_excerpt'].'">'.PHP_EOL;
-        $html[] = '</head>'.PHP_EOL;
-        $html[] = '<body>'.PHP_EOL;
-    
-        $html[] = '<div class="question wrapper"';
-        $html[] = '   itemscope=""';
-        $html[] = '   itemtype="https://schema.org/Question">';
-
-        $html[] = '<h1 itemprop="name">'.$odata['title'].'</h1>';
-        $html[] = '<div itemprop="upvoteCount">'.$odata['score'].'</div>';
-        $html[] = '<div itemprop="answerCount">'.count($odata['answers_ids']).'</div>';
-        $html[] = '<div itemprop="text">'.$odata['content'].'</div>';
-        $html[] = '<div itemprop="dateCreated">'.$odata['created'].'</div>';        
-        $html[] = '<div itemprop="dateModified">'.$odata['modified'].'</div>';                
-
-        foreach($odata['categories_ids.title'] as $category) {
-            $html[] = '<h2>'.$category.'</h2>';
-        }
+            $html[] = '<!DOCTYPE html>'.PHP_EOL;
+            $html[] = '<html lang="'.$question_data['lang'].'">'.PHP_EOL;
+            $html[] = '<head>'.PHP_EOL;    
+            $html[] = '<meta charset="utf-8">'.PHP_EOL;
+            $html[] = '<meta name="title" content="'.$question_data['title'].' - ResiExchange - Des réponses pour la résilience">'.PHP_EOL;
+            $html[] = '<meta name="description" content="'.$question_data['content_excerpt'].'">'.PHP_EOL;
+            $html[] = '</head>'.PHP_EOL;
+            $html[] = '<body>'.PHP_EOL;
         
-        $answers = $om->read('resiexchange\Answer', $odata['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score']);    
-        if($answers > 0) {
-            $first = true;
-            foreach($answers as $answer_id => $answer_data) {    
-                $html[] = '<div id="answer-'.$answer_id.'"';
-                $html[] = ' itemscope="" ';
-                $html[] = ' itemtype="https://schema.org/Answer"';
-                if($first) $html[] = ' itemprop="suggestedAnswer"';
-                $html[] = '>';
-                $html[] = '<div itemprop="upvoteCount">'.$answer_data['score'].'</div>';
-                $html[] = '<div itemprop="text">'.$answer_data['content'].'</div>';                
-                $html[] = '</div>';                        
-                $first = false;
+            $html[] = '<div class="question wrapper"';
+            $html[] = '   itemscope=""';
+            $html[] = '   itemtype="https://schema.org/Question">';
+
+            $html[] = '<h1 itemprop="name">'.$odata['title'].'</h1>';
+            $html[] = '<div itemprop="upvoteCount">'.$odata['score'].'</div>';
+            $html[] = '<div itemprop="answerCount">'.count($odata['answers_ids']).'</div>';
+            $html[] = '<div itemprop="text">'.$odata['content'].'</div>';
+            $html[] = '<div itemprop="dateCreated">'.$odata['created'].'</div>';        
+            $html[] = '<div itemprop="dateModified">'.$odata['modified'].'</div>';                
+
+            foreach($odata['categories_ids.title'] as $category) {
+                $html[] = '<h2>'.$category.'</h2>';
             }
+            
+            $answers = $om->read('resiexchange\Answer', $odata['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score']);    
+            if($answers > 0) {
+                $first = true;
+                foreach($answers as $answer_id => $answer_data) {    
+                    $html[] = '<div id="answer-'.$answer_id.'"';
+                    $html[] = ' itemscope="" ';
+                    $html[] = ' itemtype="https://schema.org/Answer"';
+                    if($first) $html[] = ' itemprop="suggestedAnswer"';
+                    $html[] = '>';
+                    $html[] = '<div itemprop="upvoteCount">'.$answer_data['score'].'</div>';
+                    $html[] = '<div itemprop="text">'.$answer_data['content'].'</div>';                
+                    $html[] = '</div>';                        
+                    $first = false;
+                }
+            }
+            $html[] = '</div>';
+            $html[] = '</body>'.PHP_EOL;        
+            $html[] = '</html>'.PHP_EOL;
         }
-        $html[] = '</div>';
-        $html[] = '</body>'.PHP_EOL;        
-        $html[] = '</html>'.PHP_EOL;
-        
         return implode(PHP_EOL, $html);
     }
 }

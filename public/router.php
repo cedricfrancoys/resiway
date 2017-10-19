@@ -47,7 +47,7 @@ try {
 
     // retrieve original URI
     $request_uri = $request->getRequestURI();
-    
+
     // look for a match among defined routes
     $uri = str_replace($base, '/', $request_uri); 
     
@@ -58,7 +58,6 @@ try {
 
     $router = new Router($routes);
     
-
     if($request->isBot()) {
         $json_file = '../config/bots.json';
         if( ($json = @file_get_contents($json_file)) === false) throw new Exception('routing config file is missing');    

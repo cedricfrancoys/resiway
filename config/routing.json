@@ -3,7 +3,7 @@
     "/association/:any?":"/resiway.fr#!/association/:any",    
     "/resiexchange":"/resiexchange.fr",
     "/resiway":"/resiway.fr",
-    "/resilib":"/resilib.fr",
+    "/resilib":"/resilib.fr",   
     "/resiexchange.fr/question/:id":"/resiexchange.fr#!/question/:id",
     "/resiexchange.fr/:any":"/resiexchange.fr",
     "/resiway.fr/:any":"/resiway.fr",

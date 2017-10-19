@@ -13,6 +13,10 @@ class Router {
         $this->setParams([]);
     }
     
+    public function getRoutes() {
+        return $this->routes;
+    }
+    
     /**
     *
     * @param array $routes Associative array of routes and related resolutions

@@ -209,6 +209,57 @@ class Document extends \easyobject\orm\Object {
             $result[$oid] = self::slugify($odata['title'], 200);
         }
         return $result;        
-    }   
+    }
+    
+    
+    /** 
+    * Converts a single object serve a static version of the content
+    *
+    */    
+    public static function toHTML($om, $oid) {
+        $html = [];
+
+        $documents = $om->read(__CLASS__, $oid, ['id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 'authors_ids.name', 'title', 'title_url', 'description', 'last_update', 'count_views', 'count_votes', 'score', 'categories_ids.title']);
+        if($documents > 0 && isset($documents[$oid])) {
+            $odata = $documents[$oid];
+
+            $description = substr($odata['description'], 0, 200);
+            $title = $odata['title'];
+            $image = "https://www.resiway.org/index.php?get=resilib_document_thumbnail&id={$oid}";
+            $url = "https://www.resiway.org/document/{$oid}/{$odata['title_url']}";
+                
+            $html[] = '<!DOCTYPE html>'.PHP_EOL;
+            $html[] = '<html lang="'.$odata['lang'].'" prefix="og: http://ogp.me/ns#">'.PHP_EOL;
+            $html[] = '<head>'.PHP_EOL;    
+            $html[] = '<meta charset="utf-8">'.PHP_EOL;
+            $html[] = '<meta name="title" content="'.$odata['title'].' - ResiLib - Des savoirs pratiques pour la résilience">'.PHP_EOL;
+            $html[] = '<meta name="description" content="'.$description.'">'.PHP_EOL;
+            $html[] = '<meta property="og:title" content="'.$odata['title'].'" />'.PHP_EOL;
+            $html[] = '<meta property="og:type" content="article" />'.PHP_EOL;
+            $html[] = '<meta property="og:url" content="'.$url.'" />'.PHP_EOL;
+            $html[] = '<meta property="og:image" content="'.$image.'" />'.PHP_EOL;
+            $html[] = '<meta property="og:description" content="'.$description.'" />'.PHP_EOL;
+            $html[] = '<meta name="twitter:card" content="summary" />'.PHP_EOL;
+            $html[] = '<meta name="twitter:title" content="'.$title.'" />'.PHP_EOL;
+            $html[] = '<meta name="twitter:url" content="'.$url.'" />'.PHP_EOL;
+            $html[] = '<meta name="twitter:description" content="'.$description.'" />'.PHP_EOL;
+            $html[] = '<meta name="twitter:image" content="'.$image.'" />'.PHP_EOL;            
+            $html[] = '</head>'.PHP_EOL;
+            $html[] = '<body>'.PHP_EOL;        
+            $html[] = '<div class="document wrapper"'.PHP_EOL;
+            $html[] = '   itemscope=""'.PHP_EOL;
+            $html[] = '   itemtype="https://schema.org/DigitalDocument">'.PHP_EOL;
+            $html[] = '<h1 itemprop="name">'.$title.'</h1>'.PHP_EOL;
+            $html[] = '<div itemprop="description">'.$description.'</div>'.PHP_EOL;        
+            $html[] = '<div itemprop="dateCreated">'.$odata['last_update'].'</div>'.PHP_EOL;
+            $html[] = '<div itemprop="author">'.implode(', ', $odata['authors_ids.name']).'</div>'.PHP_EOL;        
+            $html[] = '<div itemprop="url">'.$url.'</div>'.PHP_EOL;                                
+            $html[] = '</div>'.PHP_EOL;        
+            $html[] = '</body>'.PHP_EOL;        
+            $html[] = '</html>'.PHP_EOL;        
+        }
+        return implode(PHP_EOL, $html);
+    }
+
     
 }
