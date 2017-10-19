@@ -101,11 +101,13 @@ class ObjectManager {
             if(!function_exists('\config\export_config')) die('mandatory config namespace or function export_config is missing');
             \config\export_config();
         }
-        $this->cache = array();
-		$this->instances = array();
+        $this->db = null;
+        $this->cache = [];
+		$this->instances = [];
 		// initialize error handler
 		new EventListener();
-        $this->db = null;
+        // register ORM classes autoloader
+        spl_autoload_register([$this, 'getStatic']);    
 	}
     
     

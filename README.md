@@ -10,9 +10,10 @@ This project includes
 ### Configuration
 
 #### PHP.ini
-Following constants must be defined to a custom value, matching application requirements
-check post_max_size 
-upload_max_filesize
+Following constants must be defined to a custom value, matching application requirements:  
+
+* `post_max_size`
+* `upload_max_filesize`
 
 #### PHP modules
 json
@@ -35,10 +36,11 @@ At the moment, only GET method is supported.
 #### URLS
 * documents : https://www.resiway.org/api/documents
 * questions : https://www.resiway.org/api/questions
+* global : https://www.resiway.org/api/search
 
 
 #### Parameters
-* `api` : API version (by default '1.0', qui correspond au format JSON API 1.0)
+* `api` : API version (by default '1.0', which uses JSON API 1.0 specs http://jsonapi.org/format/)
 * `limit`: number of objects to return in one query (min.5, max. 100)
 * `start`: position of the first object to return
 
