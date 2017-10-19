@@ -121,15 +121,20 @@ class HTTPRequest {
         }
         
         // retrieve content for all HTTP methods and store it into global $_REQUEST
+        
         if (isset($_SERVER['CONTENT_TYPE']) 
             && 0 === strpos($_SERVER['CONTENT_TYPE'], 'application/x-www-form-urlencoded')
             && in_array($this->getMethod(), ['PUT', 'DELETE', 'PATCH']) ) {
-            parse_str(file_get_contents('php://input'), $_REQUEST);            
+            $params = [];
+            parse_str(file_get_contents('php://input'), $params);
+            $_REQUEST = array_merge($_REQUEST, $params);
         }
 
         // append parameter from request URI if not already in
-        if(false !== strpos($_SERVER['REQUEST_URI'], '?')) {
-            parse_str(explode('?', $_SERVER['REQUEST_URI'])[1], $_REQUEST);  
+        if(0 !== strpos($_SERVER['REQUEST_URI'], '?')) {
+            $params = [];            
+            parse_str(explode('?', $_SERVER['REQUEST_URI'])[1], $params);  
+            $_REQUEST = array_merge($_REQUEST, $params);            
         }
         
         // normalize query string
