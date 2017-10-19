@@ -3,9 +3,9 @@
 /**
  Tells indexer to update non-indexed questions
 */
-use easyobject\orm\ObjectManager as ObjectManager;
-use html\HtmlToText as HtmlToText;
-use qinoa\text\TextTransformer as TextTransformer;
+use easyobject\orm\ObjectManager;
+use html\HtmlToText;
+use qinoa\text\TextTransformer;
 
 // run this script as if it were located in the public folder
 chdir('../../public');
