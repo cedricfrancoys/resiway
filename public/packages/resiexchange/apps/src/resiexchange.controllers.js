@@ -8,8 +8,7 @@ angular.module('resiexchange')
     '$sce', 
     'feedbackService', 
     'actionService', 
-    'textAngularManager',
-    function(answer, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager) {
+    function(answer, $scope, $window, $location, $sce, feedbackService, actionService) {
         console.log('answerEdit controller');
         
         var ctrl = this;   
@@ -481,8 +480,7 @@ angular.module('resiexchange')
     '$uibModal', 
     'actionService', 
     'feedbackService', 
-    'textAngularManager',
-    function(document, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService, textAngularManager) {
+    function(document, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService) {
         console.log('document controller');
         
         var ctrl = this;
@@ -1154,12 +1152,11 @@ angular.module('resiexchange')
     '$sce', 
     'feedbackService', 
     'actionService', 
-    'textAngularManager',
     '$http',
     '$q',
     '$httpParamSerializerJQLike',
     'Upload',
-    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $q, $httpParamSerializerJQLike, Upload) {
+    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, $http, $q, $httpParamSerializerJQLike, Upload) {
         console.log('documentEdit controller');
         
         var ctrl = this;   
@@ -1862,8 +1859,7 @@ angular.module('resiexchange')
     '$uibModal', 
     'actionService', 
     'feedbackService', 
-    'textAngularManager',
-    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService, textAngularManager) {
+    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService) {
         console.log('question controller');
         
         var ctrl = this;
@@ -3063,6 +3059,8 @@ angular.module('resiexchange')
                             else {
                                 var comment_id = data.result.id;
                                 $scope.question.answers.splice(index, 1);
+                                // show user-answer block
+                                $scope.question.history['resiexchange_question_answer'] = false;
                                 // add new comment to the list
                                 $scope.question.comments.push(data.result);
                                 // wait for next digest cycle
@@ -3121,10 +3119,9 @@ angular.module('resiexchange')
     '$sce', 
     'feedbackService', 
     'actionService', 
-    'textAngularManager',
     '$http',
     '$httpParamSerializerJQLike',
-    function(question, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
+    function(question, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   

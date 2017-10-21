@@ -312,7 +312,7 @@
         <div class="answers">
         
             <div class="subheader">
-                <h2>{{question.answers.length}} {{'QUESTION_ANSWERS_COUNT_LABEL' | translate}}</h2>
+                <h2>{{question.answers.length}} <span ng-bind-html="'QUESTION_ANSWERS_COUNT_LABEL' | translate"></span></h2>
                 
                 <div id="sort-dropdown">
                     <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">

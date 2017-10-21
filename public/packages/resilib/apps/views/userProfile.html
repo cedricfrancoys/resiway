@@ -6,7 +6,7 @@
 
         <uib-tab index="0" >
             <uib-tab-heading>
-                <i class="fa fa-user"></i> {{'USER_PROFILE_TAB_PROFILE' | translate}}
+                <i class="fa fa-user"></i> <span ng-bind-html="'USER_PROFILE_TAB_PROFILE' | translate"></span>
             </uib-tab-heading>
             <div class="user-profile col-1-1 nopad" style="padding-top: 10px;">
                 <div class="col-3-12">
@@ -14,7 +14,7 @@
                         <div class="user-picture"><img ng-src="{{rootCtrl.avatarURL(ctrl.user.avatar_url, 150)}}" width="150" height="150"/></div>
                         <div class="user-details">
                             <div>
-                                <div class="reputation">{{ctrl.user.reputation | humanizeCount}} <label>{{'USER_PROFILE_REPUTATION' | translate}}</label></div>
+                                <div class="reputation">{{ctrl.user.reputation | humanizeCount}} <label ng-bind-html="'USER_PROFILE_REPUTATION' | translate"></label></div>
                                 <div class="badges">
                                     <span class="user-badge badge1">
                                         <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
@@ -39,30 +39,30 @@
                 </div>
                 <div class="col-4-12">
                     <div ng-if="user.id == ctrl.user.id" style="padding-top: 10px;">
-                        <a class="btn btn-primary btn-block btn-sm" href="/user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> {{'USER_PROFILE_EDIT' | translate}}</a>
+                        <a class="btn btn-primary btn-block btn-sm" href="/user/edit/{{user.id}}"><i class="fa fa-cogs" aria-hidden="true"></i> <span ng-bind-html="'USER_PROFILE_EDIT' | translate"></span></a>
                     </div>
                     <div class="user-stats">
                         <div class="row">
                             <div class="stat col-3">
                                 <span class="item-number">{{ctrl.user.count_questions | humanizeCount}}</span>
-                                <span class="item-label">{{'USER_PROFILE_STATS_QUESTIONS' | translate}}</span>
+                                <span class="item-label" ng-bind-html="'USER_PROFILE_STATS_QUESTIONS' | translate"></span>
                             </div>
                             <div class="stat col-3">
                                 <span class="item-number">{{ctrl.user.count_answers | humanizeCount}}</span>
-                                <span class="item-label">{{'USER_PROFILE_STATS_ANSWERS' | translate}}</span>
+                                <span class="item-label" ng-bind-html="'USER_PROFILE_STATS_ANSWERS' | translate"></span>
                             </div>
                             <div class="stat col-3">
                                 <span class="item-number">{{ctrl.user.count_comments | humanizeCount}}</span>
-                                <span class="item-label">{{'USER_PROFILE_STATS_COMMENTS' | translate}}</span>
+                                <span class="item-label" ng-bind-html="'USER_PROFILE_STATS_COMMENTS' | translate"></span>
                             </div>
                         </div>
                     </div>
                     <div class="user-facts">
                         <ul>
                             <li><i class="fa fa-map-marker" aria-hidden="true"></i> {{ctrl.user.location}}, {{ctrl.user.country}}</li>
-                            <li><i class="fa fa-history" aria-hidden="true"></i> {{'USER_PROFILE_MEMBER_FOR' | translate}} {{ctrl.user.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo:true}}</li>
-                            <li><i class="fa fa-eye" aria-hidden="true"></i> {{ctrl.user.count_views | humanizeCount}} {{'USER_PROFILE_PROFILE_VIEWS' | translate}}</li>
-                            <li style="text-transform: lowercase"><i class="fa fa-clock-o" aria-hidden="true"></i> {{'USER_PROFILE_LAST_SEEN' | translate}} {{ctrl.user.last_login | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</li>
+                            <li><i class="fa fa-history" aria-hidden="true"></i> <span ng-bind-html="'USER_PROFILE_MEMBER_FOR' | translate"></span>{{ctrl.user.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo:true}}</li>
+                            <li><i class="fa fa-eye" aria-hidden="true"></i> {{ctrl.user.count_views | humanizeCount}} <span ng-bind-html="'USER_PROFILE_PROFILE_VIEWS' | translate"></span></li>
+                            <li style="text-transform: lowercase"><i class="fa fa-clock-o" aria-hidden="true"></i> <span ng-bind-html="'USER_PROFILE_LAST_SEEN' | translate"></span> {{ctrl.user.last_login | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</li>
                         </ul>
                     </div>
                 </div>
@@ -71,7 +71,7 @@
 
         <uib-tab index="1" select="ctrl.load(ctrl.updates)" ng-show="ctr.user.id == user.id || user.role == 'a'">
           <uib-tab-heading>
-            <i class="fa fa-bookmark"></i> {{'USER_PROFILE_TAB_REPUTATION'|translate}}
+            <i class="fa fa-bookmark"></i> <span ng-bind-html="'USER_PROFILE_TAB_REPUTATION' | translate"></span>
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.updates.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
 
@@ -85,7 +85,7 @@
                             {{action.description}}
                             </div>
                             <div class="col-7-12" style="overflow: hidden">
-                                <h3 class="post-title"><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                                <h3 class="post-title"><a target="_self" href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
                             </div>
                         </div>
                         <div class="col-3-12 text-right">
@@ -112,7 +112,7 @@
 
         <uib-tab index="2" select="ctrl.load(ctrl.badges)">
           <uib-tab-heading>
-            <i class="fa fa-trophy"></i> {{'USER_PROFILE_TAB_BADGES'|translate}}
+            <i class="fa fa-trophy"></i> <span ng-bind-html="'USER_PROFILE_TAB_BADGES' | translate"></span>
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.badges.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
 
@@ -153,7 +153,7 @@
 
         <uib-tab index="3" select="ctrl.load(ctrl.questions)">
             <uib-tab-heading>
-                <i class="fa fa-comment-o"></i> {{'USER_PROFILE_TAB_QUESTIONS' | translate}}
+                <i class="fa fa-comment-o"></i> <span ng-bind-html="'USER_PROFILE_TAB_QUESTIONS' | translate"></span>
             </uib-tab-heading>
             <div class="loader" ng-show="ctrl.questions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
 
@@ -189,7 +189,7 @@
 
         <uib-tab index="4" select="ctrl.load(ctrl.answers)">
           <uib-tab-heading>
-            <i class="fa fa-comments-o"></i> {{'USER_PROFILE_TAB_ANSWERS' | translate}}
+            <i class="fa fa-comments-o"></i> <span ng-bind-html="'USER_PROFILE_TAB_ANSWERS' | translate"></span>
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.answers.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
 
@@ -224,16 +224,17 @@
 
         <uib-tab index="5" select="ctrl.load(ctrl.favorites)" ng-show="ctr.user.id == user.id || user.role == 'a'">
           <uib-tab-heading>
-            <i class="fa fa-star"></i> {{'USER_PROFILE_TAB_FAVORITES' | translate}}
+            <i class="fa fa-star"></i> <span ng-bind-html="'USER_PROFILE_TAB_FAVORITES' | translate"></span>
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.favorites.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
 
             <div class="col-1-1" style="padding-left: 15px; padding-top: 10px;">
                 <div ng-hide="ctrl.favorites.items == -1" style="min-height: 250px;">
-                    <div ng-repeat="item in ctrl.favorites.items" class="post-summary col-1-1">
+                    <div ng-repeat="(index, item) in ctrl.favorites.items" class="post-summary col-1-1">
                         <div class="col-9-12" style="overflow: hidden">
+                            <a class="star on" ng-click="removeFavorite($event, index)" title="{{'USER_PROFILE_FAVORITE_REMOVE' | translate}}"><i class="fa fa-star" aria-hidden="true"></i></a>
                             <i class="fa" ng-class="{'fa-tags': item.object_class=='resiway\\Category', 'fa-comments': item.object_class=='resiexchange\\Question', 'fa-book': item.object_class=='resilib\\Document'}" aria-hidden="true"></i>
-                            <h3 class="post-title"><a href="{{rootCtrl.makeLink(item.object_class, item.object_id)}}">{{item.name}}</a></h3>
+                            <h3 class="post-title"><a target="_self" href="{{rootCtrl.makeLink(item.object_class, item.object_id)}}">{{item.name}}</a></h3>
                         </div>
                         <div class="col-3-12 text-right">
                             {{item.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}
@@ -259,7 +260,7 @@
 
         <uib-tab index="6" select="ctrl.load(ctrl.actions)" ng-show="ctr.user.id == user.id || user.role == 'a'">
           <uib-tab-heading>
-            <i class="fa fa-history"></i> {{'USER_PROFILE_TAB_ACTIVITY' | translate}}
+            <i class="fa fa-history"></i> <span ng-bind-html="'USER_PROFILE_TAB_ACTIVITY' | translate"></span>
           </uib-tab-heading>
             <div class="loader" ng-show="ctrl.actions.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
 
@@ -271,7 +272,7 @@
                             {{action.description}}
                             </div>
                             <div class="col-8-12" style="overflow: hidden">
-                                <h3 class="post-title"><a href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
+                                <h3 class="post-title"><a target="_self" href="{{rootCtrl.makeLink(action.object_class, action.object_id)}}">{{action.object_name}}</a></h3>
                             </div>
                         </div>
                         <div class="col-3-12 text-right">

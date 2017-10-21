@@ -9,7 +9,18 @@ class HTTPRequest {
     const HEADER_CLIENT_PROTO = 'X_FORWARDED_PROTO';
     const HEADER_CLIENT_PORT = 'X_FORWARDED_PORT';
 
-
+    /**
+     * @var array
+     */
+    protected $headers;
+    
+    /**
+     * @var array
+     */
+    protected $parameters;
+    
+        
+    
     /**
      * @var array
      */
@@ -76,15 +87,14 @@ class HTTPRequest {
     /**
      * Constructor.
      *
-     * @param array           $query      The GET parameters
-     * @param array           $request    The POST parameters
-     * @param array           $attributes The request attributes (parameters parsed from the PATH_INFO, ...)
-
-     * @param array           $files      The FILES parameters
-     * @param array           $server     The SERVER parameters
-     * @param string|resource $content    The raw body data
+     * @param array           $header      map holding header attributes
+     * @param array           $parameters  parameters map : key-values pairs
+     * @param array           $attributes  request attributes (parameters parsed from the PATH_INFO, ...)
+     * @param array           $files       binary files content
+     * @param array           $cookies     cookies to be set client side
+     * @param string|resource $content     raw body data
      */
-    public function __construct() {
+    public function __construct($headers, $parameters, $attributes=[], $files=[], $cookies=[], $content='') {
         
         // init content-types mapping
         self::$formats = [
@@ -113,57 +123,9 @@ class HTTPRequest {
         $this->method = null;
         $this->format = null;
         
-        // normalize $_SERVER array (populate with indices not having HTTP_ prefix)
-        foreach ($_SERVER as $key => $value) {
-            if (0 === strpos($key, 'HTTP_')) {
-                $_SERVER[substr($key, 5)] = $value;
-            }            
-        }
         
-        // retrieve content for all HTTP methods and store it into global $_REQUEST
-        
-        if (isset($_SERVER['CONTENT_TYPE']) 
-            && 0 === strpos($_SERVER['CONTENT_TYPE'], 'application/x-www-form-urlencoded')
-            && in_array($this->getMethod(), ['PUT', 'DELETE', 'PATCH']) ) {
-            $params = [];
-            parse_str(file_get_contents('php://input'), $params);
-            $_REQUEST = array_merge($_REQUEST, $params);
-        }
-
-        // append parameter from request URI if not already in
-        if(0 !== strpos($_SERVER['REQUEST_URI'], '?')) {
-            $params = [];            
-            parse_str(explode('?', $_SERVER['REQUEST_URI'])[1], $params);  
-            $_REQUEST = array_merge($_REQUEST, $params);            
-        }
-        
-        // normalize query string
-        $parts = array();
-        $order = array();
-
-
-        foreach (explode('&', $_SERVER['QUERY_STRING']) as $param) {
-            if ('' === $param || '=' === $param[0]) {
-                // Ignore useless delimiters, e.g. "x=y&".
-                // Also ignore pairs with empty key, even if there was a value, e.g. "=value", as such nameless values cannot be retrieved anyway.
-                // PHP also does not include them when building _GET.
-                continue;
-            }
-
-            $keyValuePair = explode('=', $param, 2);
-
-            // GET parameters, that are submitted from a HTML form, encode spaces as "+" by default (as defined in enctype application/x-www-form-urlencoded).
-            // PHP also converts "+" to spaces when filling the global _GET or when using the function parse_str. This is why we use urldecode and then normalize to
-            // RFC 3986 with rawurlencode.
-            $parts[] = isset($keyValuePair[1]) ?
-                rawurlencode(urldecode($keyValuePair[0])).'='.rawurlencode(urldecode($keyValuePair[1])) :
-                rawurlencode(urldecode($keyValuePair[0]));
-            $order[] = urldecode($keyValuePair[0]);
-        }
-
-        array_multisort($order, SORT_ASC, $parts);
-
-        $this->queryString = implode('&', $parts);        
+        $this->headers = $headers;
+        $this->parameters = $parameters;
     }
 
 
@@ -175,20 +137,20 @@ class HTTPRequest {
     public function __toString() {
         return
             sprintf('%s %s %s', $this->getMethod(), $this->getRequestUri(), $this->getProtocol()).PHP_EOL.
-            implode(PHP_EOL, $_SERVER).PHP_EOL.
-            implode(PHP_EOL, $_REQUEST);
+            implode(PHP_EOL, $this->headers).PHP_EOL.
+            implode(PHP_EOL, $this->parameters);
     }
 
     public function get($parameter, $default=false) {
-        return isset($_REQUEST[$parameter])?$_REQUEST[$parameter]:$default;
+        return isset($this->parameters[$parameter])?$this->parameters[$parameter]:$default;
     }
     
-    public function getContent() {
-        return $_REQUEST;
+    public function getParameters() {
+        return $this->parameters;
     }
     
     public function getHeaders() {
-        return $_SERVER;
+        return $this->headers;
     }    
 
     
@@ -208,7 +170,7 @@ class HTTPRequest {
      */
     private function getClientIPs() {
         $clientIPs = array();
-        $ip = $this->server['REMOTE_ADDR'];
+        $ip = $this->headers['REMOTE_ADDR'];
 
 
         if (isset($this->headers[self::HEADER_FORWARDED])) {
@@ -455,8 +417,7 @@ class HTTPRequest {
      *
      * @return string|null
      */
-    public function getUser()
-    {
+    public function getUser() {
         return isset($_SERVER['PHP_AUTH_USER'])?$_SERVER['PHP_AUTH_USER']:null;
     }
 
@@ -465,8 +426,7 @@ class HTTPRequest {
      *
      * @return string|null
      */
-    public function getPassword()
-    {
+    public function getPassword() {
         return isset($_SERVER['PHP_AUTH_PW'])?$_SERVER['PHP_AUTH_PW']:null;
     }
 
@@ -475,8 +435,7 @@ class HTTPRequest {
      *
      * @return string A user name and, optionally, scheme-specific information about how to gain authorization to access the server
      */
-    public function getUserInfo()
-    {
+    public function getUserInfo() {
         $userinfo = $this->getUser();
 
         $pass = $this->getPassword();
@@ -495,59 +454,6 @@ class HTTPRequest {
      * @return string The raw URI (i.e. not URI decoded)
      */
     public function getRequestUri() {
-        if (null === $this->requestUri) {
-            $requestUri = '';
-
-            if (isset($_SERVER['X_ORIGINAL_URL'])) {
-                // IIS with Microsoft Rewrite Module
-                $requestUri = $_SERVER['X_ORIGINAL_URL'];
-                unset($_SERVER['X_ORIGINAL_URL']);
-                unset($_SERVER['HTTP_X_ORIGINAL_URL']);
-                unset($_SERVER['UNENCODED_URL']);
-                unset($_SERVER['IIS_WasUrlRewritten']);
-            } 
-            elseif (isset($_SERVER['X_REWRITE_URL'])) {
-                // IIS with ISAPI_Rewrite
-                $requestUri = $_SERVER['X_REWRITE_URL'];
-                unset($_SERVR['X_REWRITE_URL']);
-            } 
-            elseif (isset($_SERVER['IIS_WasUrlRewritten'])
-            && $_SERVER['IIS_WasUrlRewritten'] == '1' 
-            && isset($_SERVER['UNENCODED_URL'])
-            && $_SERVER['UNENCODED_URL'] != '') {
-                // IIS7 with URL Rewrite: make sure we get the unencoded URL (double slash problem)
-                $requestUri = $_SERVER['UNENCODED_URL'];
-                unset($_SERVER['UNENCODED_URL']);
-                unset($_SERVER['IIS_WasUrlRewritten']);
-            } 
-            elseif (isset($_SERVER['REQUEST_URI'])) {
-                $requestUri = $_SERVER['REQUEST_URI'];
-                // HTTP proxy reqs setup request URI with scheme and host [and port] + the URL path, only use URL path
-                $schemeAndHttpHost = $this->getProtocol().'://'.$this->getHost();
-                if (strpos($requestUri, $schemeAndHttpHost) === 0) {
-                    $requestUri = substr($requestUri, strlen($schemeAndHttpHost));
-                }
-            } 
-            elseif (isset($_SERVER['ORIG_PATH_INFO'])) {
-                // IIS 5.0, PHP as CGI
-                $requestUri = $_SERVER['ORIG_PATH_INFO'];
-                if ('' != $_SERVER['QUERY_STRING']) {
-                    $requestUri .= '?'.$_SERVER['QUERY_STRING'];
-                }
-                unset($_SERVER['ORIG_PATH_INFO']);
-            }
-
-            // normalize the request URI to ease creating sub-requests from this request
-
-            // removing everything after question mark, if any
-            if(($pos = strpos($requestUri, '?')) !== false) $requestUri = substr($requestUri, 0, $pos);
-            // removing everything after hash, if any
-            if(($pos = strpos($requestUri, '#')) !== false) $requestUri = substr($requestUri, 0, $pos);
-            
-            $_SERVER['REQUEST_URI'] = $requestUri;
-            $this->requestUri = $requestUri;            
-        }
-
         return $this->requestUri;
     }
 
@@ -592,60 +498,7 @@ class HTTPRequest {
         return $this->getSchemeAndHttpHost().$this->getBaseUrl().$path;
     }
 
-    /**
-     * Returns the path as relative reference from the current Request path.
-     *
-     * Only the URIs path component (no schema, host etc.) is relevant and must be given.
-     * Both paths must be absolute and not contain relative parts.
-     * Relative URLs from one resource to another are useful when generating self-contained downloadable document archives.
-     * Furthermore, they can be used to reduce the link size in documents.
-     *
-     * Example target paths, given a base path of "/a/b/c/d":
-     * - "/a/b/c/d"     -> ""
-     * - "/a/b/c/"      -> "./"
-     * - "/a/b/"        -> "../"
-     * - "/a/b/c/other" -> "other"
-     * - "/a/x/y"       -> "../../x/y"
-     *
-     * @param string $path The target path
-     *
-     * @return string The relative target path
-     */
-    public function getRelativeUriForPath($path)
-    {
-        // be sure that we are dealing with an absolute path
-        if (!isset($path[0]) || '/' !== $path[0]) {
-            return $path;
-        }
-
-        if ($path === $basePath = $this->getPathInfo()) {
-            return '';
-        }
-
-        $sourceDirs = explode('/', isset($basePath[0]) && '/' === $basePath[0] ? substr($basePath, 1) : $basePath);
-        $targetDirs = explode('/', isset($path[0]) && '/' === $path[0] ? substr($path, 1) : $path);
-        array_pop($sourceDirs);
-        $targetFile = array_pop($targetDirs);
-
-        foreach ($sourceDirs as $i => $dir) {
-            if (isset($targetDirs[$i]) && $dir === $targetDirs[$i]) {
-                unset($sourceDirs[$i], $targetDirs[$i]);
-            } else {
-                break;
-            }
-        }
-
-        $targetDirs[] = $targetFile;
-        $path = str_repeat('../', count($sourceDirs)).implode('/', $targetDirs);
-
-        // A reference to the same base directory or an empty subdirectory must be prefixed with "./".
-        // This also applies to a segment with a colon character (e.g., "file:colon") that cannot be used
-        // as the first segment of a relative-path reference, as it would be mistaken for a scheme name
-        // (see http://tools.ietf.org/html/rfc3986#section-4.2).
-        return !isset($path[0]) || '/' === $path[0]
-            || false !== ($colonPos = strpos($path, ':')) && ($colonPos < ($slashPos = strpos($path, '/')) || false === $slashPos)
-            ? "./$path" : $path;
-    }
+    
 
     /**
      * Generates the normalized query string for the Request.
@@ -721,37 +574,7 @@ class HTTPRequest {
     }
 
 
-    /**
-     * Gets the request "intended" method.
-     *
-     * If the X-HTTP-Method-Override header is set, and if the method is a POST,
-     * then it is used to determine the "real" intended HTTP method.
-     *
-     * The _method request parameter can also be used to determine the HTTP method,
-     * but only if enableHttpMethodParameterOverride() has been called.
-     *
-     * The method is always an uppercased string.
-     *
-     * @return string The request method
-     *
-     * @see getRealMethod()
-     */
     public function getMethod() {
-        if (null === $this->method) {
-            $this->method = $_SERVER['REQUEST_METHOD'];
-
-            if (in_array($this->method, ['POST', 'post'])) {
-                if (isset($_SERVER['X-HTTP-METHOD-OVERRIDE'])) {
-                    $this->method = $_SERVER['X-HTTP-METHOD-OVERRIDE'];
-                } 
-                elseif (isset($_REQUEST['_method'])) {                    
-                    $this->method = $_REQUEST['_method'];
-                }
-            }
-            
-            $this->method = strtoupper($this->method);
-        }
-
         return $this->method;
     }
 

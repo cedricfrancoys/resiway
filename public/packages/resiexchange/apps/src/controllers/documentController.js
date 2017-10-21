@@ -15,8 +15,7 @@ angular.module('resiexchange')
     '$uibModal', 
     'actionService', 
     'feedbackService', 
-    'textAngularManager',
-    function(document, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService, textAngularManager) {
+    function(document, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService) {
         console.log('document controller');
         
         var ctrl = this;

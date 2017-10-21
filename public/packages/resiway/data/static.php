@@ -3,8 +3,8 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
-use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
+use config\QNLib;
+use easyobject\orm\ObjectManager;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);

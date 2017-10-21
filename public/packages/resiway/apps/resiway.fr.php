@@ -38,6 +38,7 @@ $token = md5($rev.rand(1, 100));
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>        
 
         <?php
+        /*
         if(!$request->isBot() && !$request->isMobile()) {
         ?>
             <script src="packages/resiway/apps/assets/js/contribute.min.js"></script>
@@ -53,6 +54,7 @@ $token = md5($rev.rand(1, 100));
             </script>
         <?php
         }
+        */
         ?>
         
         <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        

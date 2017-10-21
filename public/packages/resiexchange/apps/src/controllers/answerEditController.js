@@ -8,8 +8,7 @@ angular.module('resiexchange')
     '$sce', 
     'feedbackService', 
     'actionService', 
-    'textAngularManager',
-    function(answer, $scope, $window, $location, $sce, feedbackService, actionService, textAngularManager) {
+    function(answer, $scope, $window, $location, $sce, feedbackService, actionService) {
         console.log('answerEdit controller');
         
         var ctrl = this;   

@@ -38,18 +38,10 @@
                     <div class="control-group">
                         <div class="controls">
                             <div class="wrapper">
-                                <div class="content" 
-                                     text-angular="text-angular" 
-                                     ng-model="ctrl.topic.content" 
-                                     ta-toolbar="[
-                                        ['fullScreen', 'html'], ['redo', 'undo'],
-                                        ['bold', 'italics'],
-                                        ['h1', 'h2', 'h3'],                    
-                                        ['ul', 'ol', 'indent','outdent'],
-                                        ['insertImage', 'insertLink', 'insertVideo'],
-                                        ['wordcount', 'charcount']
-                                ]" 
-                                ></div>
+                                <textarea class="description form-control" style="height: 100px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="ctrl.topic.content">
+                                </textarea>                                       
                             </div>
                         </div>
                     </div>

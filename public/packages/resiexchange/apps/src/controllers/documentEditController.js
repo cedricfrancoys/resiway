@@ -12,12 +12,11 @@ angular.module('resiexchange')
     '$sce', 
     'feedbackService', 
     'actionService', 
-    'textAngularManager',
     '$http',
     '$q',
     '$httpParamSerializerJQLike',
     'Upload',
-    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $q, $httpParamSerializerJQLike, Upload) {
+    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, $http, $q, $httpParamSerializerJQLike, Upload) {
         console.log('documentEdit controller');
         
         var ctrl = this;   

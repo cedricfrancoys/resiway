@@ -12,10 +12,9 @@ angular.module('resiexchange')
     '$sce', 
     'feedbackService', 
     'actionService', 
-    'textAngularManager',
     '$http',
     '$httpParamSerializerJQLike',
-    function(question, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, textAngularManager, $http, $httpParamSerializerJQLike) {
+    function(question, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, $http, $httpParamSerializerJQLike) {
         console.log('questionEdit controller');
         
         var ctrl = this;   

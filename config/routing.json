@@ -25,6 +25,7 @@
     "/resiway.fr":"?show=resiway_resiway.fr",
     "/resilib.fr":"?show=resiway_resilib.fr",
     "/ekopedia.fr":"?show=resiway_ekopedia.fr",
+    "/resipedia.fr":"?show=resipedia_resipedia.fr",    
     "/sitemap.txt":"?show=resiway_sitemap",
     "/sitemap.html":"?show=resiway_sitemap&output=html",
     "/api/categories":"?get=resiway_category_list&api=1.0",

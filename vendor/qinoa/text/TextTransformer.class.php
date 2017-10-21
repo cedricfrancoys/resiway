@@ -31,6 +31,34 @@ class TextTransformer {
         return strtolower($value); 
     }
 
+    
+   /**
+    * Transform a string into a slug (URL-compatible words separated by dashes)
+    * This method expects a UTF-8 string
+    */
+    public static function slugify($value) {    
+        return str_replace(' ', '-', self::normalize($value));
+    }
+
+    /**
+     * Cuts a string by words according to given max length.
+     *
+     * @param string    $value
+     * @param integer   $max_chars
+     * @return string 
+     */
+    public static function excerpt($value, $max_chars) {
+        $res = '';        
+        $len = 0;
+        for($i = 0, $parts = explode(' ', $value), $j = count($parts); $i < $j; ++$i) {
+            $piece = $parts[$i].' ';
+            $p_len = strlen($piece);
+            if($len + $p_len > $max_chars) break;
+            $len += $p_len;
+            $res .= $piece;
+        } if($len == 0) $res = substr($value, 0, $max_chars);
+        return $res;
+    }    
 
     /**
     * Try to convert a word to its most common form (masculin singulier)
@@ -62,16 +90,7 @@ class TextTransformer {
             }
         }
         return $word;
-    }    
-    
-    /**
-    * Transform a string into a slug (URL-compatible words separated by dashes)
-    * This method expects a UTF-8 string
-    */
-    public static function slugify($value) {    
-        return str_replace(' ', '-', self::normalize($value));
-    }
-
+    }      
     
     /**
     * Generate a 64-bits integer hash from given string

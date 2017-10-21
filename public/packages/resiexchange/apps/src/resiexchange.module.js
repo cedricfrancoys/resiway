@@ -16,84 +16,13 @@ var resiway = angular.module('resiexchange', [
     'ngFileUpload',
     'ui.bootstrap',
     'ui.tinymce',    
-    'oi.select',    
-    'textAngular',
+    'oi.select',
     'pascalprecht.translate',
     'btford.markdown',
     'angularMoment',
     'ngToast'    
 ])
 
-
-/**
-* Provide fulscreen capability to textAngular editor
-*
-*/
-.config([
-    '$provide', 
-    function($provide) {
-        $provide.decorator('taOptions', ['taRegisterTool', '$delegate', function(taRegisterTool, taOptions) { 
-            // $delegate is the taOptions we are decorating
-            taRegisterTool('fullScreen', {
-                tooltiptext: 'Toogle full screen',
-                iconclass: "fa fa-arrows-alt",
-                activeState: function(){
-                    return this.$editor().fullScreen;
-                },            
-                action: function() {
-                    if(typeof this.$editor().fullScreen == 'undefined') {
-                        this.$editor().fullScreen = false;
-                    }
-                    
-                    var $instance = this.$editor().displayElements.text.parent().parent();
-                    var $body = angular.element(document.querySelector('body'));
-                    var $toolbar = angular.element($instance.children()[0]);
-
-                    if(this.$editor().fullScreen) {
-                        // restore size
-                        $instance.css({
-                                        'position': this.$editor().original_position, 
-                                        'width': this.$editor().original_width, 
-                                        'height': this.$editor().original_height
-                                      });                    
-                        // restore body children
-                        $body.append(this.$editor().original_body_content);
-                        // restore parent
-                        this.$editor().original_parent.append($instance.detach());
-                    }
-                    else {
-                        // save the minimized dimension
-                        this.$editor().original_width = $instance.css('width');
-                        this.$editor().original_height = $instance.css('height');
-                        // save original parent
-                        this.$editor().original_parent = $instance.parent();
-                        this.$editor().original_position = $instance.css('position');
-                        // save original body content
-                        this.$editor().original_body_content = $body.children().detach();
-                        // append editor as lone child of body
-                        $body.append(
-                            $instance
-                            .detach()
-                            .css({
-                                    'position': 'absolute', 
-                                    'width': '100%', 
-                                    'height': '100%', 
-                                    'z-index': '9999', 
-                                    'top': '0px', 
-                                    'left': '0px'
-                                })
-                        );
-                    }
-                    $instance.css('height', 'calc(100% - '+$toolbar[0].offsetHeight+'px)');
-                    // toggle fullscreen 
-                    this.$editor().fullScreen = !this.$editor().fullScreen;                
-                }
-            });
-            taOptions.toolbar[1].push('fullScreen');
-            return taOptions;
-        }]);    
-    }
-])
 
 /**
 * Configure ngToast animations

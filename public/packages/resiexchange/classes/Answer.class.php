@@ -74,7 +74,7 @@ class Answer extends \easyobject\orm\Object {
              'indexed'          => function() { return false; }, 
              'count_votes'      => function() { return 0; },
              'score'            => function() { return 0; },             
-             'count_flags'      => function() { return 0; },                          
+             'count_flags'      => function() { return 0; }
         );
     }
     
