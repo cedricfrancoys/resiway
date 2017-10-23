@@ -77,10 +77,10 @@
                                ng-click="showShareModal()"
                                title="{{'QUESTION_ACTIONS_SHARE_TOOLTIP' | translate}}"
                                class="short-link">
-                                <i class="fa fa-share-alt" aria-hidden="true"></i> {{'QUESTION_ACTIONS_SHARE' | translate}}
+                                <i class="fa fa-share-alt" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ACTIONS_SHARE' | translate"></span>
                             </a>&nbsp;
                             <a href="/question/edit/{{question.id}}">
-                                <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_ACTIONS_EDIT' | translate}}
+                                <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ACTIONS_EDIT' | translate"></span>
                             </a>&nbsp;                            
                             <a href                                         
                                id="question-flag"
@@ -91,7 +91,7 @@
                                popover-trigger="'toggle-popover'" 
                                popover-placement="right"
                                popover-append-to-body="true">
-                                <i class="fa fa-flag" aria-hidden="true"></i> {{'QUESTION_ACTIONS_FLAG' | translate}}
+                                <i class="fa fa-flag" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ACTIONS_FLAG' | translate"></span>
                             </a>&nbsp;                            
                             <a href 
                                id="question-delete"
@@ -103,13 +103,13 @@
                                popover-trigger="'toggle-popover'"
                                popover-placement="right"
                                popover-append-to-body="true">
-                                <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ACTIONS_DELETE' | translate}}
+                                <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ACTIONS_DELETE' | translate"></span>
                             </a>                            
                         </div>
                         <div class="signature" ng-if="question.editor != 0 && question.editor.id != question.creator.id">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'QUESTION_STATS_EDITED' | translate}} {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime"><span ng-bind-html="'QUESTION_STATS_EDITED' | translate"></span> {{question.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="/user/{{question.editor.id}}/{{question.editor.name_url}}">
@@ -141,7 +141,7 @@
                         <div class="signature owner">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'QUESTION_STATS_ASKED' | translate}} {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime"><span ng-bind-html="'QUESTION_STATS_ASKED' | translate"></span> {{question.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">
@@ -194,13 +194,13 @@
                                     uib-popover-template="'popoverCustom.html'" 
                                     popover-trigger="'toggle-popover'" 
                                     popover-placement="right"
-                                    popover-append-to-body="true">
-                                {{'QUESTION_COMMENTS_EDIT_BUTTON' | translate}}
+                                    popover-append-to-body="true"
+                                    ng-bind-html="'QUESTION_COMMENTS_EDIT_BUTTON' | translate">
                             </button>
                             <button
                                     class="btn btn-primary btn-xs"
-                                    ng-click="question.comments[comment_index].editMode = false">
-                                {{'QUESTION_COMMENTS_CANCEL_BUTTON' | translate}}
+                                    ng-click="question.comments[comment_index].editMode = false"
+                                    ng-bind-html="'QUESTION_COMMENTS_CANCEL_BUTTON' | translate">
                             </button>
                         </div>                        
                         <div ng-hide="question.comments[comment_index].editMode">
@@ -254,7 +254,7 @@
                                         </a>
                                     </span>
                                     <a href ng-click="question.comments[comment_index].editMode = true">
-                                        <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_EDIT' | translate}}
+                                        <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_COMMENT_ACTIONS_EDIT' | translate"></span>
                                     </a>&nbsp;                               
                                     <a href
                                        id="comment-{{comment.id}}-delete"
@@ -265,7 +265,7 @@
                                        popover-trigger="'toggle-popover'" 
                                        popover-placement="right"
                                        popover-append-to-body="true">
-                                        <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_DELETE' | translate}}
+                                        <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_COMMENT_ACTIONS_DELETE' | translate"></span>
                                     </a>                                          
                                     
                                 </div>
@@ -287,8 +287,8 @@
                         <a href 
                            ng-click="question.commentsLimit=1000" 
                            class="js-show-link comments-link " 
-                           title="{{ 'QUESTION_COMMENTS_SHOW_ALL_TOOLTIP' | translate}}">
-                           {{ 'QUESTION_COMMENTS_SHOW_ALL' | translate}}</a>
+                           title="{{ 'QUESTION_COMMENTS_SHOW_ALL_TOOLTIP' | translate}}"
+                           ng-bind-html="'QUESTION_COMMENTS_SHOW_ALL' | translate"></a>
                     </span>
                     <div class="wrapper new-comment" style="margin-top: 10px;" ng-show="question.newCommentShow">
                         <textarea ng-model="question.newCommentContent" style="width: 100%;" placeholder="{{ 'QUESTION_COMMENTS_ADD_PLACEHOLDER' | translate }}"></textarea>
@@ -299,8 +299,8 @@
                                 popover-append-to-body="true"
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="right"
-                                popover-append-to-body="true">
-                            {{ 'QUESTION_COMMENTS_ADD_BUTTON' | translate}}
+                                popover-append-to-body="true"
+                                ng-bind-html="'QUESTION_COMMENTS_ADD_BUTTON' | translate">
                         </button>
                     </div>
                 </div>
@@ -425,10 +425,10 @@
                             <div class="actions">
                                 <a href="/question/{{question.id}}#answer-{{answer.id}}"
                                    title="{{'QUESTION_ANSWER_ACTIONS_SHARE_TOOLTIP' | translate}}">
-                                    <i class="fa fa-share-alt" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_SHARE' | translate}}
+                                    <i class="fa fa-share-alt" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ANSWER_ACTIONS_SHARE' | translate"></span>
                                 </a>&nbsp;
                                 <a href="/answer/edit/{{answer.id}}">
-                                    <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_EDIT' | translate}}
+                                    <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ANSWER_ACTIONS_EDIT' | translate"></span>
                                 </a>&nbsp;                               
                                 <a href                                         
                                    id="answer-{{answer.id}}-flag"
@@ -439,7 +439,7 @@
                                    popover-trigger="'toggle-popover'" 
                                    popover-placement="right"
                                    popover-append-to-body="true">  
-                                    <i class="fa fa-flag" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_FLAG' | translate}}
+                                    <i class="fa fa-flag" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ANSWER_ACTIONS_FLAG' | translate"></span>
                                 </a>&nbsp;                                 
                                 <a href
                                    id="answer-{{answer.id}}-delete"
@@ -450,7 +450,7 @@
                                    popover-trigger="'toggle-popover'" 
                                    popover-placement="right"
                                    popover-append-to-body="true">
-                                    <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_DELETE' | translate}}
+                                    <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ANSWER_ACTIONS_DELETE' | translate"></span>
                                 </a>
                                 <a href
                                    id="answer-{{answer.id}}-convert"
@@ -461,7 +461,7 @@
                                    popover-trigger="'toggle-popover'" 
                                    popover-placement="right"
                                    popover-append-to-body="true">
-                                    <i class="fa fa-exchange" aria-hidden="true"></i> {{'QUESTION_ANSWER_ACTIONS_CONVERT' | translate}}
+                                    <i class="fa fa-exchange" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_ANSWER_ACTIONS_CONVERT' | translate"></span>
                                 </a>                                 
                             </div>
                             <!--                            
@@ -489,7 +489,7 @@
                                 <div class="user-info">
                                     <div class="user-action-time">
 
-                                        <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{'ANSWER_STATS_ANSWERED' | translate}} {{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
+                                        <span class="relativetime" title="{{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}"><span ng-bind-html="{{'ANSWER_STATS_ANSWERED' | translate"></span> {{answer.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
                                     </div>
                                     <div class="user-avatar">
                                         <a href="/user/{{answer.creator.id}}/{{answer.creator.name_url}}">
@@ -542,13 +542,13 @@
                                         uib-popover-template="'popoverCustom.html'" 
                                         popover-trigger="'toggle-popover'" 
                                         popover-placement="right"
-                                        popover-append-to-body="true">
-                                    {{'QUESTION_COMMENTS_EDIT_BUTTON' | translate}}
+                                        popover-append-to-body="true"
+                                        ng-bind-html="'QUESTION_COMMENTS_EDIT_BUTTON' | translate">
                                 </button>
                                 <button
                                         class="btn btn-primary btn-xs"
-                                        ng-click="question.answers[answer_index].comments[comment_index].editMode = false">
-                                    {{'QUESTION_COMMENTS_CANCEL_BUTTON' | translate}}
+                                        ng-click="question.answers[answer_index].comments[comment_index].editMode = false"
+                                        ng-bind-html="'QUESTION_COMMENTS_CANCEL_BUTTON' | translate">
                                 </button>
                             </div>                        
                             <div ng-hide="question.answers[answer_index].comments[comment_index].editMode">
@@ -601,7 +601,7 @@
                                             </a>
                                         </span>
                                         <a href ng-click="question.answers[answer_index].comments[comment_index].editMode = true">
-                                            <i class="fa fa-pencil" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_EDIT' | translate}}
+                                            <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_COMMENT_ACTIONS_EDIT' | translate"></span>
                                         </a>&nbsp;                               
                                         <a href
                                            id="answer-{{answer.id}}-comment-{{comment.id}}-delete"
@@ -612,7 +612,7 @@
                                            popover-trigger="'toggle-popover'" 
                                            popover-placement="right"
                                            popover-append-to-body="true">
-                                            <i class="fa fa-remove" aria-hidden="true"></i> {{'QUESTION_COMMENT_ACTIONS_DELETE' | translate}}
+                                            <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_COMMENT_ACTIONS_DELETE' | translate"></span>
                                         </a>  
                                     </div>
                                 </div>
@@ -733,7 +733,7 @@
                         popover-trigger="'toggle-popover'" 
                         popover-placement="right"
                         popover-append-to-body="true">
-                    <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> {{'QUESTION_USER_ANSWER_SUBMIT' | translate}}</button>            
+                    <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> <span ng-bind-html="'QUESTION_USER_ANSWER_SUBMIT' | translate"></button>
             </div>
         </div>
             
@@ -744,7 +744,7 @@
                 <div class="module question-stats">
                     <div class="stat-row">
                         <div class="title">
-                            {{'QUESTION_STATS_ASKED' | translate}}
+                            <span ng-bind-html="'QUESTION_STATS_ASKED' | translate"></span>
                         </div>
                         <div class="content">
                             <b>{{question.created}}</b>
@@ -752,7 +752,7 @@
                     </div>
                     <div class="stat-row">                    
                         <div class="title">
-                            {{'QUESTION_STATS_VIEWED' | translate}}
+                            <span ng-bind-html="'QUESTION_STATS_VIEWED' | translate"></span>
                         </div>
                         <div class="content">
                             <b>{{question.count_views}} {{'QUESTION_STATS_TIMES' | translate}}</b>
@@ -760,7 +760,7 @@
                     </div>                        
                     <div class="stat-row">                        
                         <div class="title">
-                            {{'QUESTION_STATS_ACTIVE' | translate}}
+                            <span ng-bind-html="'QUESTION_STATS_ACTIVE' | translate"></span>
                         </div>
                         <div class="content">
                             <b>{{question.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
