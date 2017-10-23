@@ -16,7 +16,7 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <meta name="title" content="ResiLib - La Biblio résiliente">
         <meta name="description" content="ResiLib bibliothèque collaborative de documents open source pour la diffusion et la réappropriation des savoirs-faires.">
 
-        <link rel="alternate" href="https://www.resiway.org/resilib.fr" hreflang="fr"/>
+        <!-- <link rel="alternate" href="https://www.resiway.org/resilib.fr" hreflang="fr"/> -->
 
         <meta name="fragment" content="!">
         <base href="/resilib.fr">

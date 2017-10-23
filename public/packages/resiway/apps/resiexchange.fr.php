@@ -16,7 +16,7 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <meta name="title" content="ResiExchange - Réponses pour la résilience">
         <meta name="description" content="ResiExchange est une plateforme collaborative open source d'échange d'informations sur les thèmes de l'autonomie, la transition, la permaculture et la résilience.">
 
-        <link rel="alternate" href="https://www.resiway.org/resiexchange.fr" hreflang="fr"/>
+        <!-- <link rel="alternate" href="https://www.resiway.org/resiexchange.fr" hreflang="fr"/> -->
         
         <meta name="fragment" content="!">
         <base href="/resiexchange.fr">
