@@ -1,7 +1,7 @@
 <div class="grid wrapper">
     <div class="col-1-1">
         <div class="page-header">
-            <h1>{{'ANSWER_EDIT_TITLE' | translate}}</h1>
+            <h1 ng-bind-html="'ANSWER_EDIT_TITLE' | translate"></h1>
         </div>
     </div>
 </div>    
@@ -74,8 +74,9 @@
                     <div class="form-actions">
                         <button class="btn btn-default" 
                                 tabindex="30" 
-                                onclick="history.go(-1)">
-                            {{'ANSWER_EDIT_CANCEL' | translate}}</button>
+                                onclick="history.go(-1)"
+                                ng-bind-html="'ANSWER_EDIT_CANCEL' | translate">
+                        </button>
 
                         <button id="answer-post"
                                 class="user-answer-submit btn btn-primary" 
@@ -83,7 +84,7 @@
                                 uib-popover-template="'popoverCustom.html'" 
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="right">
-                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> {{'ANSWER_EDIT_SUBMIT' | translate}}</button>                          
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> <span ng-bind-html="'ANSWER_EDIT_SUBMIT' | translate"></span></button>
                     </div>
 
                 
@@ -100,26 +101,26 @@
 			            <tbody>
                         <tr>
 			                <td>
-			                    <p class="label-key">{{'ANSWER_STATS_ANSWERED' | translate}}</p>
+			                    <p class="label-key"><span ng-bind-html="'ANSWER_STATS_ANSWERED' | translate"></span></p>
 			                </td>
 			                <td style="padding-left: 10px">
-			                    <p class="label-key"><b>{{answer.created}}</b></p>
+			                    <p class="label-key"><b> {{answer.created}}</b></p>
 			                </td>
 			            </tr>
 			            <tr>
 			                <td>
-			                    <p class="label-key">{{'ANSWER_STATS_VIEWED' | translate}}</p>
+			                    <p class="label-key"><span ng-bind-html="'ANSWER_STATS_VIEWED' | translate"></span></p>
 			                </td>
 
 			                <td style="padding-left: 10px">
 			                    <p class="label-key">
-			                        <b>{{answer.count_views}} {{'ANSWER_STATS_TIMES' | translate}}</b>
+			                        <b>{{answer.count_views}} <span ng-bind-html="'ANSWER_STATS_TIMES' | translate"></span></b>
 			                    </p>
 			                </td>
 			            </tr>
 			            <tr>
                             <td>
-                                <p class="label-key">{{'ANSWER_STATS_ACTIVE' | translate}}</p>
+                                <p class="label-key"><span ng-bind-html="'ANSWER_STATS_ACTIVE' | translate"></span></p>
                             </td>
                             <td style="padding-left: 10px">
                                 <p class="label-key">
