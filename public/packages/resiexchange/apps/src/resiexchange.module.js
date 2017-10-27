@@ -59,7 +59,7 @@ var resiway = angular.module('resiexchange', [
             $translateProvider
             .translations(global_config.locale, translations)
             .preferredLanguage(global_config.locale)
-            .useSanitizeValueStrategy('sanitize');
+            .useSanitizeValueStrategy('sanitizeParameters');
         }    
     }
 ])
