@@ -667,7 +667,7 @@
         
         <div id="your-answer" class="user-answer" ng-hide="user.id && question.history['resiexchange_question_answer']">
             <div class="subheader">
-                <h2>{{'QUESTION_USER_ANSWER' | translate}}</h2>
+                <h2 ng-bind-html="'QUESTION_USER_ANSWER' | translate"></h2>
             </div>
             <div class="wrapper">
                 <textarea class="content form-control" style="height: 200px;"
