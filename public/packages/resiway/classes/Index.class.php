@@ -2,6 +2,7 @@
 namespace resiway;
 
 use qinoa\text\TextTransformer;
+use qinoa\html\HtmlToText;
 
 /**
 *
@@ -50,6 +51,19 @@ class Index extends \easyobject\orm\Object {
         );
     }
 
+    public static function extractKeywords($string) {
+        $string = HtmlToText::convert($string, false);
+        $string = TextTransformer::normalize($string);
+        $words = explode(' ', $string);
+        $result = [];
+        foreach($words as $word) {
+            // drop irrelevant words        
+            if(!TextTransformer::is_relevant($word)) continue;
+            $result[] = substr(TextTransformer::axiomize($word), 0, 32);
+        }
+        return $result;
+    }
+            
     public static function normalizeQuery($query) {
         $query = TextTransformer::normalize($query);
         $keywords = explode(' ', $query);

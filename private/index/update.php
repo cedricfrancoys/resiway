@@ -4,8 +4,10 @@
  Tells indexer to update non-indexed questions
 */
 use easyobject\orm\ObjectManager;
-use html\HtmlToText;
+
 use qinoa\text\TextTransformer;
+
+use resiway\Index;
 
 // run this script as if it were located in the public folder
 chdir('../../public');
@@ -19,21 +21,9 @@ require_once('../qn.lib.php');
 
 list($result, $error_message_ids) = [true, []];
 
-set_silent(true);
+set_silent(false);
 
-
-function extractKeywords($string) {
-    $string = HtmlToText::convert($string, false);
-    $string = TextTransformer::normalize($string);
-    $parts = explode(' ', $string);
-    $result = [];
-    foreach($parts as $part) {
-        // index keywords from 3 chars and on
-        if(strlen($part) >= 3) $result[] = substr(TextTransformer::axiomize($part), 0, 32);
-    }
-    return $result;
-}
-    
+ 
 
 try {
     
@@ -74,7 +64,7 @@ try {
                         if(!is_array($value)) $value = (array) $value;
                         foreach($value as $key => $str) {
                             // $keywords = array_merge($keywords, extractKeywords($str));
-                            $words[$field] = array_merge($words[$field], extractKeywords($str));
+                            $words[$field] = array_merge($words[$field], Index::extractKeywords($str));
                         }
                     }
                 }
@@ -89,7 +79,7 @@ try {
                         $hash = TextTransformer::hash($keyword);
                         // we treat hash as a string in case PHP engine does not handle 20 digits numbers 
                         // we expect SQL to deal with the conversion
-                        $res = $om->search('resiway\Index', ['hash', 'like', $hash]);
+                        $res = $om->search('resiway\Index', ['hash', '=', $hash]);
                         // skip index if already exists
                         if($res > 0 && count($res) > 0) {
                             $index_id = $res[0];
@@ -108,7 +98,7 @@ try {
                         $lines[] = "($index_id, $object_id, '$field', $count)";
                     }
                     if(count($lines)) {
-                        $db->sendQuery("INSERT INTO $object_table (`index_id`, `$object_field`, `field`, `count`) values ".implode(',', $lines)." ON DUPLICATE KEY UPDATE foo=foo;;");                    
+                        $db->sendQuery("INSERT IGNORE INTO $object_table (`index_id`, `$object_field`, `field`, `count`) values ".implode(',', $lines).";");                    
                     }
                 }
                 
