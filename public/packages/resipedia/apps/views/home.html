@@ -1,0 +1,175 @@
+<div class="grid wrapper">
+    <div class="col-8-12">
+    <!--
+        <div class="well blank_index">
+                <h2>Bienvenue sur ResiExchange !</h2>
+                <p style="font-size:1.0em;">
+                <strong>ResiExchange</strong> est une plateforme collaborative d'échange d'informations pour les initiatives aspirant à la résilience.<br />
+                <br />
+                Le développement et la participation à cet outil, supporté par l'association <a href="//www.resiway.org/">RésiWay</a>, sont ouverts à tous.<br />
+                <br />
+                Avec l'aide de chacun, l'objectif est de constituer une bibliothèque de réponses détaillées aux questions relatives à l'autonomie, la transition, la permaculture et la résilience.<br />
+                <br />
+                <a href="/help/categories" class="btn btn-info" style="margin-bottom: 5px;">Découvrir les fonctionnalités</a>
+                <a href="/questions" class="btn btn-info" style="margin-bottom: 5px;">Consulter les question-réponses</a>
+                <a href="/question/edit/0" class="btn btn-primary" style="margin-bottom: 5px;">Poser votre première question</a>
+            </p>            
+        </div>
+        -->
+        <div class="row">
+
+            <div class="col-md-3">
+                <strong class="lead">ResiExchange</strong>
+            </div>
+            <div class="col-md-9">
+                partager les <b>connaissances</b><br />
+                pour apprendre à vivre de manière <b>saine</b>&nbsp;et&nbsp;<b>écologique</b><br /> 
+                à faible coût <b>énergétique</b>&nbsp;et&nbsp;<b>économique</b>
+            </div>
+
+        </div>
+        
+        <div class="row">
+            <article class="col-md-12">
+            <div class="col-1-2">
+                <div class="col-1-2 nopad">
+                    <img style="width: 100%; max-width: 250px;" src="packages/resiway/apps/assets/img/bien_etre.png">
+                </div>
+                <div class="col-1-2 nopad">
+                    <h3>Prendre soin de soi</h3>
+                    <ul class="list-unstyled">
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 87]]})">Santé et soins</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 129]]})">Cosmétiques écologiques</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 117]]})">Liniment pour bébé</a></li>
+                    </ul>                    
+                </div>
+            </div>
+            <div class="col-1-2">
+                <div class="col-1-2 nopad">
+                    <img style="width: 100%; max-width: 250px;" src="packages/resiway/apps/assets/img/nettoyage_sain_eco.png">
+                </div>
+                <div class="col-1-2 nopad">
+                    <h3>Nettoyage sain et écologique</h3>
+                    <ul class="list-unstyled">
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 83]]})">Hygiène et Ménage</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 84]]})">Savons et lessives éco</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 79]]})">Vermicompost</a></li>
+                    </ul>                    
+                </div>            
+            </div>            
+            <div class="col-1-2">
+                <div class="col-1-2 nopad">
+                    <img style="width: 100%; max-width: 250px;" src="packages/resiway/apps/assets/img/naitre_grandir.png">
+                </div>
+                <div class="col-1-2 nopad">
+                    <h3>Naître et grandir</h3>
+                    <ul class="list-unstyled">
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 89]]})">Éducation et Parentage</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 113]]})">Allaitement naturel</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 90]]})">Pédagogie Montessori</a></li>
+                    </ul>                    
+                </div>            
+            </div>
+            <div class="col-1-2">
+                <div class="col-1-2 nopad">
+                    <img style="width: 100%; max-width: 250px;" src="packages/resiway/apps/assets/img/alimentation_saine.png">
+                </div>
+                <div class="col-1-2 nopad">
+                    <h3>Manger sain</h3>
+                    <ul class="list-unstyled">
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 57]]})">Alimentation</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 79]]})">Recettes avec légumes oubliés</a></li>
+                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 57]]})">Assiette équilibrée</a></li>
+                    </ul>                    
+                </div>
+            </div>
+
+            </article>
+        </div>
+
+        <div class="row">
+            <article class="col-md-12">
+                <p class="lead">Questions qui attendent ta réponse</p>
+                <div class="fade-in-out" ng-show="ctrl.poor_questions.length > 0">
+                <div style="margin-top: 10px;">                
+                    <div class="col-1-2 nopad featured-questions" ng-repeat="question in ctrl.poor_questions | limitTo : 10: 0">
+                        <table>
+                            <tr>
+                                <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                                <td><a href="/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                            </tr>
+                        </table>                
+                    </div>
+                    <div class="col-1-2 nopad featured-questions" ng-repeat="question in ctrl.poor_questions |limitTo : 10 : 10">
+                        <table>
+                            <tr>
+                                <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                                <td><a href="/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                            </tr>
+                        </table>                
+                    </div>
+                
+                </div>                
+            </article>
+        </div>
+        
+    </div>
+    
+    <div class="col-4-12">
+        <div class="panel panel-default" style="min-height: 545px;">
+
+            <div class="container" >
+                <div style="width: 100%; height: 90px;">
+                    <div class="fb-like" data-href="https://www.facebook.com/resiway" data-layout="standard" data-action="like" data-size="small" data-show-faces="true" data-share="true"></div>
+                    <!-- <div class="fb-like" data-href="https://www.resiway.org/" data-layout="standard"  data-action="like" data-show-faces="false" data-colorscheme="dark"></div> -->
+                    <div class="fb-follow" style="margin-top: 5px;" data-href="https://www.facebook.com/resiway" data-layout="standard" data-size="small" data-show-faces="false" data-colorscheme="dark"></div>
+                </div>
+                <div class="col-1-1">
+                    <img style="border-radius: 10px; height: 43px; width: 50px;" src="packages/resiway/apps/assets/img/ced_isa.png" />&nbsp;&nbsp;<a href="http://www.icway.be/">Autour de Ced &amp Isa</a>
+                </div>
+            </div>
+            <div class="container" style="padding-bottom: 0;">
+                <div class="lead" style="border-bottom: 1px solid grey;">
+                    <div>Participants</div>
+                </div>
+            
+                <div class="col-3-12" style="display: inline-block;">
+                    <span class="item-number">{{ctrl.count_posts}}</span>
+                    <span class="item-label">{{'QUESTIONS_STATS_POSTS' | translate}}</span>
+                </div>
+                <div class="col-3-12" style="display: inline-block;">
+                    <span class="item-number">{{ctrl.count_users}}</span>
+                    <span class="item-label">{{'QUESTIONS_STATS_USERS' | translate}}</span>
+                </div>
+                <div class="col-6-12" style="display: inline-block; ">
+                    <a class="btn btn-sm btn-success pull-right col-1-1" href="/user/sign/up"><i class="fa fa-group" aria-hidden="true"></i> Je participe</a>
+                </div>
+            </div>
+         
+            <div class="container fade-in-out" ng-show="ctrl.active_questions.length > 0">
+                <div class="lead" style="border-bottom: 1px solid grey;">
+                    <div>Questions actives</div>
+                </div>
+                <div class="featured-questions" ng-repeat="question in ctrl.active_questions">
+                    <table>
+                        <tr>
+                            <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                            <td><a href="/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                        </tr>
+                    </table>                
+                </div>            
+            </div>
+
+            <div class="container">
+                <div class="lead" style="border-bottom: 1px solid grey;">
+                    <div>À propos</div>
+                </div>
+                <div id="aboutcontent">
+                    <p><b><a href="/resiway.fr">ResiWay</a></b> est une plateforme collaborative open source de partage de savoirs sur les thèmes de la&nbsp;<strong>Permaculture</strong>, la&nbsp;<strong>Transition</strong>, et l'<strong>Autonomie</strong>.</p>
+                </div>                
+            </div>            
+            
+        </div>
+    </div>
+    
+</div>

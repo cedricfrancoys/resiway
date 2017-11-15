@@ -77,32 +77,6 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids, $total) = [[], [], $params['total']];
 
-
-function searchFromIndex($query) {
-    $result = [];
-    $query = TextTransformer::normalize($query);
-    $keywords = explode(' ', $query);
-    $hash_list = array_map(function($a) { return TextTransformer::hash(TextTransformer::axiomize($a)); }, $keywords);
-    // we have all words related to the question :
-    $om = &ObjectManager::getInstance();    
-    $db = $om->getDBHandler();    
-    // obtain related ids of index entries to add to question (don't mind the collision / false-positive)
-	$res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in ('".implode("','", $hash_list)."');");
-    $index_ids = [];
-    while($row = $db->fetchArray($res)) {
-        $index_ids[] = $row['id'];
-    }
-    
-    if(count($index_ids)) {
-        $res = $db->sendQuery("SELECT DISTINCT(question_id) FROM resiway_rel_index_question WHERE index_id in ('".implode("','", $index_ids)."');");
-        while($row = $db->fetchArray($res)) {
-            $result[] = $row['question_id'];
-        }
-    }
-    return $result;
-}
-
-
 try {
     
     $om = &ObjectManager::getInstance();
@@ -115,7 +89,10 @@ try {
         $params['domain'] = [];
         // adapt domain to restrict results to given channel
         $params['domain'][] = ['channel_id','=', $params['channel']];        
-        $questions_ids = searchFromIndex($params['q']);
+        
+        $indexes_ids = resiway\Index::searchByQuery($om, $params['q']);        
+        $questions_ids = $om->search('resiexchange\Question', ['indexes_ids', 'contains', $indexes_ids]);
+               
         if(count($questions_ids) > 0) {
             $params['domain'][] = ['id','in', $questions_ids];
         }
@@ -164,12 +141,13 @@ try {
         if($res < 0 || !count($res)) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 
         $authors_ids = [];
-        $tags_ids = [];
+        $categories_ids = [];
         $questions = [];
         foreach($res as $question_id => $question_data) {
+            
             // remember creators ids for each question
             $authors_ids = array_merge($authors_ids, (array) $question_data['creator']); 
-            $tags_ids = array_merge($tags_ids, (array) $question_data['categories_ids']);         
+            $categories_ids = array_merge($categories_ids, (array) $question_data['categories_ids']);         
             
             $questions[$question_id] = array(
                                         'id'                => $question_id,
@@ -177,7 +155,7 @@ try {
                                         'title_url'         => $question_data['title_url'],
                                         'content_excerpt'   => $question_data['content_excerpt'],
                                         'created'           => $question_data['created'],
-                                        'score'       => $question_data['score'],                                        
+                                        'score'             => $question_data['score'],                                        
                                         'count_views'       => $question_data['count_views'],
                                         'count_votes'       => $question_data['count_votes'],
                                         'count_answers'     => $question_data['count_answers']
@@ -196,20 +174,20 @@ try {
             else unset($res[$question_id]);
         }
        
-        // retrieve tags
-        $questions_tags = $om->read('resiway\Category', $tags_ids, ['title', 'path', 'parent_path', 'description']);        
-        if($questions_tags < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
+        // retrieve categories
+        $questions_categories = $om->read('resiway\Category', $categories_ids, ['title', 'path', 'parent_path', 'description']);        
+        if($questions_categories < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
 
         foreach($res as $question_id => $question_data) {
-            $questions[$question_id]['tags'] = [];
-            foreach($question_data['categories_ids'] as $tag_id) {
-                $tag_data = $questions_tags[$tag_id];
-                $questions[$question_id]['tags'][] = array(
-                                            'id'            => $tag_id,
-                                            'title'         => $tag_data['title'], 
-                                            'path'          => $tag_data['path'],
-                                            'parent_path'   => $tag_data['parent_path'],
-                                            'description'   => $tag_data['description']
+            $questions[$question_id]['categories'] = [];
+            foreach($question_data['categories_ids'] as $category_id) {
+                $category_data = $questions_categories[$category_id];
+                $questions[$question_id]['categories'][] = array(
+                                            'id'            => $category_id,
+                                            'title'         => $category_data['title'], 
+                                            'path'          => $category_data['path'],
+                                            'parent_path'   => $category_data['parent_path'],
+                                            'description'   => $category_data['description']
                                         );            
             }
         }
@@ -233,42 +211,8 @@ catch(Exception $e) {
 if( intval($params['api']) > 0 && is_array($result) ) {
     // JSON API RFC7159
     header('Content-type: application/vnd.api+json');
-    $result = [];
-    $included = [];
-    foreach($questions as $id => $question) {
-        $author_id = $question['creator']['id'];
-        unset($question['creator']['id']);
-        if(!isset($included['creator_'.$author_id])) {
-            $included['creator_'.$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $question['creator']];
-        }        
-        foreach($question['tags'] as $category) {        
-            $category_id = $category['id'];
-            unset($category['id']);        
-            if(!isset($included['category_'.$category_id])) {
-                $included['category_'.$category_id] = ['type' => 'category', 'id' => $category_id, 'attributes' => (object) $category];
-            }        
-        }
-        $categories = $question['tags'];
-        unset($question['id']);        
-        unset($question['creator']);        
-        unset($question['tags']);                
-        $result[] = [
-            'type'          => 'question', 
-            'id'            => $id, 
-            'attributes'    => (object) $question, 
-            'relationships' => (object) [
-                'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
-                'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
-            ]
-        ];       
-    }
-    ksort($included);
-    echo json_encode((object)[
-        'jsonapi'   => (object) ['version' => '1.0'],
-        'meta'      => ['count' => $params['total'], 'page-size' => $params['limit'], 'total-pages' => ceil($params['total']/$params['limit'])],
-        'data'      => $result,
-        'included'  => array_values($included),
-        ], JSON_PRETTY_PRINT);    
+    $params['pages'] = ceil($params['total']/$params['limit']);
+    echo resiexchange\Question::toJSON($om, $questions_ids, $params);
     exit();
 }
 

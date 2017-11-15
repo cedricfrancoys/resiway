@@ -1,0 +1,271 @@
+<div class="grid wrapper">   
+    <div class="col-8-12 page-body">    
+        <div class="user-document wrapper">
+            <div class="col-1-1 nopad">                
+                    <div class="control-group">
+                        <label class="control-label">Titre</label>
+                        <div class="controls">
+                            <input id="title" 
+                                   ng-model="document.title"
+                                   type="text"
+                                   class="form-control title col-md-4" 
+                                   value="" 
+                                   size="54" 
+                                   maxlength="128">
+                            <p class="help-inline">Indiquez un titre aussi clair et concis que possible pour votre document. (max 400 caractères)</p>
+                        </div>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label">Auteur(s)</label>
+                        <div class="controls">
+                        
+                            <oi-select
+                                        oi-options="item.name for item in loadAuthorsMatches($query)"
+                                        ng-model="document.authors"
+                                        multiple
+                                        multiple-limit="8"
+                                        oi-select-options="{
+                                            newItem: true,
+                                            saveTrigger: 'enter blur . , ;',
+                                            newItemFn: 'addAuthor($query)'
+                                        }"                                        
+                                        placeholder="Auteurs"></oi-select>
+<!--                                        
+                            <input id="author" 
+                                   ng-model="document.author"
+                                   type="text"
+                                   class="form-control author col-md-4" 
+                                   value="" 
+                                   size="54" 
+                                   maxlength="128"
+                                   autocomplete="off"
+                                   uib-typeahead="name for name in ctrl.getNames($viewValue)" 
+                                   typeahead-loading="loadingLocations" 
+                                   typeahead-no-results="noMatch">
+                            <div ng-show="noMatch"></div>                                   
+-->
+                            <p class="help-inline">Prénom et NOM de l'auteur; répétition dans le cas de co-auteurs; SIGLE (Détail De l'Acronyme) pour une personne morale</p>
+                        </div>
+                    </div>
+                    <div class="col-1-1 nopad">
+                        <div class="col-1-2">
+                            <div class="control-group">
+                                <label class="control-label">Fichier</label>
+                                <div class="controls">
+                                    <div class="btn btn-default" 
+                                         style="width: 25%;"
+                                         ngf-select 
+                                         ng-model="document.content"
+                                         ngf-accept="'application/pdf'" 
+                                         ngf-max-size="64MB">
+                                         Choisir
+                                    </div> 
+                                    <input style="display: inline-block; width: 70%;" class="form-control"  type="text" ng-model="document.content.name" readonly="readonly" />
+                                    <p class="help-inline">&nbsp;</p>
+                                </div>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">Version</label>
+                                <div class="controls">
+                                    <div class="input-group">
+                                      <input type="text" 
+                                             class="form-control" 
+                                             uib-datepicker-popup="dd/MM/yyyy" 
+                                             datepicker-append-to-body="true"
+                                             ng-model="document.last_update" 
+                                             is-open="versionPopup.opened" 
+                                             datepicker-options="dateOptions"
+                                             close-text="Close" 
+                                             placeholder="01/01/1970" />
+                                      <span class="input-group-btn">
+                                        <button type="button" class="btn btn-default" ng-click="versionPopupOpen()"><i class="fa fa-calendar"></i></button>
+                                      </span>
+                                    </div>                                           
+                                    <p class="help-inline">Date de publication du document</p>
+                                </div>
+                            </div>
+                            <!--
+                            <div class="control-group">
+                                <label class="control-label">Licence</label>
+                                <div class="controls">
+                                    <input id="license" 
+                                           ng-model="document.license"
+                                           type="text"
+                                           class="form-control license" 
+                                           value="" 
+                                           size="54" 
+                                           maxlength="128"
+                                           placeholder="CC-by-nc-sa">
+                                    <p class="help-inline">&nbsp;</p>
+                                </div>
+                            </div>
+                            -->
+                            <div class="col-8-12 nopad">
+                                <div class="control-group">                            
+                                    <label class="control-label">Licence</label>
+                                    <div class="controls">                                
+                                        <div class="btn-group" uib-dropdown >
+                                            <button type="button" class="btn btn-default" uib-dropdown-toggle ng-disabled="disabled">
+                                            <span style="min-width: 126px; display: inline-block; text-align: left;">{{document.license}}</span> <span class="caret"></span>
+                                            </button>
+                                            <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="single-button">
+                                                <li role="menuitem"><a title="Creative Commons - attribution" href ng-click="document.license='CC-by'"><i class="cc cc-BY" aria-hidden="true"></i> CC-by</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale" href ng-click="document.license='CC-by-nc'"><i class="cc cc-by-nc" aria-hidden="true"></i> CC-by-nc</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / partage dans les mêmes conditions" href ng-click="document.license='CC-by-nc-sa'"><i class="cc cc-by-nc-sa" aria-hidden="true"></i> CC-by-nc-sa</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / pas de modification" href ng-click="document.license='CC-by-nc-nd'"><i class="cc cc-by-nc-nd" aria-hidden="true"></i> CC-by-nc-nd</a></li>
+                                                <li role="menuitem"><a title="Creative Commons - attribution / partage dans les mêmes conditions" href ng-click="document.license='CC-by-sa'"><i class="cc cc-by-sa" aria-hidden="true"></i> CC-by-sa</a></li>                                                
+                                                <li role="menuitem"><a title="Creative Commons - attribution / pas de modification" href ng-click="document.license='CC-by-nd'"><i class="cc cc-by-nd" aria-hidden="true"></i> CC-by-nd</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>                            
+                            </div>
+                            <div class="col-4-12 nopad">
+                                <div class="control-group">
+                                    <label class="control-label">Nombre de pages</label>
+                                    <div class="controls">
+                                        <input type="text" ng-model="document.pages" class="form-control" />
+                                        <p class="help-inline">&nbsp;</p>
+                                    </div>
+                                </div>                            
+                            </div>
+                            
+    
+
+                        </div>                        
+                        <div class="col-1-2">
+                            
+                            <div class="control-group">
+                                <label class="control-label">Vignette</label>
+                                <div class="controls">
+                                    <div class="btn btn-default" 
+                                         style="width: 25%; vertical-align: top;"
+                                         ngf-select 
+                                         ng-model="document.thumbnail"
+                                         ngf-accept="'image/jpg'" 
+                                         ngf-max-size="1MB">
+                                         Choisir
+                                    </div> 
+                                    <img class="form-control" style="width: 100px; height: 133px; padding: 0; border: solid 1px lightgrey; display: inline-block !important;" ngf-thumbnail="document.thumbnail" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}">
+                                    <p class="help-inline">&nbsp;</p>
+                                </div>
+                            </div>                        
+                        </div>
+                    </div>
+                    
+                    
+
+                     <div class="control-group" style="clear: both;">
+                        <label class="control-label">Catégories</label>
+                        <div class="controls">
+
+                        <!-- alternate display (but sorting before grouping): oi-options="item.path group by item.parent_path for item in categories" -->
+                            <oi-select
+                                        oi-options="item.path for item in loadCategoriesMatches($query)"
+                                        ng-model="document.categories"
+                                        multiple
+                                        multiple-limit="8"
+                                        oi-select-options="{
+                                            searchFilter: 'customSearchFilter',
+                                            dropdownFilter: 'customDropdownFilter',
+                                            listFilter: 'customListFilter',
+                                            newItem: true,
+                                            saveTrigger: 'enter blur . , ;',
+                                            newItemFn: 'addCategory($query)'
+                                        }"                                        
+                                        placeholder="Catégories"></oi-select>
+
+                            <p class="help-inline">Choisissez ou créez une ou plusieurs catégories</p>
+                        </div>
+                    </div>
+
+                     <div class="control-group" style="clear: both;">
+                        <label class="control-label">URL d'origine</label>
+                        <div class="controls">
+                            <input type="text" ng-model="document.original_url" class="form-control" />        
+                            <p class="help-inline">Emplacement auquel a été trouvé le document</p>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label">Description</label>
+                        <div class="controls">
+
+                            <div class="wrapper">
+                                <textarea class="description form-control" style="height: 100px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="document.description">
+                                </textarea>                                
+                            </div>            
+          
+                     
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">            
+
+                        <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeAlert($index)">{{alert.msg | translate}}</div>                                                
+                        
+                        <button class="btn btn-default" tabindex="30" onclick="history.go(-1)">Cancel</button>
+
+                        <button id="document-post"
+                                class="btn btn-primary" 
+                                ng-click="documentPost($event)"
+                                uib-popover-template="'popoverCustom.html'" 
+                                popover-trigger="'toggle-popover'" 
+                                popover-placement="right">
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> Soumettre le document
+                        </button>
+                    </div>
+
+                
+            </div>
+
+        </div>
+            
+    </div>
+    <div class="col-4-12">
+        <div ng-if="document.id" class="panel panel-default">
+            <div class="container">
+                <div class="module document-stats">
+			        <table id="qinfo">
+			            <tbody>
+                        <tr>
+			                <td>
+			                    <p class="label-key">{{'DOCUMENT_STATS_ASKED' | translate}}</p>
+			                </td>
+			                <td style="padding-left: 10px">
+			                    <p class="label-key"><b>{{document.created}}</b></p>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td>
+			                    <p class="label-key">{{'DOCUMENT_STATS_VIEWED' | translate}}</p>
+			                </td>
+
+			                <td style="padding-left: 10px">
+			                    <p class="label-key">
+			                        <b>{{document.count_views}} {{'DOCUMENT_STATS_TIMES' | translate}}</b>
+			                    </p>
+			                </td>
+			            </tr>
+			            <tr>
+                            <td>
+                                <p class="label-key">{{'DOCUMENT_STATS_ACTIVE' | translate}}</p>
+                            </td>
+                            <td style="padding-left: 10px">
+                                <p class="label-key">
+                                    <b>{{document.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                                </p>
+                            </td>
+			            </tr>
+                        </tbody>
+                    </table>
+			    </div>
+            </div>
+        </div>
+
+        <div ng-include="'documentHelp.html'"></div>          
+    </div>    
+</div>    

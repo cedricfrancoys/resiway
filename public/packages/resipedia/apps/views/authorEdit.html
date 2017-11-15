@@ -1,0 +1,93 @@
+<div class="grid wrapper">   
+    <div class="col-8-12 page-body">    
+        <div class="user-question wrapper">
+            <div class="col-1-1 nopad">                
+                    <div class="control-group">
+                        <label class="control-label">Nom</label>
+                        <div class="controls">
+                            <input id="title" 
+                                   ng-model="author.name"
+                                   type="text"
+                                   class="form-control title col-md-4" 
+                                   tabindex="1" 
+                                   value="" 
+                                   size="54" 
+                                   maxlength="128">
+                            <p class="help-inline">Prénom et NOM de l'auteur; SIGLE (Détail De l'Acronyme) pour une organisation</p>
+                        </div>
+                    </div>          
+                    
+                    <div class="control-group">
+                        <label class="control-label">www</label>
+                        <div class="controls">
+                            <input id="title" 
+                                   ng-model="author.url"
+                                   type="text"
+                                   class="form-control title col-md-4" 
+                                   tabindex="1" 
+                                   value="" 
+                                   size="54" 
+                                   maxlength="355">
+                            <p class="help-inline">URL complète (http://www.example.com/)</p>
+                        </div>
+                    </div> 
+                    
+                    <div class="control-group">
+                        <label class="control-label">Description</label>
+                        <div class="controls">
+
+                            <div class="wrapper">
+                                <textarea class="content form-control" style="height: 200px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="author.description">
+                                </textarea>
+                            </div>            
+          
+                     
+                        </div>
+                    </div>
+
+                     
+                    
+                    <div class="form-actions">            
+
+                        <button class="btn btn-default" tabindex="30" onclick="history.go(-1)">Cancel</button>
+
+                        <button id="author-post"
+                                class="btn btn-primary" 
+                                ng-click="authorPost($event)"
+                                uib-popover-template="'popoverCustom.html'" 
+                                popover-trigger="'toggle-popover'" 
+                                popover-placement="right">
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> Soumettre 
+                        </button>                          
+                    </div>
+
+                
+            </div>
+
+        </div>
+            
+    </div>
+    <div class="col-4-12">
+        <div ng-if="author.id" class="panel panel-default">
+            <div class="container">
+                <div class="user-stats">
+                    <div class="row">
+                        <div class="stat col-3">
+                            <span class="item-number">{{author.count_documents | humanizeCount}}</span>
+                            <span class="item-label">{{'AUTHOR_STATS_DOCUMENTS' | translate}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="user-facts">
+                    <ul>
+                        <li><i class="fa fa-eye" aria-hidden="true"></i> {{author.count_views | humanizeCount}} {{'USER_PROFILE_PROFILE_VIEWS' | translate}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+    </div>    
+</div>    

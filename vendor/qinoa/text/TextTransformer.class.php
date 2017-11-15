@@ -36,32 +36,32 @@ class TextTransformer {
     * Transform a string into a slug (URL-compatible words separated by dashes)
     * This method expects a UTF-8 string
     */
-    public static function slugify($value) {    
-        return str_replace(' ', '-', self::normalize($value));
+    public static function slugify($value, $max_length=255) {
+        return substr(str_replace(' ', '-', self::normalize($value)), 0, $max_length);
     }
 
     /**
      * Cuts a string by words according to given max length.
      *
      * @param string    $value
-     * @param integer   $max_chars
+     * @param integer   $max_length
      * @return string 
      */
-    public static function excerpt($value, $max_chars) {
+    public static function excerpt($value, $max_length) {
         $res = '';        
         $len = 0;
         for($i = 0, $parts = explode(' ', $value), $j = count($parts); $i < $j; ++$i) {
             $piece = $parts[$i].' ';
             $p_len = strlen($piece);
-            if($len + $p_len > $max_chars) break;
+            if($len + $p_len > $max_length) break;
             $len += $p_len;
             $res .= $piece;
-        } if($len == 0) $res = substr($value, 0, $max_chars);
+        } if($len == 0) $res = substr($value, 0, $max_length);
         return $res;
     }    
 
     /**
-    * Try to convert a word to its most common form (masculin singulier)
+    * Try to convert a word to its most common form (masculin singulier ou verbe)
     */
     public static function axiomize($word, $locale='fr') {
         static $locales = [
@@ -72,6 +72,8 @@ class TextTransformer {
             'oux'   => 'ou',
             's'     => '',
             'onne'  => 'on',
+            'ional' => 'ion',
+            'nage'  => 'ner',
             'euse'  => 'eur',
             'rice'  => 'eur',
             'ere'   => 'er'
@@ -81,16 +83,27 @@ class TextTransformer {
         $word_len = strlen($word);
         foreach($items as $key => $val) {
             $key_len = strlen($key);
+            // do not alter full-word
             if($word_len > $key_len) {
                 if(substr($word, -$key_len) == $key) {
                     $word = substr($word, 0, -$key_len);
                     $word = $word.$val;
                     $word_len = strlen($word);
+                    break;
                 }
             }
         }
         return $word;
-    }      
+    }
+    
+    public static function is_relevant($word, $locale='fr') {
+        static $locales = [
+        'fr' => ["un", "une", "le", "la", "les", "l", "d", "de", "du", "des", "ce", "ca", "ces", "c", "s", "que", "qui", "quoi", "qu", "a", "au", "ou", "il", "elle", "pour", "donc", "dont"]
+        ];
+        $items = $locales[$locale];
+        return !(in_array($word, $items));
+    }
+    
     
     /**
     * Generate a 64-bits integer hash from given string

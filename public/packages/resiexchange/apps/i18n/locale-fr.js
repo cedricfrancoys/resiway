@@ -236,7 +236,7 @@ var translations = {
     "USER_SIGN_SIGNIN": "S'identifier",
     "USER_SIGN_SIGNUP": "S'inscrire",
     "USER_SIGN_REMEMBER_ME": "Rester connecté",
-    "USER_SIGN_ACCEPT_TERMS": "J'accepte les <a href=\"/resiway.fr#/association/mentions-legales\">conditions d'utilisations</a>",
+    "USER_SIGN_ACCEPT_TERMS": "J'accepte les <a href=\"/resiway.fr#!/association/mentions-legales\" target=\"_self\">conditions d'utilisations</a>",
     
     // Categories  
     "CATEGORIES_TITLE": "Catégories",
@@ -283,7 +283,7 @@ var translations = {
     "action_already_performed": "Cette action ne peut être réalisée qu'une seule fois",
     "request_failed": "La requête a échoué",
     "user_unidentified": "Seul les utilisateurs identifiés peuvent effectuer cette action",
-    "user_reputation_insufficient": "Ta réputation n'est pas encore suffisante pour effectuer cette action (<a href=\"/resiexchange.fr#/help/topic/14\">en savoir plus</a>)",
+    "user_reputation_insufficient": "Ta réputation n'est pas encore suffisante pour effectuer cette action (<a href=\"/resiexchange.fr#!/help/topic/14\" target=\"_self\">en savoir plus</a>)",
     "user_not_admin": "Seuls les administrateurs peuvent effectuer cette action",
     "user_not_owner": "Seul le créateur peut effectuer cette action",
 
@@ -309,7 +309,7 @@ var translations = {
     "question_unknown": "Question inconnue",
     "question_author_unknown": "Impossible de retrouver l'auteur de la question",
     "question_editor_unknown": "Impossible de retrouver le dernier éditeur de la question",  
-    "question_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes questions (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
+    "question_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes questions (<a href=\"/resiexchange.fr#!/help/category/4\" target=\"_self\">en savoir plus</a>)",
     
     "question_title_length_invalid": "Assure-toi que le titre soit suffisamment explicite (min. 25 caractères)",
     "question_content_length_invalid": "Contenu trop long (max. 4096 caractères)",
@@ -318,8 +318,8 @@ var translations = {
     // errors related to answers                    
     "answer_unknown": "Réponse inconnue",
     "answer_missing_content": "Ne pas oublier d'indiquer... la réponse (min. 128 caractères)",
-    "answer_content_length_invalid": "Assures-toi que ta réponse soit suffisamment explicite, sans être trop longue (min. 128, max. 4096 caractères)",
-    "answer_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes réponses (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
+    "answer_content_length_invalid": "Assure-toi que ta réponse soit suffisamment explicite, sans être trop longue (min. 128, max. 4096 caractères)",
+    "answer_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes réponses (<a href=\"/resiexchange.fr#!/help/category/4\" target=\"_self\">en savoir plus</a>)",
       
     // errors related to comments
     "comment_unknown": "Commentaire inconnu",
@@ -330,9 +330,9 @@ var translations = {
     "category_missing_description": "Penses à préciser une description pour cette catégorie",
     "category_unknown": "Catégorie inconnue",
     "category_title_length_invalid": "Pour des raisons de clareté, le titre des catégories ne peut excéder 64 caractères",
-    "category_description_length_invalid": "Assures-toi que la description de la catégorie ne soit pas trop longue (max. 255 caractères)",
+    "category_description_length_invalid": "Assure-toi que la description de la catégorie ne soit pas trop longue (max. 255 caractères)",
 
     // errors related to documents    
-    "document_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes soumissions (<a href=\"/resiexchange.fr#/help/category/4\">en savoir plus</a>)",
+    "document_created_by_user": "Seuls les votes des autres utilisateurs sont pris en compte pour tes soumissions (<a href=\"/resiexchange.fr#!/help/category/4\" target=\"_self\">en savoir plus</a>)",
     "document_missing_pages": "Oups, il manque le nombre de pages du document"
 };

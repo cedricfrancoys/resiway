@@ -164,27 +164,31 @@ class HTTPRequestContext extends HTTPRequest {
         }
         /* Google */
         // $_SERVER['HTTP_USER_AGENT'] = 'Googlebot';
-        else if(stripos($_SERVER['HTTP_USER_AGENT'], 'Google') !== false) {
-            $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
-            // possible formats (https://support.google.com/webmasters/answer/1061943)
-            //  crawl-66-249-66-1.googlebot.com
-            //  rate-limited-proxy-66-249-90-77.google.com
-            $res = preg_match('/\.googlebot\.com$/i', $hostname);
-            if(!$res) {
-                $res = preg_match('/\.google\.com$/i', $hostname);        
-            }        
+        else {
+            if(empty($_SERVER['HTTP_USER_AGENT'])) {
+                $res = false;
+            }
+            else if(stripos($_SERVER['HTTP_USER_AGENT'], 'Google') !== false) {
+                $hostname = gethostbyaddr($_SERVER['REMOTE_ADDR']);
+                // possible formats (https://support.google.com/webmasters/answer/1061943)
+                //  crawl-66-249-66-1.googlebot.com
+                //  rate-limited-proxy-66-249-90-77.google.com
+                $res = preg_match('/\.googlebot\.com$/i', $hostname);
+                if(!$res) {
+                    $res = preg_match('/\.google\.com$/i', $hostname);        
+                }        
+            }
+            /* Facebook */
+            else if(stripos($_SERVER["HTTP_USER_AGENT"], "facebookexternalhit/") !== false 
+                || stripos($_SERVER["HTTP_USER_AGENT"], "Facebot") !== false ) {
+                $res = true;
+            }
+            /* Twitter */
+            else if(stripos($_SERVER["HTTP_USER_AGENT"], "Twitterbot") !== false) {
+                $res = true;    
+            }
+            $this->is_bot = $res;
         }
-        /* Facebook */
-        else if(stripos($_SERVER["HTTP_USER_AGENT"], "facebookexternalhit/") !== false 
-            || stripos($_SERVER["HTTP_USER_AGENT"], "Facebot") !== false ) {
-            $res = true;
-        }
-        /* Twitter */
-        else if(stripos($_SERVER["HTTP_USER_AGENT"], "Twitterbot") !== false) {
-            $res = true;    
-        }
-        $this->is_bot = $res;
-        
         return $this->is_bot;
     }
     

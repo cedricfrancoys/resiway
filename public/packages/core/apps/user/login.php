@@ -31,7 +31,6 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../qn.api.php');
 
 use html\phpQuery as phpQuery;
-use html\HtmlPurifier as HtmlPurifier;
 
 set_silent(true);
 

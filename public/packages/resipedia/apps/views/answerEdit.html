@@ -1,0 +1,139 @@
+<div class="grid wrapper">
+    <div class="col-1-1">
+        <div class="page-header">
+            <h1 ng-bind-html="'ANSWER_EDIT_TITLE' | translate"></h1>
+        </div>
+    </div>
+</div>    
+<div class="grid wrapper">
+
+    <div class="col-8-12">
+    
+        <div class="user-answer wrapper">
+            <div class="col-1-1 nopad">                                    
+                    <div class="control-group">
+                        <div class="controls">
+                            <div class="wrapper">
+                                <textarea class="content form-control" style="height: 200px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="answer.content">
+                                </textarea>
+                                Source : 
+                                <div class="checkbox" style="display: inline-block;">
+                                    <label>
+                                        <input type="checkbox" ng-model="noExternalSource" style="top: -1px;">
+                                        Je suis l'auteur de cette réponse
+                                    </label>
+                                </div>
+                                <div ng-hide="noExternalSource">
+
+                                    <div class="col-3-12">
+                                        <div class="control-group">
+                                            <label class="control-label">Auteur</label>
+                                            <div class="controls">
+                                                <input type="text" ng-model="answer.source_author" class="form-control" />
+                                                <p class="help-inline">&nbsp;</p>
+                                            </div>
+                                        </div>                            
+                                    </div>
+                                    <div class="col-4-12">
+                                        <div class="control-group">
+                                            <label class="control-label">URL</label>
+                                            <div class="controls">
+                                                <input type="text" ng-model="answer.source_url" class="form-control" />
+                                                <p class="help-inline">&nbsp;</p>
+                                            </div>
+                                        </div>                            
+                                    </div>                       
+                                    <div class="col-5-12">
+                                        <div class="control-group">                            
+                                            <label class="control-label">Licence</label>
+                                            <div class="controls">                                
+                                                <div class="btn-group" uib-dropdown dropdown-append-to-body>
+                                                    <button id="source-license" type="button" class="btn btn-default" uib-dropdown-toggle  ng-disabled="disabled">
+                                                    <span style="min-width: 126px; display: inline-block; text-align: left;">{{answer.source_license}}</span> <span class="caret"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="source-license">
+                                                        <li role="menuitem"><a title="Creative Commons - attribution" href ng-click="answer.source_license='CC-by'"><i class="cc cc-BY" aria-hidden="true"></i> CC-by</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale" href ng-click="answer.source_license='CC-by-nc'"><i class="cc cc-by-nc" aria-hidden="true"></i> CC-by-nc</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / partage dans les mêmes conditions" href ng-click="answer.source_license='CC-by-nc-sa'"><i class="cc cc-by-nc-sa" aria-hidden="true"></i> CC-by-nc-sa</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas d'utilisation commerciale / pas de modification" href ng-click="answer.source_license='CC-by-nc-nd'"><i class="cc cc-by-nc-nd" aria-hidden="true"></i> CC-by-nc-nd</a></li>
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / partage dans les mêmes conditions" href ng-click="answer.source_license='CC-by-sa'"><i class="cc cc-by-sa" aria-hidden="true"></i> CC-by-sa</a></li>                                                
+                                                        <li role="menuitem"><a title="Creative Commons - attribution / pas de modification" href ng-click="answer.source_license='CC-by-nd'"><i class="cc cc-by-nd" aria-hidden="true"></i> CC-by-nd</a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>                            
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                                
+                    <div class="form-actions">
+                        <button class="btn btn-default" 
+                                tabindex="30" 
+                                onclick="history.go(-1)"
+                                ng-bind-html="'ANSWER_EDIT_CANCEL' | translate">
+                        </button>
+
+                        <button id="answer-post"
+                                class="user-answer-submit btn btn-primary" 
+                                ng-click="answerPost($event)"
+                                uib-popover-template="'popoverCustom.html'" 
+                                popover-trigger="'toggle-popover'" 
+                                popover-placement="right">
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> <span ng-bind-html="'ANSWER_EDIT_SUBMIT' | translate"></span></button>
+                    </div>
+
+                
+            </div>
+
+        </div>
+            
+    </div>
+    <div class="col-4-12">
+        <div class="panel panel-default">
+            <div class="container">
+                <div class="module answer-stats">
+			        <table id="qinfo">
+			            <tbody>
+                        <tr>
+			                <td>
+			                    <p class="label-key"><span ng-bind-html="'ANSWER_STATS_ANSWERED' | translate"></span></p>
+			                </td>
+			                <td style="padding-left: 10px">
+			                    <p class="label-key"><b> {{answer.created}}</b></p>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td>
+			                    <p class="label-key"><span ng-bind-html="'ANSWER_STATS_VIEWED' | translate"></span></p>
+			                </td>
+
+			                <td style="padding-left: 10px">
+			                    <p class="label-key">
+			                        <b>{{answer.count_views}} <span ng-bind-html="'ANSWER_STATS_TIMES' | translate"></span></b>
+			                    </p>
+			                </td>
+			            </tr>
+			            <tr>
+                            <td>
+                                <p class="label-key"><span ng-bind-html="'ANSWER_STATS_ACTIVE' | translate"></span></p>
+                            </td>
+                            <td style="padding-left: 10px">
+                                <p class="label-key">
+                                    <b>{{answer.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                                </p>
+                            </td>
+			            </tr>
+                        </tbody>
+                    </table>
+			    </div>
+            </div>
+        </div>
+        <div ng-include="'answerHelp.html'"></div>
+    </div>
+   
+</div>

@@ -21,7 +21,7 @@
 use easyobject\orm\ObjectManager as ObjectManager;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
 use easyobject\orm\DataAdapter as DataAdapter;
-use html\HTMLPurifier_Config as HTMLPurifier_Config;
+use qinoa\html\HTMLPurifier_Config as HTMLPurifier_Config;
 use html\HtmlTemplate as HtmlTemplate;
 
 // these utilities require inclusion of main configuration file 
@@ -195,48 +195,13 @@ class ResiAPI {
     *
     */
     public static function userPublicFields() {
-        return ['id', 
-                'created',
-                'verified',
-                'last_login',
-                'display_name',
-                'name_url',                
-                'avatar_url',
-                'about',
-                'language', 
-                'country', 
-                'location',                
-                'reputation',
-                'role',
-                'count_questions', 
-                'count_views', 
-                'count_answers', 
-                'count_comments',              
-                'count_badges_1', 
-                'count_badges_2', 
-                'count_badges_3'
-               ];
+        $om = &ObjectManager::getInstance();
+        return resiway\User::getPublicFields();
     }
 
     public static function userPrivateFields() {
-        return ['login', 
-                'firstname',
-                'lastname', 
-                'publicity_mode',
-// todo : remove relation fields from this list
-                'notifications_ids',
-                'notify_reputation_update', 
-                'notify_badge_awarded', 
-                'notify_question_comment', 
-                'notify_answer_comment', 
-                'notify_question_answer',
-                'notify_post_edit',
-                'notify_post_flag',
-                'notify_post_delete',
-                'notify_updates',
-                'notice_delay',
-                'last_notice'
-               ];
+        $om = &ObjectManager::getInstance();
+        return resiway\User::getPrivateFields();
     }
     
     /**

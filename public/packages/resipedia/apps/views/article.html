@@ -1,0 +1,375 @@
+<div class="grid wrapper">
+    <div class="col-1-1">
+        <div class="page-header">
+            <h1>{{article.title}}</h1>
+        </div>
+    </div>
+</div>
+<div class="grid wrapper">
+
+    <div class="col-8-12">
+    
+        <div class="article wrapper" 
+            itemscope="" 
+            itemtype="https://schema.org/Article">
+            
+            <div class="vote hidden-xs col-1-12 nopad">                
+                <div class="voteup" 
+                     ng-class="{on: article.history['resilexi_article_voteup']}">
+                    <a href
+                       id="article-voteup"
+                       title="{{'ARTICLE_ACTIONS_VOTEUP_TOOLTIP' | translate}}"
+                       class="fa fa-thumbs-o-up" 
+                       ng-click="articleVoteUp($event)" 
+                       uib-popover-template="'popoverCustom.html'" 
+                       popover-trigger="'toggle-popover'" 
+                       popover-placement="right"
+                       popover-append-to-body="true"
+                       aria-hidden="true"></a>
+                </div>
+                <div class="vote-count" itemprop="upvoteCount" >
+                    <span>{{article.score | humanizeCount}}</span>
+                </div>
+                <div class="votedown" 
+                     ng-class="{on: article.history['resilexi_article_votedown']}">
+                    <a href
+                       id="article-votedown"
+                       title="{{'ARTICLE_ACTIONS_VOTEDOWN_TOOLTIP' | translate}}"
+                       class="fa fa-thumbs-o-down" 
+                       ng-click="articleVoteDown($event)" 
+                       uib-popover-template="'popoverCustom.html'" 
+                       popover-trigger="'toggle-popover'" 
+                       popover-placement="right"
+                       popover-append-to-body="true"
+                       aria-hidden="true">
+                    </a>
+                </div>
+                <div class="star" 
+                     ng-class="{on: article.history['resilexi_article_star']}">
+                    <a href 
+                       id="article-star"
+                       title="{{'ARTICLE_ACTIONS_STAR_TOOLTIP' | translate}}"
+                       class="fa fa-star"
+                       ng-click="articleStar($event)" 
+                       uib-popover-template="'popoverCustom.html'" 
+                       popover-trigger="'toggle-popover'" 
+                       popover-placement="right"
+                       popover-append-to-body="true"
+                       aria-hidden="true">
+                    </a>
+                </div>
+                <div class="favorite-count"><span>{{article.count_stars | humanizeCount}}</span></div>
+            </div>
+            <div class="content col-11-12 nopad">
+            
+                <div class="text" itemprop="text">                    
+                    <p ng-bind-html="article.content"></p>
+                </div>
+                
+                <div class="tags">
+                    <a ng-repeat="tag in article.categories" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
+                </div>
+                
+                <div class="footer">
+                    <div class="meta">
+                        <div class="actions">
+                            <a href
+                               ng-click="showShareModal()"
+                               title="{{'ARTICLE_ACTIONS_SHARE_TOOLTIP' | translate}}"
+                               class="short-link">
+                                <i class="fa fa-share-alt" aria-hidden="true"></i> <span ng-bind-html="'ARTICLE_ACTIONS_SHARE' | translate"></span>
+                            </a>&nbsp;
+                            <a href="/article/edit/{{article.id}}">
+                                <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'ARTICLE_ACTIONS_EDIT' | translate"></span>
+                            </a>&nbsp;                            
+                            <a href                                         
+                               id="article-flag"
+                               title="{{'ARTICLE_ACTIONS_FLAG_TOOLTIP' | translate}}"
+                               ng-class="{on: article.history['resilexi_article_flag']}"                                           
+                               ng-click="articleFlag($event)"
+                               uib-popover-template="'popoverCustom.html'" 
+                               popover-trigger="'toggle-popover'" 
+                               popover-placement="right"
+                               popover-append-to-body="true">
+                                <i class="fa fa-flag" aria-hidden="true"></i> <span ng-bind-html="'ARTICLE_ACTIONS_FLAG' | translate"></span>
+                            </a>&nbsp;                            
+                            <a href 
+                               id="article-delete"
+                               title="{{'ARTICLE_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                               class="delete-post-link"                                
+                               ng-show="user.id==article.creator.id || user.role!='u'"
+                               ng-click="articleDelete($event)"
+                               uib-popover-template="'popoverCustom.html'"
+                               popover-trigger="'toggle-popover'"
+                               popover-placement="right"
+                               popover-append-to-body="true">
+                                <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'ARTICLE_ACTIONS_DELETE' | translate"></span>
+                            </a>                            
+                        </div>
+                        <div class="signature" ng-if="article.editor != 0 && article.editor.id != article.creator.id">
+                            <div class="user-info">
+                                <div class="user-action-time">
+                                    <span class="relativetime"><span ng-bind-html="'ARTICLE_STATS_EDITED' | translate"></span> {{article.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                </div>
+                                <div class="user-avatar">
+                                    <a href="/user/{{article.editor.id}}/{{article.editor.name_url}}" title="{{article.editor.display_name}}">
+                                        <div class="avatar-wrapper">
+                                            <img ng-src="{{rootCtrl.avatarURL(article.editor.avatar_url, 32)}}" width="32" height="32" border="0">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="user-details">
+                                    <a href="/user/{{article.editor.id}}/{{article.editor.name_url}}">{{article.editor.display_name}}</a>
+                                    <div>
+                                        <span class="reputation-score" title="{{'ARTICLE_USER_DETAILS_REPUTATION'|translate}}">{{article.editor.reputation}}</span>
+                                        <span class="badges" title="{{'ARTICLE_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="article.editor.count_badges_1 > 0">
+                                            <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ article.editor.count_badges_1 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'ARTICLE_USER_DETAILS_BADGES_SILVER'|translate}}" ng-show="article.editor.count_badges_2 > 0">
+                                            <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ article.editor.count_badges_2 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'ARTICLE_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="article.editor.count_badges_3 > 0">
+                                            <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ article.editor.count_badges_3 }}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="signature owner">
+                            <div class="user-info">
+                                <div class="user-action-time">
+                                    <span class="relativetime"><span ng-bind-html="'ARTICLE_STATS_ASKED' | translate"></span> {{article.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                </div>
+                                <div class="user-avatar">
+                                    <a href="/user/{{article.creator.id}}/{{article.creator.name_url}}" title="{{article.creator.display_name}}">
+                                        <div class="avatar-wrapper">
+                                            <img ng-src="{{rootCtrl.avatarURL(article.creator.avatar_url, 32)}}" width="32" height="32" border="0">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="user-details">
+                                    <a href="/user/{{article.creator.id}}/{{article.creator.name_url}}">{{article.creator.display_name}}</a>
+                                    <div>
+                                        <span class="reputation-score" title="{{'ARTICLE_USER_DETAILS_REPUTATION'|translate}}">{{article.creator.reputation}}</span>
+                                        <span class="badges" title="{{'ARTICLE_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="article.creator.count_badges_1 > 0">
+                                            <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ article.creator.count_badges_1 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'ARTICLE_USER_DETAILS_BADGES_SILVER'|translate}}" ng-show="article.creator.count_badges_2 > 0">
+                                            <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ article.creator.count_badges_2 }}</span>
+                                        </span>
+                                        <span class="badges" title="{{'ARTICLE_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="article.creator.count_badges_3 > 0">
+                                            <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                            <span class="badgecount">{{ article.creator.count_badges_3 }}</span>
+                                        </span>
+                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="comments">
+                
+                    <div ng-repeat="(comment_index, comment) in article.comments | limitTo: article.commentsLimit" class="comment wrapper">
+
+                        <div 
+                            class="wrapper new-comment" 
+                            style="margin-top: 10px;" 
+                            ng-show="article.comments[comment_index].editMode">
+                            <textarea 
+                                ng-model="article.comments[comment_index].content" 
+                                style="width: 100%;" 
+                                placeholder="{{'ARTICLE_COMMENTS_ADD_PLACEHOLDER' | translate}}">
+                            </textarea>
+                            <button id="comment-{{comment.id}}-editComment" 
+                                    class="btn btn-primary btn-xs"
+                                    ng-click="articleCommentEdit($event, comment_index)"
+                                    uib-popover-template="'popoverCustom.html'" 
+                                    popover-trigger="'toggle-popover'" 
+                                    popover-placement="right"
+                                    popover-append-to-body="true"
+                                    ng-bind-html="'ARTICLE_COMMENTS_EDIT_BUTTON' | translate">
+                            </button>
+                            <button
+                                    class="btn btn-primary btn-xs"
+                                    ng-click="article.comments[comment_index].editMode = false"
+                                    ng-bind-html="'ARTICLE_COMMENTS_CANCEL_BUTTON' | translate">
+                            </button>
+                        </div>                        
+                        <div ng-hide="article.comments[comment_index].editMode">
+                        
+                            <div id="comment-{{comment.id}}" class="comment-{{comment_index}} comment-vote col-1-12 nopad">
+                                
+                                <div class="comment-score">
+                                    <span title="{{'ARTICLE_COMMENT_SCORE_TOOLTIP' | translate}}">
+                                        {{comment.score | humanizeCount}}
+                                    </span>
+                                </div>
+                                <div class="comment-actions" >
+                                    <div class="comment-voteup" 
+                                         ng-class="{on: comment.history['resilexi_articlecomment_voteup']}">
+                                        <a href
+                                           id="comment-{{comment.id}}-voteup"
+                                           title="{{'ARTICLE_COMMENT_ACTIONS_VOTEUP_TOOLTIP' | translate}}"                                   
+                                           class="fa fa-thumbs-o-up" 
+                                           ng-click="articleCommentVoteUp($event, comment_index)"
+                                           uib-popover-template="'popoverCustom.html'" 
+                                           popover-trigger="'toggle-popover'" 
+                                           popover-placement="right"
+                                           popover-append-to-body="true"
+                                           aria-hidden="true">
+                                        </a>
+                                    </div>
+                                    <div class="comment-flag" >
+                                        <a href                                         
+                                           id="comment-{{comment.id}}-flag"
+                                           title="{{'ARTICLE_COMMENT_ACTIONS_FLAG_TOOLTIP' | translate}}"
+                                           class="fa fa-flag" 
+                                           ng-class="{on: comment.history['resilexi_articlecomment_flag']}"                                           
+                                           ng-click="articleCommentFlag($event, comment_index)"
+                                           uib-popover-template="'popoverCustom.html'" 
+                                           popover-trigger="'toggle-popover'" 
+                                           popover-placement="right"
+                                           popover-append-to-body="true"                                               
+                                           aria-hidden="true">
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="comment-text col-11-12 nopad">
+                                <div class="comment-body">
+                                    <span btf-markdown="comment.content"></span>
+                                    –&nbsp;
+                                    <a class="comment-user" href="/user/{{comment.creator.id}}/{{comment.creator.name_url}}" title="{{comment.creator.reputation}}">{{comment.creator.display_name}}</a>
+                                    <span class="comment-date" dir="ltr">
+                                        <a class="comment-link" href="/article/{{article.id}}#comment-{{comment.id}}">
+                                            <span class="relativetime" title="{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}">{{comment.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</span>
+                                        </a>
+                                    </span>
+                                    <a href ng-click="article.comments[comment_index].editMode = true">
+                                        <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'ARTICLE_COMMENT_ACTIONS_EDIT' | translate"></span>
+                                    </a>&nbsp;                               
+                                    <a href
+                                       id="comment-{{comment.id}}-delete"
+                                       title="{{'ARTICLE_COMMENT_ACTIONS_DELETE_TOOLTIP' | translate}}"
+                                       ng-show="user.id==comment.creator.id"
+                                       ng-click="articleCommentDelete($event, comment_index)"
+                                       uib-popover-template="'popoverCustom.html'" 
+                                       popover-trigger="'toggle-popover'" 
+                                       popover-placement="right"
+                                       popover-append-to-body="true">
+                                        <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'ARTICLE_COMMENT_ACTIONS_DELETE' | translate"></span>
+                                    </a>                                          
+                                    
+                                </div>
+
+                            </div>
+                         </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="comments-actions">
+                    <a href 
+                       ng-click="article.newCommentShow = true" 
+                       class="comments-link" 
+                       title="{{ 'ARTICLE_COMMENTS_ADD_TOOLTIP' | translate}}" >
+                       {{ 'ARTICLE_COMMENTS_ADD' | translate}}</a>
+                    <span ng-show="article.comments.length > article.commentsLimit">                        
+                        <span class="js-link-separator ">&nbsp;|&nbsp;</span>
+                        <a href 
+                           ng-click="article.commentsLimit=1000" 
+                           class="js-show-link comments-link " 
+                           title="{{ 'ARTICLE_COMMENTS_SHOW_ALL_TOOLTIP' | translate}}"
+                           ng-bind-html="'ARTICLE_COMMENTS_SHOW_ALL' | translate"></a>
+                    </span>
+                    <div class="wrapper new-comment" style="margin-top: 10px;" ng-show="article.newCommentShow">
+                        <textarea ng-model="article.newCommentContent" style="width: 100%;" placeholder="{{ 'ARTICLE_COMMENTS_ADD_PLACEHOLDER' | translate }}"></textarea>
+                        <button id="article-addComment" 
+                                class="btn btn-primary btn-xs"
+                                ng-click="articleComment($event)"
+                                uib-popover-template="'popoverCustom.html'" 
+                                popover-append-to-body="true"
+                                popover-trigger="'toggle-popover'" 
+                                popover-placement="right"
+                                popover-append-to-body="true"
+                                ng-bind-html="'ARTICLE_COMMENTS_ADD_BUTTON' | translate">
+                        </button>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+        
+            
+    </div>
+    <div class="col-4-12">
+        <div class="panel panel-default">
+            <div class="container" style="border-bottom: solid 1px lightgrey;">
+                <div class="module article-stats">
+                    <div class="stat-row">
+                        <div class="title">
+                            <span ng-bind-html="'ARTICLE_STATS_ASKED' | translate"></span>
+                        </div>
+                        <div class="content">
+                            <b>{{article.created}}</b>
+                        </div>
+                    </div>
+                    <div class="stat-row">                    
+                        <div class="title">
+                            <span ng-bind-html="'ARTICLE_STATS_VIEWED' | translate"></span>
+                        </div>
+                        <div class="content">
+                            <b>{{article.count_views}} {{'ARTICLE_STATS_TIMES' | translate}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            <span ng-bind-html="'ARTICLE_STATS_ACTIVE' | translate"></span>
+                        </div>
+                        <div class="content">
+                            <b>{{article.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            Auteur
+                        </div>
+                        <div class="content">
+                            <b><a href="/user/{{article.creator.id}}/{{article.creator.name_url}}">{{article.creator.display_name}}</a></b>
+                        </div>
+                    </div>                        
+                    <div class="stat-row">                        
+                        <div class="title">
+                            
+                        </div>
+                        <div class="content about">
+                            <p ng-bind-html="article.creator.about"></p>
+                        </div>
+                    </div>                                            
+			    </div>
+            </div>
+            
+            <div class="container fade-in-out" ng-show="related_articles.length > 0" >                    
+                <h4>Articles similaires</h4>
+                <div class="related-articles" ng-repeat="article in related_articles">
+                    <table>
+                        <tr>
+                            <td><span class="mini-counts btn btn-success btn-xs">{{article.score | humanizeCount}}</span></td>
+                            <td><a href="/article/{{article.id}}/{{article.title_url}}" title="{{article.title}}">{{article.title}}</a></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

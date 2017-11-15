@@ -24,9 +24,8 @@ if(isset($_REQUEST['_escaped_fragment_'])) {
 }
 
 // This script is used to cache result of 'show' requests 
-// * show requests should always return static HTML, and expect no params
-// * no cache for bots
-if( $request->get('show') && !$request->isBot() ) {
+// ('show' requests should always return static HTML, and expect no params)
+if( $request->get('show')) {
     $cache_filename = '../cache/'.$_REQUEST['show'];
     if(file_exists($cache_filename)) {
         print(file_get_contents($cache_filename));

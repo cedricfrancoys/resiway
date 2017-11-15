@@ -18,8 +18,7 @@ $params = QNLib::announce(
                                             'description'   => 'Pseudo class of the object to retrieve (article, document, question, answer, category, user).',
                                             'type'          => 'string', 
                                             'required'      => true
-                                            ),
-    
+                                            ),    
                         'id'	        => array(
                                             'description'   => 'Identifier of the object to retrieve.',
                                             'type'          => 'integer', 

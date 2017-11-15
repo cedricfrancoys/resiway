@@ -1,0 +1,135 @@
+
+
+<div id="topBar" class="topbar" ng-controller="topBarCtrl as ctrl" >        
+
+    <div class="grid wrapper">
+    <!-- 1) dropdown dialogs -->
+
+
+    
+        <!-- platform dialog -->
+        <div class="platform-dialog" ng-show="ctrl.platformDropdown" ng-cloak>
+            <div class="head text-uppercase">{{'TOOLBAR_PLATFORM_OTHER_APPS'|translate}}</div>
+            <ul>
+                <a href="/resiway.fr" target="_self">
+                    <li>
+                        <div class="platform-icon resiway"></div>
+                        <div class="descr">Présentation de RésiWay et des outils collaboratifs</div>
+                    </li>
+                </a>
+                <a href="/resiexchange.fr" target="_self">
+                    <li>
+                        <div class="platform-icon resiexchange"></div>
+                        <div class="descr">Questions &amp; Réponses sur les thèmes de l'autonomie, la Transition, la Permaculture, le Faire-ensemble et la résilience</div>
+                    </li>
+                </a>
+                <a href="/resilib.fr" target="_self">
+                    <li>
+                        <div class="platform-icon resilib"></div>
+                        <div class="descr">Bibliothèque de retours d'expériences pour la réappropriation des savoirs-faire</div>
+                    </li>
+                </a>
+                <!--
+                <li>
+                    <div class="platform-icon resinet"></div>
+                    <div class="descr">Réseau social de support mutuel et de présentaiton d'initiatives pour l'autonomie, la transition et la permaculture.</div>
+                </li>
+                -->
+                <!--
+                <li>
+                    <div class="platform-icon resipedia"></div>
+                    <div class="descr">Wiki rassemblant les informations de toutes les plateformes</div>
+                </li>
+                -->
+                <a href="/ekopedia.fr" target="_self">
+                    <li>
+                        <div class="platform-icon ekopedia"></div>
+                        <div class="descr">Encyclopédie pratique pour intégrer l'écologie à son quotidien</div>
+                    </li>
+                </a>
+            </ul>
+        </div>
+        <!-- notifications dialog -->        
+        <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
+            <div class="head">
+                <a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
+                <a href class="pull-right" ng-click="ctrl.notificationsDismissAll()">tout supprimer</a>
+            </div>
+            <ul>
+                <a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">
+                    <li ng-repeat="(notification_index, notification) in user.notifications">
+                        <div class="title"><a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">{{notification.title}}</a></div>
+                        <div class="descr" ng-bind-html="notification.content"></div>
+                    </li>
+                </a>
+            </ul>
+            <div class="foot"><a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">+ Voir toutes les notifications</a></div>
+        </div>
+        <!-- help dialog -->
+        <div class="help-dialog" ng-show="ctrl.helpDropdown">
+            <ul>
+                <li>
+                    <div class="title">Centre d'Aide</div>
+                    <div class="descr small"><a href="/resiexchange.fr#!/help/categories" target="_self">Des réponses à toutes vos questions sur le fonctionnement de la plateforme</a></div>
+                </li>
+                <li>
+                    <div class="title">Meta</div>
+                    <div class="descr small"><a href="/meta.resiexchange.fr#!/questions" target="_self">Discussions sur le fonctionnement et les règles de la plateforme</a></div>
+                </li>
+            </ul>
+        </div>
+        <!-- user dialog -->
+        <div class="user-dialog" ng-show="ctrl.userDropdown">
+            <ul>
+                <a href="/resiexchange.fr#!/user/{{user.id}}/{{user.name_url}}" target="_self">
+                    <li>
+                        <i class="fa fa-user" aria-hidden="true"></i> Profil
+                    </li>
+                </a>
+                <a ng-click="ctrl.signOut()">
+                    <li>
+                       <i class="fa fa-sign-out" aria-hidden="true"></i> Déconnexion
+                    </li>
+                </a>
+            </ul>
+        </div>
+
+        
+    <!-- 2) toolbar -->
+        <div class="col-1-1">
+    
+            <div class="platform-items">
+                <div class="platform-btn {{config.application}}" ng-class="{open: ctrl.platformDropdown}" ng-click="togglePlatformDropdown()">
+                    <div class="app-icon"></div>
+                    <i class="fa fa-caret-down" aria-hidden="true"></i>          
+                </div>            
+                <div id="help-btn" class="help-btn hidden-xs" ng-class="{open: ctrl.helpDropdown}" ng-click="toggleHelpDropdown()">
+                    Aide 
+                    <i class="fa fa-caret-down" aria-hidden="true"></i>          
+                </div>
+                <div id="rw-donation" class="visible-lg-block visible-md-block visible-sm-block">
+                    <a class="btn btn-danger" href="/resiway.fr#!/association/soutenir" target="_self"><i class="fa fa-heart" aria-hidden="true"></i> Faire un don</a>
+                </div>                    
+            </div>
+            
+            <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">
+                    <a href="/resiexchange.fr#!/user/sign/in" target="_self"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
+                    <a href="/resiexchange.fr#!/user/sign/up" target="_self"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
+            </div>
+            
+            <div id="notify-btn" class="notify-btn ng-hide hidden-xs" ng-class="{open: ctrl.notifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user.id">
+                <i class="fa fa-inbox" aria-hidden="true"></i>
+                <span ng-show="user.notifications.length" class="unread-count bg-info">{{user.notifications.length}}</span>
+            </div>
+            
+            <div id="user-btn" class="user-btn ng-hide" ng-class="{open: ctrl.userDropdown}" ng-click="toggleUserDropdown()" ng-show="user.id">
+                <span class="user-avatar pull-left">
+                  <img ng-if="user.avatar_url" ng-src="{{rootCtrl.avatarURL(user.avatar_url, 30)}}" class="center-block">
+                </span>
+                {{ user.display_name }}
+                <i class="fa fa-caret-down" aria-hidden="true"></i>          
+            </div>            
+        </div>
+
+    </div>
+</div>

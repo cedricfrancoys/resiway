@@ -1,6 +1,8 @@
 <?php
 namespace resilib;
-use qinoa\text\TextTransformer as TextTransformer;
+
+use qinoa\text\TextTransformer;
+use qinoa\html\HTMLToText;
 
 class Document extends \easyobject\orm\Object {
 
@@ -50,6 +52,13 @@ class Document extends \easyobject\orm\Object {
             
             'description'		    => array('type' => 'html', 'onchange' => 'resilib\Document::onchangeDescription'),
 
+            'content_excerpt'       => array(
+                                        'type'              => 'function',
+                                        'result_type'       => 'short_text',
+                                        'store'             => true, 
+                                        'function'          => 'resilib\Document::getContentExcerpt'
+                                       ),
+            
             'thumbnail'			    => array('type' => 'file'),
             
             'pages'				    => array('type' => 'integer'),
@@ -153,20 +162,18 @@ class Document extends \easyobject\orm\Object {
         );
     }
     
-    public static function slugify($value) {
-        // remove accentuated chars
-        $value = htmlentities($value, ENT_QUOTES, 'UTF-8');
-        $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
-        $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
-        // remove all non-quote-space-alphanum-dash chars
-        $value = preg_replace('/[^\'\s-a-z0-9]/i', '', $value);
-        // replace spaces, dashes and quotes with dashes
-        $value = preg_replace('/[\s-\']+/', '-', $value);           
-        // trim the end of the string
-        $value = trim($value, '.-_');
-        return strtolower($value);
-    }
-    
+
+    // Returns excerpt of the content of max 200 chars cutting on a word-basis
+    public static function getContentExcerpt($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read(__CLASS__, $oids, ['description']);
+        foreach($res as $oid => $odata) {
+            $result[$oid] = TextTransformer::excerpt(HTMLToText::convert($odata['description'], false), RESILIB_DOCUMENT_CONTENT_EXCERPT_LENGTH_MAX);
+        }
+        return $result;        
+    }    
+   
+   
     public static function onchangeContent($om, $oids, $lang) {
         if(isset($_FILES['content'])) {
             $om->write('resilib\Document', $oids, 
@@ -198,7 +205,7 @@ class Document extends \easyobject\orm\Object {
     
     public static function onchangeDescription($om, $oids, $lang) {
         // force re-indexing the document
-        $om->write(__CLASS__, $oids, ['indexed' => false], $lang);                
+        $om->write(__CLASS__, $oids, ['indexed' => false, 'content_excerpt' => null], $lang);                
     }
     
     public static function getTitleURL($om, $oids, $lang) {
@@ -206,7 +213,7 @@ class Document extends \easyobject\orm\Object {
         $res = $om->read(__CLASS__, $oids, ['title']);
         foreach($res as $oid => $odata) {
             // note: final format will be: #/document/{id}/{title}
-            $result[$oid] = self::slugify($odata['title'], 200);
+            $result[$oid] = TextTransformer::slugify($odata['title'], 200);
         }
         return $result;        
     }

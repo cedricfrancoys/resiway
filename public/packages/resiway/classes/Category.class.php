@@ -51,6 +51,15 @@ class Category extends \easyobject\orm\Object {
                                     'onchange'          => 'resiway\Category::onchangeCountDocuments'
                                    ),
 
+            /* amount of articles in this category and its subcategories */
+            'count_article'     => array(
+                                    'type'              => 'function',
+                                    'result_type'       => 'integer',
+                                    'store'             => true, 
+                                    'function'          => 'resiway\Category::getCountArticles',
+                                    'onchange'          => 'resiway\Category::onchangeCountArticles'
+                                   ),
+                                   
             /* number of times this category has been marked as favorite */
             'count_stars'		=> array('type' => 'integer'),
             
@@ -59,20 +68,23 @@ class Category extends \easyobject\orm\Object {
                                     'store'             => true,
                                     'multilang'         => true,
                                     'result_type'       => 'string', 
-                                    'function'          => 'resiway\Category::getPath'),
+                                    'function'          => 'resiway\Category::getPath'
+                                    ),
                                     
             'parent_path'		=> array(
                                     'type'              => 'function', 
                                     'store'             => true,
                                     'multilang'         => true,
                                     'result_type'       => 'string', 
-                                    'function'          => 'resiway\Category::getParentPath'),
+                                    'function'          => 'resiway\Category::getParentPath'
+                                    ),
                                     
             'children_ids'		=> array(
                                     'type'              => 'one2many', 
                                     'foreign_object'    => 'resiway\Category', 
                                     'foreign_field'     => 'parent_id', 
-                                    'order'             => 'title'),
+                                    'order'             => 'title'
+                                    ),
 
             
             'questions_ids'	    => array(
@@ -91,9 +103,16 @@ class Category extends \easyobject\orm\Object {
                                     'rel_table'		    => 'resilib_rel_document_category', 
                                     'rel_foreign_key'	=> 'document_id', 
                                     'rel_local_key'		=> 'category_id'
-                                    )                                    
+                                    ),                                    
                                     
-                                   
+            'articles_ids'	    => array(
+                                    'type' 			    => 'many2many', 
+                                    'foreign_object'	=> 'resilexi\Article', 
+                                    'foreign_field'		=> 'categories_ids', 
+                                    'rel_table'		    => 'resilexi_rel_article_category', 
+                                    'rel_foreign_key'	=> 'article_id', 
+                                    'rel_local_key'		=> 'category_id'
+                                    )                                   
         );
     }
     
@@ -171,8 +190,28 @@ class Category extends \easyobject\orm\Object {
                 $result[$oid] = $res[$oid]['documents_ids'];
                 if(count($res[$oid]['children_ids'])) {
                     $children_categories = self::getRelatedDocumentsIds($om, $res[$oid]['children_ids'], $lang);
-                    foreach($children_categories as $child_id => $children_questions_ids) {
-                        $result[$oid] = array_merge($result[$oid], $children_questions_ids);
+                    foreach($children_categories as $child_id => $children_documents_ids) {
+                        $result[$oid] = array_merge($result[$oid], $children_documents_ids);
+                    }
+                    $result[$oid] = array_unique($result[$oid]);
+                }
+            }
+        }        
+        return $result;
+    }
+
+    public static function getRelatedArticlesIds($om, $oids, $lang) {
+        $result = [];
+        // cyclic dependency: remember that this approach only works if all involved categories paths are set !       
+        $res = $om->read(__CLASS__, $oids, ['articles_ids', 'children_ids']);
+        foreach($oids as $oid) {
+            $result[$oid] = [];
+            if(isset($res[$oid])) {
+                $result[$oid] = $res[$oid]['articles_ids'];
+                if(count($res[$oid]['children_ids'])) {
+                    $children_categories = self::getRelatedArticlesIds($om, $res[$oid]['children_ids'], $lang);
+                    foreach($children_categories as $child_id => $children_articles_ids) {
+                        $result[$oid] = array_merge($result[$oid], $children_articles_ids);
                     }
                     $result[$oid] = array_unique($result[$oid]);
                 }
@@ -196,6 +235,18 @@ class Category extends \easyobject\orm\Object {
     public static function getCountDocuments($om, $oids, $lang) {
         $result = [];
         $res = self::getRelatedDocumentsIds($om, $oids, $lang);
+        foreach($oids as $oid) {
+            $result[$oid] = 0;
+            if(isset($res[$oid])) {
+                $result[$oid] = count($res[$oid]);
+            }
+        }        
+        return $result;
+    }
+
+    public static function getCountArticles($om, $oids, $lang) {
+        $result = [];
+        $res = self::getRelatedArticlesIds($om, $oids, $lang);
         foreach($oids as $oid) {
             $result[$oid] = 0;
             if(isset($res[$oid])) {

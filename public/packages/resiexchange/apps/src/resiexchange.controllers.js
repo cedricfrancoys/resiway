@@ -3945,8 +3945,8 @@ angular.module('resiexchange')
         
         var ctrl = this;
         
-        // set default mode to blank
-        ctrl.mode = ''; 
+        // set default mode to signin form
+        ctrl.mode = 'in'; 
         
         // asign mode from URL if it matches one of the allowed modes
         switch($routeParams.mode) {

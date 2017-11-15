@@ -1,0 +1,173 @@
+<div class="grid wrapper">
+    <div class="col-8-12">
+    <!-- sort dropdown -->
+        <div class="subheader">
+            <h1 id="h-articles">{{ 'ARTICLES_ARTICLES' | translate}}</h1>
+            
+            <div id="sort-dropdown">
+                <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
+                  <button id="single-button" type="button" class="btn btn-primary dropdown-toggle" uib-dropdown-toggle="" ng-disabled="disabled" aria-haspopup="true" aria-expanded="false">
+                    Trier <span class="caret"></span>
+                  </button>
+                <!-- Simple dropdown -->
+
+                  <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                    <li class="dropdown-header">Articles...</li>
+                    <li><a href ng-click="rootCtrl.search({order:'count_views', sort: 'desc'});">les plus vues</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'created', sort: 'desc'});">les plus récentes</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'score', sort: 'desc'});">les plus populaires</a></li>
+                    <li><a href ng-click="rootCtrl.search({order:'count_answers', sort: 'asc'});">les moins répondues</a></li>                    
+                  </ul>
+                </div>
+            </div>
+            <!--
+            <div id="tabs" ng-controller="ArticlesListTabsCtrl">
+                  <uib-tabset active="active">
+                    <uib-tab index="0" select="updateSelection()">
+                        <uib-tab-heading><i class="fa fa-plus-circle"></i> Les plus récentes</uib-tab-heading>
+                    </uib-tab>
+                    <uib-tab index="1" select="updateSelection()" heading="Les plus vues">
+                        <uib-tab-heading><i class="fa fa-eye"></i> Les plus vues</uib-tab-heading>
+                    </uib-tab>
+                    <uib-tab index="2" select="updateSelection()" heading="Les plus répondues">
+                        <uib-tab-heading><i class="fa fa-comment-o"></i> Les plus répondues</uib-tab-heading>
+                    </uib-tab>
+                  </uib-tabset>
+
+            </div>
+            -->
+        </div>
+        <div class="loader" ng-show="ctrl.articles.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
+
+        <div ng-repeat="article in ctrl.articles.items" class="article narrow col-1-1">
+            <div class="counters" >
+                <div class="votes" title="{{article.score}} {{'ARTICLES_VOTES' | translate}}">
+                    <div class="mini-counts">                
+                        <i class="fa fa-check-circle" ng-class="{'text-success': article.history['resiexchange_article_voteup']  || article.history['resiexchange_article_votedown']}"aria-hidden="true"></i> {{article.count_votes | humanizeCount}}
+                    </div> 
+                </div>
+                <div class="views" title="{{article.count_views}} {{'ARTICLES_VIEWS' | translate}}">
+                    <div class="mini-counts">
+                        <i class="fa fa-eye" ng-class="{'text-success': article.history['resiexchange_article_view']}" aria-hidden="true"></i> {{article.count_views | humanizeCount}}
+                    </div>
+                </div>
+            </div>
+            <div class="summary">
+                <h3>
+                    <a class="article-hyperlink" href="/article/{{article.id}}/{{article.title_url}}">{{article.title}}</a>
+                </h3>
+                <div class="excerpt">{{article.content_excerpt}}</div>
+                
+                <div class="categories col-8-12 nopad">
+                    <a ng-repeat="category in article.categories" 
+                    ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" 
+                    class="category" 
+                    popover-trigger="'mouseenter'"
+                    uib-popover-html="category.description"
+                    popover-append-to-body="true"
+                    popover-placement="bottom-left"
+                    popover-title="{{category.path}}"
+                    >{{category.title}}</a> 
+                </div>
+                <div class="started col-4-12 nopad">
+                    <div class="signature owner">
+                        <div class="user-info">
+                            <div class="user-action-time">
+                                <span>{{article.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                            </div>
+                            <div class="user-avatar">
+                                <a href="/users/{{article.creator.id}}" title="{{article.creator.display_name}}"><img ng-src="{{rootCtrl.avatarURL(article.creator.avatar_url, 32)}}" width="32" height="32" border="0"></a>
+                            </div>
+                            <div class="user-details">
+                                <a href="/user/{{article.creator.id}}/{{article.creator.name_url}}">{{article.creator.display_name}}</a>
+                                <div>
+                                    <span class="reputation-score" title="score de reputation" dir="ltr">{{article.creator.reputation}}</span>
+                                    <span class="badges" ng-show="article.creator.count_badges_1 > 0">
+                                        <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{article.creator.count_badges_1}}</span>
+                                    </span>
+                                    <span class="badges" ng-show="article.creator.count_badges_2 > 0">
+                                        <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{article.creator.count_badges_2}}</span>
+                                    </span>
+                                    <span class="badges" ng-show="article.creator.count_badges_3 > 0">
+                                        <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{article.creator.count_badges_3}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                         
+                </div>
+            </div>
+        </div>
+
+        <ul uib-pagination 
+            class="pagination-sm" 
+            total-items="search.criteria.total" 
+            ng-model="ctrl.articles.currentPage"
+            ng-change="ctrl.load()"
+            items-per-page="25"
+            max-size="5" 
+            direction-links="false"
+            boundary-links="true"
+            first-text="«" 
+            last-text="»"
+            rotate="true"
+            force-ellipses="true"></ul>
+            
+    </div>
+    <div class="col-4-12">
+        <div class="panel panel-default">
+            <div class="container" style="min-height: 500px;">
+                <div class="container">
+                    <span class="item-number">{{search.criteria.total | humanizeCount:true}}</span>
+                    <span class="item-label">{{'ARTICLES_STATS_ARTICLES' | translate}}</span>
+                    <div ng-show="categories.length > 0" class="categories container fade-in-out" style="display: inline-block; padding: 0;">
+                        dans 
+                        <a 
+                            href="/category/{{category.id}}/{{category.title_url}}"
+                            class="category"                          
+                            ng-repeat="category in categories" 
+                            title="{{category.path}}">{{category.title}}</a>
+                    </div>
+                </div>
+                
+                <div ng-show="active_articles.length > 0" class="container fade-in-out">                    
+                    <span class="small"><b>Sujets actifs:</b></span><br />
+                    <div class="featured-articles" ng-repeat="article in active_articles">
+                        <table>
+                            <tr>
+                                <td><span class="mini-counts btn btn-success btn-xs">{{article.score | humanizeCount}}</span></td>
+                                <td><a href="/article/{{article.id}}/{{article.title_url}}" title="{{article.title}}">{{article.title}}</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div ng-show="related_categories.length > 0" class="container fade-in-out">                    
+                    <span class="small"><b>Catégories similaires:</b></span><br />
+                    <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
+                        <a 
+                            href="/category/{{category.id}}/{{category.title_url}}"
+                            class="category"
+                            title="{{category.path}}">{{category.title}}</a>
+                        <div class="category-count">x {{category.count_articles}}&nbsp;</div>
+                    </div>
+                </div>
+
+                <div ng-show="featured_categories.length > 0" class="container fade-in-out">                    
+                    <span class="small"><b>Categories populaires:</b></span><br />
+                    <div class="featured-categories categories" ng-repeat="category in featured_categories" style="display: inline-block;">
+                        <a 
+                            href="/category/{{category.id}}/{{category.title_url}}"
+                            class="category"                            
+                            title="{{category.path}}">{{category.title}}</a>
+                        <div class="category-count">x {{category.count_articles}}&nbsp;</div>
+                    </div>                
+                </div>                
+
+            </div>
+        </div>
+    </div>
+</div>    

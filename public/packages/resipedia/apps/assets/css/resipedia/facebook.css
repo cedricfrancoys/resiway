@@ -1,0 +1,12 @@
+.fb-like, .fb-like iframe[style], .fb-like span, .fb-like.fb_iframe_widget span iframe {
+   width: 100% !important;
+}
+.fb-follow, .fb-follow iframe[style], .fb-follow span, .fb-follow.fb_iframe_widget span iframe {
+   width: 100% !important;
+}
+.fb-comments, .fb-comments iframe[style], .fb-comments span, .fb-comments.fb_iframe_widget span iframe {
+   width: 100% !important;
+}
+.fb-page, .fb-page iframe[style], .fb-page span {
+    width: 100% !important;
+}

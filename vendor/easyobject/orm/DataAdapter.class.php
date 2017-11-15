@@ -20,8 +20,8 @@
 */
 namespace easyobject\orm;
 
-use html\HTMLPurifier as HTMLPurifier;
-use html\HTMLPurifier_Config as HTMLPurifier_Config;
+use qinoa\html\HTMLPurifier as HTMLPurifier;
+use qinoa\html\HTMLPurifier_Config as HTMLPurifier_Config;
 use date\DateFormatter as DateFormatter;
 use fs\FSManipulator as FSManipulator;
 use \Exception as Exception;

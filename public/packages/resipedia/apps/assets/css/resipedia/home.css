@@ -1,0 +1,23 @@
+.featured-questions, .related-questions, .related-documents, .related-articles  {
+    margin-bottom: 5px;
+}
+
+.featured-questions table tr td, .related-questions table tr td, .related-documents table tr td, .related-articles table tr td  {
+    padding-right: 4px;
+    
+}
+
+.featured-questions p, .related-questions p, .related-documents p , .related-articles p  {
+    height: 23px; 
+    line-height: 23px; 
+    margin-bottom: 4px; 
+    max-width: 100%; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    overflow: hidden;
+}
+
+
+.featured-questions .mini-counts, .related-questions .mini-counts, .related-documents .mini-counts, .related-articles .mini-counts {
+    min-width: 36px;
+}    

@@ -52,14 +52,20 @@ try {
     $uri = str_replace($base, '/', $request_uri); 
     
     // load routes definition
-    $json_file = '../config/routing.json';    
+    $json_file = '../config/routing/default.json';    
     if( ($json = @file_get_contents($json_file)) === false) throw new Exception('routing config file is missing');    
     if( ($routes = json_decode($json, true)) == null) throw new Exception('malformed json in routing config file');
-
-    $router = new Router($routes);
     
+    $router = new Router($routes);
+
+    // load languages routes
+    $json_file = '../config/routing/fr.json';    
+    if( ($json = @file_get_contents($json_file)) === false) throw new Exception('routing config file is missing');    
+    if( ($routes = json_decode($json, true)) == null) throw new Exception('malformed json in routing config file');
+    $router->appendRoutes($routes);
+        
     if($request->isBot()) {
-        $json_file = '../config/bots.json';
+        $json_file = '../config/routing/bots.json';
         if( ($json = @file_get_contents($json_file)) === false) throw new Exception('routing config file is missing');    
         if( ($routes = json_decode($json, true)) == null) throw new Exception('malformed json in routing config file');
         $router->prependRoutes($routes);
@@ -96,7 +102,10 @@ else {
         // merge resolved params with original URL params, if any
         $params = array_merge(config\QNlib::extract_params($_SERVER['REQUEST_URI']), $params);
         // inject resolved params to global '$_REQUEST' (if a param is already set, its value is overwritten)    
-        foreach($params as $key => $value) $_REQUEST[$key] = $value;
+        foreach($params as $key => $value) {
+            $_REQUEST[$key] = $value;
+            $request->set($key, $value);
+        }
         include_once('index.php');
     }
 }

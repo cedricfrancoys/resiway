@@ -1,7 +1,9 @@
 <?php
 namespace resiexchange;
 
-use html\HtmlToText;
+use resiway\User;
+
+use qinoa\html\HTMLToText;
 
 
 class Question extends \easyobject\orm\Object {
@@ -197,6 +199,110 @@ class Question extends \easyobject\orm\Object {
             $result[$oid] = self::slugify($odata['title'], 200);
         }
         return $result;        
+    }
+    
+    public static function getAuthor($om, $oids) {
+        $result = [];
+        $questions = $om->read(__CLASS__, $oids, ['creator']);
+        $authors_ids = [];
+        if($questions > 0) {
+            foreach($questions as $question_id => $question_data) {
+                // remember creators ids for each question
+                $authors_ids = array_merge($authors_ids, (array) $question_data['creator']); 
+            }            
+            // retrieve authors data
+            $questions_authors = $om->read('resiway\User', $authors_ids, User::getPublicFields());        
+            if($questions_authors > 0) {
+                foreach($questions as $question_id => $question_data) {
+                    $author_id = $question_data['creator'];
+                    if(isset($questions_authors[$author_id])) {
+                        $result[$question_id]['creator'] = $questions_authors[$author_id];
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+    
+    public static function getCategories($om, $oids) {
+        $result = [];
+        $questions = $om->read(__CLASS__, $oids, ['categories_ids']);
+        $categories_ids = [];
+        if($questions > 0) {
+            foreach($questions as $question_id => $question_data) {
+                // remember categories ids for each question
+                $categories_ids = array_merge($categories_ids, (array) $question_data['categories_ids']); 
+            }            
+            // retrieve categories data
+            $questions_categories = $om->read('resiway\Category', $categories_ids, ['id', 'title', 'path', 'parent_path', 'description']);        
+            if($questions_categories > 0) {
+                foreach($questions as $question_id => $question_data) {
+                    $categories_ids = $question_data['categories_ids'];
+                    $result[$question_id]['categories'] = [];
+                    foreach($categories_ids as $category_id) {
+                        if(isset($questions_categories[$category_id])) {
+                            $result[$question_id]['categories'][] = $questions_categories[$category_id];
+                        }                        
+                    }
+                }
+            }
+        }
+        return $result;
+    }    
+    
+    /**
+    * Converts a list of questions to a JSON structure
+    * 
+    */
+    public static function toJSON($om, $oids, $params) {
+        $result = [];
+        $included = [];
+        
+        $questions = $om->read(__CLASS__, $oids, ['creator', 'created', 'title', 'title_url', 'content_excerpt', 'score', 'count_views', 'count_votes', 'count_answers', 'categories_ids']);        
+
+        // read authors
+        $authors = self::getAuthor($om, $oids);
+        $questions = array_replace_recursive($questions, $authors);
+        
+        // read categories
+        $categories = self::getCategories($om, $oids);
+        $questions = array_replace_recursive($questions, $categories);
+                        
+        // build JSON object
+        foreach($questions as $id => $question) {
+            $author_id = $question['creator']['id'];
+            unset($question['creator']['id']);
+            if(!isset($included['creator_'.$author_id])) {
+                $included['creator_'.$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $question['creator']];
+            }        
+            foreach($question['categories'] as $category) {
+                $category_id = $category['id'];
+                unset($category['id']);
+                if(!isset($included['category_'.$category_id])) {
+                    $included['category_'.$category_id] = ['type' => 'category', 'id' => $category_id, 'attributes' => (object) $category];
+                }        
+            }
+            $categories = $question['categories'];
+            unset($question['id']);        
+            unset($question['creator']);        
+            unset($question['categories']);                
+            $result[] = [
+                'type'          => 'question', 
+                'id'            => $id, 
+                'attributes'    => (object) $question, 
+                'relationships' => (object) [
+                    'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
+                    'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
+                ]
+            ];       
+        }
+        ksort($included);
+        return json_encode([
+            'jsonapi'   => (object) ['version' => '1.0'],        
+            'meta'      => ['count' => $params['total'], 'page-size' => $params['limit'], 'total-pages' => $params['pages']],
+            'data'      => $result,
+            'included'  => array_values($included)
+        ], JSON_PRETTY_PRINT);
     }
     
     /** 

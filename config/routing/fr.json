@@ -1,0 +1,5 @@
+{
+    "/auteur/:name":"/resilib.fr#!/auteur/:name",
+    "/participant/:id/:name?":"/resiexchange.fr#!/participant/:id/:name",    
+    "/aide/categorie/:id/:title?":"/resiexchange.fr#!/aide/categorie/:id/:title"
+}

@@ -4,7 +4,7 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
-use html\HTMLPurifier as HTMLPurifier;
+use qinoa\html\HTMLPurifier as HTMLPurifier;
 use easyobject\orm\DataAdapter as DataAdapter;
 use easyobject\orm\PersistentDataManager as PersistentDataManager;
 

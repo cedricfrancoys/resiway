@@ -1,7 +1,7 @@
 <?php
 /**
-*    This file is part of the easyObject project.
-*    http://www.cedricfrancoys.be/easyobject
+*    This file is part of the Qinoa project.
+*    https://github.com/cedricfrancoys/qinoa
 *
 *    Copyright (C) 2012  Cedric Francoys
 *
@@ -60,6 +60,8 @@ namespace {
 	set_silent(false);
 }
 namespace config {
+    use easyobject\orm\ObjectManager;    
+    
 	/**
 	* Add some config-utility functions to the 'config' namespace
 	*/
@@ -206,7 +208,13 @@ namespace config {
 		*/
 		public static function init() {
 			$library_folder = self::get_script_path().'/vendor';
-			if(is_dir($library_folder))	set_include_path($library_folder.PATH_SEPARATOR.get_include_path());
+			if(is_dir($library_folder))	set_include_path($library_folder.PATH_SEPARATOR.get_include_path());            
+            // register own class loader
+            spl_autoload_register(__NAMESPACE__.'\QNlib::load_class');            
+            // now we can autoload the ORM manager
+            $om = &ObjectManager::getInstance();
+            // register ORM classes autoloader
+            spl_autoload_register([$om, 'getStatic']);
 		}
 
 		/**
@@ -492,7 +500,6 @@ namespace config {
 	
 	//Initialize the QNlib class for further 'load_class' calls
 	QNlib::init();
-    spl_autoload_register(__NAMESPACE__.'\QNlib::load_class');    
 }
 namespace {
     function load_class($class_path, $class_name='') {

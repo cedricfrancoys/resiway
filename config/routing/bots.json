@@ -1,0 +1,5 @@
+{
+    "/question/:id/:title?":"?get=resiway_static&class=question",
+    "/document/:id/:title?":"?get=resiway_static&class=document",
+    "/article/:id/:title?":"?get=resiway_static_article"
+}

@@ -280,6 +280,7 @@ var resiway = angular.module('resiexchange', [
                 edit: {title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall'},
                 format: {title: 'Format', items: 'bold italic underline strikethrough superscript subscript | charmap | removeformat'}
             },
+            menubar: false,
             toolbar: "fullscreen code | undo redo | bold italic | headings formatselect | blockquote bullist numlist outdent indent | link image | table",
             setup: function(editor) {
                 editor.on("init", function() {

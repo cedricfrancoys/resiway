@@ -27,8 +27,8 @@ $params = QNLib::announce(
 list($result, $error_message_ids) = [true, []];
 
 list($action_name, $object_class, $object_id) = [
-    'resiexchange_document_flag', 
-    'resiexchange\Document', 
+    'resilib_document_flag', 
+    'resilib\Document', 
     $params['document_id']
 ];
 
@@ -75,7 +75,7 @@ try {
                             ['object_class','=',  $object_class], 
                             ['created',     '>=', date("Y-m-d")]
                        ]);
-                if($res > 0 && count($res) > RESIEXCHANGE_document_FLAG_DAILY_MAX) {
+                if($res > 0 && count($res) > RESILIB_DOCUMENT_FLAG_DAILY_MAX) {
                     throw new Exception("action_max_reached", QN_ERROR_NOT_ALLOWED);
                 }        
             }       

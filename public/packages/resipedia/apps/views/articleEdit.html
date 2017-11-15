@@ -1,0 +1,123 @@
+<div class="grid wrapper">   
+    <div class="col-8-12 page-body">    
+        <div class="user-article wrapper">
+            <div class="col-1-1 nopad">                
+                    <div class="control-group">
+                        <label class="control-label" ng-bind-html="'ARTICLE_EDIT_TITLE_LABEL' | translate">Titre</label>
+                        <div class="controls">
+                            <input id="title" 
+                                   ng-model="article.title"
+                                   type="text"
+                                   class="form-control title col-md-4" 
+                                   value="" 
+                                   size="54" 
+                                   maxlength="128">
+                            <p class="help-inline" ng-bind-html="'ARTICLE_EDIT_TITLE_HELP' | translate"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group" style="clear: both;">
+                        <label class="control-label" ng-bind-html="'ARTICLE_EDIT_CATEGORIES_LABEL' | translate"></label>
+                        <div class="controls">
+
+                        <!-- alternate display (but sorting before grouping): oi-options="item.path group by item.parent_path for item in categories" -->
+                            <oi-select
+                                        oi-options="item.path for item in loadCategoriesMatches($query)"
+                                        ng-model="article.categories"
+                                        multiple
+                                        multiple-limit="8"
+                                        oi-select-options="{
+                                            searchFilter: 'customSearchFilter',
+                                            dropdownFilter: 'customDropdownFilter',
+                                            listFilter: 'customListFilter',
+                                            newItem: true,
+                                            saveTrigger: 'enter blur . , ;',
+                                            newItemFn: 'addCategory($query)'
+                                        }"                                        
+                                        placeholder="{{'ARTICLE_EDIT_CATEGORIES_LABEL' | translate}}"></oi-select>
+
+                            <p class="help-inline" ng-bind-html="'ARTICLE_EDIT_CATEGORIES_HELP' | translate"></p>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label class="control-label" ng-bind-html="'ARTICLE_EDIT_CONTENT_LABEL' | translate"></label>
+                        <div class="controls">
+
+                            <div class="wrapper">
+                                <textarea class="description form-control" style="height: 300px;"
+                                          ui-tinymce="rootCtrl.tinymceOptions"
+                                          ng-model="article.content">
+                                </textarea>                                
+                            </div>            
+          
+                     
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">            
+
+                        <div uib-alert ng-repeat="alert in alerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeAlert($index)">{{alert.msg | translate}}</div>                                                
+                        
+                        <button class="btn btn-default" tabindex="30" onclick="history.go(-1)"><span ng-bind-html="'ARTICLE_EDIT_BUTTON_CANCEL' | translate"></span></button>
+
+                        <button id="article-post"
+                                class="btn btn-primary" 
+                                ng-click="articlePost($event)"
+                                uib-popover-template="'popoverCustom.html'" 
+                                popover-trigger="'toggle-popover'" 
+                                popover-placement="right">
+                            <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i><span ng-bind-html="'ARTICLE_EDIT_BUTTON_UPDATE' | translate"></span>
+                        </button>
+                    </div>
+
+                
+            </div>
+
+        </div>
+            
+    </div>
+    <div class="col-4-12">
+        <div ng-if="article.id" class="panel panel-default">
+            <div class="container">
+                <div class="module article-stats">
+			        <table id="qinfo">
+			            <tbody>
+                        <tr>
+			                <td>
+			                    <p class="label-key">{{'ARTICLE_STATS_ASKED' | translate}}</p>
+			                </td>
+			                <td style="padding-left: 10px">
+			                    <p class="label-key"><b>{{article.created}}</b></p>
+			                </td>
+			            </tr>
+			            <tr>
+			                <td>
+			                    <p class="label-key">{{'ARTICLE_STATS_VIEWED' | translate}}</p>
+			                </td>
+
+			                <td style="padding-left: 10px">
+			                    <p class="label-key">
+			                        <b>{{article.count_views}} {{'ARTICLE_STATS_TIMES' | translate}}</b>
+			                    </p>
+			                </td>
+			            </tr>
+			            <tr>
+                            <td>
+                                <p class="label-key">{{'ARTICLE_STATS_ACTIVE' | translate}}</p>
+                            </td>
+                            <td style="padding-left: 10px">
+                                <p class="label-key">
+                                    <b>{{article.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
+                                </p>
+                            </td>
+			            </tr>
+                        </tbody>
+                    </table>
+			    </div>
+            </div>
+        </div>
+
+        <div ng-include="'articleHelp.html'"></div>          
+    </div>    
+</div>    

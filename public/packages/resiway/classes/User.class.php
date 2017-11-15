@@ -75,7 +75,9 @@ class User extends \easyobject\orm\Object {
             'count_answers'             => array('type' => 'integer'),
             'count_comments'            => array('type' => 'integer'),    
 
-            'count_documents'           => array('type' => 'integer'),                
+            'count_documents'           => array('type' => 'integer'),
+            
+            'count_articles'            => array('type' => 'integer'),            
             
             // bronze
             'count_badges_1'            => array('type' => 'integer'),
@@ -251,6 +253,51 @@ class User extends \easyobject\orm\Object {
                                     }
                                 ),                                                                
         );
+    }
+    
+    public static function getPublicFields() {
+        return ['id', 
+                'created',
+                'verified',
+                'last_login',
+                'display_name',
+                'name_url',                
+                'avatar_url',
+                'about',
+                'language', 
+                'country', 
+                'location',                
+                'reputation',
+                'role',
+                'count_questions', 
+                'count_views', 
+                'count_answers', 
+                'count_comments',              
+                'count_badges_1', 
+                'count_badges_2', 
+                'count_badges_3'
+        ];
+    }
+
+    public static function getPrivateFields() {
+        return ['login', 
+                'firstname',
+                'lastname', 
+                'publicity_mode',
+// todo : remove relation fields from this list
+                'notifications_ids',
+                'notify_reputation_update', 
+                'notify_badge_awarded', 
+                'notify_question_comment', 
+                'notify_answer_comment', 
+                'notify_question_answer',
+                'notify_post_edit',
+                'notify_post_flag',
+                'notify_post_delete',
+                'notify_updates',
+                'notice_delay',
+                'last_notice'
+        ];
     }    
     
     public static function resetDisplayName($om, $oids, $lang) {

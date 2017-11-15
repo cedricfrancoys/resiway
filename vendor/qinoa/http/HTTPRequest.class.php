@@ -135,14 +135,15 @@ class HTTPRequest {
      * @return string The request
      */
     public function __toString() {
-        return
-            sprintf('%s %s %s', $this->getMethod(), $this->getRequestUri(), $this->getProtocol()).PHP_EOL.
-            implode(PHP_EOL, $this->headers).PHP_EOL.
-            implode(PHP_EOL, $this->parameters);
+        return sprintf('%s %s %s', $this->getMethod(), $this->getRequestUri(), $this->getProtocol()).PHP_EOL.implode(PHP_EOL, $this->headers).PHP_EOL.implode(PHP_EOL, $this->parameters);
     }
 
     public function get($parameter, $default=false) {
         return isset($this->parameters[$parameter])?$this->parameters[$parameter]:$default;
+    }
+
+    public function set($parameter, $value) {
+        return $this->parameters[$parameter] = $value;
     }
     
     public function getParameters() {

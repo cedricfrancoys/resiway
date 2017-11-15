@@ -105,9 +105,7 @@ class ObjectManager {
         $this->cache = [];
 		$this->instances = [];
 		// initialize error handler
-		new EventListener();
-        // register ORM classes autoloader
-        spl_autoload_register([$this, 'getStatic']);    
+		new EventListener(); 
 	}
     
     
@@ -300,6 +298,12 @@ class ObjectManager {
         return $valid_ids;
     }
     
+    /** 
+     * Load given fields from specified class into the cache
+     *
+     * @return void
+     * @throw Exception
+     */    
 	private function load($class, $ids, $fields, $lang) {
 		// get the object instance 
 		$object = &$this->getStaticInstance($class);
@@ -452,40 +456,31 @@ class ObjectManager {
 					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
 				}
 			},
-			'related'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
-                // 'related' is not a real type, it is the description of how to handle the dot notation
+			'dotted'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
+                // 'dotted' is not a real type, it is the description of how to handle the dot notation
 				try {
                     // todo: an improvement could be made here : in case first part is identical, we could group the subsequent queries
                     // ex. categories_ids.title, categories_ids.path
 					foreach($fields as $field) {
 						$parts = explode('.', $field, 2);                        
                         // check that field has a relational type                        
-                        if(!in_array($schema[$parts[0]]['type'], array('many2one','one2many','many2many'))) throw new Exception("invalid field '$field': dot notation only applies on relationale fields", INVALID_PARAM);
+                        if(!in_array($schema[$parts[0]]['type'], array('many2one','one2many','many2many'))) {
+                            throw new Exception("invalid field '$field': dot notation only applies on relational fields", INVALID_PARAM);
+                        }
                         // read the field value from the original objects
 						$values = $om->read($class, $ids, array($parts[0]), $lang);
-
+                        // read targetted object using the right part of the dot as sub field
 						if(count($parts) > 1) {
                             // if $parts[1] still contains a dot, this call will recurse down
-
-                            if($schema[$parts[0]]['type'] == 'many2one') {
-                                $sub_ids = array_map(function($a) use ($parts){return $a[$parts[0]];}, $values);
+                            $sub_ids = [];
+                            foreach($values as $object_id => $item) {
+                                $sub_ids = array_merge($sub_ids, (array) $item[$parts[0]]);
                             }
-                            else {
-                                $sub_ids = [];
-                                foreach($values as $object_id => $item) {
-                                    $sub_ids = array_merge($sub_ids, $item[$parts[0]]);
-                                }
-                            }
-
-							$sub_values = $om->read(
-													$schema[$parts[0]]['foreign_object'],
-													$sub_ids,
-													array($parts[1]),
-													$lang);
+                            // read all sub objects at once
+							$sub_values = $om->read($schema[$parts[0]]['foreign_object'], $sub_ids, (array) $parts[1], $lang);
 
 							foreach($values as $object_id => $item) {
-                                // resulting value is stored in the cache using given $field value (ex. 'user_id.firstname')
-
+                                // resulting value is stored in the cache using given $field name (ex. 'user_id.firstname')
                                 if(is_array($item[$parts[0]])) {
                                     $result_value = [];
                                     foreach($item[$parts[0]] as $item_prop) {
@@ -496,11 +491,8 @@ class ObjectManager {
                                     if(isset($sub_values[$item[$parts[0]]][$parts[1]])) {
                                         $result_value = $sub_values[$item[$parts[0]]][$parts[1]];
                                     }
-                                    else {
-                                        $result_value = null;
-                                    }
+                                    else $result_value = null;
                                 }
-
                                 $om->cache[$class][$object_id][$field][$lang] = $result_value;
                             }
 						}
@@ -509,7 +501,52 @@ class ObjectManager {
 				catch(Exception $e) {
 					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
 				}
-			});
+			},
+            'related' => function($om, $ids, $fields) use ($schema, $class, $lang){
+                // 'related' is not a real type, it is the description of how to handle the array notation
+				try {
+                    foreach($fields as $field => $parts) {
+                        $type = $schema[$field]['type'];
+                        if(!in_array($type, array('many2one','one2many','many2many'))) throw new Exception("invalid field '$field': subfields only applies on relational fields", INVALID_PARAM);
+                        // 1) read the field value from the original objects
+                      
+						$objects = $om->read($class, $ids, $field, $lang);
+                        if($objects > 0) {
+
+                            // 2) get all ids of related objects
+                            $sub_ids = [];
+                            foreach($objects as $object_data) {
+                                $sub_ids = array_merge($sub_ids, (array) $object_data[$field]);
+                            }
+                            $sub_class = $schema[$field]['foreign_object'];
+                            // 3) read all targetted objects at once (will recurse if necessray)
+                            // all subsequent objects will therefore be cached (! no circular dependency check)
+                            $sub_objects = $om->read($sub_class, $sub_ids, (array) $parts, $lang);
+                            if($sub_objects > 0) {
+                                foreach($objects as $object_id => $object_data) {
+                                    // resulting value is stored in the cache (objects instead of ids)
+                                    $items_ids = (array) $object_data[$field];
+                                    $result = [];
+                                    foreach($items_ids as $item_id) {
+                                        if(isset($sub_objects[$item_id])) {
+                                            $result[$item_id] = $sub_objects[$item_id];
+                                        }                        
+                                    }
+                                    if($type == 'many2one') {
+                                        if(!empty($result)) $result = array_shift($result);
+                                        else $result = null;
+                                    }
+                                    $om->cache[$class][$object_id][$field.'_instance'][$lang] = $result;
+                                }                            
+                            }
+                        }                        
+                    }
+				}
+				catch(Exception $e) {
+					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+				}
+                
+            });
 
 			// build an associative array ordering given fields by their type
 			$fields_lists = array();
@@ -517,10 +554,19 @@ class ObjectManager {
 			$stored_fields = array();
 
 			// 1) retrieve fields types
-			foreach($fields as $field) {
+			foreach($fields as $key => $field) {
+                // handle array notation
+                if(!is_int($key)) {
+                    $fields_lists['related'][$key] = $field;
+                    continue;
+                }
 				// handle 'dot' notation (which means that the field refers to a sub-field)
-				if(strpos($field, '.') !== false) $type = 'related';
-				else $type = $schema[$field]['type'];
+				if(strpos($field, '.') !== false) {
+                    $fields_lists['dotted'][] = $field;
+                    continue;
+                }
+                // retrieve field type
+				$type = $schema[$field]['type'];
 				// stored computed fields are handled following their resulting type
 				if( $type == 'function'
 					&& isset($schema[$field]['store'])
@@ -540,10 +586,10 @@ class ObjectManager {
 				else  $fields_lists[$type][] = $field;
 			}
 
-
-			// 2) load fields values, grouping fields by their type
-			foreach($fields_lists as $type => $list) $load_fields[$type]($this, $ids, $list);
-
+			// 2) load fields values, grouping fields by type
+			foreach($fields_lists as $type => $list) {
+                $load_fields[$type]($this, $ids, $list);
+            }
 
 			// 3) check if some computed fields were not set in database
 			foreach($stored_fields as $field) {
@@ -707,9 +753,8 @@ class ObjectManager {
             
 			// 1) retrieve fields types
 			foreach($fields as $field) {
-
+                // retrieve field type
 				$type = $schema[$field]['type'];
-
 				// stored computed fields are handled following their resulting type
 				if( $type == 'function'
 					&& isset($schema[$field]['store'])
@@ -727,7 +772,7 @@ class ObjectManager {
 				}
 				else  $fields_lists[$type][] = $field;
 			}
-
+            // 2) store fields according to their types
 			foreach($fields_lists as $type => $list) $store_fields[$type]($this, $ids, $list);
 
 		}
@@ -957,6 +1002,7 @@ todo: signature differs from other methods	(returned value)
 	* @return mixed (int or array) error code OR resulting associative array
 	*/
 	public function read($class, $ids, $fields=NULL, $lang=DEFAULT_LANG) {
+
 		$res = array();
         // get DB handler (init DB connection if necessary)
         $db = $this->getDBHandler();
@@ -996,47 +1042,59 @@ todo: signature differs from other methods	(returned value)
 			// if no fields have been specified, we load the whole object
 			if(empty($fields)) $fields = $allowed_fields;
 			else {
-                // handle 'dot' notation (check will apply on root field)
-				for($i = 0, $j = count($fields); $i < $j; ++$i) {				
-					$field = explode('.', $fields[$i])[0];
+                // handle 'dot' notation (check will apply on root field)             
+                foreach($fields as $key => $field) {
+                    // array notation
+                    if(!is_int($key)) {
+                        $field = $key;
+                    }
+                    // dot notation
+                    else if(strpos($field, '.') !== false) {
+                        $field = explode('.', $field)[0];                        
+                    }
 					// remove fields not defined in related schema
 					if(!in_array($field, $allowed_fields)) {
-						unset($fields[$i]);
+						unset($fields[$key]);
 						EventListener::ExceptionHandler(new Exception("unknown field '$field' for class : '$class'"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
 					}
                     else if($schema[$field]['type'] == 'alias') {
-                        // add target of alias to field list
+                        // append target of alias to field list
                         $fields[] = $schema[$field]['alias'];
-                    }
-				}
-			}
-			// remove duplicate fields, if any
-			$fields = array_unique($fields);
-            // make sure there is no gap in the keys/indexes 
-            $fields = array_values($fields);
+                    }                    
+                }
                 
+			}
+
+			// remove duplicate fields, if any
+// ! array_unique does not properly handle sub-arrays            
+			// $fields = array_unique($fields);
+              
 			// 4) check among requested fields wich ones are not yet present in the internal buffer
 			// if internal buffer is empty, query the DB to load all fields from requested objects 
 			if(empty($this->cache) || !isset($this->cache[$class])) $this->load($class, $ids, $fields, $lang);			
+            // check if all objects are fully loaded            
 			else {
-                // check if some objects are fully or partially loaded
-                // use a hash to load all objects having the same missing fields at once
-				$fields_hash = array();
-				foreach($ids as $oid) {                
-					// find out missing fields for each object
-					$missing_fields = array();
-					foreach($fields as $field) if(!isset($this->cache[$class][$oid][$field][$lang])) $missing_fields[] = $field;
-					if(!empty($missing_fields)) {
-						// create a unique key, by joining names of the missing fields
-						$key = implode(',', $missing_fields);
-						$fields_hash[$key][] = $oid;
-					}
-				}			
-				// load missing fields from DB
-				foreach($fields_hash as $key => $oids) $this->load($class, $oids, explode(',', $key), $lang);
-			}
+                // missing fields array building by increment 
+                // we need the 'broadest' fields array to be loaded 
+                // (# sql queries is the most costly and queries are grouped by ids and fields)
+                $fields_missing = array();
+                foreach($fields as $key => $field) {
+                    foreach($ids as $oid) {
+                        if(!is_int($key) && !isset($this->cache[$class][$oid][$key.'_instance'][$lang])) {
+                            $fields_missing[$key] = $field;
+                            break;
+                        }                        
+                        if(!isset($this->cache[$class][$oid][$field][$lang])) {                            
+                            $fields_missing[] = $field;
+                            break;
+                        }
+                    }
+                }
+                if(!empty($fields_missing)) {
+                    $this->load($class, $ids, $fields_missing, $lang);
+                }
+            }
 
-            
 			// 5) build result reading from internal buffer
 			foreach($ids as $oid) {
                 if(!isset($this->cache[$class][$oid]) || empty($this->cache[$class][$oid])) {
@@ -1045,28 +1103,28 @@ todo: signature differs from other methods	(returned value)
                 }
                 // init result for given id, if missing
                 if(!isset($res[$oid])) $res[$oid] = array();
-				for($i = 0, $j = count($fields); $i < $j; ++$i) {
-                    // handle dot notation
-                    $field = explode('.', $fields[$i])[0];
-                    // handle aliases
-                    if($schema[$field]['type'] == 'alias') {
-                        $res[$oid][$field] = $this->cache[$class][$oid][$schema[$field]['alias']][$lang];
-                    }
-                    else {
-                        // use final notation (direct or dot)
-                        $field = $fields[$i];
-                        $res[$oid][$field] = $this->cache[$class][$oid][$field][$lang];             
-                    }
-                        
-                    /*
-                    // this should not occur unless the schema in DB does not match object columns
-                    if(!isset($this->cache[$class][$oid][$field])) {
-                        EventListener::ExceptionHandler(new Exception("value not found for field '$field' of object '$class' #'$oid'", UNKNOWN_OBJECT), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);                        
+                foreach($fields as $key => $field) {
+                    // handle array notation
+                    if(!is_int($key)) {
+                        $res[$oid][$key] = $this->cache[$class][$oid][$key.'_instance'][$lang];
                         continue;
                     }
-                    */
-					
-				}
+                    // handle dot notation
+                    if(strpos($field, '.') !== false) {
+                        // $field = explode('.', $field)[0];
+                        $res[$oid][$field] = $this->cache[$class][$oid][$field][$lang];                            
+                    }
+                    else {
+                        // handle aliases                                                
+                        if($schema[$field]['type'] == 'alias') {
+                            $res[$oid][$field] = $this->cache[$class][$oid][$schema[$field]['alias']][$lang];
+                        }
+                        else {
+                            // use final notation 
+                            $res[$oid][$field] = $this->cache[$class][$oid][$field][$lang];
+                        }
+                    }
+                }
 			}
 		}
 		catch(Exception $e) {
@@ -1087,15 +1145,13 @@ todo: signature differs from other methods	(returned value)
 	* @return mixed (integer or array)
 	*/
 	public function remove($object_class, $ids, $permanent=false) {
-// todo : validate this code
         // get DB handler (init DB connection if necessary)
         $db = $this->getDBHandler();
         $result = [];
         
 		try {
             // cast ids to an array (passing a single id is accepted)
-			if(!is_array($ids)) $ids = [$ids];
-            
+			if(!is_array($ids)) $ids = [$ids];            
             // ensure ids are numerical values
             foreach($ids as $key => $oid) {      
                  if(!is_numeric($oid)) unset($ids[$key]);
@@ -1106,7 +1162,6 @@ todo: signature differs from other methods	(returned value)
 			// 1) check rights and object schema
 			$object = &$this->getStaticInstance($object_class);
 			$schema = $object->getSchema();
-
 			// checks validity of objects identifiers
             $ids = $this->filterValidIdentifiers($object_class, $ids);
             
@@ -1167,7 +1222,7 @@ todo: signature differs from other methods	(returned value)
 	* @return mixed (integer or array)
 	*/
     
-// todo: handle dot notation
+// todo: handle dot notation and array notation
 	public function search($object_class, $domain=NULL, $order='id', $sort='asc', $start='0', $limit='0', $lang=DEFAULT_LANG) {
         // get DB handler (init DB connection if necessary)
         $db = $this->getDBHandler();
@@ -1204,7 +1259,7 @@ todo: signature differs from other methods	(returned value)
 				'file'		    => array('like', 'ilike', '='),                
 				'binary'		=> array('like', 'ilike', '='),
 				// for compatibilty reasons, 'contains' is allowed for many2one field
-				// note: 'contains' operator means 'list contains at least one of the following ids'
+				// note: in that case 'contains' operator means 'list contains *at least one* of the following ids'
 				'many2one'		=> array('is', 'in', '=', '<>', 'contains'),
 				'one2many'		=> array('contains'),
 				'many2many'		=> array('contains'),
@@ -1241,7 +1296,7 @@ todo: signature differs from other methods	(returned value)
                         if(!self::checkFieldAttributes(self::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory parameter for field '$field' of class '$object_class'", INVALID_PARAM);
 						$type 		= $schema[$field]['type'];
 
-						if(in_array($type, array('function', 'related'))) $type = $schema[$field]['result_type'];
+						if($type == 'function') $type = $schema[$field]['result_type'];
 
 						// check the validity of the field name and the operator
 						if(!in_array($field, array_keys($schema))) throw new Exception("invalid domain, unexisting field '$field' for object '$object_class'", INVALID_PARAM);
@@ -1288,7 +1343,6 @@ todo: signature differs from other methods	(returned value)
 							default:
 								// add some conditions if field is multilang (and the search is made on another language than the default one)
 								if($lang != DEFAULT_LANG && isset($schema[$field]['multilang']) && $schema[$field]['multilang']) {
-// todo : validate this code
 									$translation_table_alias = $add_table('core_translation');
 									// add joint conditions
 									$conditions[$j][] = array($table_alias.'.id', '=', '`'.$translation_table_alias.'.object_id`');
