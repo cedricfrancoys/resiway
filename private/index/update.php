@@ -21,7 +21,7 @@ require_once('../qn.lib.php');
 
 list($result, $error_message_ids) = [true, []];
 
-set_silent(false);
+set_silent(true);
 
  
 
