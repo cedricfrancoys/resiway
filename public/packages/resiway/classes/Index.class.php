@@ -2,7 +2,7 @@
 namespace resiway;
 
 use qinoa\text\TextTransformer;
-use qinoa\html\HtmlToText;
+use qinoa\html\HTMLToText;
 
 /**
 *
@@ -52,7 +52,7 @@ class Index extends \easyobject\orm\Object {
     }
 
     public static function extractKeywords($string) {
-        $string = HtmlToText::convert($string, false);
+        $string = HTMLToText::convert($string, false);
         $string = TextTransformer::normalize($string);
         $words = explode(' ', $string);
         $result = [];
