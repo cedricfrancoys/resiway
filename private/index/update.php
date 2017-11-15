@@ -56,7 +56,7 @@ try {
         $object_field = $schema[$index_field]['rel_foreign_key'];
 
         // request a batch of 5 non-indexed questions
-        $objects_ids = $om->search($object_class, ['indexed', '=', 0], 'id', 'asc', 0, 50);
+        $objects_ids = $om->search($object_class, ['indexed', '=', 0], 'id', 'asc', 0, 5);
         if($objects_ids > 0 && count($objects_ids)) {
 
             
@@ -108,7 +108,7 @@ try {
                         $lines[] = "($index_id, $object_id, '$field', $count)";
                     }
                     if(count($lines)) {
-                        $db->sendQuery("INSERT IGNORE INTO $object_table (`index_id`, `$object_field`, `field`, `count`) values ".implode(',', $lines).";");                    
+                        $db->sendQuery("INSERT INTO $object_table (`index_id`, `$object_field`, `field`, `count`) values ".implode(',', $lines)." ON DUPLICATE KEY UPDATE foo=foo;;");                    
                     }
                 }
                 

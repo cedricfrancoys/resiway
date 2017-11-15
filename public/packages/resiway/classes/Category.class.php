@@ -52,7 +52,7 @@ class Category extends \easyobject\orm\Object {
                                    ),
 
             /* amount of articles in this category and its subcategories */
-            'count_article'     => array(
+            'count_articles'     => array(
                                     'type'              => 'function',
                                     'result_type'       => 'integer',
                                     'store'             => true, 
