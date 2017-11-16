@@ -81,7 +81,7 @@ class DBManipulatorMySQL extends DBManipulator {
 	function sendQuery($query) {
 	    if(function_exists('debug_mode') && (debug_mode() & DEBUG_SQL)) print("$query\n");
 		$this->setLastQuery($query);
-		if(($result = mysqli_query($this->dbms_handler, $query)) === false) throw new Exception(__METHOD__.' : query failure, '.mysqli_error($this->dbms_handler), SQL_ERROR);
+		if(($result = mysqli_query($this->dbms_handler, $query)) === false) throw new Exception(__METHOD__.' : query failure. '.mysqli_error($this->dbms_handler).'. For query: "'.$query.'"', SQL_ERROR);
 		else {
 			// if everything went well, fetch some additional info
 			// a) for 'select' queries

@@ -293,9 +293,10 @@ namespace config {
 			if(!isset($announcement['params'])) $announcement['params'] = array();
             
             // 1) fetch values from command line, in case script was invoked by CLI
-            $options = getopt("", array_map(function ($a) { return $a.'::'; }, array_keys($announcement['params'])));            
-            foreach($options as $param => $value) {
-                $_REQUEST[$param] = $value;
+            if( $options = getopt("", array_map(function ($a) { return $a.'::'; }, array_keys($announcement['params']))) ) {
+                foreach($options as $param => $value) {
+                    $_REQUEST[$param] = $value;
+                }
             }
             
             // chek if all required parameters have been received
