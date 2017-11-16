@@ -43,6 +43,10 @@ class ObjectManager {
     */
 	private $instances;
 
+	/* Array holding names of defined packages (folders under /package directory)
+    */
+	private $packages;
+    
 	/* Instance to a DBConnection Object
     */
 	private $db;
@@ -102,6 +106,7 @@ class ObjectManager {
             \config\export_config();
         }
         $this->db = null;
+        $this->packages = null;
         $this->cache = [];
 		$this->instances = [];
 		// initialize error handler
@@ -157,7 +162,17 @@ class ObjectManager {
 		return $GLOBALS['ObjectManager_instance'];
 	}
 
-
+    public function getPackages() {
+        if(!$this->packages) {
+            $this->packages = [];
+            $package_directory = 'packages';
+            if(is_dir($package_directory) && ($list = scandir($package_directory))) {
+                foreach($list as $node) if(is_dir($package_directory.'/'.$node) && !in_array($node, array('.', '..'))) $this->packages[] = $node;
+            }
+        }
+        return $this->packages;
+    }
+    
 	/**
 	* Returns a static instance for the specified object class (does not create a new object)
 	*
@@ -783,14 +798,18 @@ class ObjectManager {
 
 
 	public function &getStatic($object_class) {
-		try {
-			$object = &$this->getStaticInstance($object_class);
-		}
-		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
-			$object = false;
-		}
-		return $object;
+        $instance = false;        
+        $packages = $this->getPackages();
+        $package = self::getObjectPackageName($object_class);
+        if(in_array($package, $packages)) {
+            try {
+                $instance = &$this->getStaticInstance($object_class);
+            }
+            catch(Exception $e) {
+                EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+            }
+        }
+		return $instance;
 	}
 
 	/**
