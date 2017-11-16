@@ -101,7 +101,7 @@ class TextTransformer {
         'fr' => ["un", "une", "le", "la", "les", "l", "d", "de", "du", "des", "ce", "ca", "ces", "c", "s", "que", "qui", "quoi", "qu", "a", "au", "ou", "il", "elle", "pour", "donc", "dont"]
         ];
         $items = $locales[$locale];
-        return !(in_array($word, $items));
+        return !(strlen($word) < 3 || in_array($word, $items));
     }
     
     
