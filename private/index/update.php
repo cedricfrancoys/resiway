@@ -1,13 +1,10 @@
 #!/usr/bin/env php
 <?php
-/**
- Tells indexer to update non-indexed questions
-*/
 use easyobject\orm\ObjectManager;
-
 use qinoa\text\TextTransformer;
-
 use resiway\Index;
+use config\QNlib;
+
 
 // run this script as if it were located in the public folder
 chdir('../../public');
@@ -19,11 +16,29 @@ require_once('../qn.lib.php');
 
 
 
+// announce script and fetch parameters values
+$params = QNLib::announce(	
+	array(	
+    'description'	=>	"Tells indexer to update non-indexed objects",
+    'params' 		=>	array(                                         
+                        'size'		=> array(
+                                            'description'   => 'Amount of objects to index for each batch',
+                                            'type'          => 'integer',
+                                            'default'       => 5
+                                            ),
+                        'flush'	    => array(
+                                            'description'   => 'Token to search among the articles',
+                                            'type'          => 'boolean',
+                                            'default'       => false
+                                            )                                            
+                        )
+	)
+);
+
 list($result, $error_message_ids) = [true, []];
 
 set_silent(true);
 
- 
 
 try {
     
@@ -46,7 +61,7 @@ try {
         $object_field = $schema[$index_field]['rel_foreign_key'];
 
         // request a batch of 5 non-indexed questions
-        $objects_ids = $om->search($object_class, ['indexed', '=', 0], 'id', 'asc', 0, 5);
+        $objects_ids = $om->search($object_class, ['indexed', '=', 0], 'id', 'asc', 0, $params['size']);
         if($objects_ids > 0 && count($objects_ids)) {
 
             
