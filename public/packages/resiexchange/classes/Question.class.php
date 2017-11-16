@@ -306,7 +306,7 @@ class Question extends \easyobject\orm\Object {
     }
     
     /** 
-    * Converts a single object serve a static version of the content
+    * Serve a static HTML version of a single object
     *
     */    
     public static function toHTML($om, $oid) {
@@ -322,11 +322,11 @@ class Question extends \easyobject\orm\Object {
             $odata = $questions[$oid];
 
             $html[] = '<!DOCTYPE html>'.PHP_EOL;
-            $html[] = '<html lang="'.$question_data['lang'].'">'.PHP_EOL;
+            $html[] = '<html lang="'.$odata['lang'].'">'.PHP_EOL;
             $html[] = '<head>'.PHP_EOL;    
             $html[] = '<meta charset="utf-8">'.PHP_EOL;
-            $html[] = '<meta name="title" content="'.$question_data['title'].' - ResiExchange - Des réponses pour la résilience">'.PHP_EOL;
-            $html[] = '<meta name="description" content="'.$question_data['content_excerpt'].'">'.PHP_EOL;
+            $html[] = '<meta name="title" content="'.$odata['title'].' - ResiExchange - Des réponses pour la résilience">'.PHP_EOL;
+            $html[] = '<meta name="description" content="'.$odata['content_excerpt'].'">'.PHP_EOL;
             $html[] = '</head>'.PHP_EOL;
             $html[] = '<body>'.PHP_EOL;
         
