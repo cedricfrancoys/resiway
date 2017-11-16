@@ -96,7 +96,7 @@ try {
                         // we expect SQL to deal with the conversion
                         $res = $om->search('resiway\Index', ['hash', '=', $hash]);
                         // skip index if already exists
-                        if($res > 0 && count($res) > 0) {
+                        if($res > 0 && count($res)) {
                             $index_id = $res[0];
                             $indexes_ids[$index_id] = (isset($indexes_ids[$index_id]))?$indexes_ids[$index_id]+1:1;
                             continue;
