@@ -285,10 +285,20 @@ namespace config {
 		public static function announce($announcement) {		
 			$result = array();
 
-			// 1) check presence of all mandatory parameters
+            
+            
+			// 0) check presence of all mandatory parameters
 			// build mandatory fields array
 			$mandatory_params = array();
 			if(!isset($announcement['params'])) $announcement['params'] = array();
+            
+            // 1) fetch values from command line, in case script was invoked by CLI
+            $options = getopt("", array_map(function ($a) { return $a.'::'; }, array_keys($announcement['params'])));            
+            foreach($options as $param => $value) {
+                $_REQUEST[$param] = $value;
+            }
+            
+            // chek if all required parameters have been received
 			foreach($announcement['params'] as $param => $description)
 				if(isset($description['required']) && $description['required']) $mandatory_params[] = $param;
 			// if at least one mandatory param is missing
