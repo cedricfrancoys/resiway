@@ -96,14 +96,8 @@ try {
     $pdf_content = $object_class::toPDF($om, $object_id);
     
     // output headers according to URL params
-    // force view
-    if($params['view']) {        
-        header("Content-Disposition: inline; filename=".$object['title_url'].".pdf;");    
-        header("Content-Type: application/pdf");
-        header("Content-Length: ".strlen($pdf_content));
-    }
     // force download
-    else {    
+    if($params['download']) {
         // disable compression whatever default option is
         ini_set('zlib.output_compression','0');
         // tell the browser to download resource
@@ -116,6 +110,12 @@ try {
         header("Cache-Control: public");
         header("Content-Type: application/pdf");
         header("Content-Length: ".strlen($pdf_content));
+    }
+    // online view
+    else {    
+        header("Content-Disposition: inline; filename=".$object['title_url'].".pdf;");    
+        header("Content-Type: application/pdf");
+        header("Content-Length: ".strlen($pdf_content));    
     }
     // output PDF content
     print($pdf_content);    
