@@ -111,6 +111,32 @@ class ResiAPI {
         return str_replace(['+','/'],['-', '_'], $code);
     }
     
+    // todo: complete
+    public static function resolvePseudoClass($object_pseudo_class) {
+        $object_class = false;
+        switch($object_pseudo_class) {
+        case 'article':
+            $object_class = 'resilexi\Article';   
+            break;        
+        case 'document':
+            $object_class = 'resilib\Document';   
+            break;       
+        case 'question':
+            $object_class = 'resiexchange\Question';   
+            break;    
+        case 'answer':
+            $object_class = 'resiexchange\Answer';   
+            break;    
+        case 'category':
+            $object_class = 'resiway\Category';   
+            break;    
+        case 'user': 
+            $object_class = 'resiway\User';   
+            break;
+        }
+        return $object_class;
+    }    
+    
 // todo: complete
     public static function makeLink($object_class, $object_id) {
         $link = '';

@@ -1,6 +1,8 @@
 <?php
 namespace resilib;
 
+use resiway\User;
+
 use qinoa\text\TextTransformer;
 use qinoa\html\HTMLToText;
 
@@ -218,9 +220,74 @@ class Document extends \easyobject\orm\Object {
         return $result;        
     }
     
+
+    /**
+    * Converts a list of documents to a JSON structure matching JSON API RFC7159 specifications
+    * content-type: application/vnd.api+json
+    * 
+    */  
+    public static function toJSONAPI($om, $oids, $meta) {
+        $result = [];
+        $included = [];
+        
+        $documents = $om->read(__CLASS__, $oids, [
+                                                    'creator'  => User::getPublicFields(), 
+                                                    'created', 
+                                                    'title', 
+                                                    'title_url',
+                                                    'description',
+                                                    'authors_ids',
+                                                    'content_excerpt', 
+                                                    'content_type',
+                                                    'original_url',
+                                                    'score', 
+                                                    'count_views', 
+                                                    'count_votes', 
+                                                    'categories_ids' => ['id', 'title', 'path', 'parent_path', 'description']
+                                                ]);
+
+        // build JSON object
+        foreach($documents as $id => $document) {
+            $author_id = $document['creator']['id'];
+            unset($document['creator']['id']);
+            if(!isset($included['creator_'.$author_id])) {
+                $included['creator_'.$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $document['creator']];
+            }        
+            foreach($document['categories_ids'] as $category) {
+                $category_id = $category['id'];
+                unset($category['id']);
+                if(!isset($included['category_'.$category_id])) {
+                    $included['category_'.$category_id] = ['type' => 'category', 'id' => $category_id, 'attributes' => (object) $category];
+                }        
+            }
+            $categories = array_values($document['categories_ids']);
+            unset($document['id']);        
+            unset($document['creator']);        
+            unset($document['categories_ids']);
+            $document['resilink'] = "http://resilink.io/document/{$id}/{$title_url}";
+            $result[] = [
+                'type'          => 'document', 
+                'id'            => $id, 
+                'attributes'    => (object) $document, 
+                'relationships' => (object) [
+                    'creator'       => (object)['data' => (object)['type' => 'people', 'id' => $author_id]],
+                    'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
+                ]
+            ];       
+        }
+        ksort($included);
+        return json_encode(array_merge(
+            ['jsonapi'   => (object) ['version' => '1.0'] ],
+            $meta,
+            [
+                'data'      => $result,
+                'included'  => array_values($included)
+            ]
+        ), JSON_PRETTY_PRINT);
+    }
     
     /** 
-    * Converts a single object serve a static version of the content
+    * Serve a static HTML version of a single document object
     *
     */    
     public static function toHTML($om, $oid) {
@@ -268,5 +335,16 @@ class Document extends \easyobject\orm\Object {
         return implode(PHP_EOL, $html);
     }
 
-    
+    /** 
+    * Serve a PDF version of a single document object
+    *
+    */    
+    public static function toPDF($om, $oid) {
+        $result = null;
+        $documents = $om->read(__CLASS__, $oid, ['content']);
+        if($documents > 0 && isset($documents[$oid])) {
+            $result = $documents[$oid]['content'];
+        }
+        return $result;
+    }
 }

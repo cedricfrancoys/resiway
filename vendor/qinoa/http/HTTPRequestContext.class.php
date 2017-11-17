@@ -186,9 +186,9 @@ class HTTPRequestContext extends HTTPRequest {
             /* Twitter */
             else if(stripos($_SERVER["HTTP_USER_AGENT"], "Twitterbot") !== false) {
                 $res = true;    
-            }
-            $this->is_bot = $res;
+            }            
         }
+        $this->is_bot = $res;        
         return $this->is_bot;
     }
     

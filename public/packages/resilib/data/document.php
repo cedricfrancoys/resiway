@@ -12,7 +12,7 @@ set_silent(true);
 // announce script and fetch parameters values
 $params = QNLib::announce(	
 	array(	
-    'description'	=>	"Returns a fully loaded document object",
+    'description'	=>	"Returns a fully loaded document JSON object",
     'params' 		=>	array(                                         
                         'id'    => array(
                                     'description'   => 'Identifier of the document to retrieve.',

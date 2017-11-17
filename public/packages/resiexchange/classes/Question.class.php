@@ -3,8 +3,9 @@ namespace resiexchange;
 
 use resiway\User;
 
+use qinoa\text\TextTransformer;
 use qinoa\html\HTMLToText;
-
+use qinoa\pdf\DOMPDF;
 
 class Question extends \easyobject\orm\Object {
    
@@ -47,6 +48,7 @@ class Question extends \easyobject\orm\Object {
             /* text describing the question */
             'content'			    => array('type' => 'html', 'onchange' => 'resiexchange\Question::onchangeContent'),
 
+            /* auto-generated question summary */
             'content_excerpt'       => array(
                                         'type'              => 'function',
                                         'result_type'       => 'string',
@@ -57,6 +59,9 @@ class Question extends \easyobject\orm\Object {
             /* number of times this question has been displayed */
             'count_views'			=> array('type' => 'integer'),
 
+            /* number of times this question has been downloaded */
+            'count_downloads'		=> array('type' => 'integer'),
+            
             /* number of times this question has been voted (up and down) */
             'count_votes'			=> array('type' => 'integer'),
 
@@ -140,36 +145,7 @@ class Question extends \easyobject\orm\Object {
              'count_links'      => function() { return 0; }
         );
     }
-
-    public static function slugify($value) {
-        // remove accentuated chars
-        $value = htmlentities($value, ENT_QUOTES, 'UTF-8');
-        $value = preg_replace('~&([a-z]{1,2})(acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', $value);
-        $value = html_entity_decode($value, ENT_QUOTES, 'UTF-8');
-        // remove all non-quote-space-alphanum-dash chars
-        $value = preg_replace('/[^\'\s-a-z0-9]/i', '', $value);
-        // replace spaces, dashes and quotes with dashes
-        $value = preg_replace('/[\s-\']+/', '-', $value);           
-        // trim the end of the string
-        $value = trim($value, '.-_');
-        return strtolower($value);
-    }
-        
-    public static function excerpt($html, $max_chars) {
-        $res = '';        
-        // convert html to txt
-        $string = HtmlToText::convert($html, false);
-        $len = 0;
-        for($i = 0, $parts = explode(' ', $string), $j = count($parts); $i < $j; ++$i) {
-            $piece = $parts[$i].' ';
-            $p_len = strlen($piece);
-            if($len + $p_len > $max_chars) break;
-            $len += $p_len;
-            $res .= $piece;
-        } if($len == 0) $res = substr($string, 0, $max_chars);
-        return $res;
-    }
-    
+           
     public static function onchangeContent($om, $oids, $lang) {
         // force re-compute content_excerpt
         $om->write('resiexchange\Question', $oids, ['content_excerpt' => null, 'indexed' => false], $lang);        
@@ -181,93 +157,49 @@ class Question extends \easyobject\orm\Object {
     }    
 
     // Returns excerpt of the content of max 200 chars cutting on a word-basis   
-    // todo: define excerpt length in config file
     public static function getContentExcerpt($om, $oids, $lang) {
         $result = [];
         $res = $om->read('resiexchange\Question', $oids, ['content']);
         foreach($res as $oid => $odata) {
-            $result[$oid] = self::excerpt($odata['content'], 200);
+            $result[$oid] = TextTransformer::excerpt(HTMLToText::convert($odata['content'], false), RESIEXCHANGE_QUESTION_CONTENT_EXCERPT_LENGTH_MAX);
         }
         return $result;        
     }
 
+    // todo: define slug length in config file
     public static function getTitleURL($om, $oids, $lang) {
         $result = [];
         $res = $om->read('resiexchange\Question', $oids, ['title']);
         foreach($res as $oid => $odata) {
             // note: final format will be: #/question/{id}/{title}
-            $result[$oid] = self::slugify($odata['title'], 200);
+            $result[$oid] = TextTransformer::slugify($odata['title'], 200);
         }
         return $result;        
     }
-    
-    public static function getAuthor($om, $oids) {
-        $result = [];
-        $questions = $om->read(__CLASS__, $oids, ['creator']);
-        $authors_ids = [];
-        if($questions > 0) {
-            foreach($questions as $question_id => $question_data) {
-                // remember creators ids for each question
-                $authors_ids = array_merge($authors_ids, (array) $question_data['creator']); 
-            }            
-            // retrieve authors data
-            $questions_authors = $om->read('resiway\User', $authors_ids, User::getPublicFields());        
-            if($questions_authors > 0) {
-                foreach($questions as $question_id => $question_data) {
-                    $author_id = $question_data['creator'];
-                    if(isset($questions_authors[$author_id])) {
-                        $result[$question_id]['creator'] = $questions_authors[$author_id];
-                    }
-                }
-            }
-        }
-        return $result;
-    }
-    
-    public static function getCategories($om, $oids) {
-        $result = [];
-        $questions = $om->read(__CLASS__, $oids, ['categories_ids']);
-        $categories_ids = [];
-        if($questions > 0) {
-            foreach($questions as $question_id => $question_data) {
-                // remember categories ids for each question
-                $categories_ids = array_merge($categories_ids, (array) $question_data['categories_ids']); 
-            }            
-            // retrieve categories data
-            $questions_categories = $om->read('resiway\Category', $categories_ids, ['id', 'title', 'path', 'parent_path', 'description']);        
-            if($questions_categories > 0) {
-                foreach($questions as $question_id => $question_data) {
-                    $categories_ids = $question_data['categories_ids'];
-                    $result[$question_id]['categories'] = [];
-                    foreach($categories_ids as $category_id) {
-                        if(isset($questions_categories[$category_id])) {
-                            $result[$question_id]['categories'][] = $questions_categories[$category_id];
-                        }                        
-                    }
-                }
-            }
-        }
-        return $result;
-    }    
+           
     
     /**
-    * Converts a list of questions to a JSON structure
+    * Converts a list of questions to a JSON structure matching JSON API RFC7159 specifications
+    * content-type: application/vnd.api+json
     * 
-    */
-    public static function toJSON($om, $oids, $params) {
+    */  
+    public static function toJSONAPI($om, $oids, $meta) {
         $result = [];
         $included = [];
         
-        $questions = $om->read(__CLASS__, $oids, ['creator', 'created', 'title', 'title_url', 'content_excerpt', 'score', 'count_views', 'count_votes', 'count_answers', 'categories_ids']);        
-
-        // read authors
-        $authors = self::getAuthor($om, $oids);
-        $questions = array_replace_recursive($questions, $authors);
-        
-        // read categories
-        $categories = self::getCategories($om, $oids);
-        $questions = array_replace_recursive($questions, $categories);
-                        
+        $questions = $om->read(__CLASS__, $oids, [
+                                                    'creator'  => User::getPublicFields(), 
+                                                    'created', 
+                                                    'title', 
+                                                    'title_url', 
+                                                    'content_excerpt', 
+                                                    'score', 
+                                                    'count_views', 
+                                                    'count_votes', 
+                                                    'count_answers', 
+                                                    'categories_ids' => ['id', 'title', 'path', 'parent_path', 'description']
+                                                ]);
+                       
         // build JSON object
         foreach($questions as $id => $question) {
             $author_id = $question['creator']['id'];
@@ -275,49 +207,54 @@ class Question extends \easyobject\orm\Object {
             if(!isset($included['creator_'.$author_id])) {
                 $included['creator_'.$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $question['creator']];
             }        
-            foreach($question['categories'] as $category) {
+            foreach($question['categories_ids'] as $category) {
                 $category_id = $category['id'];
                 unset($category['id']);
                 if(!isset($included['category_'.$category_id])) {
                     $included['category_'.$category_id] = ['type' => 'category', 'id' => $category_id, 'attributes' => (object) $category];
                 }        
             }
-            $categories = $question['categories'];
+            $categories = array_values($question['categories_ids']);
             unset($question['id']);        
             unset($question['creator']);        
-            unset($question['categories']);                
+            unset($question['categories_ids']);                
             $result[] = [
                 'type'          => 'question', 
                 'id'            => $id, 
                 'attributes'    => (object) $question, 
                 'relationships' => (object) [
-                    'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
+                    'creator'       => (object)['data' => (object)['type' => 'people', 'id' => $author_id]],
                     'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
                 ]
             ];       
         }
         ksort($included);
-        return json_encode([
-            'jsonapi'   => (object) ['version' => '1.0'],        
-            'meta'      => ['count' => $params['total'], 'page-size' => $params['limit'], 'total-pages' => $params['pages']],
-            'data'      => $result,
-            'included'  => array_values($included)
-        ], JSON_PRETTY_PRINT);
+        return json_encode(array_merge(
+            ['jsonapi'   => (object) ['version' => '1.0'] ],
+            $meta,
+            [
+                'data'      => $result,
+                'included'  => array_values($included)
+            ]
+        ), JSON_PRETTY_PRINT);
     }
     
     /** 
-    * Serve a static HTML version of a single object
+    * Serve a static HTML version of a single question object
     *
-    */    
+    */
+// todo : include CSS styling / HTML templating        
     public static function toHTML($om, $oid) {
         $html = [];
 
-        $questions = $om->read(__CLASS__, $oid, ['id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'content_excerpt', 'count_views', 'count_votes', 'score', 'answers_ids', 'categories_ids.title']);
+        $questions = $om->read(__CLASS__, $oid, [
+            'id', 'lang', 'creator', 'created', 'editor', 'edited', 'modified', 
+            'title', 'title_url', 'content', 'content_excerpt', 
+            'count_views', 'count_votes', 'score', 
+            'categories_ids.title',
+            'answers_ids' => ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score']
+        ]);
         if($questions > 0 && isset($questions[$oid])) {
-            // merge all answers_ids
-            $answers_ids = array_reduce($questions, function($result, $question) { return array_merge($result, $question['answers_ids']); }, []);
-            // pre-load all answers at once
-            $answers = $om->read('resiexchange\Answer', $answers_ids, ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score']);    
 
             $odata = $questions[$oid];
 
@@ -335,8 +272,8 @@ class Question extends \easyobject\orm\Object {
             $html[] = '   itemtype="https://schema.org/Question">';
 
             $html[] = '<h1 itemprop="name">'.$odata['title'].'</h1>';
-            $html[] = '<div itemprop="upvoteCount">'.$odata['score'].'</div>';
-            $html[] = '<div itemprop="answerCount">'.count($odata['answers_ids']).'</div>';
+            $html[] = '<div><label>score:</label><span itemprop="upvoteCount">'.$odata['score'].'</span></div>';
+            $html[] = '<div><label>answers:</label><span itemprop="answerCount">'.count($odata['answers_ids']).'</span></div>';
             $html[] = '<div itemprop="text">'.$odata['content'].'</div>';
             $html[] = '<div itemprop="dateCreated">'.$odata['created'].'</div>';        
             $html[] = '<div itemprop="dateModified">'.$odata['modified'].'</div>';                
@@ -345,10 +282,9 @@ class Question extends \easyobject\orm\Object {
                 $html[] = '<h2>'.$category.'</h2>';
             }
             
-            $answers = $om->read('resiexchange\Answer', $odata['answers_ids'], ['creator', 'created', 'editor', 'edited', 'content', 'content_excerpt', 'score']);    
-            if($answers > 0) {
+            if($odata['answers_ids'] > 0) {
                 $first = true;
-                foreach($answers as $answer_id => $answer_data) {    
+                foreach($odata['answers_ids'] as $answer_id => $answer_data) {    
                     $html[] = '<div id="answer-'.$answer_id.'"';
                     $html[] = ' itemscope="" ';
                     $html[] = ' itemtype="https://schema.org/Answer"';
@@ -366,4 +302,21 @@ class Question extends \easyobject\orm\Object {
         }
         return implode(PHP_EOL, $html);
     }
+    
+    /** 
+    * Serve a PDF version of a single article object
+    *
+    */    
+    public static function toPDF($om, $oid) {
+        $result = null;
+        $html = self::toHTML($om, $oid);
+        if(strlen($html) > 0) {
+            $dompdf = new DOMPDF();
+            $dompdf->load_html($html, 'UTF-8');
+            $dompdf->set_paper("letter", 'portrait');
+            $dompdf->render();	
+            $result = $dompdf->output();
+        }
+        return $result;
+    }      
 }

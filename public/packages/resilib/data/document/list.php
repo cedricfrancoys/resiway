@@ -247,63 +247,6 @@ catch(Exception $e) {
     $error_message_ids = array($e->getMessage());
 }
 
-// determine output format
-if( intval($params['api']) > 0 && is_array($result) ) {
-    // JSON API RFC7159
-    header('Content-type: application/vnd.api+json');
-    $result = [];
-    $included = [];
-    foreach($documents as $id => $document) {
-        $author_id = $document['creator']['id'];
-        unset($document['creator']['id']);
-        if(!isset($included['creator_'.$author_id])) {
-            $included['creator_'.$author_id] = ['type' => 'people', 'id' => $author_id, 'attributes' => (object) $document['creator']];
-        }        
-        foreach($document['categories'] as $category) {        
-            $category_id = $category['id'];
-            unset($category['id']);        
-            if(!isset($included['category_'.$category_id])) {
-                $included['category_'.$category_id] = ['type' => 'category', 'id' => $category_id, 'attributes' => (object) $category];
-            }        
-        }
-        $categories = $document['categories'];
-        $title_url = $document['title_url'];
-        unset($document['id']);        
-        unset($document['creator']);        
-        unset($document['categories']);
-        unset($document['title_url']);
-        $result[] = [
-            'type'          => 'document', 
-            'id'            => $id, 
-            'links'         => (object) [
-                'self'          => QNLib::get_url(false, false)."document/{$id}/{$title_url}",
-                'resilink'      => "http://resilink.io/document/{$id}/{$title_url}"
-            ],            
-            'attributes'    => (object) $document, 
-            'relationships' => (object) [
-                'creator'       => (object)['data' => (object)['id'=>$author_id, 'type'=>'people']],
-                'categories'    => (object)['data' => array_map(function($a) {return (object)['id'=>$a['id'], 'type'=>'category'];}, $categories)]
-            ]
-        ];       
-    }
-    ksort($included);
-    echo json_encode((object)[
-        'jsonapi'   => (object) ['version' => '1.0'],
-        'meta'      => [
-                        'count'         => $params['total'], 
-                        'page-index'    => floor($params['start']/$params['limit'])+1,
-                        'page-size'     => $params['limit'], 
-                        'total-pages'   => ceil($params['total']/$params['limit'])
-                       ],
-        'links'     => ['self' => QNLib::get_url(false, false).'api/documents?start='.$params['start'].'&limit='.$params['limit'], 
-                        'next' => QNLib::get_url(false, false).'api/documents?start='.($params['start']+$params['limit']).'&limit='.$params['limit']
-                       ],
-        'data'      => $result,
-        'included'  => array_values($included),
-        ], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);    
-    exit();
-}
-
 // send json result
 header('Content-type: application/json; charset=UTF-8');
 echo json_encode([

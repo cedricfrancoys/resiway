@@ -5,6 +5,7 @@ use resiway\User;
 
 use qinoa\text\TextTransformer;
 use qinoa\html\HTMLToText;
+use qinoa\pdf\DOMPDF;
 
 class Article extends \easyobject\orm\Object {
 
@@ -43,12 +44,13 @@ class Article extends \easyobject\orm\Object {
             /* language into which the article is written */
             'lang'			        => array('type' => 'string'),
             
-            /* channel of the current question ('default', 'help', 'meta', ...) */
+            /* channel of the current article ('default', 'help', 'meta', ...) */
             'channel_id'            => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
                         
-            
+            /* complete content of the article */
             'content'			    => array('type' => 'html', 'onchange' => 'resilexi\Article::onchangeContent'),
 
+            /* auto-generated article summary */
             'content_excerpt'       => array(
                                         'type'              => 'function',
                                         'result_type'       => 'short_text',
@@ -70,6 +72,9 @@ class Article extends \easyobject\orm\Object {
 
             /* number of times this article has been displayed */
             'count_views'			=> array('type' => 'integer'),
+
+            /* number of times this article has been downloaded */
+            'count_downloads'		=> array('type' => 'integer'),
            
             /* number of times this article has been voted (up and down) */
             'count_votes'			=> array('type' => 'integer'),
@@ -218,6 +223,67 @@ class Article extends \easyobject\orm\Object {
                 'included'  => array_values($included)
             ]
         ), JSON_PRETTY_PRINT);
-    }    
+    }
+
+    /** 
+    * Serve a static HTML version of a single article object
+    *
+    */
+// todo : include CSS styling / HTML templating    
+    public static function toHTML($om, $oid) {
+        $html = [];
+
+        $articles = $om->read(__CLASS__, $oid, ['id', 'creator', 'created', 'editor', 'edited', 'modified', 'title', 'title_url', 'content', 'content_excerpt', 'count_views', 'count_votes', 'score', 'categories_ids.title']);
+        if($articles > 0 && isset($articles[$oid])) {
+
+            $odata = $articles[$oid];
+
+            $html[] = '<!DOCTYPE html>'.PHP_EOL;
+            $html[] = '<html lang="'.$odata['lang'].'">'.PHP_EOL;
+            $html[] = '<head>'.PHP_EOL;    
+            $html[] = '<meta charset="utf-8">'.PHP_EOL;
+            $html[] = '<meta name="title" content="'.$odata['title'].' - ResiLexi - Tous les thèmes de la résilience">'.PHP_EOL;
+            $html[] = '<meta name="description" content="'.$odata['content_excerpt'].'">'.PHP_EOL;
+            $html[] = '</head>'.PHP_EOL;
+            $html[] = '<body>'.PHP_EOL;
+        
+            $html[] = '<div class="article wrapper"';
+            $html[] = '   itemscope=""';
+            $html[] = '   itemtype="https://schema.org/Article">';
+
+            $html[] = '<h1 itemprop="name">'.$odata['title'].'</h1>';
+            $html[] = '<div itemprop="upvoteCount">'.$odata['score'].'</div>';
+            $html[] = '<div itemprop="text">'.$odata['content'].'</div>';
+            $html[] = '<div itemprop="dateCreated">'.$odata['created'].'</div>';        
+            $html[] = '<div itemprop="dateModified">'.$odata['modified'].'</div>';                
+
+            foreach($odata['categories_ids.title'] as $category) {
+                $html[] = '<h2>'.$category.'</h2>';
+            }
+            
+
+            $html[] = '</div>';
+            $html[] = '</body>'.PHP_EOL;        
+            $html[] = '</html>'.PHP_EOL;
+        }
+        return implode(PHP_EOL, $html);
+    }
+    
+    /** 
+    * Serve a PDF version of a single article object
+    *
+    */
+    public static function toPDF($om, $oid) {
+        $result = null;
+        $html = self::toHTML($om, $oid);
+        if(strlen($html) > 0) {
+            $dompdf = new DOMPDF();
+            $dompdf->load_html($html, 'UTF-8');
+            $dompdf->set_paper("letter", 'portrait');
+            $dompdf->render();	
+            $result = $dompdf->output();
+        }
+        return $result;
+    }   
     
 }

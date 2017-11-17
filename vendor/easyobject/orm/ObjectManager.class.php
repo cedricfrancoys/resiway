@@ -1000,7 +1000,6 @@ todo: signature differs from other methods	(returned value)
                 }
 			}
 
-
 		}
 		catch(Exception $e) {
 			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);

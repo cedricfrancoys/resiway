@@ -30,7 +30,10 @@
     "/sitemap.txt":"?show=resiway_sitemap",
     "/sitemap.html":"?show=resiway_sitemap&output=html",
     "/api/categories":"?get=resiway_category_list&api=1.0",
-    "/api/questions":"?get=resiexchange_question_list&api=1.0",
-    "/api/documents":"?get=resilib_document_list&api=1.0",
-    "/api/articles":"?get=resiway_api_articles"
+    "/api/questions":"?get=resiway_api&class=question",
+    "/api/documents":"?get=resiway_api&class=document",
+    "/api/articles":"?get=resiway_api&class=article",
+    "/pdf/question/:id/:title?":"?get=resiway_pdf&class=question",
+    "/pdf/document/:id/:title?":"?get=resiway_pdf&class=document",
+    "/pdf/article/:id/:title?":"?get=resiway_pdf&class=article"
 }

@@ -207,15 +207,6 @@ catch(Exception $e) {
     $error_message_ids = array($e->getMessage());
 }
 
-// determine output format
-if( intval($params['api']) > 0 && is_array($result) ) {
-    // JSON API RFC7159
-    header('Content-type: application/vnd.api+json');
-    $params['pages'] = ceil($params['total']/$params['limit']);
-    echo resiexchange\Question::toJSON($om, $questions_ids, $params);
-    exit();
-}
-
 // send json result
 header('Content-type: application/json; charset=UTF-8');
 echo json_encode([

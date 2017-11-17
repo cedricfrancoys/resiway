@@ -308,7 +308,7 @@ namespace config {
             if( count($missing_params) || isset($_REQUEST['announce']) ) {
 				// output json data telling what is expected
 				echo json_encode(array(
-                                    'result'            => MISSING_PARAM,
+                                    'result'            => QN_ERROR_MISSING_PARAM,
                                     'announcement'      => $announcement, 
                                     'error_message_ids' => ['missing_'.array_values($missing_params)[0]]
                                  ), JSON_FORCE_OBJECT|JSON_PRETTY_PRINT);
@@ -327,11 +327,12 @@ namespace config {
 					else $_REQUEST[$param] = $config['default'];
 				}
 				// handle optional attributes, if any, and prevent some js/php misunderstanding
-				if(in_array($_REQUEST[$param], array('NULL', 'null'))) $_REQUEST[$param] = null;
+				if(in_array($_REQUEST[$param], ['NULL', 'null'], true)) $_REQUEST[$param] = null;
+                
 				switch($config['type']) {
 					case 'bool':
                     case 'boolean':
-						if(in_array($_REQUEST[$param], array('TRUE', 'true', '1', 1))) $_REQUEST[$param] = true;
+						if(in_array($_REQUEST[$param], ['TRUE', 'true', '1', 1, true], true)) $_REQUEST[$param] = true;
 						else $_REQUEST[$param] = false;								
 						break;
 					case 'array':
@@ -345,8 +346,8 @@ namespace config {
                         break;
 					case 'int':
                     case 'integer':
-                        if(in_array($_REQUEST[$param], array('TRUE', 'true'))) $_REQUEST[$param] = 1;
-                        else if(in_array($_REQUEST[$param], array('FALSE', 'false'))) $_REQUEST[$param] = 0;
+                        if(in_array($_REQUEST[$param], ['TRUE', 'true'], true)) $_REQUEST[$param] = 1;
+                        else if(in_array($_REQUEST[$param], ['FALSE', 'false'], true)) $_REQUEST[$param] = 0;
                         else $_REQUEST[$param] = intval($_REQUEST[$param]);
                         if(isset($config['min'])) {
                             $min = $config['min'];
