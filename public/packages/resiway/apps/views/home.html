@@ -175,7 +175,7 @@
                                 <a href="/resiexchange.fr#!/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> a partagé un nouveau document 
                                 <a href="/resilib.fr#!/document/{{action.object.id}}/{{action.object.title_url}}" target="_self">{{action.object.title}}</a> 
                                 dans la catégorie <a href="/resilib.fr#!/category/{{action.object['categories_ids'][0]}}" target="_self">{{action.object['categories_ids.name'][0]}}</a>
-                                <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div>
+                                <!-- <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div> -->
                             </div>                            
 
                             <div ng-switch-when="resiexchange_answer_post" style="display: table-cell; vertical-align: top;">

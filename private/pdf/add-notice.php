@@ -60,7 +60,7 @@ try {
 
             $output = '';
             exec("pdftk \"{$filename}.tmp\" \"{$filename}.orig\" cat output \"{$filename}\" 2>&1", $output);
-            chgrp($filename , APACHE_USER);
+            chgrp($filename, APACHE_USER);
             chown($filename, APACHE_USER);
             chmod($filename, 0664);
 
