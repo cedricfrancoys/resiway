@@ -265,7 +265,7 @@ class Document extends \easyobject\orm\Object {
             unset($document['id']);        
             unset($document['creator']);        
             unset($document['categories_ids']);
-            $document['resilink'] = "http://resilink.io/document/{$id}/{$title_url}";
+            $document['resilink'] = "http://resilink.io/document/{$id}/{$document['title_url']}";
             $result[] = [
                 'type'          => 'document', 
                 'id'            => $id, 
