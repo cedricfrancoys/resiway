@@ -182,7 +182,8 @@ class Document extends \easyobject\orm\Object {
                 array(
                         'original_filename'	=> $_FILES['content']['name'], 
                         'size'		        => $_FILES['content']['size'], 
-                        'content_type'		=> $_FILES['content']['type']
+                        'content_type'		=> $_FILES['content']['type'],
+                        'notice'            => false
                 ), 
                 $lang);
         }

@@ -11,6 +11,9 @@ use easyobject\orm\ObjectManager as ObjectManager;
 chdir('../../public');
 set_time_limit(0);
 
+// define Apache user (new pdf pre-pended with notice will have that user as owner)
+define('APACHE_USER', 'www-data');
+
 // this utility script uses qinoa library
 // and requires file config/config.inc.php
 require_once('../qn.lib.php');
@@ -44,12 +47,22 @@ try {
             $dompdf = new DOMPDF();
             $dompdf->load_html($html, 'UTF-8');
             $dompdf->set_paper("letter", 'portrait');
-            $dompdf->render();	
+            $dompdf->render();
+
+            // remove .orig if it already exists
+            if(file_exists($filename.'.orig')) {
+                unlink($filename.'.orig');
+            }
+            
+            // rename original file
             rename($filename, $filename.'.orig');
             file_put_contents($filename.'.tmp', $dompdf->output());
 
             $output = '';
             exec("pdftk \"{$filename}.tmp\" \"{$filename}.orig\" cat output \"{$filename}\" 2>&1", $output);
+            chgrp($filename , APACHE_USER);
+            chown($filename, APACHE_USER);
+            chmod($filename, 0664);
 
             // delete temporary file
             unlink($filename.'.tmp');
