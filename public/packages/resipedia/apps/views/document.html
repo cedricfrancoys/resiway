@@ -143,15 +143,15 @@
                             <a href="/pdf/document/{{document.id}}/{{document.title_url}}?view=1" 
                                type="application/pdf" 
                                target="_blank">
-                              <i class="fa fa-eye" aria-hidden="true"></i> {{ 'MODAL_DOCUMENT_SHARE_VIEW' | translate }}
+                              <i class="fa fa-eye" aria-hidden="true"></i> <span ng-bind-html="'MODAL_DOCUMENT_SHARE_VIEW' | translate"></span>
                             </a>&nbsp;
                             <a href
                                ng-click="showShareModal()"
                                title="{{'DOCUMENT_ACTIONS_SHARE_TOOLTIP' | translate}}">
-                                <i class="fa fa-share-alt" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_SHARE' | translate}}
+                                <i class="fa fa-share-alt" aria-hidden="true"></i> <span ng-bind-html="'DOCUMENT_ACTIONS_SHARE' | translate"></span>
                             </a>&nbsp;
                             <a href="/document/edit/{{document.id}}">
-                                <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_EDIT' | translate}}
+                                <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'DOCUMENT_ACTIONS_EDIT' | translate"></span>
                             </a>&nbsp;                            
                             <a href                                         
                                id="document-flag"
@@ -162,7 +162,7 @@
                                popover-trigger="'toggle-popover'" 
                                popover-placement="right"
                                popover-append-to-body="true">
-                                <i class="fa fa-flag" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_FLAG' | translate}}
+                                <i class="fa fa-flag" aria-hidden="true"></i> <span ng-bind-html="'DOCUMENT_ACTIONS_FLAG' | translate"></span>
                             </a>&nbsp;                            
                             <a href 
                                id="document-delete"
@@ -174,13 +174,13 @@
                                popover-trigger="'toggle-popover'"
                                popover-placement="right"
                                popover-append-to-body="true">
-                                <i class="fa fa-remove" aria-hidden="true"></i> {{'DOCUMENT_ACTIONS_DELETE' | translate}}
+                                <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'DOCUMENT_ACTIONS_DELETE' | translate"></span>
                             </a>                            
                         </div>
                         <div class="signature" ng-if="document.editor != 0 && document.editor.id != document.creator.id">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'DOCUMENT_STATS_EDITED' | translate}} {{document.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime"><span ng-bind-html="'DOCUMENT_STATS_EDITED' | translate"></span> {{document.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="/user/{{document.editor.id}}/{{document.editor.name_url}}">
@@ -212,7 +212,7 @@
                         <div class="signature owner">
                             <div class="user-info">
                                 <div class="user-action-time">
-                                    <span class="relativetime">{{'DOCUMENT_STATS_ASKED' | translate}} {{document.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                                    <span class="relativetime"><span ng-bind-html="'DOCUMENT_STATS_ASKED' | translate"></span> {{document.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
                                 </div>
                                 <div class="user-avatar">
                                     <a href="/user/{{document.creator.id}}/{{document.creator.name_url}}">
@@ -265,13 +265,13 @@
                                     uib-popover-template="'popoverCustom.html'" 
                                     popover-trigger="'toggle-popover'" 
                                     popover-placement="right"
-                                    popover-append-to-body="true">
-                                {{'DOCUMENT_COMMENTS_EDIT_BUTTON' | translate}}
+                                    popover-append-to-body="true"
+                                    ng-bind-html="'DOCUMENT_COMMENTS_EDIT_BUTTON' | translate">
                             </button>
                             <button
                                     class="btn btn-primary btn-xs"
-                                    ng-click="document.comments[comment_index].editMode = false">
-                                {{'DOCUMENT_COMMENTS_CANCEL_BUTTON' | translate}}
+                                    ng-click="document.comments[comment_index].editMode = false"
+                                    ng-bind-html="'DOCUMENT_COMMENTS_CANCEL_BUTTON' | translate">
                             </button>
                         </div>                        
                         <div ng-hide="document.comments[comment_index].editMode">
@@ -325,7 +325,7 @@
                                         </a>
                                     </span>
                                     <a href ng-click="document.comments[comment_index].editMode = true">
-                                        <i class="fa fa-pencil" aria-hidden="true"></i> {{'DOCUMENT_COMMENT_ACTIONS_EDIT' | translate}}
+                                        <i class="fa fa-pencil" aria-hidden="true"></i> <span ng-bind-html="'DOCUMENT_COMMENT_ACTIONS_EDIT' | translate"></span>
                                     </a>&nbsp;                               
                                     <a href
                                        id="comment-{{comment.id}}-delete"
@@ -336,7 +336,7 @@
                                        popover-trigger="'toggle-popover'" 
                                        popover-placement="right"
                                        popover-append-to-body="true">
-                                        <i class="fa fa-remove" aria-hidden="true"></i> {{'DOCUMENT_COMMENT_ACTIONS_DELETE' | translate}}
+                                        <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'DOCUMENT_COMMENT_ACTIONS_DELETE' | translate"></span>
                                     </a>                                          
                                     
                                 </div>
@@ -351,15 +351,17 @@
                     <a href 
                        ng-click="document.newCommentShow = true" 
                        class="comments-link" 
-                       title="{{ 'DOCUMENT_COMMENTS_ADD_TOOLTIP' | translate}}" >
-                       {{ 'DOCUMENT_COMMENTS_ADD' | translate}}</a>
+                       title="{{ 'DOCUMENT_COMMENTS_ADD_TOOLTIP' | translate}}" 
+                       ng-bind-html="'DOCUMENT_COMMENTS_ADD' | translate">
+                    </a>
                     <span ng-show="document.comments.length > document.commentsLimit">                        
                         <span class="js-link-separator ">&nbsp;|&nbsp;</span>
                         <a href 
                            ng-click="document.commentsLimit=1000" 
                            class="js-show-link comments-link " 
-                           title="{{ 'DOCUMENT_COMMENTS_SHOW_ALL_TOOLTIP' | translate}}">
-                           {{ 'document_COMMENTS_SHOW_ALL' | translate}}</a>
+                           title="{{ 'DOCUMENT_COMMENTS_SHOW_ALL_TOOLTIP' | translate}}"
+                           ng-bind-html="'DOCUMENT_COMMENTS_SHOW_ALL' | translate">
+                        </a>
                     </span>
                     <div class="wrapper new-comment" style="margin-top: 10px;" ng-show="document.newCommentShow">
                         <textarea ng-model="document.newCommentContent" style="width: 100%;" placeholder="{{ 'DOCUMENT_COMMENTS_ADD_PLACEHOLDER' | translate }}"></textarea>
@@ -370,8 +372,8 @@
                                 popover-append-to-body="true"
                                 popover-trigger="'toggle-popover'" 
                                 popover-placement="right"
-                                popover-append-to-body="true">
-                            {{ 'DOCUMENT_COMMENTS_ADD_BUTTON' | translate}}
+                                popover-append-to-body="true"
+                                ng-bind-html="'DOCUMENT_COMMENTS_ADD_BUTTON' | translate">
                         </button>
                     </div>
                 </div>
@@ -391,7 +393,7 @@
                 <div class="module document-stats">
                     <div class="stat-row">
                         <div class="title">
-                            {{'DOCUMENT_STATS_ASKED' | translate}}
+                            <span ng-bind-html="'DOCUMENT_STATS_ASKED' | translate"></span>
                         </div>
                         <div class="content">
                             <b>{{document.created}}</b>
@@ -399,7 +401,7 @@
                     </div>
                     <div class="stat-row">                    
                         <div class="title">
-                            {{'DOCUMENT_STATS_VIEWED' | translate}}
+                            <span ng-bind-html="'DOCUMENT_STATS_VIEWED' | translate"></span>
                         </div>
                         <div class="content">
                             <b>{{document.count_views}} {{'DOCUMENT_STATS_TIMES' | translate}}</b>
@@ -407,7 +409,7 @@
                     </div>
                     <div class="stat-row">                    
                         <div class="title">
-                            {{'DOCUMENT_STATS_DOWNLOADED' | translate}}
+                            <span ng-bind-html="'DOCUMENT_STATS_DOWNLOADED' | translate"></span>
                         </div>
                         <div class="content">
                             <b>{{document.count_downloads}} {{'DOCUMENT_STATS_TIMES' | translate}}</b>
@@ -415,7 +417,7 @@
                     </div>                    
                     <div class="stat-row">                        
                         <div class="title">
-                            {{'DOCUMENT_STATS_ACTIVE' | translate}}
+                            <span ng-bind-html="'DOCUMENT_STATS_ACTIVE' | translate"></span>
                         </div>
                         <div class="content">
                             <b>{{document.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
