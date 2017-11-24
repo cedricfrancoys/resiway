@@ -72,6 +72,8 @@
             var fb = hello('facebook').getAuthResponse();
             var go = hello('google').getAuthResponse();
             
+            console.log(fb);
+            console.log(go);
             if(fb) {
                 hello('facebook').api( 'me' ).then(function(r) {
                     console.log(r);
