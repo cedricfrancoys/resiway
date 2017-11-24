@@ -154,6 +154,9 @@ class HTTPRequest {
         return $this->headers;
     }    
 
+    public function getHeader($header, $default=false) {
+        return isset($this->headers[$header])?$this->headers[$header]:$default;                
+    }
     
 
     /**

@@ -20,6 +20,8 @@ class HTTPRequestContext extends HTTPRequest {
         // init mobile detector with unaffected GLOBALS
         $this->detector = new MobileDetect;
         
+        $_SERVER = array_merge($_SERVER, (array) getallheaders());
+        
         // normalize $_SERVER array (populate with indices not having HTTP_ prefix)
         foreach ($_SERVER as $key => $value) {
             if (0 === strpos($key, 'HTTP_')) {
