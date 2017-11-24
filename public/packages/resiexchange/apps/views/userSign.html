@@ -78,6 +78,7 @@
             </div>                     
         </div>
     </div>
+
     <div class="col-4-12" ng-show="ctrl.mode=='recover'" ng-cloak>
         <div>
             <div class="panel-heading">
@@ -123,6 +124,7 @@
             </div>                     
         </div>        
     </div>
+
     <div class="col-4-12 nopad">
         <div ng-show="ctrl.mode=='' || ctrl.mode=='up'">
             <div class="panel-heading">
@@ -139,6 +141,7 @@
         </div>    
 
     </div>
+
     <div class="col-4-12 nopad">
         <div ng-show="ctrl.mode=='' || ctrl.mode=='up'">
             <div class="panel-heading">
@@ -155,7 +158,17 @@
             </div>
             <div class="panel-body" >
                 <a id="btn-login" href="/user/sign/up"  class="btn btn-success btn-xs">Créez un compte</a>
-                pour participer à <b>ResiWay</b>.
+                pour participer à <b>ResiWay</b>.<br />
+                <center><strong>OU</strong><br />
+                <div class="btn-group">
+                    <a class="btn btn-danger disabled"><i class="fa fa-google-plus" style="width: 2em;"></i></a>
+                    <a class="btn btn-danger" onclick="hello('google').login()" style="width:12em;"> Sign in with Google</a>
+                </div>
+                <br /><br />
+                <div class="btn-group">
+                    <a class="btn btn-primary disabled"><i class="fa fa-facebook" style="width: 2em;"></i></a>
+                    <a class="btn btn-primary" onclick="hello('facebook').login()" style="width:12em"> Sign in with Facebook</a>
+                </div>	                
             </div>
         </div>
         <div ng-show="ctrl.mode=='' || ctrl.mode=='in' || ctrl.mode=='up'">

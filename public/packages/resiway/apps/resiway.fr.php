@@ -41,7 +41,8 @@ $token = md5($rev.rand(1, 100));
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/scripts.html"); ?>
         <!-- styles -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>        
-        
+
+        <script src="packages/resiway/apps/assets/js/hello.all.min.js"></script>                
         
         <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
         <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
@@ -54,13 +55,28 @@ $token = md5($rev.rand(1, 100));
             locale: 'fr',
             channel: '1'
         };
+        
+        hello.init({
+            facebook: '1786954014889199',
+            google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com'
+        }, {
+            redirect_uri: 'oauth2callback'
+        });
+        
+        hello.on('auth.login', function(auth) {
+
+            // Call user information, for the given network
+            hello(auth.network).api('me').then(function(r) {
+                console.log(r);
+            });
+        });        
         </script>
       
     </head>
 
 
     <body class="ng-cloak">
-        <div id="fb-root"></div>
+        <div id="fb-root"></div>        
         
         <!-- templates in rootScope -->
         <?php
