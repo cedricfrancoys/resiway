@@ -52,12 +52,16 @@
         <script src="packages/resiway/apps/assets/js/hello.all.min.js"></script>             
         
         <script>
-        hello.init({
-            facebook: '1786954014889199',
-            google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com'
-        }, {
-            redirect_uri: 'oauth2callback'
-        });
+        hello.init(
+            {
+                facebook: '1786954014889199',
+                google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com'
+            }, 
+            {
+                scope: 'basic, email',
+                redirect_uri: 'oauth2callback'
+            }
+        );
         
         hello.on('auth.login', function(auth) {
 
