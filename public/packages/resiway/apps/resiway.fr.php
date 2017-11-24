@@ -54,22 +54,7 @@ $token = md5($rev.rand(1, 100));
             application: 'resiway',
             locale: 'fr',
             channel: '1'
-        };
-        
-        hello.init({
-            facebook: '1786954014889199',
-            google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com'
-        }, {
-            redirect_uri: 'oauth2callback'
-        });
-        
-        hello.on('auth.login', function(auth) {
-
-            // Call user information, for the given network
-            hello(auth.network).api('me').then(function(r) {
-                console.log(r);
-            });
-        });        
+        };          
         </script>
       
     </head>
