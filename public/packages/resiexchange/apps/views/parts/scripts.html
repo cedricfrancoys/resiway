@@ -65,5 +65,22 @@
             hello(auth.network).api('me').then(function(r) {
                 console.log(r);
             });
-        });            
+        });
+        
+        function socialTest() {
+            var fb = hello('facebook').getAuthResponse();
+            var go = hello('google').getAuthResponse();
+            
+            if(fb) {
+                hello('facebook').api( 'me' ).then(function(r) {
+                    console.log(r);
+                });
+            }
+            else if(go) {
+                hello('google').api( 'me' ).then(function(r) {
+                    console.log(r);
+                });
+            
+            }
+        }
         </script>
