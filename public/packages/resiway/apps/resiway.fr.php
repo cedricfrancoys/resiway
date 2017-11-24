@@ -40,9 +40,7 @@ $token = md5($rev.rand(1, 100));
         <!-- scripts -->
         <?php echo file_get_contents("packages/resiexchange/apps/views/parts/scripts.html"); ?>
         <!-- styles -->
-        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>        
-
-        <script src="packages/resiway/apps/assets/js/hello.all.min.js"></script>                
+        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>                   
         
         <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
         <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
