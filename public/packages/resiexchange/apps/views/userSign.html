@@ -139,7 +139,32 @@
                 </ul>
             </div>
         </div>    
-
+        <div ng-show="ctrl.mode=='in'">
+            <div class="panel-heading">
+                <div class="panel-title"><i class="fa fa-user" aria-hidden="true"></i> Utiliser un compte social</div>                
+                <div class="panel-description">Vous identifier avec votre compte social</div>
+            </div>
+            <div class="panel-body" style="padding: 0">
+                <div class="container">
+                    <div class="btn-group">
+                        <a class="btn btn-danger disabled" style="background-color: #d34836;"><i class="fa fa-google-plus" style="width: 2em;"></i></a>
+                        <a class="btn btn-danger" onclick="hello('google').login()" style="width:12em; background-color: #d34836;"> Google</a>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="btn-group">
+                        <a class="btn btn-primary disabled" style="background-color: #3b5998;"><i class="fa fa-facebook" style="width: 2em;"></i></a>
+                        <a class="btn btn-primary" onclick="hello('facebook').login()" style="width:12em; background-color: #3b5998;"> Facebook</a>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="btn-group">
+                        <a class="btn btn-info disabled" style="background-color: #21a1f1;"><i class="fa fa-twitter" style="width: 2em;"></i></a>
+                        <a class="btn btn-info" onclick="hello('facebook').login()" style="width:12em; background-color: #21a1f1;"> Twitter</a>
+                    </div>
+                </div>                
+            </div>
+        </div>    
     </div>
 
     <div class="col-4-12 nopad">
@@ -158,18 +183,7 @@
             </div>
             <div class="panel-body" >
                 <a id="btn-login" href="/user/sign/up"  class="btn btn-success btn-xs">Créez un compte</a>
-                pour participer à <b>ResiWay</b>.<br />
-                <center><strong>OU</strong><br />
-                <div class="btn-group">
-                    <a class="btn btn-danger disabled"><i class="fa fa-google-plus" style="width: 2em;"></i></a>
-                    <a class="btn btn-danger" onclick="hello('google').login()" style="width:12em;"> Sign in with Google</a>
-                </div>
-                <br /><br />
-                <div class="btn-group">
-                    <a class="btn btn-primary disabled"><i class="fa fa-facebook" style="width: 2em;"></i></a>
-                    <a class="btn btn-primary" onclick="hello('facebook').login()" style="width:12em"> Sign in with Facebook</a>
-                </div>
-                <button onclick="socialTest()">test</button>
+                pour participer à <b>ResiWay</b>.
             </div>
         </div>
         <div ng-show="ctrl.mode=='' || ctrl.mode=='in' || ctrl.mode=='up'">
