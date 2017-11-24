@@ -67,7 +67,8 @@
             });
         });
         
-        function socialTest() {
+        var socialTest = function() {
+            console.log('social testing');
             var fb = hello('facebook').getAuthResponse();
             var go = hello('google').getAuthResponse();
             
