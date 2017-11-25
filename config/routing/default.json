@@ -39,6 +39,5 @@
     "/html/question/:id/:title?":"?get=resiway_html&class=question",
     "/html/document/:id/:title?":"?get=resiway_html&class=document",
     "/html/article/:id/:title?":"?get=resiway_html&class=article",
-    "/oauth2callback":"?show=resiway_oauth",
-    "/oauthproxy":"?get=resiway_oauth"    
+    "/oauth2callback":"?show=resiway_oauth"
 }

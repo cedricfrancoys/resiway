@@ -128,6 +128,27 @@ class HTTPRequest {
         $this->parameters = $parameters;
     }
 
+    
+    public function send() {
+        $response = null;
+        $response_status = 'HTTP/1.1 400 Bad Request';
+        if(isset($this->URI) && strlen($this->URI)) {
+            $data = @file_get_contents(
+                                        $this->URI, 
+                                        false,
+                                        stream_context_create([
+                                                                'http' => [ 'ignore_errors' => true ]
+                                                              ])
+                                       );
+            if($data && isset($http_response_header[0])) {                               
+                $response_status = $http_response_header[0];
+                unset($http_response_header[0]);
+                // $response = new HTTPResponse($http_response_header, $data);
+        
+            }
+        }
+        return $response;
+    }
 
     /**
      * Returns the request as a string.
@@ -753,7 +774,7 @@ class HTTPRequest {
      *
      * @return bool true if the request is an XMLHttpRequest, false otherwise
      */
-    public function isXmlHttpRequest() {
+    public function isXHR() {
         return 'XMLHttpRequest' == $this->headers->get('X-Requested-With');
     }
 

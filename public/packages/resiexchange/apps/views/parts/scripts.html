@@ -69,29 +69,22 @@
 
             // Call user information, for the given network
             hello(auth.network).api('me').then(function(r) {
+            /* returned structure with common fields:
+                id
+                first_name
+                last_name
+                name
+                picture
+                thumbnail
+                * email
+            */
                 console.log(r);
+            /*
+                * auth.network (social_network)                
+                * access_token (social_token)
+            */
+                console.log(auth);
             });
         });
         
-        var socialTest = function() {
-            console.log('social testing');
-            var fb = hello('facebook').getAuthResponse();
-            var go = hello('google').getAuthResponse();
-            
-            console.log(fb);
-            console.log(go);
-            if(fb) {
-                hello('facebook').api( 'me' ).then(function(r) {
-                    console.log(r);
-                });
-            }
-            else if(go) {
-                hello('google').api( 'me' ).then(function(r) {
-                    console.log(r);
-                });
-            
-            }
-                
-          
-        }
         </script>
