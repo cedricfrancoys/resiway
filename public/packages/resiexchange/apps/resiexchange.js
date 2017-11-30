@@ -408,6 +408,7 @@ var resiway = angular.module('resiexchange', [
         */
         hello.on("auth.login", function (auth) {
             $rootScope.$broadcast('social.auth', auth);
+            console.log('auth notification received in rootscope');
         });        
     }
 ])
@@ -6005,7 +6006,8 @@ angular.module('resiexchange')
         };
         
         $scope.$on('social.auth', function(auth) {
-            
+            console.log('auth notification received in userSign controller');
+            console.log(auth);
             if(angular.isDefined(auth.network) && angular.isDefined(auth.access_token)) {
             
                 $http.get('index.php?do=resiway_user_auth&network_name='+auth.network+'&network_token='+auth.access_token)
