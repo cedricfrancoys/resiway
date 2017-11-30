@@ -174,7 +174,7 @@ angular.module('resiexchange')
             }
         };
         
-        $scope.$on('social.auth', function(auth) {
+        $scope.$on('social.auth', function(event, auth) {
             console.log('auth notification received in userSign controller');
             console.log(auth);
             if(angular.isDefined(auth.network) && angular.isDefined(auth.access_token)) {
