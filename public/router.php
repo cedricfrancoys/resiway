@@ -47,11 +47,12 @@ try {
     $base = $request->getBasePath();
 
     // retrieve original URI
-    $request_uri = $request->getUri();
+    $query = $request->getQuery();
+    $request_uri = $request->getPath().((strlen($query) > 0)?'?'.$query:'');
 
     // look for a match among defined routes
     $uri = str_replace($base, '/', $request_uri); 
-    
+
     // load routes definition
     $json_file = '../config/routing/default.json';    
     if( ($json = @file_get_contents($json_file)) === false) throw new Exception('routing config file is missing');    
