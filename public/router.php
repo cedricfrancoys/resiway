@@ -43,15 +43,9 @@ try {
     $phpContext = &PhpContext::getInstance();
     $request = $phpContext->getHttpRequest();
 
-    // get the base directory of the current script
-    $base = $request->getBasePath();
-
     // retrieve original URI
     $query = $request->getQuery();
-    $request_uri = $request->getPath().((strlen($query) > 0)?'?'.$query:'');
-
-    // look for a match among defined routes
-    $uri = str_replace($base, '/', $request_uri); 
+    $uri = $request->getPath().((strlen($query) > 0)?'?'.$query:'');
 
     // load routes definition
     $json_file = '../config/routing/default.json';    
