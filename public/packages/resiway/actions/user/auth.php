@@ -59,7 +59,7 @@ try {
                 'fields'       => 'email,first_name,last_name',
                 'access_token' => $network_token
             ])->send();
-        if(!is_null($respons->get('error'))) {
+        if(!is_null($response->get('error'))) {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }                
         $id = $response->get('id');
@@ -75,7 +75,7 @@ try {
             ->setBody([
                 'access_token' => $network_token
             ])->send();
-        if(!is_null($respons->get('error'))) {
+        if(!is_null($response->get('error'))) {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }
         $data = $response->getBody();
