@@ -100,7 +100,7 @@ try {
         // disable email confirmation
         $_REQUEST['send_confirm'] = false;
         $json = json_decode(get_include_contents("packages/resiway/actions/user/signup.php"), true);    
-        if(is_numeric($json['result'])) {
+        if(is_numeric($json['result']) && $json['result'] < 0) {
             throw new Exception($json['error_message_ids'][0], $json['result']);
         }
         // retrieve user_id
@@ -125,7 +125,7 @@ try {
     $_REQUEST['password'] = $user_data['password'];
     $json = json_decode(get_include_contents("packages/resiway/actions/user/signin.php"), true);    
 
-    if(is_numeric($json['result'])) {
+    if(is_numeric($json['result']) && $json['result'] < 0) {
         throw new Exception($json['error_message_ids'][0], $json['result']);
     }
 
