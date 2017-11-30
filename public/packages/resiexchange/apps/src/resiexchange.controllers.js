@@ -4102,9 +4102,9 @@ angular.module('resiexchange')
             }
         };
         
-        $scope.$on('social.auth', function(auth) {
+        $scope.$on('social.auth', function(event, auth) {
             console.log('auth notification received in userSign controller');
-            console.log(auth);
+            console.log(event, auth);
             if(angular.isDefined(auth.network) && angular.isDefined(auth.access_token)) {
             
                 $http.get('index.php?do=resiway_user_auth&network_name='+auth.network+'&network_token='+auth.access_token)
