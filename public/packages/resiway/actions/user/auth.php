@@ -52,7 +52,7 @@ try {
     $pdm = &PersistentDataManager::getInstance();
     
     switch($network_name) {
-    'facebook':
+    case 'facebook':
         $oauthRequest = new HttpRequest('/v2.9/me', ['Host' => 'graph.facebook.com:443']);    
         $response = $oauthRequest
             ->setBody([
@@ -69,7 +69,7 @@ try {
         $_REQUEST['lastname'] = $response->get('last_name');
         $_REQUEST['account_type'] = 'facebook';
         break;
-    'google':
+    case 'google':
         $oauthRequest = new HttpRequest('/plus/v1/people/me', ['Host' => 'www.googleapis.com:443']);
         $response = $oauthRequest
             ->setBody([
