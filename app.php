@@ -85,10 +85,10 @@ $_REQUEST = array_merge($_REQUEST, $_FILES);
 * Dispatching : include the requested script
 */
 $accepted_requests = array(
-						'do'	=> array('type' => 'action handler','dir' => 'actions'), 	// do something server-side
-						'get'	=> array('type' => 'data provider',	'dir' => 'data'),		// return some data (json)
-						'show'	=> array('type' => 'application',	'dir' => 'apps')		// output rendering information (html/js)
-					);
+    'do'	=> array('type' => 'action handler','dir' => 'actions'),    // do something server-side
+    'get'	=> array('type' => 'data provider',	'dir' => 'data'),       // return some data (json)
+    'show'	=> array('type' => 'application',	'dir' => 'apps')        // output rendering information (html/js)
+);
 
 
 // check current request for package specification

@@ -14,5 +14,8 @@
     </head>
 
     <body class="ng-cloak"></body>
-
+    <!--
+    This file should only be loaded when OAuth2 is required and displayed inside a popup.
+    Should the auth succeed, the popup should close and hello.js script send an event holding the auth response.
+    -->
 </html>

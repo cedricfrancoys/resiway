@@ -4100,7 +4100,25 @@ angular.module('resiexchange')
                     $scope.recoverAlerts = [{ type: 'danger', msg: error_id }];
                 });                  
             }
-        };    
+        };
+        
+        $scope.$on('social.auth', function(auth) {
+            $http.get('index.php?do=resiway_user_auth&network_name='+auth.network+'&network_token='+auth.access_token)
+                .then(
+                function successCallback(response) {
+                    ctrl.running = false;
+                    var data = response.data;
+                    // now we should be authenticated
+                    authenticationService.authenticate();
+                },
+                function errorCallback(response) {
+                    ctrl.running = false;
+                    var error_id = data.error_message_ids[0];     
+                    // server fault, user not verified, ...
+                    // todo
+                    console.log(response);
+                });              
+        });
     }
 ]);
 angular.module('resiexchange')

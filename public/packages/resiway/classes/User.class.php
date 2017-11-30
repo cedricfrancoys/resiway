@@ -21,6 +21,9 @@ class User extends \easyobject\orm\Object {
             
             'password'                  => array('type' => 'string'),
             
+            /* origin of the user account (resiway, ekopedia, facebook, google, ...) */
+            'account_type'              => array('type' => 'string'),
+            
             'firstname'                 => array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),
             
             'lastname'                  => array('type' => 'string', 'onchange' => 'resiway\User::resetDisplayName'),

@@ -20,7 +20,8 @@ var resiway = angular.module('resiexchange', [
     'pascalprecht.translate',
     'btford.markdown',
     'angularMoment',
-    'ngToast'    
+    'ngToast',
+    'ngHello'
 ])
 
 
@@ -93,6 +94,25 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
+.config([
+    'helloProvider',
+    function (helloProvider) {
+        helloProvider.init(
+            {
+                // RW public keys
+                facebook: '1786954014889199',
+                google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com',
+                twitter: '6MV5s7IYX2Uqi3tD33s9VSEKb'
+            }, 
+            {
+                scope: 'basic, email',
+                redirect_uri: 'oauth2callback',
+                oauth_proxy: 'https://auth-server.herokuapp.com/proxy'
+            }
+        );
+    }
+])
+
 
 .run( [
     '$window', 
@@ -103,7 +123,8 @@ var resiway = angular.module('resiexchange', [
     'authenticationService', 
     'actionService', 
     'feedbackService',
-    function($window, $timeout, $rootScope, $location, $cookies, authenticationService, actionService, feedbackService) {
+    'hello',
+    function($window, $timeout, $rootScope, $location, $cookies, authenticationService, actionService, feedbackService, hello) {
         console.log('run method invoked');
 
         // Bind rootScope with feedbackService service (popover display)
@@ -240,7 +261,13 @@ var resiway = angular.module('resiexchange', [
         authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
         // try to authenticate or restore the session
         authenticationService.authenticate();
-           
+
+        /* 
+        * relay hello.js login notifications
+        */
+        hello.on("auth.login", function (auth) {
+            $rootScope.$broadcast('social.auth', auth);
+        });        
     }
 ])
 

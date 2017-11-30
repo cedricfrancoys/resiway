@@ -1,9 +1,6 @@
 <?php
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
-use qinoa\http\HTTPRequestContext;
-
-$request = &HTTPRequestContext::getInstance();
 
 $rev = ResiAPI::currentRevision(); 
 $token = md5($rev.rand(1, 100));

@@ -5,9 +5,10 @@
 */
 include_once('../qn.lib.php');
 
-use qinoa\http\HTTPRequestContext;
+use qinoa\php\PhpContext;
 
-$request = &HTTPRequestContext::getInstance();
+$phpContext = &PhpContext::getInstance();
+$request = $phpContext->getHttpRequest();
 
 function getAppOutput() {
     ob_start();	

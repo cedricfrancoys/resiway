@@ -27,7 +27,7 @@
 // load Qinoa bootstrap library : system constants and functions definitions
 include_once('../qn.lib.php');
 
-use qinoa\http\HTTPRequestContext;
+use qinoa\php\PhpContext;
 use qinoa\route\Router;
 
 /**
@@ -40,13 +40,14 @@ set_silent(true);
 
 
 try {
-    $request = &HTTPRequestContext::getInstance();
+    $phpContext = &PhpContext::getInstance();
+    $request = $phpContext->getHttpRequest();
 
     // get the base directory of the current script
     $base = $request->getBasePath();
 
     // retrieve original URI
-    $request_uri = $request->getRequestURI();
+    $request_uri = $request->getUri();
 
     // look for a match among defined routes
     $uri = str_replace($base, '/', $request_uri); 

@@ -14,14 +14,14 @@ $params = QNLib::announce(
     'description'	=>	"Attempt to sign a user in.",
     'params' 		=>	array(
                         'login'	    =>  array(
-                                        'description' => 'email address of the user.',
-                                        'type' => 'string', 
-                                        'required'=> true
+                                        'description'   => 'email address of the user.',
+                                        'type'          => 'string', 
+                                        'required'      => true
                                         ),
                         'password'	=>  array(
-                                        'description' => 'md5 hash of the user\'s password.',
-                                        'type' => 'string', 
-                                        'required'=> true
+                                        'description'   => 'md5 hash of the user\'s password.',
+                                        'type'          => 'string', 
+                                        'required'      => true
                                         )
                         )
 	)
@@ -42,6 +42,6 @@ catch(Exception $e) {
 // send json result
 header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
-        'result' => $result, 
+        'result'            => $result, 
         'error_message_ids' => $error_message_ids
      ], JSON_PRETTY_PRINT);
