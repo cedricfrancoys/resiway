@@ -63,7 +63,7 @@ try {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }                
         $id = $response->get('id');
-        $avatar_url = "https://graph.facebook.com/{$id}/picture";
+        $_REQUEST['avatar_url'] = "https://graph.facebook.com/{$id}/picture";
         $_REQUEST['login'] = $response->get('email');
         $_REQUEST['firstname'] = $response->get('first_name');
         $_REQUEST['lastname'] = $response->get('last_name');
@@ -79,7 +79,7 @@ try {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }
         $data = $response->getBody();
-        $avatar_url = $data['image']['url'];
+        $_REQUEST['avatar_url'] = $data['image']['url'];
         $_REQUEST['login'] = $data['emails'][0]['value'];      
         $_REQUEST['firstname'] = $data['name']['givenName'];
         $_REQUEST['lastname'] = $data['name']['familyName'];
@@ -89,9 +89,10 @@ try {
         throw new Exception("user_invalid_network", QN_ERROR_INVALID_PARAM);           
     }
 
-    
+
     // check if an account has already been created for this email address
     $ids = $om->search('resiway\User', ['login', '=', $_REQUEST['login']]);
+
     if($ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN); 
 
     // create a user account for this email address
@@ -102,12 +103,15 @@ try {
         if(is_numeric($json['result'])) {
             throw new Exception($json['error_message_ids'][0], $json['result']);
         }
+        // retrieve user_id
+        $user_id = $pdm->get('user_id');        
+    }
+    else {
+        $user_id = $pdm->set('user_id', $ids[0]);
     }
 
     // now user account should exist
     
-    // retrieve user_id
-    $user_id = $pdm->get('user_id');
     if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
        
     // retrieve user credentials
