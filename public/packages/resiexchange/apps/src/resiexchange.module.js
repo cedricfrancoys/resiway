@@ -268,7 +268,7 @@ var resiway = angular.module('resiexchange', [
         hello.on("auth.login", function (auth) {
             console.log('auth notification received in rootscope');
             console.log(auth);
-            $rootScope.$broadcast('social.auth', auth);
+            $rootScope.$broadcast('social.auth', auth.authResponse);
         });        
     }
 ])
