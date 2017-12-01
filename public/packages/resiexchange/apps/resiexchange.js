@@ -1046,6 +1046,9 @@ angular.module('resiexchange')
             $rootScope.user = {id: 0};
             $cookies.remove('username');
             $cookies.remove('password');
+            if(localStorage){
+                localStorage.removeItem('hello');
+            }            
         };
 
 
