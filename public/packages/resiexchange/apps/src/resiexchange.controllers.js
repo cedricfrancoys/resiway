@@ -4102,7 +4102,18 @@ angular.module('resiexchange')
             }
         };
         
-        
+        $scope.$on('auth.signed', function(event, auth) {
+            ctrl.running = false;
+            console.log('auth notification received in userSign controller');
+            // if some action is pending, return to URL where it occured
+            if($rootScope.pendingAction
+            && typeof $rootScope.pendingAction.next_path != 'undefined') {
+               $location.path($rootScope.pendingAction.next_path);
+            }
+            else {
+                $location.path($rootScope.previousPath);
+            }
+        });
     }
 ]);
 angular.module('resiexchange')

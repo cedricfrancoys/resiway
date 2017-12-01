@@ -417,26 +417,16 @@ var resiway = angular.module('resiexchange', [
                     function success(response) {
                         var data = response.data;
                         // now we should be able to authenticate
-                        authenticationService.authenticate();
-/*
+                        authenticationService.authenticate()
                         .then(
                             function success(data) {
-                                // if some action is pending, return to URL where it occured
-                                if($rootScope.pendingAction
-                                && typeof $rootScope.pendingAction.next_path != 'undefined') {
-                                   $location.path($rootScope.pendingAction.next_path);
-                                }
-                                else {
-                                    $location.path($rootScope.previousPath);
-                                }
+                                $rootScope.$broadcast('auth.signed'); 
                             },
                             function error(data) {
                                 // unexpected error
                                 console.log(data);
                             }
                          );  
-                        $rootScope.$broadcast('auth.signed'); 
-                        */
                     },
                     function error(response) {
                         var error_id = data.error_message_ids[0];     
@@ -445,9 +435,7 @@ var resiway = angular.module('resiexchange', [
                         console.log(response);
                     }
                 );              
-            }
-            
-
+            }            
         });        
     }
 ])
@@ -6044,7 +6032,18 @@ angular.module('resiexchange')
             }
         };
         
-        
+        $scope.$on('auth.signed', function(event, auth) {
+            ctrl.running = false;
+            console.log('auth notification received in userSign controller');
+            // if some action is pending, return to URL where it occured
+            if($rootScope.pendingAction
+            && typeof $rootScope.pendingAction.next_path != 'undefined') {
+               $location.path($rootScope.pendingAction.next_path);
+            }
+            else {
+                $location.path($rootScope.previousPath);
+            }
+        });
     }
 ]);
 angular.module('resiexchange')
