@@ -197,7 +197,8 @@ var resiway = angular.module('resiexchange', [
         $rootScope.$on('$locationChangeSuccess', function(angularEvent) {
             console.log('$locationChangeSuccess');
 
-            if($rootScope.currentPath) {
+            // remember previsousPath if different from user/sign (and subs)
+            if($rootScope.currentPath && $rootScope.currentPath.substring(0, signPath.length) != signPath) {                
                 $rootScope.previousPath = $rootScope.currentPath;
             }
             $rootScope.currentPath = $location.path();

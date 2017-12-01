@@ -37,16 +37,6 @@ $params = QNLib::announce(
                                             'type'          => 'string', 
                                             'default'       => 'fr'
                                         ),
-                        'account_type'  =>  array(
-                                            'description'   => 'origin of user account.',
-                                            'type'          => 'string', 
-                                            'default'       => 'resiway'
-                                        ),
-                        'avatar_url'    =>  array(
-                                            'description'   => 'URL of the user avatar.',
-                                            'type'          => 'string', 
-                                            'default'       => ''
-                                        ),
                         'send_confirm'  =>  array(
                                             'description'   => 'Flag telling if we need to send a confirmation email.',
                                             'type'          => 'boolean', 
@@ -59,14 +49,13 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids) = [true, []];
 
-list($action_name, $login, $firstname, $lastname, $language, $account_type, $avatar_url, $send_confirm) = [ 
+list($action_name, $login, $firstname, $lastname, $language, $account_type, $send_confirm) = [ 
     'resiway_user_signup',
     strtolower(trim($params['login'])),
     $params['firstname'],
     $params['lastname'],
     $params['lang'],
-    $params['account_type'],
-    $params['avatar_url'],
+    'resiway',
     $params['send_confirm']    
 ];
 
@@ -95,10 +84,10 @@ try {
         $password .= sprintf("%x", rand(0, 15)) ;
     }
     
-    if(strlen($avatar_url) <= 0) {
-        // generate avatar URL using identicon with a random hash
-        $avatar_url = 'https://www.gravatar.com/avatar/'.md5($firstname.rand()).'?d=identicon&s=@size';
-    }
+
+    // generate avatar URL using identicon with a random hash
+    $avatar_url = 'https://www.gravatar.com/avatar/'.md5($firstname.rand()).'?d=identicon&s=@size';
+
     // get requesting IP geo location
     $location = GeoIP::getLocationFromIP($_SERVER['REMOTE_ADDR']);
     // init creation array with new user info

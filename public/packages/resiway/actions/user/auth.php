@@ -63,11 +63,11 @@ try {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }                
         $id = $response->get('id');
-        $_REQUEST['avatar_url'] = "https://graph.facebook.com/{$id}/picture";
+        $account_type = 'facebook';        
+        $avatar_url = "https://graph.facebook.com/{$id}/picture";
         $_REQUEST['login'] = $response->get('email');
         $_REQUEST['firstname'] = $response->get('first_name');
         $_REQUEST['lastname'] = $response->get('last_name');
-        $_REQUEST['account_type'] = 'facebook';
         break;
     case 'google':
         $oauthRequest = new HttpRequest('/plus/v1/people/me', ['Host' => 'www.googleapis.com:443']);
@@ -79,11 +79,11 @@ try {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }
         $data = $response->getBody();
-        $_REQUEST['avatar_url'] = $data['image']['url'];
+        $account_type] = 'google';        
+        $avatar_url = $data['image']['url'];        
         $_REQUEST['login'] = $data['emails'][0]['value'];      
         $_REQUEST['firstname'] = $data['name']['givenName'];
         $_REQUEST['lastname'] = $data['name']['familyName'];
-        $_REQUEST['account_type'] = 'google';
         break;
     default:
         throw new Exception("user_invalid_network", QN_ERROR_INVALID_PARAM);           
@@ -96,7 +96,11 @@ try {
     if($ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN); 
 
     // create a user account for this email address
-    if(count($ids) === 0) {
+    if(count($ids) > 0) {
+        $user_id = $ids[0];
+    }
+    // register new account
+    else {
         // disable email confirmation
         $_REQUEST['send_confirm'] = false;
         $json = json_decode(get_include_contents("packages/resiway/actions/user/signup.php"), true);    
@@ -104,31 +108,21 @@ try {
             throw new Exception($json['error_message_ids'][0], $json['result']);
         }
         // retrieve user_id
-        $user_id = $pdm->get('user_id');        
-    }
-    else {
-        $user_id = $pdm->set('user_id', $ids[0]);
+        $user_id = $pdm->get('user_id');
     }
 
     // now user account should exist
-    
-    if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
-       
-    // retrieve user credentials
-    $res = $om->read('resiway\User', $user_id, ['login', 'password'] );
-    if($res < 0 || !isset($res[$user_id])) return QN_ERROR_UNKNOWN_OBJECT;    
-    $user_data = $res[$user_id];           
-    
 
+    // update user data
+    $user_data = [
+                    'verified'      => true, 
+                    'avatar_url'    => $avatar_url, 
+                    'account_type'  => $account_type
+                  ];                      
+    $user_id = $om->write('resiway\User', $user_id, $user_data);
+    
     // sign user in
-    $_REQUEST['login'] = $user_data['login'];
-    $_REQUEST['password'] = $user_data['password'];
-    $json = json_decode(get_include_contents("packages/resiway/actions/user/signin.php"), true);    
-
-    if(is_numeric($json['result']) && $json['result'] < 0) {
-        throw new Exception($json['error_message_ids'][0], $json['result']);
-    }
-
+    $pdm->set('user_id', $user_id);
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());
