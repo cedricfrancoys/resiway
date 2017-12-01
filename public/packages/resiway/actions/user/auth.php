@@ -119,7 +119,7 @@ try {
                     'avatar_url'    => $avatar_url, 
                     'account_type'  => $account_type
                   ];                      
-    $user_id = $om->write('resiway\User', $user_id, $user_data);
+    $om->write('resiway\User', $user_id, $user_data);
     
     // sign user in
     $pdm->set('user_id', $user_id);
