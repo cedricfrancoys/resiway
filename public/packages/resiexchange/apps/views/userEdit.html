@@ -33,7 +33,7 @@
                                                 </button>
                                                 <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="avatar-button">
                                                     <li role="menuitem" ng-repeat-start="(avatar_service, avatar_url) in ctrl.avatars">
-                                                        <a href ng-click="ctrl.user.avatar_url = avatar_url">
+                                                        <a href ng-click="ctrl.user.avatar_url = avatar_url" style="text-transform: capitalize;">
                                                             <img ng-src="{{rootCtrl.avatarURL(avatar_url, '40')}}" width="40" height="40">
                                                             {{avatar_service}}
                                                         </a>

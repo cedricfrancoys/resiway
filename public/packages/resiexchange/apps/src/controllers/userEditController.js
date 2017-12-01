@@ -85,7 +85,8 @@ console.log(ctrl.user);
         if(online(google.getAuthResponse())) {
             google.api('me').then(function(json) {
                 $scope.$apply(function() {
-                    ctrl.avatars.google = json.thumbnail;
+                    var url = json.thumbnail;
+                    ctrl.avatars.google = url.replace("/\?sz=.*/g", "?sz=@size");
                 });
             });            
         }
