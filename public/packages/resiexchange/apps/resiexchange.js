@@ -338,7 +338,8 @@ var resiway = angular.module('resiexchange', [
         $rootScope.$on('$locationChangeSuccess', function(angularEvent) {
             console.log('$locationChangeSuccess');
 
-            if($rootScope.currentPath) {
+            // remember previsousPath if different from user/sign (and subs)
+            if($rootScope.currentPath && $rootScope.currentPath.substring(0, signPath.length) != signPath) {                
                 $rootScope.previousPath = $rootScope.currentPath;
             }
             $rootScope.currentPath = $location.path();
@@ -5479,7 +5480,8 @@ angular.module('resiexchange')
     '$translate',
     'feedbackService',
     'actionService',
-    function(user, $scope, $window, $filter, $http, $translate, feedback, action) {
+    'hello',
+    function(user, $scope, $window, $filter, $http, $translate, feedback, action, hello) {
     console.log('userEdit controller');    
     
     var ctrl = this;
@@ -5530,11 +5532,30 @@ console.log(ctrl.user);
         ctrl.avatars = {
             libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
             gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
-            identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
-            google: ''
+            identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size'
         };
+        
+        var online = function(session) {
+            var currentTime = (new Date()).getTime() / 1000;
+            return session && session.access_token && session.expires > currentTime;
+        };
+
+        var facebook = hello('facebook').getAuthResponse();
+        var google = hello('google').getAuthResponse();
+
+        if(online(fb)) {
+            facebook.api('me').then(function(json) {
+                ctrl.avatars.facebook = json.thumbnail;
+            });
+        }
+        if(online(google)) {
+            google.api('me').then(function(json) {
+                ctrl.avatars.google = json.thumbnail;
+            });            
+        }
             
         // @init
+        /*
         // retrieve GMail avatar, if any
         $http.get('https://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
         .then(
@@ -5545,7 +5566,8 @@ console.log(ctrl.user);
             function errorCallback(response) {
 
             }
-        );     
+        );
+        */        
     }
     
     $scope.$watchGroup([
