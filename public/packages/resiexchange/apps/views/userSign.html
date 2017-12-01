@@ -32,7 +32,14 @@
                                 <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> Connexion
                             </button>
                         </div>
-                    </div>                   
+                    </div>
+                    <div>
+                        <div class="panel-body small">
+                        ResiWay utilise des cookies.<br />
+                        En cochant l'option "Rester connecté", vous autorisez la plateforme à conserver, dans votre navigateur, vos informations d'identification. Aucune information personnelle n'est transmise à des tiers.
+                        </div>
+                    </div>
+                    
                 </form>
                 <div uib-alert ng-repeat="alert in signInAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignInAlert($index)">{{alert.msg | translate}}</div>                
             </div>                     
@@ -125,21 +132,8 @@
         </div>        
     </div>
 
-    <div class="col-4-12 nopad">
-        <div ng-show="ctrl.mode=='' || ctrl.mode=='up'">
-            <div class="panel-heading">
-                <div class="panel-title"><b>Rési</b>Way est une plateforme libre</div>                
-                <div class="panel-description">qui respecte vos données</div>
-            </div>
-            <div class="panel-body" >
-                <ul style="text-indent: 0px;margin: 0;padding: 0;list-style: none;">
-                    <li>Votre email reste confidentiel</li> 
-                    <li>Pas de publicité</li>
-                    <li>Pas de spam</li>
-                </ul>
-            </div>
-        </div>    
-        <div ng-show="ctrl.mode=='in'">
+    <div class="col-4-12 nopad" ng-show="ctrl.mode=='' || ctrl.mode=='in' || ctrl.mode=='up'">  
+        <div>
             <div class="panel-heading">
                 <div class="panel-title"><i class="fa fa-user" aria-hidden="true"></i> Utiliser un compte social</div>                
                 <div class="panel-description">Vous identifier avec votre compte social</div>
@@ -167,6 +161,19 @@
                 -->
             </div>
         </div>    
+        <div style="margin-top:20px;">
+            <div class="panel-heading">
+                <div class="panel-title"><b>Rési</b>Way est une plateforme libre</div>                
+                <div class="panel-description">qui respecte vos données:</div>
+            </div>
+            <div class="panel-body" >
+                <ul style="text-indent: 0px;margin: 0;padding: 0;list-style: none;">
+                    <li><span class="fa-stack fa-lg"><i class="fa fa-eye fa-stack-1x" ></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>Votre email reste confidentiel</li> 
+                    <li><span class="fa-stack fa-lg"><i class="fa fa-bullhorn fa-stack-1x" ></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>Pas de publicité</li>
+                    <li><span class="fa-stack fa-lg"><i class="fa fa-envelope-o fa-stack-1x" ></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>Pas de spam</li>
+                </ul>
+            </div>
+        </div>          
     </div>
 
     <div class="col-4-12 nopad">
@@ -194,13 +201,6 @@
             </div>
             <div class="panel-body" >
                 <a id="btn-login" href="/user/sign/recover" class="btn btn-warning btn-xs">Récupérez</a> votre mot de passe en un clin d'oeil.
-            </div>
-        </div>
-        <div ng-show="ctrl.mode=='in'">
-            <div class="panel-heading"></div>
-            <div class="panel-body small">
-            ResiWay utilise des cookies.<br />
-En cochant l'option "Rester connecté", vous autorisez la plateforme à conserver, dans votre navigateur, vos informations d'identification. Aucune information personnelle n'est transmise à des tiers.
             </div>
         </div>
         
