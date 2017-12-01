@@ -276,7 +276,8 @@ var resiway = angular.module('resiexchange', [
                     function success(response) {
                         var data = response.data;
                         // now we should be able to authenticate
-                        authenticationService.authenticate()
+                        authenticationService.authenticate();
+/*
                         .then(
                             function success(data) {
                                 // if some action is pending, return to URL where it occured
@@ -294,6 +295,7 @@ var resiway = angular.module('resiexchange', [
                             }
                          );  
                         $rootScope.$broadcast('auth.signed'); 
+                        */
                     },
                     function error(response) {
                         var error_id = data.error_message_ids[0];     
