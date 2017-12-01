@@ -409,7 +409,42 @@ var resiway = angular.module('resiexchange', [
         hello.on("auth.login", function (auth) {
             console.log('auth notification received in rootscope');
             console.log(auth);
-            $rootScope.$broadcast('social.auth', auth.authResponse);
+            if(angular.isDefined(auth.authResponse) && angular.isDefined(auth.authResponse.network) && angular.isDefined(auth.authResponse.access_token)) {
+                // relay auth data to the server
+                $http.get('index.php?do=resiway_user_auth&network_name='+auth.authResponse.network+'&network_token='+auth.authResponse.access_token)
+                .then(
+                    function success(response) {
+                        var data = response.data;
+                        // now we should be able to authenticate
+                        authenticationService.authenticate()
+                        .then(
+                            function success(data) {
+                                // if some action is pending, return to URL where it occured
+                                if($rootScope.pendingAction
+                                && typeof $rootScope.pendingAction.next_path != 'undefined') {
+                                   $location.path($rootScope.pendingAction.next_path);
+                                }
+                                else {
+                                    $location.path($rootScope.previousPath);
+                                }
+                            },
+                            function error(data) {
+                                // unexpected error
+                                console.log(data);
+                            }
+                         );  
+                        $rootScope.$broadcast('auth.signed'); 
+                    },
+                    function error(response) {
+                        var error_id = data.error_message_ids[0];     
+                        // server fault, user not verified, ...
+                        // todo
+                        console.log(response);
+                    }
+                );              
+            }
+            
+
         });        
     }
 ])
@@ -6006,28 +6041,7 @@ angular.module('resiexchange')
             }
         };
         
-        $scope.$on('social.auth', function(event, auth) {
-            console.log('auth notification received in userSign controller');
-            console.log(auth);
-            if(angular.isDefined(auth.network) && angular.isDefined(auth.access_token)) {
-            
-                $http.get('index.php?do=resiway_user_auth&network_name='+auth.network+'&network_token='+auth.access_token)
-                    .then(
-                    function successCallback(response) {
-                        ctrl.running = false;
-                        var data = response.data;
-                        // now we should be authenticated
-                        authenticationService.authenticate();
-                    },
-                    function errorCallback(response) {
-                        ctrl.running = false;
-                        var error_id = data.error_message_ids[0];     
-                        // server fault, user not verified, ...
-                        // todo
-                        console.log(response);
-                    });              
-            }
-        });
+        
     }
 ]);
 angular.module('resiexchange')
