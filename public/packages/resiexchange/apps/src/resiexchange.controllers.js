@@ -3620,7 +3620,7 @@ console.log(ctrl.user);
             google.api('me').then(function(json) {
                 $scope.$apply(function() {
                     var avatar_url = json.thumbnail;
-                    ctrl.avatars.google = avatar_url.replace("/\?sz=.*/", "?sz=@size");
+                    ctrl.avatars.google = avatar_url.replace(/\?sz=.*/, "?sz=@size");
                 });
             });            
         }
