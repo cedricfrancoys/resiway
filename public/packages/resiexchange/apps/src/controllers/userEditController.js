@@ -77,12 +77,16 @@ console.log(ctrl.user);
 
         if(online(facebook.getAuthResponse())) {
             facebook.api('me').then(function(json) {
-                ctrl.avatars.facebook = json.thumbnail;
+                $scope.$apply(function() {
+                    ctrl.avatars.facebook = json.thumbnail;
+                });
             });
         }
         if(online(google.getAuthResponse())) {
             google.api('me').then(function(json) {
-                ctrl.avatars.google = json.thumbnail;
+                $scope.$apply(function() {
+                    ctrl.avatars.google = json.thumbnail;
+                });
             });            
         }
             
