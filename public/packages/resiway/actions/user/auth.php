@@ -79,7 +79,7 @@ try {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }
         $data = $response->getBody();
-        $account_type] = 'google';        
+        $account_type = 'google';        
         $avatar_url = $data['image']['url'];        
         $_REQUEST['login'] = $data['emails'][0]['value'];      
         $_REQUEST['firstname'] = $data['name']['givenName'];
