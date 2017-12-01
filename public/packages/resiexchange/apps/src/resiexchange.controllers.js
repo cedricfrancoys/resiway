@@ -3609,7 +3609,7 @@ console.log(ctrl.user);
         var facebook = hello('facebook').getAuthResponse();
         var google = hello('google').getAuthResponse();
 
-        if(online(fb)) {
+        if(online(facebook)) {
             facebook.api('me').then(function(json) {
                 ctrl.avatars.facebook = json.thumbnail;
             });
