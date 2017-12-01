@@ -3606,15 +3606,15 @@ console.log(ctrl.user);
             return session && session.access_token && session.expires > currentTime;
         };
 
-        var facebook = hello('facebook').getAuthResponse();
-        var google = hello('google').getAuthResponse();
+        var facebook = hello('facebook');
+        var google = hello('google');
 
-        if(online(facebook)) {
+        if(online(facebook.getAuthResponse())) {
             facebook.api('me').then(function(json) {
                 ctrl.avatars.facebook = json.thumbnail;
             });
         }
-        if(online(google)) {
+        if(online(google.getAuthResponse())) {
             google.api('me').then(function(json) {
                 ctrl.avatars.google = json.thumbnail;
             });            
