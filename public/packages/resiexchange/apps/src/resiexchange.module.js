@@ -120,11 +120,12 @@ var resiway = angular.module('resiexchange', [
     '$rootScope', 
     '$location',
     '$cookies',
+    '$http',
     'authenticationService', 
     'actionService', 
     'feedbackService',
     'hello',
-    function($window, $timeout, $rootScope, $location, $cookies, authenticationService, actionService, feedbackService, hello) {
+    function($window, $timeout, $rootScope, $location, $cookies, $http, authenticationService, actionService, feedbackService, hello) {
         console.log('run method invoked');
 
         // Bind rootScope with feedbackService service (popover display)
