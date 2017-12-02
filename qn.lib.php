@@ -413,9 +413,9 @@ namespace config {
 					$GLOBALS['QNlib_loading_classes'][$class_name] = true;
 					$file_path = self::get_class_path(str_replace('\\', '/', $class_path));
                     // use Qinoa class extention
-					if(self::path_contains($file_path.'.class.php')) $result = include $file_path.'.class.php';
+					if(self::path_contains($file_path.'.class.php')) $result = include_once $file_path.'.class.php';
                     // Fallback to simple php extension
-                    else if(self::path_contains($file_path.'.php')) $result = include $file_path.'.php';
+                    else if(self::path_contains($file_path.'.php')) $result = include_once $file_path.'.php';
 					unset($GLOBALS['QNlib_loading_classes']);
 				}
 			}

@@ -35,15 +35,16 @@ class HttpResponse extends HttpMessage {
         // set status-line
         header($this->getProtocol().' '.$this->getStatus());
         // set headers
-        $headers = $this->getHeaders();
+        $headers = $this->getHeaders(true);
         foreach($headers as $header => $value) {
             if($header == 'Content-Length') continue;
             header($header.': '.$value);
         }
         // output body
         $body = $this->getBody();
+
         if(is_array($body)) {
-            switch($this->getContentType()) {
+            switch($this->getHeaders()->getContentType()) {
             case 'application/json':
             case 'text/javascript':
                 $body = json_encode($body, JSON_PRETTY_PRINT);
@@ -54,10 +55,13 @@ class HttpResponse extends HttpMessage {
                 $xml = new SimpleXMLElement('<root/>');
                 array_walk_recursive($body, array ($xml, 'addChild'));
                 $body = $xml->asXML();
+            default:
+                $body = http_build_query($body);
             }
         }
         header('Content-Length: '.strlen($body));
         echo $body;
+        // no output should be emitted after this point
         return $this;        
     }
     

@@ -2,9 +2,9 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
-use config\QNlib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
-use easyobject\orm\PersistentDataManager as PersistentDataManager;
+use config\QNlib;
+use easyobject\orm\ObjectManager;
+use easyobject\orm\PersistentDataManager;
 use qinoa\http\HttpRequest;
 
 // force silent mode (debug output would corrupt json data)
@@ -80,7 +80,7 @@ try {
         }
         $data = $response->getBody();
         $account_type = 'google';        
-        $avatar_url = $data['image']['url'];        
+        $avatar_url = (explode('?', $data['image']['url'])[0]).'?sz=@size';
         $_REQUEST['login'] = $data['emails'][0]['value'];      
         $_REQUEST['firstname'] = $data['name']['givenName'];
         $_REQUEST['lastname'] = $data['name']['familyName'];
@@ -95,11 +95,11 @@ try {
 
     if($ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN); 
 
-    // create a user account for this email address
+    // an account with this email address already exists
     if(count($ids) > 0) {
         $user_id = $ids[0];
     }
-    // register new account
+    // no account yet : register new user
     else {
         // disable email confirmation
         $_REQUEST['send_confirm'] = false;
@@ -108,21 +108,20 @@ try {
             throw new Exception($json['error_message_ids'][0], $json['result']);
         }
         // retrieve user_id
-        $user_id = $pdm->get('user_id');
+        $user_id = $pdm->get('user_id');        
     }
-
-    // now user account should exist
 
     // update user data
     $user_data = [
                     'verified'      => true, 
                     'avatar_url'    => $avatar_url, 
                     'account_type'  => $account_type
-                  ];                      
-    $om->write('resiway\User', $user_id, $user_data);
+                 ];
+    $om->write('resiway\User', $user_id, $user_data);        
     
-    // sign user in
+    // make sure user is signed in
     $pdm->set('user_id', $user_id);
+
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

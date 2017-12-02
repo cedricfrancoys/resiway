@@ -16,10 +16,10 @@ class PhpContext {
         if(!strlen($this->getSessionId())) session_start();
 
         // retrieve current request 
-        $this->httpRequest = new HttpRequest($this->getHttpMethod().' '.$this->getHttpUri().' '.$this->getHttpProtocol(), $this->getHttpHeaders(), $this->getHttpBody());
+        $this->httpRequest = new HttpRequest($this->getHttpMethod().' '.$this->getHttpUri().' '.$this->getHttpProtocol(), $this->getHttpRequestHeaders(), $this->getHttpBody());
         
-        // build response 
-        $this->httpResponse = new HttpResponse('HTTP/1.1 200 OK', $this->getHeaders());        
+        // build response (retrieive default headers set by PHP)
+        $this->httpResponse = new HttpResponse('HTTP/1.1 200 OK', $this->getHttpResponseHeaders());        
     }
     
     public static function &getInstance() {
@@ -41,7 +41,7 @@ class PhpContext {
         return session_id();
     }
     
-    private function getHeaders() {
+    private function getHttpResponseHeaders() {
         $res = [];
         $headers = headers_list();
         foreach($headers as $header) {
@@ -87,7 +87,7 @@ class PhpContext {
      * Get all HTTP header key/values as an associative array for the current request.
      *
      */    
-    private function getHttpHeaders() {
+    private function getHttpRequestHeaders() {
         static $headers = null;
         
         if(!$headers) {

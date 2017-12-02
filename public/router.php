@@ -39,13 +39,12 @@ use qinoa\route\Router;
 set_silent(true);
 
 
-try {
-    $phpContext = &PhpContext::getInstance();
-    $request = $phpContext->getHttpRequest();
+$phpContext = &PhpContext::getInstance();
+$request = $phpContext->getHttpRequest();
 
-    // retrieve original URI
-    $query = $request->getQuery();
-    $uri = $request->getPath().((strlen($query) > 0)?'?'.$query:'');
+try {
+    // retrieve URI path
+    $uri = $request->getUri()->getPath();
 
     // load routes definition
     $json_file = '../config/routing/default.json';    
@@ -67,7 +66,7 @@ try {
         $router->prependRoutes($routes);
     }
 
-    $found_url = $router->resolve($uri);   
+    $found_url = $router->resolve($uri);    
 }
 catch(Exception $e) {
     $found_url = null;
@@ -81,8 +80,13 @@ if(!$found_url) {
 }
 // URL match found 
 else {
-    // merge resolved params with URL params, if any
-    $params = array_merge(config\QNlib::extract_params($found_url), $router->getParams());
+    // extract resolved params, if any
+    $params = [];
+    if($found_url[0] == '?') {
+        parse_str(substr($found_url, 1), $params);        
+    }
+    // merge resolved params with URL params
+    $params = array_merge($params, $router->getParams());
     // set the header to HTTP 200 and relay processing to index.php
     header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
     header('Status: 200 OK');
@@ -92,11 +96,14 @@ else {
         foreach($params as $param => $value) {
             $found_url = str_replace(':'.$param, $value, $found_url);
         }
+        // redirect to new URL
         header('Location: '.$found_url);
     }
-    else {
+    else {        
         // merge resolved params with original URL params, if any
-        $params = array_merge(config\QNlib::extract_params($_SERVER['REQUEST_URI']), $params);
+        if($request->getMethod() == 'GET') {
+            $params = array_merge((array) $request->getBody(), $params);            
+        }
         // inject resolved params to global '$_REQUEST' (if a param is already set, its value is overwritten)    
         foreach($params as $key => $value) {
             $_REQUEST[$key] = $value;

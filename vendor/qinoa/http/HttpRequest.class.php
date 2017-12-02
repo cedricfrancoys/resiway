@@ -2,6 +2,7 @@
 namespace qinoa\http;
 
 use qinoa\http\HttpMessage;
+use qinoa\http\HttpUri;
 use qinoa\http\MobileDetect;
 
 class HttpRequest extends HttpMessage {
@@ -14,14 +15,11 @@ class HttpRequest extends HttpMessage {
         if(isset($parts[2])) {
             $this->setProtocol($parts[2]);
         }
-        else {
-            $this->setProtocol('HTTP/1.1');
-        }
         // 2) retrieve URI and host
         if(isset($parts[1])) {
-            if($this->isValidUri($parts[1])) {
+            // URI ?
+            if(HttpUri::isValid($parts[1])) {
                 $this->setUri($parts[1]);
-                $this->setHeader('Host', $this->getHost());            
             }
             else {
                 // check Host header for a port number (see RFC2616)
@@ -33,22 +31,19 @@ class HttpRequest extends HttpMessage {
                     $port = isset($host_parts[1])?trim($host_parts[1]):80;
                     $scheme = ($port==443)?'https':'http';
                     $uri = $scheme.'://'.$host.':'.$port.$parts[1];
-                    if($this->isValidUri($uri)) {
-                        $this->setUri($uri);
-                    }
+                    $this->setUri($uri);
                 }
             }
         }
         // 3) retrieve method
         if(isset($parts[0])) {
             // method ?
-            if(in_array($parts[0], self::$valid_methods) ) {
+            if(in_array($parts[0], self::$HTTP_METHODS) ) {
                 $this->setMethod($parts[0]);
             }
             else {
-                $this->setMethod('GET');
                 // URI ?
-                if($this->isValidUri($parts[0])) {
+                if(HttpUri::isValid($parts[0])) {
                     $this->setUri($parts[0]);
                 }
                 else {
@@ -61,23 +56,19 @@ class HttpRequest extends HttpMessage {
                         $port = isset($host_parts[1])?trim($host_parts[1]):80;
                         $scheme = ($port==443)?'https':'http';
                         $uri = $scheme.'://'.$host.':'.$port.$parts[0];
-                        if($this->isValidUri($uri)) {
-                            $this->setUri($uri);
-                        }
+                        $this->setUri($uri);
                     }                
                 }                
             }
         }
-        else {
-            $this->setMethod('GET');
-        }
+
     }
         
-    
+   
     public function send() {       
         $response = null;
         
-        $uri = $this->getUri();
+        $uri = (string) $this->getUri();
         
         if(strlen($uri) > 0) {
             $method = $this->getMethod();
@@ -93,7 +84,7 @@ class HttpRequest extends HttpMessage {
                 'Accept-Charset'    => 'utf-8'
             ];
             // retrieve content type
-            $content_type = $this->getContentType();            
+            $content_type = $this->getHeaders()->getContentType();            
             if(strlen($content_type) <= 0 && in_array($method,['GET', 'POST'])) {
                 // fallback to form encoded data 
                 $content_type = 'application/x-www-form-urlencoded';
@@ -119,7 +110,7 @@ class HttpRequest extends HttpMessage {
             // set content-length (might be 0)
             $additional_headers['Content-Length'] = $body_length;            
             // merge manually defined headers with additional headers (later overwrites the former)
-            $headers = array_merge($this->getHeaders(), $additional_headers);
+            $headers = array_merge((array) $this->getHeaders(true), $additional_headers);
             // adapt headers to fit into a numerically indexed array
             $headers = array_map(function ($header, $value) {return "$header: $value";}, array_keys($headers), $headers);
             // build the HTTP options array
@@ -203,25 +194,6 @@ class HttpRequest extends HttpMessage {
         $this->is_mobile = ( $detector->isMobile() || $detector->isTablet());
         return $this->is_mobile;
     }    
-    
-    /**
-     * Returns true if the request is a XMLHttpRequest.
-     *
-     * Checks HTTP header for an X-Requested-With entry set to 'XMLHttpRequest'.
-     *
-     * @link http://en.wikipedia.org/wiki/List_of_Ajax_frameworks#JavaScript
-     *
-     * @return bool true if the request is an XMLHttpRequest, false otherwise
-     */
-    public function isXHR() {
-        static $is_xhr = null;
-        if(is_null($is_xhr)) {
-            $is_xhr = false;
-            if(isset($this->headers['X-Requested-With'])) {
-                $is_xhr = ('XMLHttpRequest' == $this->headers['X-Requested-With']);
-            }
-        }
-        return $is_xhr;
-    }        
+          
     
 }
