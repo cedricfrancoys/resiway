@@ -55,10 +55,10 @@ try {
     case 'facebook':
         $oauthRequest = new HttpRequest('/v2.9/me', ['Host' => 'graph.facebook.com:443']);    
         $response = $oauthRequest
-            ->setBody([
-                'fields'       => 'email,first_name,last_name',
-                'access_token' => $network_token
-            ])->send();
+                    ->setBody([
+                        'fields'       => 'email,first_name,last_name',
+                        'access_token' => $network_token
+                    ])->send();
         if(!is_null($response->get('error'))) {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }                
@@ -72,9 +72,9 @@ try {
     case 'google':
         $oauthRequest = new HttpRequest('/plus/v1/people/me', ['Host' => 'www.googleapis.com:443']);
         $response = $oauthRequest
-            ->setBody([
-                'access_token' => $network_token
-            ])->send();
+                    ->setBody([
+                        'access_token' => $network_token
+                    ])->send();
         if(!is_null($response->get('error'))) {
             throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
         }

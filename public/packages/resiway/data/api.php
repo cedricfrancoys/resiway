@@ -23,11 +23,16 @@ $params = QNLib::announce(
 	array(	
     'description'	=>	"Returns a list of objects matching the received criteria",
     'params' 		=>	array(
-                        'class'	        => array(
+                        'class'	    => array(
                                             'description'   => 'Pseudo class of the object to retrieve (article, document, question, answer, category, user).',
                                             'type'          => 'string', 
                                             'required'      => true
-                                            ),       
+                                            ),
+                        'domain'	=> array(
+                                            'description'   => 'Search domain.',
+                                            'type'          => 'array',
+                                            'default'       => []
+                                            ),                                            
                         'q'		    => array(
                                             'description'   => 'Token to search among the objects',
                                             'type'          => 'string',
@@ -89,9 +94,10 @@ try {
     $API_URL = $API_URLs[$object_pseudo_class];
     
     // 0) retrieve matching objects identifiers
-    $params['domain'] = [];
+
     // build domain   
     if(strlen($params['q']) > 0) {
+        $params['domain'] = [];        
         // adapt domain to restrict results to given channel
         $params['domain'][] = ['channel_id','=', '1'];        
         $indexes_ids = resiway\Index::searchByQuery($om, $params['q']);        
