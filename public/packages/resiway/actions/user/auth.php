@@ -64,7 +64,7 @@ try {
         }                
         $id = $response->get('id');
         $account_type = 'facebook';        
-        $avatar_url = "https://graph.facebook.com/{$id}/picture";
+        $avatar_url = "https://graph.facebook.com/{$id}/picture?height=@size&width=@size";
         $_REQUEST['login'] = $response->get('email');
         $_REQUEST['firstname'] = $response->get('first_name');
         $_REQUEST['lastname'] = $response->get('last_name');
