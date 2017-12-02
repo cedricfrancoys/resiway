@@ -529,7 +529,7 @@ var resiway = angular.module('resiexchange', [
 
         rootCtrl.avatarURL = function(url, size) {
             var str = new String(url);
-            return str.replace("@size", size);
+            return str.replace(/@size/g, size);
         };
             
         rootCtrl.htmlToTxt = function(html) {
