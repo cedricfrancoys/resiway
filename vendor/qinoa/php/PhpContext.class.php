@@ -56,26 +56,21 @@ class PhpContext {
     }
 
     /** 
-     * Retrieve the request "intended" method.
+     * Retrieve the request method.
      *
      * If the X-HTTP-Method-Override header is set, and if the method is a POST,
      * then it is used to determine the "real" intended HTTP method.
      *
-     * The _method request parameter can also be used to determine the HTTP method
      */    
     private function getHttpMethod() {
-        static $method = null;
-        
+        static $method = null;        
         if(!$method) {
             $method = $_SERVER['REQUEST_METHOD'];
-
-            if (!strcasecmp($method, 'POST')) {
+            if (strcasecmp($method, 'POST') === 0) {
                 if (isset($_SERVER['X-HTTP-METHOD-OVERRIDE'])) {
                     $method = $_SERVER['X-HTTP-METHOD-OVERRIDE'];
                 } 
-                elseif (isset($_REQUEST['_method'])) {                    
-                    $method = $_REQUEST['_method'];
-                }
+
             }
             // normalize to upper case
             $method = strtoupper($method);
@@ -129,8 +124,8 @@ class PhpContext {
             }              
             // handle ETags
             if(!isset($headers['ETag'])) {
-                if(isset($_SERVER['if_none_match'])) {
-                    $headers['ETag'] = $_SERVER['if_none_match'];
+                if(isset($_SERVER['HTTP_IF_NONE_MATCH'])) {
+                    $headers['ETag'] = $_SERVER['HTTP_IF_NONE_MATCH'];
                 }
                 else {
                     $headers['ETag'] = '';

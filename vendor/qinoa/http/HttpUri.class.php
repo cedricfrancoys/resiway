@@ -142,8 +142,10 @@ class HttpUri {
     }
     
     /**
-     *
+     * Checks validity of provided URI
      * with support for internationalized domain name (IDN) support (non-ASCII chars)
+     *
+     * @param $uri  string
      */
     public static function isValid($uri) {
         $res = filter_var($uri, FILTER_VALIDATE_URL);
@@ -151,13 +153,13 @@ class HttpUri {
             // check if uri contains unicode chars
             $mb_len = mb_strlen($uri);
             if ($mb_len !== strlen($uri)) {
-                // replace all multi-bytes chars with a single-byte char (X)
+                // replace all multi-bytes chars with a single-byte char (A)
                 $safe_uri = '';
                 for ($i = 0; $i < $mb_len; ++$i) {
                     $ch = mb_substr($uri, $i, 1);
-                    $safe_uri .= strlen($ch) > 1 ? 'X' : $ch;
+                    $safe_uri .= strlen($ch) > 1 ? 'A' : $ch;
                 }
-                // re-check safe-uri
+                // re-check normalized URI
                 $res = filter_var($safe_uri, FILTER_VALIDATE_URL);
             }
         }

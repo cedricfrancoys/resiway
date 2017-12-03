@@ -156,7 +156,7 @@ class HttpMessage {
     // @var mixed (string | array)
     private $body;
     
-    // string
+    // @var string
     private $status;
 
     // @var HttpUri
@@ -181,7 +181,7 @@ class HttpMessage {
         $this->setProtocol('HTTP/1.1');
         // default method
         $this->setMethod('GET');
-        // init URI (this is an invalid URI so all members will be set to null)
+        // init URI (this is an invalid URI, so all members will be set to null)
         $this->setUri('');
     }
     
@@ -193,6 +193,10 @@ class HttpMessage {
         return $this;
     }
     
+    /**
+     *
+     * @param $headers  array
+     */
     public function setHeaders($headers) {
         $this->headers = new HttpHeaders($headers);
         return $this;        
@@ -207,7 +211,12 @@ class HttpMessage {
         return $this;
     }
     
-    // this method is invoked byt HttpRequest and HttpResponse constructors
+    /**
+     *
+     * This method is invoked byt HttpRequest and HttpResponse constructors.
+     *
+     * @param $uri  string
+     */
     public function setUri($uri) {        
         $this->uri = new HttpUri($uri);
         // maintain headers consistency
@@ -225,9 +234,15 @@ class HttpMessage {
         }
         return $this;
     }    
-       
+    
+    /**
+     * Tries to force conversion to an associative array based on content-type.
+     * Falls back to a raw string if conversion is not possible.
+     * 
+     *
+     * @param $body mixed (string | array)
+     */
     public function setBody($body) {
-        // try to force conversion to an associative array based on content-type
         if(!is_array($body)) {
             switch($this->getHeaders()->getContentType()) {
             case 'application/x-www-form-urlencoded':
