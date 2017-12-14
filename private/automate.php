@@ -68,7 +68,7 @@ try {
         // pick up object for which last action is the oldest
         // pick up a ressource some people have already marked as trusted
         
-        $objects_ids = $om->search($object_class, [ ['score', '>', '3'] ], 'modified', 'asc', 0, 5);
+        $objects_ids = $om->search($object_class, [ ['score', '>', '2'] ], 'modified', 'asc', 0, 5);
         
         // note : il n'y a pas de risque de toujours sélectionner les mêmes objets car les actions modifient le champ "modified"
         // et aucune action n'est bloquante (pas de limitation)                    
