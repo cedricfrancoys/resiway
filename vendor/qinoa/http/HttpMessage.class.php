@@ -1,4 +1,9 @@
 <?php
+/* 
+    This file is part of the qinoa framework <http://www.github.com/cedricfrancoys/qinoa>
+    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
+*/
 namespace qinoa\http;
 
 use qinoa\http\HttpUri;

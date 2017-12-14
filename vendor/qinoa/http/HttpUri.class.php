@@ -1,43 +1,10 @@
 <?php
+/* 
+    This file is part of the qinoa framework <http://www.github.com/cedricfrancoys/qinoa>
+    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
+*/
 namespace qinoa\http;
-
-/*
-
-HttpUri might sound a little redundant but this name actually makes sense to have uniform class names and to insist on the fact that not all URI apply to a web context.
-
-For instance, "urn:isbn:0-395-36341-1" is a valid URI but useless for HTTP protocol
-
-
-
-    ### URI structure:
-    @link http://www.ietf.org/rfc/rfc3986.txt
-    @link https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-    
-    generic form: scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment]
-
-    examples: 
-    * http://www.example.com/index.html
-    * https://www.w3.org/hypertext/DataSources/Overview.html
-    * ftp://me:mypass@ftp.example.com:80/index.html
-
-
-    
-    
-    
-                          hierarchical part
-            ┌────────────────────┴────────────────────┐
-                          authority             path
-            ┌────────────────┴──────────────┐┌────┴───┐
-      abc://username:password@example.com:123/path/data?key=value&key2=value2#fragid
-      └┬┘   └──────┬────────┘ └────┬────┘ └┬┘           └─────────┬─────────┘ └─┬──┘
-    scheme  user information      host    port                  query        fragment
-    
-                                             └───────────────┬──────────────┘
-    
-
-   is non-standard, but is so common in route definition    
-*/   
-
 
 /**
  *

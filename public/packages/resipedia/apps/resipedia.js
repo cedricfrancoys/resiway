@@ -161,7 +161,8 @@ var resiway = angular.module('resipedia', [
     'pascalprecht.translate',
     'btford.markdown',
     'angularMoment',
-    'ngToast'    
+    'ngToast',
+    'ngHello'
 ])
 
 
@@ -235,6 +236,24 @@ var resiway = angular.module('resipedia', [
     }
 ])
 
+.config([
+    'helloProvider',
+    function (helloProvider) {
+        helloProvider.init(
+            {
+                // RW public keys
+                facebook: '1786954014889199',
+                google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com',
+                twitter: '6MV5s7IYX2Uqi3tD33s9VSEKb'
+            }, 
+            {
+                scope: 'basic, email',
+                redirect_uri: 'oauth2callback',
+                oauth_proxy: 'https://auth-server.herokuapp.com/proxy'
+            }
+        );
+    }
+])
 
 .run( [
     '$window', 
@@ -242,10 +261,12 @@ var resiway = angular.module('resipedia', [
     '$rootScope', 
     '$location',
     '$cookies',
+    '$http',
     'authenticationService', 
     'actionService', 
     'feedbackService',
-    function($window, $timeout, $rootScope, $location, $cookies, authenticationService, actionService, feedbackService) {
+    'hello',
+    function($window, $timeout, $rootScope, $location, $cookies, $http, authenticationService, actionService, feedbackService, hello) {
         console.log('run method invoked');
 
         // Bind rootScope with feedbackService service (popover display)
@@ -317,7 +338,8 @@ var resiway = angular.module('resipedia', [
         $rootScope.$on('$locationChangeSuccess', function(angularEvent) {
             console.log('$locationChangeSuccess');
 
-            if($rootScope.currentPath) {
+            // remember previsousPath if different from user/sign (and subs)
+            if($rootScope.currentPath && $rootScope.currentPath.substring(0, signPath.length) != signPath) {                
                 $rootScope.previousPath = $rootScope.currentPath;
             }
             $rootScope.currentPath = $location.path();
@@ -382,7 +404,40 @@ var resiway = angular.module('resipedia', [
         authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
         // try to authenticate or restore the session
         authenticationService.authenticate();
-           
+
+        /* 
+        * relay hello.js login notifications
+        */
+        hello.on("auth.login", function (auth) {
+            console.log('auth notification received in rootscope');
+            console.log(auth);
+            if(angular.isDefined(auth.authResponse) && angular.isDefined(auth.authResponse.network) && angular.isDefined(auth.authResponse.access_token)) {
+                // relay auth data to the server
+                $http.get('index.php?do=resiway_user_auth&network_name='+auth.authResponse.network+'&network_token='+auth.authResponse.access_token)
+                .then(
+                    function success(response) {
+                        var data = response.data;
+                        // now we should be able to authenticate
+                        authenticationService.authenticate()
+                        .then(
+                            function success(data) {
+                                $rootScope.$broadcast('auth.signed'); 
+                            },
+                            function error(data) {
+                                // unexpected error
+                                console.log(data);
+                            }
+                         );  
+                    },
+                    function error(response) {
+                        var error_id = data.error_message_ids[0];     
+                        // server fault, user not verified, ...
+                        // todo
+                        console.log(response);
+                    }
+                );
+            }
+        });
     }
 ])
 
@@ -406,7 +461,7 @@ var resiway = angular.module('resipedia', [
             plugins : 'wordcount charcount advlist autolink link image lists charmap fullscreen preview table paste code',
             skin: 'lightgray',
             theme : 'modern',
-            content_css: 'packages/resiexchange/apps/assets/css/bootstrap.min.css',
+            content_css: 'packages/resipedia/apps/assets/css/bootstrap.min.css',
             elementpath: false,
             block_formats: 
                     'Paragraph=p;' +
@@ -461,6 +516,10 @@ var resiway = angular.module('resipedia', [
                 case 'resilib':
                     list_page = '/documents';
                     break;
+                case 'resilexi':
+                    list_page = '/articles';
+                    break;
+                    
             }
             // go to list page
             if($location.path() == list_page) { 
@@ -475,17 +534,18 @@ var resiway = angular.module('resipedia', [
             switch(object_class) {    
             case 'resiway\\Author': return '#!/author/'+object_id;            
             case 'resiway\\Category': return '#!/category/'+object_id;
-            case 'resiexchange\\Question': return 'resiexchange.'+$rootScope.config.locale+'#!/question/'+object_id;
-            case 'resiexchange\\Answer': return 'resiexchange.'+$rootScope.config.locale+'#!/answer/'+object_id;
-            case 'resiexchange\\QuestionComment': return 'resiexchange.'+$rootScope.config.locale+'#!/questionComment/'+object_id;               
-            case 'resiexchange\\AnswerComment': return 'resiexchange.'+$rootScope.config.locale+'#!/answerComment/'+object_id;
-            case 'resilib\\Document': return 'resilib.'+$rootScope.config.locale+'#!/document/'+object_id;            
+            case 'resiexchange\\Question': return '/question/'+object_id;
+            case 'resiexchange\\Answer': return '/answer/'+object_id;
+            case 'resiexchange\\QuestionComment': return '/questionComment/'+object_id;               
+            case 'resiexchange\\AnswerComment': return '/answerComment/'+object_id;
+            case 'resilib\\Document': return '/document/'+object_id;            
+            case 'resilexi\\Article': return '/article/'+object_id;                        
             }
         };
 
         rootCtrl.avatarURL = function(url, size) {
             var str = new String(url);
-            return str.replace("@size", size);
+            return str.replace(/@size/g, size);
         };
             
         rootCtrl.htmlToTxt = function(html) {
@@ -1044,6 +1104,9 @@ angular.module('resipedia')
             $rootScope.user = {id: 0};
             $cookies.remove('username');
             $cookies.remove('password');
+            if(localStorage){
+                localStorage.removeItem('hello');
+            }
         };
 
 
@@ -2786,7 +2849,7 @@ angular.module('resipedia')
                           }, 
                           article);
                           
-
+console.log(article);
         /**
         * for many2many field, as initial setting we mark all ids to be removed
         */
@@ -2824,7 +2887,10 @@ angular.module('resipedia')
                     id: $scope.article.id,
                     title: $scope.article.title,
                     content: $scope.article.content,
-                    categories_ids: $scope.article.categories_ids
+                    categories_ids: $scope.article.categories_ids,
+                    source_author: $scope.article.source_author,
+                    source_url: $scope.article.source_url,
+                    source_license: $scope.article.source_license                    
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -4762,7 +4828,7 @@ angular.module('resipedia')
     '$uibModal', 
     'actionService', 
     'feedbackService', 
-    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService ) {
+    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService) {
         console.log('question controller');
         
         var ctrl = this;
@@ -4949,7 +5015,7 @@ angular.module('resipedia')
                     content: $scope.question.newAnswerContent,
                     source_author: $scope.question.newAnswerSource_author,
                     source_url: $scope.question.newAnswerSource_url,
-                    source_license: $scope.question.newAnswerSource_license,                    
+                    source_license: $scope.question.newAnswerSource_license                   
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -6449,7 +6515,8 @@ angular.module('resipedia')
     '$translate',
     'feedbackService',
     'actionService',
-    function(user, $scope, $window, $filter, $http, $translate, feedback, action) {
+    'hello',
+    function(user, $scope, $window, $filter, $http, $translate, feedback, action, hello) {
     console.log('userEdit controller');    
     
     var ctrl = this;
@@ -6500,11 +6567,35 @@ console.log(ctrl.user);
         ctrl.avatars = {
             libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
             gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
-            identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
-            google: ''
+            identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size'
         };
+        
+        var online = function(session) {
+            var currentTime = (new Date()).getTime() / 1000;
+            return session && session.access_token && session.expires > currentTime;
+        };
+
+        var facebook = hello('facebook');
+        var google = hello('google');
+
+        if(online(facebook.getAuthResponse())) {
+            facebook.api('me').then(function(json) {
+                $scope.$apply(function() {
+                    ctrl.avatars.facebook = json.thumbnail;
+                });
+            });
+        }
+        if(online(google.getAuthResponse())) {
+            google.api('me').then(function(json) {
+                $scope.$apply(function() {
+                    var avatar_url = json.thumbnail;
+                    ctrl.avatars.google = avatar_url.replace(/\?sz=.*/, "?sz=@size");
+                });
+            });            
+        }
             
         // @init
+        /*
         // retrieve GMail avatar, if any
         $http.get('https://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
         .then(
@@ -6515,7 +6606,8 @@ console.log(ctrl.user);
             function errorCallback(response) {
 
             }
-        );     
+        );
+        */        
     }
     
     $scope.$watchGroup([
@@ -6848,8 +6940,8 @@ angular.module('resipedia')
         
         var ctrl = this;
         
-        // set default mode to blank
-        ctrl.mode = ''; 
+        // set default mode to signin form
+        ctrl.mode = 'in'; 
         
         // asign mode from URL if it matches one of the allowed modes
         switch($routeParams.mode) {
@@ -7003,7 +7095,20 @@ angular.module('resipedia')
                     $scope.recoverAlerts = [{ type: 'danger', msg: error_id }];
                 });                  
             }
-        };    
+        };
+        
+        $scope.$on('auth.signed', function(event, auth) {
+            ctrl.running = false;
+            console.log('auth notification received in userSign controller');
+            // if some action is pending, return to URL where it occured
+            if($rootScope.pendingAction
+            && typeof $rootScope.pendingAction.next_path != 'undefined') {
+               $location.path($rootScope.pendingAction.next_path);
+            }
+            else {
+                $location.path($rootScope.previousPath);
+            }
+        });
     }
 ]);
 angular.module('resipedia')

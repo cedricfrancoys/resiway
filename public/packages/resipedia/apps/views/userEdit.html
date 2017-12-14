@@ -32,32 +32,13 @@
                                                 {{'USER_EDIT_UPDATE_AVATAR'|translate}} <span class="caret"></span>
                                                 </button>
                                                 <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="avatar-button">
-                                                    <li role="menuitem">
-                                                    <a href ng-click="ctrl.user.avatar_url = ctrl.avatars.google">
-                                                        <img ng-src="{{rootCtrl.avatarURL(ctrl.avatars.google, '40')}}" width="40" height="40">
-                                                        Google
-                                                    </a>
+                                                    <li role="menuitem" ng-repeat-start="(avatar_service, avatar_url) in ctrl.avatars">
+                                                        <a href ng-click="ctrl.user.avatar_url = avatar_url" style="text-transform: capitalize;">
+                                                            <img ng-src="{{rootCtrl.avatarURL(avatar_url, '40')}}" width="40" height="40">
+                                                            {{avatar_service}}
+                                                        </a>
                                                     </li>
-                                                    <li class="divider"></li>
-                                                    <li role="menuitem">
-                                                    <a href ng-click="ctrl.user.avatar_url = ctrl.avatars.libravatar">
-                                                        <img ng-src="{{rootCtrl.avatarURL(ctrl.avatars.libravatar, '40')}}" width="40" height="40">
-                                                        Libravatar
-                                                    </a>
-                                                    </li>                                            
-                                                    <li class="divider"></li>
-                                                    <li role="menuitem">
-                                                    <a href ng-click="ctrl.user.avatar_url = ctrl.avatars.gravatar">
-                                                        <img ng-src="{{rootCtrl.avatarURL(ctrl.avatars.gravatar, '40')}}" width="40" height="40">
-                                                        Gravatar
-                                                    </a>
-                                                    </li>
-                                                    <li class="divider"></li>
-                                                    <li role="menuitem">
-                                                    <a href ng-click="ctrl.user.avatar_url = ctrl.avatars.identicon">
-                                                        <img ng-src="{{rootCtrl.avatarURL(ctrl.avatars.identicon, '40')}}" width="40" height="40">
-                                                        Identicon
-                                                    </a></li>
+                                                    <li class="divider" ng-repeat-end></li>
                                                 </ul>
                                             </div>
                                         </div>

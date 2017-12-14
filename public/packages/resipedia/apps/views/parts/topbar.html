@@ -52,25 +52,25 @@
         <!-- notifications dialog -->        
         <div class="notify-dialog" ng-show="ctrl.notifyDropdown">
             <div class="head">
-                <a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
+                <a href="/user/notifications/{{user.id}}" target="_self">{{'TOOLBAR_NOTIFICATIONS_TITLE' | translate}}</a>
                 <a href class="pull-right" ng-click="ctrl.notificationsDismissAll()">tout supprimer</a>
             </div>
             <ul>
-                <a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">
+                <a href="/user/notifications/{{user.id}}" target="_self">
                     <li ng-repeat="(notification_index, notification) in user.notifications">
-                        <div class="title"><a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">{{notification.title}}</a></div>
+                        <div class="title"><a href="/user/notifications/{{user.id}}" target="_self">{{notification.title}}</a></div>
                         <div class="descr" ng-bind-html="notification.content"></div>
                     </li>
                 </a>
             </ul>
-            <div class="foot"><a href="/resiexchange.fr#!/user/notifications/{{user.id}}" target="_self">+ Voir toutes les notifications</a></div>
+            <div class="foot"><a href="/user/notifications/{{user.id}}" target="_self">+ Voir toutes les notifications</a></div>
         </div>
         <!-- help dialog -->
         <div class="help-dialog" ng-show="ctrl.helpDropdown">
             <ul>
                 <li>
                     <div class="title">Centre d'Aide</div>
-                    <div class="descr small"><a href="/resiexchange.fr#!/help/categories" target="_self">Des réponses à toutes vos questions sur le fonctionnement de la plateforme</a></div>
+                    <div class="descr small"><a href="/help/categories" target="_self">Des réponses à toutes vos questions sur le fonctionnement de la plateforme</a></div>
                 </li>
                 <li>
                     <div class="title">Meta</div>
@@ -81,7 +81,7 @@
         <!-- user dialog -->
         <div class="user-dialog" ng-show="ctrl.userDropdown">
             <ul>
-                <a href="/resiexchange.fr#!/user/{{user.id}}/{{user.name_url}}" target="_self">
+                <a href="/user/{{user.id}}/{{user.name_url}}" target="_self">
                     <li>
                         <i class="fa fa-user" aria-hidden="true"></i> Profil
                     </li>
@@ -99,10 +99,9 @@
         <div class="col-1-1">
     
             <div class="platform-items">
-                <div class="platform-btn {{config.application}}" ng-class="{open: ctrl.platformDropdown}" ng-click="togglePlatformDropdown()">
+                <div class="platform-btn {{config.application}}" ng-class="{open: ctrl.platformDropdown}" >
                     <div class="app-icon"></div>
-                    <i class="fa fa-caret-down" aria-hidden="true"></i>          
-                </div>            
+                </div>
                 <div id="help-btn" class="help-btn hidden-xs" ng-class="{open: ctrl.helpDropdown}" ng-click="toggleHelpDropdown()">
                     Aide 
                     <i class="fa fa-caret-down" aria-hidden="true"></i>          
@@ -113,8 +112,8 @@
             </div>
             
             <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">
-                    <a href="/resiexchange.fr#!/user/sign/in" target="_self"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
-                    <a href="/resiexchange.fr#!/user/sign/up" target="_self"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
+                    <a href="/user/sign/in" target="_self"><i class="fa fa-sign-in" aria-hidden="true"></i> Connexion</a>
+                    <a href="/user/sign/up" target="_self"><i class="fa fa-user-plus" aria-hidden="true"></i> Inscription</a>
             </div>
             
             <div id="notify-btn" class="notify-btn ng-hide hidden-xs" ng-class="{open: ctrl.notifyDropdown}" ng-click="toggleNotifyDropdown()" ng-show="user.id">

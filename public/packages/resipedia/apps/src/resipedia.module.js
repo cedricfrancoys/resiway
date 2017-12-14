@@ -20,7 +20,8 @@ var resiway = angular.module('resipedia', [
     'pascalprecht.translate',
     'btford.markdown',
     'angularMoment',
-    'ngToast'    
+    'ngToast',
+    'ngHello'
 ])
 
 
@@ -94,6 +95,24 @@ var resiway = angular.module('resipedia', [
     }
 ])
 
+.config([
+    'helloProvider',
+    function (helloProvider) {
+        helloProvider.init(
+            {
+                // RW public keys
+                facebook: '1786954014889199',
+                google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com',
+                twitter: '6MV5s7IYX2Uqi3tD33s9VSEKb'
+            }, 
+            {
+                scope: 'basic, email',
+                redirect_uri: 'oauth2callback',
+                oauth_proxy: 'https://auth-server.herokuapp.com/proxy'
+            }
+        );
+    }
+])
 
 .run( [
     '$window', 
@@ -101,10 +120,12 @@ var resiway = angular.module('resipedia', [
     '$rootScope', 
     '$location',
     '$cookies',
+    '$http',
     'authenticationService', 
     'actionService', 
     'feedbackService',
-    function($window, $timeout, $rootScope, $location, $cookies, authenticationService, actionService, feedbackService) {
+    'hello',
+    function($window, $timeout, $rootScope, $location, $cookies, $http, authenticationService, actionService, feedbackService, hello) {
         console.log('run method invoked');
 
         // Bind rootScope with feedbackService service (popover display)
@@ -176,7 +197,8 @@ var resiway = angular.module('resipedia', [
         $rootScope.$on('$locationChangeSuccess', function(angularEvent) {
             console.log('$locationChangeSuccess');
 
-            if($rootScope.currentPath) {
+            // remember previsousPath if different from user/sign (and subs)
+            if($rootScope.currentPath && $rootScope.currentPath.substring(0, signPath.length) != signPath) {                
                 $rootScope.previousPath = $rootScope.currentPath;
             }
             $rootScope.currentPath = $location.path();
@@ -241,7 +263,40 @@ var resiway = angular.module('resipedia', [
         authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
         // try to authenticate or restore the session
         authenticationService.authenticate();
-           
+
+        /* 
+        * relay hello.js login notifications
+        */
+        hello.on("auth.login", function (auth) {
+            console.log('auth notification received in rootscope');
+            console.log(auth);
+            if(angular.isDefined(auth.authResponse) && angular.isDefined(auth.authResponse.network) && angular.isDefined(auth.authResponse.access_token)) {
+                // relay auth data to the server
+                $http.get('index.php?do=resiway_user_auth&network_name='+auth.authResponse.network+'&network_token='+auth.authResponse.access_token)
+                .then(
+                    function success(response) {
+                        var data = response.data;
+                        // now we should be able to authenticate
+                        authenticationService.authenticate()
+                        .then(
+                            function success(data) {
+                                $rootScope.$broadcast('auth.signed'); 
+                            },
+                            function error(data) {
+                                // unexpected error
+                                console.log(data);
+                            }
+                         );  
+                    },
+                    function error(response) {
+                        var error_id = data.error_message_ids[0];     
+                        // server fault, user not verified, ...
+                        // todo
+                        console.log(response);
+                    }
+                );
+            }
+        });
     }
 ])
 
@@ -265,7 +320,7 @@ var resiway = angular.module('resipedia', [
             plugins : 'wordcount charcount advlist autolink link image lists charmap fullscreen preview table paste code',
             skin: 'lightgray',
             theme : 'modern',
-            content_css: 'packages/resiexchange/apps/assets/css/bootstrap.min.css',
+            content_css: 'packages/resipedia/apps/assets/css/bootstrap.min.css',
             elementpath: false,
             block_formats: 
                     'Paragraph=p;' +
@@ -320,6 +375,10 @@ var resiway = angular.module('resipedia', [
                 case 'resilib':
                     list_page = '/documents';
                     break;
+                case 'resilexi':
+                    list_page = '/articles';
+                    break;
+                    
             }
             // go to list page
             if($location.path() == list_page) { 
@@ -334,17 +393,18 @@ var resiway = angular.module('resipedia', [
             switch(object_class) {    
             case 'resiway\\Author': return '#!/author/'+object_id;            
             case 'resiway\\Category': return '#!/category/'+object_id;
-            case 'resiexchange\\Question': return 'resiexchange.'+$rootScope.config.locale+'#!/question/'+object_id;
-            case 'resiexchange\\Answer': return 'resiexchange.'+$rootScope.config.locale+'#!/answer/'+object_id;
-            case 'resiexchange\\QuestionComment': return 'resiexchange.'+$rootScope.config.locale+'#!/questionComment/'+object_id;               
-            case 'resiexchange\\AnswerComment': return 'resiexchange.'+$rootScope.config.locale+'#!/answerComment/'+object_id;
-            case 'resilib\\Document': return 'resilib.'+$rootScope.config.locale+'#!/document/'+object_id;            
+            case 'resiexchange\\Question': return '/question/'+object_id;
+            case 'resiexchange\\Answer': return '/answer/'+object_id;
+            case 'resiexchange\\QuestionComment': return '/questionComment/'+object_id;               
+            case 'resiexchange\\AnswerComment': return '/answerComment/'+object_id;
+            case 'resilib\\Document': return '/document/'+object_id;            
+            case 'resilexi\\Article': return '/article/'+object_id;                        
             }
         };
 
         rootCtrl.avatarURL = function(url, size) {
             var str = new String(url);
-            return str.replace("@size", size);
+            return str.replace(/@size/g, size);
         };
             
         rootCtrl.htmlToTxt = function(html) {

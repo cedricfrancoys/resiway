@@ -87,7 +87,7 @@ angular.module('resipedia')
                           }, 
                           article);
                           
-
+console.log(article);
         /**
         * for many2many field, as initial setting we mark all ids to be removed
         */
@@ -125,7 +125,10 @@ angular.module('resipedia')
                     id: $scope.article.id,
                     title: $scope.article.title,
                     content: $scope.article.content,
-                    categories_ids: $scope.article.categories_ids
+                    categories_ids: $scope.article.categories_ids,
+                    source_author: $scope.article.source_author,
+                    source_url: $scope.article.source_url,
+                    source_license: $scope.article.source_license                    
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,

@@ -18,7 +18,8 @@ $params = QNLib::announce(
     'params' 		=>	array(                                         
                         'id'    => array(
                                     'description'   => 'Identifier of the article to retrieve.',
-                                    'type'          => 'integer', 
+                                    // 'type'          => 'integer', 
+                                    'type'          => 'string', 
                                     'required'      => true
                                     ),                                            
                         )
@@ -32,7 +33,11 @@ list($object_class, $object_id) = ['resilexi\Article', $params['id']];
 
 
 try {
-    
+    if(strpos($object_id, 'eko_') === 0) {
+        $object_id = substr($object_id, 4);
+        header("Location: http://localhost/eko/article_json.php?id=$object_id");
+        exit();
+    }
     $om = &ObjectManager::getInstance();
     
     // 0) retrieve parameters

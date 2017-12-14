@@ -113,7 +113,6 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
-
 .run( [
     '$window', 
     '$timeout', 
@@ -294,9 +293,9 @@ var resiway = angular.module('resiexchange', [
                         // todo
                         console.log(response);
                     }
-                );              
-            }            
-        });        
+                );
+            }
+        });
     }
 ])
 

@@ -6,7 +6,7 @@
                 <div class="panel-description">Identifiez-vous pour valider vos actions.</div>                
             </div>
             <div class="panel-body" >
-                <form id="loginform" class="form-horizontal" role="form">       
+                <form id="form-signin" class="form-horizontal" role="form">       
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
                         <input ng-model="username" id="user-login" type="text" class="form-control" name="username" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
@@ -32,7 +32,14 @@
                                 <i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> Connexion
                             </button>
                         </div>
-                    </div>                   
+                    </div>
+                    <div>
+                        <div class="panel-body small">
+                        ResiWay utilise des cookies.<br />
+                        En cochant l'option "Rester connecté", vous autorisez la plateforme à conserver, dans votre navigateur, vos informations d'identification. Aucune information personnelle n'est transmise à des tiers.
+                        </div>
+                    </div>
+                    
                 </form>
                 <div uib-alert ng-repeat="alert in signInAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignInAlert($index)">{{alert.msg | translate}}</div>                
             </div>                     
@@ -48,7 +55,7 @@
             <div class="panel-body" >
                 <div uib-alert ng-repeat="alert in signUpAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeSignUpAlert($index)">{{alert.msg | translate}}</div>
                 
-                <form id="loginform" class="form-horizontal" role="form">       
+                <form id="form-signup" class="form-horizontal" role="form">       
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
                         <input ng-model="firstname" id="user-firstname" type="text" class="form-control" name="firstname" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_FIRSTNAME' | translate}}">                                        
@@ -67,7 +74,7 @@
                     <div style="margin-top:10px;" class="form-group">
                         <div class="col-sm-12 controls">
                           <button 
-                             id="btn-login"
+                             id="btn-register"
                              style="width: 100%;" 
                              class="btn btn-primary col-sm-12" 
                              ng-click="ctrl.signUp()"><i ng-show="ctrl.running" class="fa fa-spinner fa-spin" aria-hidden="true"></i> S'inscrire</button>
@@ -78,6 +85,7 @@
             </div>                     
         </div>
     </div>
+
     <div class="col-4-12" ng-show="ctrl.mode=='recover'" ng-cloak>
         <div>
             <div class="panel-heading">
@@ -87,7 +95,7 @@
                 <div ng-hide="ctrl.recovery_sent">
                     <div uib-alert ng-repeat="alert in recoverAlerts" ng-class="'alert-' + (alert.type || 'warning')" close="ctrl.closeRecoverAlert($index)">{{alert.msg | translate}}</div>
                     
-                    <form id="loginform" class="form-horizontal" role="form">       
+                    <form id="form-reset" class="form-horizontal" role="form">       
 
                         <div class="input-group" style="margin-bottom: 25px; " >
                             <p>Indique ton adresse email pour que l'application y envoie des instructions sur la façon de le réinitialiser.</p>
@@ -123,54 +131,76 @@
             </div>                     
         </div>        
     </div>
-    <div class="col-4-12 nopad">
-        <div ng-show="ctrl.mode=='' || ctrl.mode=='up'">
+
+    <div class="col-4-12 nopad" ng-show="ctrl.mode=='' || ctrl.mode=='in' || ctrl.mode=='up'">  
+        <div>
+            <div class="panel-heading">
+                <div class="panel-title"><i class="fa fa-user" aria-hidden="true"></i> Utiliser un compte social</div>                
+                <div class="panel-description">Vous identifier avec votre compte social</div>
+            </div>
+            <div class="panel-body" style="padding: 0">
+                <div class="container">
+                    <div class="btn-group">
+                        <a class="btn btn-danger disabled" style="background-color: #d34836;"><i class="fa fa-google-plus" style="width: 2em;"></i></a>
+                        <a class="btn btn-danger" onclick="hello('google').login()" style="font-weight: bold; width:12em; background-color: #d34836;"> Google</a>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="btn-group">
+                        <a class="btn btn-primary disabled" style="background-color: #3b5998;"><i class="fa fa-facebook" style="width: 2em;"></i></a>
+                        <a class="btn btn-primary" onclick="hello('facebook').login()" style="font-weight: bold; width:12em; background-color: #3b5998;"> Facebook</a>
+                    </div>
+                </div>
+                <!--
+                <div class="container">
+                    <div class="btn-group">
+                        <a class="btn btn-info disabled" style="background-color: #21a1f1;"><i class="fa fa-twitter" style="width: 2em;"></i></a>
+                        <a class="btn btn-info" onclick="hello('twitter').login()" style="width:12em; background-color: #21a1f1;"> Twitter</a>
+                    </div>
+                </div>                
+                -->
+            </div>
+        </div>    
+        <div style="margin-top:20px;">
             <div class="panel-heading">
                 <div class="panel-title"><b>Rési</b>Way est une plateforme libre</div>                
-                <div class="panel-description">qui respecte vos données</div>
+                <div class="panel-description">qui respecte vos données:</div>
             </div>
             <div class="panel-body" >
                 <ul style="text-indent: 0px;margin: 0;padding: 0;list-style: none;">
-                    <li>Votre email reste confidentiel</li> 
-                    <li>Pas de publicité</li>
-                    <li>Pas de spam</li>
+                    <li><span class="fa-stack fa-lg"><i class="fa fa-eye fa-stack-1x" ></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>Votre email reste confidentiel</li> 
+                    <li><span class="fa-stack fa-lg"><i class="fa fa-bullhorn fa-stack-1x" ></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>Pas de publicité</li>
+                    <li><span class="fa-stack fa-lg"><i class="fa fa-envelope-o fa-stack-1x" ></i><i class="fa fa-ban fa-stack-2x text-danger"></i></span>Pas de spam</li>
                 </ul>
             </div>
-        </div>    
-
+        </div>          
     </div>
+
     <div class="col-4-12 nopad">
         <div ng-show="ctrl.mode=='' || ctrl.mode=='up'">
             <div class="panel-heading">
-                <div class="panel-title">Déjà inscrit ?</div>                
+                <div class="panel-title"><strong>Déjà inscrit ?</strong></div>                
             </div>
             <div class="panel-body" >
-                <a id="btn-login" href="/user/sign/in"  class="btn btn-success btn-xs">Connectez-vous</a>
+                <a href="/user/sign/in"  class="btn btn-success btn-xs">Connectez-vous</a>
                 pour valider vos actions.
             </div>
         </div>    
         <div ng-show="ctrl.mode=='in'">
             <div class="panel-heading">
-                <div class="panel-title">Nouvel utilisateur ?</div>                
+                <div class="panel-title"><strong>Nouvel utilisateur ?</strong></div>
             </div>
             <div class="panel-body" >
-                <a id="btn-login" href="/user/sign/up"  class="btn btn-success btn-xs">Créez un compte</a>
+                <a href="/user/sign/up"  class="btn btn-success btn-xs">Créez un compte</a>
                 pour participer à <b>ResiWay</b>.
             </div>
         </div>
         <div ng-show="ctrl.mode=='' || ctrl.mode=='in' || ctrl.mode=='up'">
             <div class="panel-heading">
-                <div class="panel-title">Mot de passe oublié ?</div>       
+                <div class="panel-title"><strong>Mot de passe oublié ?</strong></div>       
             </div>
             <div class="panel-body" >
-                <a id="btn-login" href="/user/sign/recover" class="btn btn-warning btn-xs">Récupérez</a> votre mot de passe en un clin d'oeil.
-            </div>
-        </div>
-        <div ng-show="ctrl.mode=='in'">
-            <div class="panel-heading"></div>
-            <div class="panel-body small">
-            ResiWay utilise des cookies.<br />
-En cochant l'option "Rester connecté", vous autorisez la plateforme à conserver, dans votre navigateur, vos informations d'identification. Aucune information personnelle n'est transmise à des tiers.
+                <a href="/user/sign/recover" class="btn btn-warning btn-xs">Récupérez</a> votre mot de passe en un clin d'oeil.
             </div>
         </div>
         

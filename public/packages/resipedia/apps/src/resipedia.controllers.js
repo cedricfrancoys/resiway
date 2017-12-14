@@ -822,7 +822,7 @@ angular.module('resipedia')
                           }, 
                           article);
                           
-
+console.log(article);
         /**
         * for many2many field, as initial setting we mark all ids to be removed
         */
@@ -860,7 +860,10 @@ angular.module('resipedia')
                     id: $scope.article.id,
                     title: $scope.article.title,
                     content: $scope.article.content,
-                    categories_ids: $scope.article.categories_ids
+                    categories_ids: $scope.article.categories_ids,
+                    source_author: $scope.article.source_author,
+                    source_url: $scope.article.source_url,
+                    source_license: $scope.article.source_license                    
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -2798,7 +2801,7 @@ angular.module('resipedia')
     '$uibModal', 
     'actionService', 
     'feedbackService', 
-    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService ) {
+    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService) {
         console.log('question controller');
         
         var ctrl = this;
@@ -2985,7 +2988,7 @@ angular.module('resipedia')
                     content: $scope.question.newAnswerContent,
                     source_author: $scope.question.newAnswerSource_author,
                     source_url: $scope.question.newAnswerSource_url,
-                    source_license: $scope.question.newAnswerSource_license,                    
+                    source_license: $scope.question.newAnswerSource_license                   
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -4485,7 +4488,8 @@ angular.module('resipedia')
     '$translate',
     'feedbackService',
     'actionService',
-    function(user, $scope, $window, $filter, $http, $translate, feedback, action) {
+    'hello',
+    function(user, $scope, $window, $filter, $http, $translate, feedback, action, hello) {
     console.log('userEdit controller');    
     
     var ctrl = this;
@@ -4536,11 +4540,35 @@ console.log(ctrl.user);
         ctrl.avatars = {
             libravatar: 'https://seccdn.libravatar.org/avatar/'+md5(ctrl.user.login)+'?s=@size',
             gravatar: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.login)+'?s=@size',
-            identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size',
-            google: ''
+            identicon: 'https://www.gravatar.com/avatar/'+md5(ctrl.user.firstname+ctrl.user.id)+'?d=identicon&s=@size'
         };
+        
+        var online = function(session) {
+            var currentTime = (new Date()).getTime() / 1000;
+            return session && session.access_token && session.expires > currentTime;
+        };
+
+        var facebook = hello('facebook');
+        var google = hello('google');
+
+        if(online(facebook.getAuthResponse())) {
+            facebook.api('me').then(function(json) {
+                $scope.$apply(function() {
+                    ctrl.avatars.facebook = json.thumbnail;
+                });
+            });
+        }
+        if(online(google.getAuthResponse())) {
+            google.api('me').then(function(json) {
+                $scope.$apply(function() {
+                    var avatar_url = json.thumbnail;
+                    ctrl.avatars.google = avatar_url.replace(/\?sz=.*/, "?sz=@size");
+                });
+            });            
+        }
             
         // @init
+        /*
         // retrieve GMail avatar, if any
         $http.get('https://picasaweb.google.com/data/entry/api/user/'+ctrl.user.login+'?alt=json')
         .then(
@@ -4551,7 +4579,8 @@ console.log(ctrl.user);
             function errorCallback(response) {
 
             }
-        );     
+        );
+        */        
     }
     
     $scope.$watchGroup([
@@ -4884,8 +4913,8 @@ angular.module('resipedia')
         
         var ctrl = this;
         
-        // set default mode to blank
-        ctrl.mode = ''; 
+        // set default mode to signin form
+        ctrl.mode = 'in'; 
         
         // asign mode from URL if it matches one of the allowed modes
         switch($routeParams.mode) {
@@ -5039,7 +5068,20 @@ angular.module('resipedia')
                     $scope.recoverAlerts = [{ type: 'danger', msg: error_id }];
                 });                  
             }
-        };    
+        };
+        
+        $scope.$on('auth.signed', function(event, auth) {
+            ctrl.running = false;
+            console.log('auth notification received in userSign controller');
+            // if some action is pending, return to URL where it occured
+            if($rootScope.pendingAction
+            && typeof $rootScope.pendingAction.next_path != 'undefined') {
+               $location.path($rootScope.pendingAction.next_path);
+            }
+            else {
+                $location.path($rootScope.previousPath);
+            }
+        });
     }
 ]);
 angular.module('resipedia')

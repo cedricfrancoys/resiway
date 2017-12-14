@@ -15,7 +15,7 @@ angular.module('resipedia')
     '$uibModal', 
     'actionService', 
     'feedbackService', 
-    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService ) {
+    function(question, $scope, $window, $location, $http, $sce, $timeout, $uibModal, actionService, feedbackService) {
         console.log('question controller');
         
         var ctrl = this;
@@ -202,7 +202,7 @@ angular.module('resipedia')
                     content: $scope.question.newAnswerContent,
                     source_author: $scope.question.newAnswerSource_author,
                     source_url: $scope.question.newAnswerSource_url,
-                    source_license: $scope.question.newAnswerSource_license,                    
+                    source_license: $scope.question.newAnswerSource_license                   
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,

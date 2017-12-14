@@ -65,7 +65,7 @@
                 <div class="text" itemprop="text">                    
                     <p ng-bind-html="question.content"></p>
                 </div>
-                
+                               
                 <div class="tags">
                     <a ng-repeat="tag in question.tags" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
                 </div>
@@ -771,7 +771,20 @@
                             Auteur
                         </div>
                         <div class="content">
-                            <b><a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a></b>
+                            <div class="cc-license" style="display: inline-block; vertical-align: bottom;">
+                                <a 
+                                    class="cc-link"                                     
+                                    title="Creative Commons - attribution / partage dans les mêmes conditions">
+                                    <i class="cc cc-cc" aria-hidden="true"></i>
+                                    <i class="cc cc-by" aria-hidden="true"></i>
+                                    <i class="cc cc-sa" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                            <strong>
+                                <a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">
+                                {{question.creator.display_name}}
+                                </a>
+                            </strong>
                         </div>
                     </div>                        
                     <div class="stat-row">                        
@@ -797,7 +810,18 @@
                         <div class="title">
                         </div>
                         <div class="content"> 
-                            <b><a href="/user/{{answer.creator.id}}/{{answer.creator.name_url}}">{{answer.creator.display_name}}</a></b>                            
+                            <div class="cc-license" style="display: inline-block; vertical-align: bottom;">
+                                <a 
+                                    class="cc-link" 
+                                    title="Creative Commons - attribution / partage dans les mêmes conditions">
+                                    <i class="cc cc-cc" aria-hidden="true"></i>
+                                    <i class="cc cc-by" aria-hidden="true"></i>
+                                    <i class="cc cc-sa" aria-hidden="true"></i>
+                                </a>
+                            </div>                        
+                            <strong>
+                                <a href="/user/{{answer.creator.id}}/{{answer.creator.name_url}}">{{answer.creator.display_name}}</a>
+                            </strong>                            
                         </div>
                     </div>
                     <div class="stat-row" ng-repeat-end>

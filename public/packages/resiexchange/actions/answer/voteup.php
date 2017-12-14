@@ -1,9 +1,9 @@
 <?php
 /* voteup.php - resiexchange_answer_voteup controller
 
-    This file is part of the tagger program <http://www.github.com/cedricfrancoys/resiway>
-    Copyright (C) Cedric Francoys, 2017, Yegen
-    Some Right Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
+    This file is part of the resiway application <http://www.github.com/cedricfrancoys/resiway>
+    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
 */
 
 /**

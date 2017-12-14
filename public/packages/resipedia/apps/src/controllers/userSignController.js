@@ -17,8 +17,8 @@ angular.module('resipedia')
         
         var ctrl = this;
         
-        // set default mode to blank
-        ctrl.mode = ''; 
+        // set default mode to signin form
+        ctrl.mode = 'in'; 
         
         // asign mode from URL if it matches one of the allowed modes
         switch($routeParams.mode) {
@@ -172,6 +172,19 @@ angular.module('resipedia')
                     $scope.recoverAlerts = [{ type: 'danger', msg: error_id }];
                 });                  
             }
-        };    
+        };
+        
+        $scope.$on('auth.signed', function(event, auth) {
+            ctrl.running = false;
+            console.log('auth notification received in userSign controller');
+            // if some action is pending, return to URL where it occured
+            if($rootScope.pendingAction
+            && typeof $rootScope.pendingAction.next_path != 'undefined') {
+               $location.path($rootScope.pendingAction.next_path);
+            }
+            else {
+                $location.path($rootScope.previousPath);
+            }
+        });
     }
 ]);
