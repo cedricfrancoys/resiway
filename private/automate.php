@@ -35,15 +35,30 @@ try {
     $om = &ObjectManager::getInstance();   
     $pdm = &PersistentDataManager::getInstance();
         
+    // weighted actions
     $objects_classes = [
-                        'resilib\Document'      => ['resilib_document_voteup', 'resilib_document_view', 'resilib_document_download', 'resilib_document_star'], 
-                        'resiexchange\Question' => ['resiexchange_question_voteup', 'resiexchange_question_view', 'resiexchange_question_star']
+                        'resilib\Document'      => ['resilib_document_voteup' => 5, 'resilib_document_view' => 10, 'resilib_document_download' => 3, 'resilib_document_star' => 1],
+                        'resiexchange\Question' => ['resiexchange_question_voteup' => 5, 'resiexchange_question_view' => 10, 'resiexchange_question_star' => 1]
                        ];
 
     $bots_ids = [];
     for($i = 0; $i < BOTS_COUNT; ++$i) {
         $bots_ids[] = BOTS_INDEX_START+$i;
     }
+    
+    function getRandomWeightedElement(array $weightedValues) {
+        $rand = mt_rand(1, (int) array_sum($weightedValues));
+
+        foreach ($weightedValues as $key => $value) {
+          $rand -= $value;
+          if ($rand <= 0) {
+            return $key;
+          }
+        }
+    }
+    
+
+    
 // on ne veut pas marquer trop rapidement un objet créé par un utilisateur réel
 // on veut générer un peu d'activité en permanence
 // nombre d'actions estimées : > 500.000
@@ -62,7 +77,8 @@ try {
         if($objects_ids < 0 || !count($objects_ids)) throw new Exception("no_match", QN_ERROR_UNKNOWN);
 
         // pick up a random action
-        $action_name = $actions_names[array_rand($actions_names)];
+        $action_name = getRandomWeightedElement($actions_names);
+        
         $action_id = ResiAPI::actionId($action_name);
         
         foreach($objects_ids as $object_id) {
