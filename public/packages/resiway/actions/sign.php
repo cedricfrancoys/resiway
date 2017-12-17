@@ -40,6 +40,7 @@ try {
         $user_id = $params['user_id'];
     }
     $user_id = $pdm->set('user_id', $user_id);
+    setcookie ('PHPSESSID', session_id());
     $result = $user_id;
 }
 catch(Exception $e) {
