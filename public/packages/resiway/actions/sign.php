@@ -36,8 +36,10 @@ try {
         asort($scores);
         $user_id = array_keys($scores)[0];
     }
-    else $user_id = $params['user_id'];
-    $pdm->set('user_id', $user_id);
+    else {
+        $user_id = $params['user_id'];
+    }
+    $user_id = $pdm->set('user_id', $user_id);
     $result = $user_id;
 }
 catch(Exception $e) {
