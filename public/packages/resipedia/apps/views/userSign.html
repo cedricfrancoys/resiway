@@ -15,13 +15,15 @@
                         <span class="input-group-addon"><i class="fa fa-lock"></i></span>
                         <input ng-model="password" id="user-password" type="password" class="form-control" name="password" placeholder="{{'USER_EDIT_PLACEHOLDER_PASSWORD' | translate}}">
                     </div>
-                    <div class="input-group">
+
+                    <div class="input-group" ng-show="false">
                       <div class="checkbox">
                         <label>
                           <input ng-model="remember" id="login-remember" type="checkbox" name="remember" value="1"> {{ 'USER_SIGN_REMEMBER_ME' | translate}}
                         </label>
                       </div>
                     </div>
+
                     <div style="margin-top:10px;" class="form-group">
                         <div class="col-sm-12 controls">
                             <button type="submit" 
@@ -36,7 +38,7 @@
                     <div>
                         <div class="panel-body small">
                         ResiWay utilise des cookies.<br />
-                        En cochant l'option "Rester connecté", vous autorisez la plateforme à conserver, dans votre navigateur, vos informations d'identification. Aucune information personnelle n'est transmise à des tiers.
+                        En utilisant les applications ResiWay, vous autorisez la plateforme à conserver, dans votre navigateur, vos informations d'identification. Aucune information personnelle n'est transmise à des tiers.
                         </div>
                     </div>
                     
