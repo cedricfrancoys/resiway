@@ -27,18 +27,25 @@ $params = QNLib::announce(
 list($object_class, $object_id) = ['resilib\Document', $params['id']];
 
 try {
-    $om = &ObjectManager::getInstance();
-    $res = $om->read($object_class, $object_id, ['id', 'thumbnail']);   
-    
-    if($res < 0 || !count($res)) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
-    $content = $res[$object_id]['thumbnail'];
+
+    if($object_id <= 0) {
+        // base64 encoded 1x1 JPEG picture
+        $rawdata = "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
+        $content = base64_decode($rawdata);
+    }
+    else {
+        $om = &ObjectManager::getInstance();
+        $res = $om->read($object_class, $object_id, ['id', 'thumbnail']);   
+        
+        if($res < 0 || !count($res)) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
+        $content = $res[$object_id]['thumbnail'];
+    }
     
     header("Content-Type: image/jpeg");
     header("Content-Length: ".strlen($content));
 
     print($content);
     exit();
-
 }
 catch(Exception $e) {
     $result = $e->getCode();
