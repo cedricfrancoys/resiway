@@ -219,17 +219,24 @@ input[type="text"] {
     padding-left: 20px;
     padding-right: 30px;    
     padding-top: 2px;
-    -webkit-transition: all .5s ease;
-    -moz-transition: all .5s ease;
-    transition: all .5s ease;      
+    -webkit-transition: all .5s ease-in-out;
+    -moz-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;    
 }
 
 .search-input:hover, .search-input:focus {
     width: 400px;
 }
 
-.search-input input:focus {
-    width: 358px;
+.search-input input[type=text] {
+    width: 178px;
+    font-size: 15px;
+    -webkit-transition: all .5s ease-in-out;
+    -moz-transition: all .5s ease-in-out;
+    transition: all .5s ease-in-out;
+}
+.search-input input[type=text]:focus, .search-input input[type=text]:hover {
+   width: 318px;
 }
 
 .search-input button, .search-input button:focus {
@@ -241,9 +248,6 @@ input[type="text"] {
     left: 10px;
 }
 
-.search-input input[type=text] {
-    font-size: 15px;
-}
 .search-input.form-group-sm .form-control, .search-input.form-group-sm .input-group .btn-sm {
     height: 30px;
 }

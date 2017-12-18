@@ -22,8 +22,9 @@ angular.module('resipedia')
                 previousPage: -1,                
                 limit: $rootScope.search.criteria.limit
             }
-        });
-
+        });        
+        
+        
         ctrl.load = function() {
             if(ctrl.articles.currentPage != ctrl.articles.previousPage) {
                 ctrl.articles.previousPage = ctrl.articles.currentPage;
@@ -48,6 +49,14 @@ angular.module('resipedia')
                 );
             }
         };
-        
+
+        $scope.getClassFromType = function(type) {
+            switch(type) {
+            case 'question': return {'fa-comment-o':true};
+            case 'article':  return {'fa-file-text-o':true};
+            case 'document': return {'fa-book':true};
+            }
+            return {};
+        }
     }
 ]);
