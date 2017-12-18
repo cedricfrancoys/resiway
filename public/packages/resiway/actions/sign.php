@@ -1,4 +1,7 @@
 <?php
+// Dispatcher (index.php) is in charge of setting the context and should include easyObject library
+defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
+require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
 use easyobject\orm\ObjectManager as ObjectManager;
@@ -25,7 +28,7 @@ try {
     $om = &ObjectManager::getInstance();        
     $pdm = &PersistentDataManager::getInstance();
     
-    if(!$params['user_id']) {
+    if($params['user_id'] <= 0) {
         // set identity as one of the random test-user
         $users_ids = $om->search('resiway\User', [['login', 'like', 'resiway_u%']]);
         $users = $om->read('resiway\User', $users_ids, ['id', 'count_questions', 'count_answers', 'count_comments', 'count_documents']);
@@ -39,8 +42,10 @@ try {
     else {
         $user_id = $params['user_id'];
     }
-    $user_id = $pdm->set('user_id', $user_id);
-    setcookie ('PHPSESSID', session_id());
+    // generate access_token
+    $access_token = ResiAPI::userToken($user_id);
+    // store token in cookie
+    setcookie('access_token', $access_token );
     $result = $user_id;
 }
 catch(Exception $e) {

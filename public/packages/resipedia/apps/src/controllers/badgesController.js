@@ -10,7 +10,9 @@ angular.module('resipedia')
 
         var ctrl = this;
 
-
+        // @data model
+        $scope.userBadges = [];
+        $scope.badgeCategories = categories;
         
         // @init
         // group badges inside each category
@@ -32,19 +34,13 @@ angular.module('resipedia')
                 start: 0,
                 limit: 100
             }).then(
-            function successCallback(response) {
+            function success(response) {
                 var data = response.data;
                 angular.forEach(data.result, function (badge, i) {
-                    $scope.userBadges.push(badge.badge_id);
+                    $scope.userBadges.push(+badge.badge_id);
                 });
             });
         });         
-  
-        
-        // @data model
-        $scope.userBadges = [];
-        $scope.badgeCategories = categories;
-        
       
     }
 ]);

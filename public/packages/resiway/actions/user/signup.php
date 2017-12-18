@@ -2,12 +2,11 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
-use config\QNlib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
-use easyobject\orm\PersistentDataManager as PersistentDataManager;
-use html\HtmlTemplate as HtmlTemplate;
-use maxmind\geoip\GeoIP as GeoIP;
-
+use config\QNlib;
+use easyobject\orm\ObjectManager;
+use html\HtmlTemplate;
+use maxmind\geoip\GeoIP;
+use qinoa\php\PhpContext;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -63,7 +62,6 @@ $messages_folder = '../spool';
 
 try {    
     $om = &ObjectManager::getInstance();
-    $pdm = &PersistentDataManager::getInstance();
 
     // check login format validity
     $userClass = &$om->getStatic('resiway\User');
@@ -115,8 +113,10 @@ try {
     // update global counter
     ResiAPI::repositoryInc('resiway.count_users');     
     
-    // update session data
-    $pdm->set('user_id', $user_id);
+    // update context data
+    $phpContext = &PhpContext::getInstance();    
+    $phpContext->set('user_id', $user_id);
+
     
     if($send_confirm) {
         // retrieve newly created user
@@ -164,6 +164,13 @@ try {
     
     // log user registration
     ResiAPI::registerAction($user_id, $action_name, 'resiway\User', $user_id);
+    
+    
+    // generate access_token
+    $access_token = ResiAPI::userToken($user_id);
+    // store token in cookie
+    setcookie('access_token', $access_token);
+    
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

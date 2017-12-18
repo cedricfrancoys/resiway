@@ -1,7 +1,6 @@
 <?php
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 use config\QNlib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
 
 require_once('../resi.api.php');
 
@@ -31,8 +30,15 @@ $params = QNLib::announce(
 list($login, $password, $error_message_ids) = [strtolower(trim($params['login'])), $params['password'], []];
 
 try {
-    $result = ResiAPI::userSign($login, $password);
-    if($result < 0) throw new Exception("user_unidentified", QN_ERROR_NOT_ALLOWED);
+    $user_id = ResiAPI::userSign($login, $password);
+    if($user_id < 0) throw new Exception("user_unidentified", QN_ERROR_NOT_ALLOWED);
+
+    // generate access_token
+    $access_token = ResiAPI::userToken($user_id);
+    // store token in cookie
+    setcookie('access_token', $access_token );
+    // along with an access_token    
+    $result = $user_id;
 }
 catch(Exception $e) {
     $error_message_ids = array($e->getMessage());

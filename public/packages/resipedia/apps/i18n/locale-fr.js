@@ -336,6 +336,10 @@ var translations = {
     // BADGES
     "BADGES_TITLE": "Badges",
     
+    
+    // Search results
+    "SEARCH_STATS_ITEMS": "ressources",
+    
     // generic errors
     "action_failed": "L'action a échoué",
     "action_max_reached": "Tu as atteint le maximum pour aujourd'hui",

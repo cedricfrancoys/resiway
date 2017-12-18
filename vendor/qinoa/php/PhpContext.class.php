@@ -13,7 +13,9 @@ class PhpContext {
     
     private function __construct() {
         // init session
-        if(!strlen($this->getSessionId())) session_start();
+        if(!strlen($this->getSessionId())) {
+            session_start();
+        }
 
         // retrieve current request 
         $this->httpRequest = new HttpRequest($this->getHttpMethod().' '.$this->getHttpUri().' '.$this->getHttpProtocol(), $this->getHttpRequestHeaders(), $this->getHttpBody());
@@ -27,6 +29,18 @@ class PhpContext {
             self::$instance = new self();
         }
         return self::$instance;        
+    }
+    
+    public function get($var, $default=null) {
+        if(isset($GLOBALS[$var])) {
+            return $GLOBALS[$var];
+        }
+        return $default;
+    }
+
+    public function set($var, $value) {
+        $GLOBALS[$var] = $value;
+        return $this;
     }
     
     public function getHttpRequest() {

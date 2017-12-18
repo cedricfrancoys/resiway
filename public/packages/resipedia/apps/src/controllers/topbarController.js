@@ -89,7 +89,7 @@ angular.module('resipedia')
                 action: 'resiway_user_signout',
                 next_path: '/',
                 callback: function($scope, data) {
-                    authentication.clearCredentials();
+                    authentication.signout();
                 }
             });
         };

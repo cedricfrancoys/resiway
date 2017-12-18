@@ -80,10 +80,10 @@ angular.module('resipedia')
                 ctrl.running = true;                
                 // form is complete
                 ctrl.closeSignInAlerts();                
-                authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
+                // authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
                 // attempt to log the user in
-                authenticationService.authenticate().then(
-                function successHandler(data) {
+                authenticationService.signin($scope.username, md5($scope.password)).then(
+                function success(data) {
                     ctrl.running = false;
                     // if some action is pending, return to URL where it occured
                     if($rootScope.pendingAction
@@ -94,9 +94,9 @@ angular.module('resipedia')
                         $location.path($rootScope.previousPath);
                     }
                 },
-                function errorHandler() {
+                function error() {
                     ctrl.running = false;
-                    authenticationService.clearCredentials();
+                    // authenticationService.clearCredentials();
                     $scope.signInAlerts = [{ type: 'danger', msg: 'Email ou mot de passe incorrect.' }];
                 });        
             }
@@ -121,7 +121,7 @@ angular.module('resipedia')
                 function successHandler(data) {
                     ctrl.running = false;
                     authenticationService.authenticate().then(
-                    function successHandler(data) {
+                    function success(data) {
                         // actively request emails
                         $http.get('index.php?do=resiway_user_pull');
                         // if some action is pending, return to URL where it occured
@@ -133,12 +133,12 @@ angular.module('resipedia')
                             $location.path($rootScope.previousPath);
                         }
                     },
-                    function errorHandler(data) {
-                        authenticationService.clearCredentials();
+                    function error(data) {
+                        // authenticationService.clearCredentials();
                         $scope.signUpAlerts = [{ type: 'danger', msg: 'Sorry, an unexpected error occured.' }];
                     });  
                 },
-                function errorHandler(data) {
+                function error(data) {
                     ctrl.running = false;
                     var error_id = data.error_message_ids[0];     
                     // server fault, email already registered, ...

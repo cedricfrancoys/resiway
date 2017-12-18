@@ -1,8 +1,8 @@
 <?php
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 
-use config\QNlib as QNLib;
-use easyobject\orm\PersistentDataManager as PersistentDataManager;
+use config\QNlib;
+use qinoa\php\PhpContext;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -16,8 +16,8 @@ $params = QNLib::announce(
 
 
 // destroy persistent data
-$pdm = &PersistentDataManager::getInstance();
-$pdm->reset();
+$phpContext = &PhpContext::getInstance();    
+$phpContext->set('user_id', 0);
 foreach ($_COOKIE as $name => $value) setcookie($name, null);
 setcookie(session_name(), '');
 session_regenerate_id(true);

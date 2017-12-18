@@ -4,7 +4,6 @@ require_once('../resi.api.php');
 
 use config\QNlib as QNLib;
 
-
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
 
@@ -16,6 +15,14 @@ $params = QNLib::announce(
 );
 
 list($result, $error_message_ids) = [ResiAPI::userId(), []];
+
+try {
+    
+}
+catch(Exception $e) {
+    $result = $e->getCode();
+    $error_message_ids = array($e->getMessage());    
+}
 
 // send json result
 header('Content-type: application/json; charset=UTF-8');

@@ -29,6 +29,7 @@ angular.module('resipedia')
             '/category/:id/:title?': '/categorie/:id/:title?',
             '/categories': '/categories',
             '/badges': '/badges',
+            '/search': '/recherche',
             '/article/edit/:id': '/article/edition/:id',
             '/article/:id/:title?': '/article/:id/:title?',
             '/articles': '/articles',            
@@ -137,6 +138,18 @@ angular.module('resipedia')
                         }]
                     }
         },
+        /**
+        * Badges related routes
+        */
+        '/search': {
+                    templateUrl : templatePath+'search.html',
+                    controller  : 'searchController as ctrl',
+                    resolve     : {
+                        search: ['routeSearchProvider', function (provider) {
+                            return provider.load();
+                        }]
+                    }
+        },        
         /**
         * Category related routes
         */

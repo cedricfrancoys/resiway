@@ -114,6 +114,22 @@ var resiway = angular.module('resipedia', [
     }
 ])
 
+.factory('httpRequestInterceptor', [
+    '$cookies',    
+    function ($cookies) {
+        return {
+            request: function (config) {
+                config.headers['Authorization'] = 'Bearer ' + $cookies.get('access_token');
+                return config;
+            }
+        };
+    }
+])
+
+.config(['$httpProvider', function ($httpProvider) {
+  $httpProvider.interceptors.push('httpRequestInterceptor');
+}])
+
 .run( [
     '$window', 
     '$timeout', 
@@ -260,7 +276,7 @@ var resiway = angular.module('resipedia', [
         /*
         * auto-restore session or auto-login with cookie values    
         */
-        authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
+        // authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
         // try to authenticate or restore the session
         authenticationService.authenticate();
 
@@ -366,7 +382,8 @@ var resiway = angular.module('resipedia', [
             var criteria = angular.extend({}, $rootScope.search.default, values || {});
             angular.copy(criteria, $rootScope.search.criteria);
 
-            var list_page = '';
+            var list_page = '/search';
+            /*
             switch($rootScope.config.application) {
                 case 'resiway':
                 case 'resiexchange':
@@ -380,6 +397,7 @@ var resiway = angular.module('resipedia', [
                     break;
                     
             }
+            */
             // go to list page
             if($location.path() == list_page) { 
                 $rootScope.$broadcast('$locationChangeStart');

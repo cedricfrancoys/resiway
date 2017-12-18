@@ -5,7 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib;
 use easyobject\orm\ObjectManager;
-use easyobject\orm\PersistentDataManager;
+use qinoa\php\PhpContext;
 
 // announce script and fetch parameters values
 $params = QNLib::announce(	
@@ -30,7 +30,7 @@ list($object_class, $object_id) = ['resiexchange\Answer', $params['answer_id']];
 set_silent(true);
 
 try {
-    $pdm = &PersistentDataManager::getInstance();
+    $phpContext = &PhpContext::getInstance();    
     $om = &ObjectManager::getInstance();    
     $db = $om->getDBHandler();   
 
@@ -93,8 +93,8 @@ try {
     $_REQUEST['question_id'] = $object['question_id'];    
     $_REQUEST['content'] = $object['content'];
     
-    // log as the author
-    $pdm->set('user_id', $object['creator']);
+    // log as the author : update context data
+    $phpContext->set('user_id', $object['creator']);
 
     function get_include_contents($filename) {
         ob_start();	
@@ -106,7 +106,7 @@ try {
     $result = $json['result'];
     
     // restore user id
-    $pdm->set('user_id', $user_id);    
+    $phpContext->set('user_id', $user_id); 
 }
 catch(Exception $e) {
     $result = $e->getCode();

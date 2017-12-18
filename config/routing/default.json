@@ -4,6 +4,7 @@
     "/resiexchange":"/resipedia.fr",
     "/resiway":"/resiway.fr",
     "/resilib":"/resipedia.fr",   
+    "/search/:q?":"/resipedia.fr#!/search/:q?",
     "/resiexchange.fr/question/:id/:title?":"/resipedia.fr#!/question/:id/:title?",
     "/resilib.fr/document/:id/:title?":"/resipedia.fr#!/document/:id/:title?",
     "/resiexchange.fr/:any":"/resipedia.fr",    

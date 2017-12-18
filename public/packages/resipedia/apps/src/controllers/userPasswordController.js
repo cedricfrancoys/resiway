@@ -34,7 +34,7 @@ angular.module('resipedia')
                 var params = decoded.split(';');
                 $http.get('index.php?do=resiway_user_signin&login='+params[0]+'&password='+params[1])
                 .then(
-                function successCallback(response) {
+                function success(response) {
                     var data = response.data;
                     if(typeof response.data.result != 'undefined'
                     && response.data.result > 0) {
@@ -43,7 +43,7 @@ angular.module('resipedia')
                         authenticationService.authenticate();
                     }
                 },
-                function errorCallback() {
+                function error() {
                     // something went wrong server-side
                 });
             }

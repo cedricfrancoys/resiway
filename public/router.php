@@ -43,9 +43,6 @@ $phpContext = &PhpContext::getInstance();
 $request = $phpContext->getHttpRequest();
 
 try {
-    // retrieve URI path
-    $uri = $request->getUri()->getPath();
-
     // load routes definition
     $json_file = '../config/routing/default.json';    
     if( ($json = @file_get_contents($json_file)) === false) throw new Exception('routing config file is missing');    
@@ -66,7 +63,7 @@ try {
         $router->prependRoutes($routes);
     }
 
-    $found_url = $router->resolve($uri);    
+    $found_url = $router->resolve($request->getUri()->getPath(), $request->getMethod());
 }
 catch(Exception $e) {
     $found_url = null;

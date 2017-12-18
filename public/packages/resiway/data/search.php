@@ -161,7 +161,7 @@ try {
                     }
 
                 }               
-                                
+
                 // load objects values
                 $items = [];
                 foreach($batches as $index_field => $object_fields) {
@@ -169,18 +169,21 @@ try {
                             
                     $objects_scores = $objects[$object_class];
                                         
-                    $res = $om->read($object_class, array_keys($objects_scores), ['title', 'title_url', 'content_excerpt', 'count_views', 'score'] );
+                    $res = $om->read($object_class, array_keys($objects_scores), ['title', 'title_url', 'content_excerpt', 'count_views', 'score', 'creator' => User::getPublicFields(), 'categories' => ['id', 'title', 'title_url', 'path'] ]);
                     if($res > 0 && count($res)) {
                         foreach($objects_scores as $object_id => $score) {
                             if(!isset($items[$score])) $items[$score] = [];
                             $pseudo_type = strtolower(explode('\\', $object_class)[1]);
                             $items[$score][] = [
+                                'id'            => $object_id, 
                                 'title'         => $res[$object_id]['title'], 
                                 'type'          => $pseudo_type,
                                 'url'           => $pseudo_type.'/'.$object_id.'/'.$res[$object_id]['title_url'],
                                 'description'   => $res[$object_id]['content_excerpt'],
                                 'count_views'   => $res[$object_id]['count_views'], 
-                                'score'         => $res[$object_id]['score']
+                                'score'         => $res[$object_id]['score'],
+                                'creator'       => $res[$object_id]['creator'],
+                                'categories'    => array_values($res[$object_id]['categories'])
                             ];
                         }            
                     }

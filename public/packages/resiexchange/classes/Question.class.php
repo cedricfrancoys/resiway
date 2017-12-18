@@ -90,6 +90,8 @@ class Question extends \easyobject\orm\Object {
                                         'rel_foreign_key'	=> 'tag_id', 
                                         'rel_local_key'		=> 'question_id'
                                         ),
+                                        
+            'categories'		    => array('type' => 'alias', 'alias' => 'categories_ids'),
             
             /* identifiers of the answers to this question */
             'answers_ids'           => array(

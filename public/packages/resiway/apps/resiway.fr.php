@@ -6,7 +6,7 @@ $rev = ResiAPI::currentRevision();
 $token = md5($rev.rand(1, 100));
 ?>
 <!DOCTYPE html>
-<html lang="fr" ng-app="resiexchange" id="top" ng-controller="rootController as rootCtrl">
+<html lang="fr" ng-app="resipedia" id="top" ng-controller="rootController as rootCtrl">
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -33,15 +33,15 @@ $token = md5($rev.rand(1, 100));
         }
         </script>
         <!-- favicons -->
-        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/favicons.html"); ?>
+        <?php echo file_get_contents("packages/resipedia/apps/views/parts/favicons.html"); ?>
         <!-- scripts -->
-        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/scripts.html"); ?>
+        <?php echo file_get_contents("packages/resipedia/apps/views/parts/scripts.html"); ?>
         <!-- styles -->
-        <?php echo file_get_contents("packages/resiexchange/apps/views/parts/styles.html"); ?>                   
+        <?php echo file_get_contents("packages/resipedia/apps/views/parts/styles.html"); ?>                   
         
-        <script src="packages/resiexchange/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
-        <script src="packages/resiexchange/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
-        <script src="packages/resiexchange/apps/resiexchange.js?v=<?php echo $token; ?>"></script>        
+        <script src="packages/resipedia/apps/i18n/moment-locale/fr.js?v=<?php echo $token; ?>"></script>        
+        <script src="packages/resipedia/apps/i18n/locale-fr.js?v=<?php echo $token; ?>"></script>
+        <script src="packages/resipedia/apps/resipedia.js?v=<?php echo $token; ?>"></script>        
         <link rel="stylesheet" type="text/css" href="packages/resiexchange/apps/assets/css/resiexchange.min.css?v=<?php echo $token; ?>" />
 
         <script>

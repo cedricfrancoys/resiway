@@ -99,7 +99,7 @@
         <div class="col-1-1">
     
             <div class="platform-items">
-                <div class="platform-btn {{config.application}}" ng-class="{open: ctrl.platformDropdown}" >
+                <div class="platform-btn {{config.application}} open" ng-class="{open: ctrl.platformDropdown}" >
                     <div class="app-icon"></div>
                 </div>
                 <div id="help-btn" class="help-btn hidden-xs" ng-class="{open: ctrl.helpDropdown}" ng-click="toggleHelpDropdown()">
@@ -108,7 +108,24 @@
                 </div>
                 <div id="rw-donation" class="visible-lg-block visible-md-block visible-sm-block">
                     <a class="btn btn-danger" href="/resiway.fr#!/association/soutenir" target="_self"><i class="fa fa-heart" aria-hidden="true"></i> Faire un don</a>
-                </div>                    
+                </div>
+                <div class="search-input form-group-sm hidden-xs">
+                    <form ng-submit="rootCtrl.search({q: search.criteria.q})">
+                    <div class="input-group">
+                        <i ng-show="loadingLocations" class="fa fa-spin fa-spinner" style="position: absolute; left: -15px; top: 10px;"></i>                
+                        <input 
+                        id="search-input"
+                        class="form-control" 
+                        type="text" 
+                        placeholder="{{'TOOLBAR_SEARCH_PLACEHOLDER'|translate}}"  
+                        ng-model="search.criteria.q" 
+                        autocomplete="off">
+                        <div class="input-group-btn">
+                            <button id="search-input-button" class="btn btn-sm btn-default" type="submit"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                    </form>
+                </div>                 
             </div>
             
             <div id="login-btn" class="login-btn ng-hide" ng-hide="user.id">

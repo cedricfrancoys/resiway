@@ -189,7 +189,8 @@ class ObjectManager {
 				if(!isset($matches[1])) throw new Exception("malformed class file for object '$class' : parent class name not found", INVALID_PARAM);
 				else $parent_class = trim($matches[1]);
 				// caution : no mutual inclusion check is done, so this call might result in an infinite loop
-				if($parent_class != '\easyobject\orm\Object') $this->getStaticInstance($parent_class);
+                // no longer necessary
+				// if($parent_class != '\easyobject\orm\Object') $this->getStaticInstance($parent_class);
 				if(!(include $filename)) throw new Exception("unknown object class : '$class'", UNKNOWN_OBJECT);
 			}
 			if(!isset($this->instances[$class])) $this->instances[$class] = new $class();
@@ -1027,26 +1028,28 @@ todo: signature differs from other methods	(returned value)
         
 		try {
 			// 1) do some pre-treatment
-			// cast ids to an array (passing a single id is accepted)
-			if(!is_array($ids))     $ids = (array) $ids;
             
-			// cast fields to an array (passing a single field is accepted)
-			if(!is_array($fields))  $fields = (array) $fields;
-
+			// force cast ids to array (passing a single id is accepted)
+			if(!is_array($ids)) {
+                $ids = (array) $ids;
+            }
+			// force cast fields to array (passing a single field is accepted)
+			if(!is_array($fields)) {
+                $fields = (array) $fields;
+            }
 			// remove duplicate ids, if any
 			$ids = array_unique($ids);
-
             // ensure ids are positive numerical values
             foreach($ids as $key => $oid) {
                 $ids[$key] = intval($oid);
                 if($ids[$key] <= 0) unset($ids[$key]);
             }
-
-            // if no ids were specified, the result is an empty list
+            
+            // if no ids were specified, the result is an empty list (array)
 			if(empty($ids)) return $res;
 
 
-            // 3) check $fields arg validity
+            // 2) check $fields arg validity
 
             // get static instance and check that given class exists
 			$object = &$this->getStaticInstance($class);
@@ -1057,44 +1060,59 @@ todo: signature differs from other methods	(returned value)
             
             // remove unknown fields
 			$allowed_fields = $object->getFields();
+            // remember aliases, if any
+            $aliases_fields = [];
 			// if no fields have been specified, we load the whole object
 			if(empty($fields)) $fields = $allowed_fields;
 			else {
-                // handle 'dot' notation (check will apply on root field)             
+                // check fields validity
                 foreach($fields as $key => $field) {
-                    // array notation
+                    // handle array notation, key is the actual field to load
                     if(!is_int($key)) {
-                        $field = $key;
-                    }
-                    // dot notation
-                    else if(strpos($field, '.') !== false) {
-                        $field = explode('.', $field)[0];                        
+                        // handle aliases
+                        if($schema[$key]['type'] == 'alias') {
+                            // remember alias                            
+                            $aliases_fields[$schema[$key]['alias']] = $key;
+                            // assign fields array with target field
+                            $fields[$schema[$key]['alias']] = $field;
+                            // remove alias from fields array
+                            unset($fields[$key]);
+                        }
+                        // key is the actual field name
+                        $field = $key;                        
+                    }                    
+                    else {
+                        // handle 'dot' notation (check will apply on root field)
+                        if(strpos($field, '.') !== false) {
+                            $field = explode('.', $field)[0];                        
+                        }
+                        // handle aliases
+                        if($schema[$field]['type'] == 'alias') {
+                            // remember alias                            
+                            $aliases_fields[$schema[$field]['alias']] = $field;
+                            // assign fields array with target field
+                            $fields[$key] = $schema[$field]['alias'];                            
+                        }                        
                     }
 					// remove fields not defined in related schema
 					if(!in_array($field, $allowed_fields)) {
 						unset($fields[$key]);
 						EventListener::ExceptionHandler(new Exception("unknown field '$field' for class : '$class'"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
 					}
-                    else if($schema[$field]['type'] == 'alias') {
-                        // append target of alias to field list
-                        $fields[] = $schema[$field]['alias'];
-                    }                    
                 }
                 
 			}
 
-			// remove duplicate fields, if any
-// ! array_unique does not properly handle sub-arrays            
-			// $fields = array_unique($fields);
+			// remove duplicate fields, if any 
+            // removed: this is not an issue, since the value will be loaded once and returned as many times as requested
               
-			// 4) check among requested fields wich ones are not yet present in the internal buffer
+			// 3) check among requested fields wich ones are not yet present in the internal buffer
 			// if internal buffer is empty, query the DB to load all fields from requested objects 
 			if(empty($this->cache) || !isset($this->cache[$class])) $this->load($class, $ids, $fields, $lang);			
             // check if all objects are fully loaded            
 			else {
-                // missing fields array building by increment 
-                // we need the 'broadest' fields array to be loaded 
-                // (# sql queries is the most costly and queries are grouped by ids and fields)
+                // build the missing fields array by increment 
+                // we need the 'broadest' fields array to be loaded to minimize # of SQL queries
                 $fields_missing = array();
                 foreach($fields as $key => $field) {
                     foreach($ids as $oid) {
@@ -1113,7 +1131,7 @@ todo: signature differs from other methods	(returned value)
                 }
             }
 
-			// 5) build result reading from internal buffer
+			// 4) build result by reading from internal buffer
 			foreach($ids as $oid) {
                 if(!isset($this->cache[$class][$oid]) || empty($this->cache[$class][$oid])) {
                     EventListener::ExceptionHandler(new Exception("unknown object #'$oid' for class : '$class'", UNKNOWN_OBJECT), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);                        
@@ -1121,10 +1139,16 @@ todo: signature differs from other methods	(returned value)
                 }
                 // init result for given id, if missing
                 if(!isset($res[$oid])) $res[$oid] = array();
+                // first pass : retrieve fields values
                 foreach($fields as $key => $field) {
                     // handle array notation
                     if(!is_int($key)) {
-                        $res[$oid][$key] = $this->cache[$class][$oid][$key.'_instance'][$lang];
+                        if($schema[$key]['type'] == 'alias') {
+                            $res[$oid][$key] = $this->cache[$class][$oid][$schema[$key]['alias'].'_instance'][$lang];
+                        }                    
+                        else {
+                            $res[$oid][$key] = $this->cache[$class][$oid][$key.'_instance'][$lang];
+                        }                        
                         continue;
                     }
                     // handle dot notation
@@ -1141,6 +1165,13 @@ todo: signature differs from other methods	(returned value)
                             // use final notation 
                             $res[$oid][$field] = $this->cache[$class][$oid][$field][$lang];
                         }
+                    }
+                }
+                // second pass : handle aliases, if any
+                if(count($aliases_fields)) {
+                    foreach($aliases_fields as $field => $key) {
+                        $res[$oid][$key] = $res[$oid][$field];
+                        unset($res[$oid][$field]);
                     }
                 }
 			}

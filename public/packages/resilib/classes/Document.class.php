@@ -87,6 +87,8 @@ class Document extends \easyobject\orm\Object {
                                         'rel_local_key'     => 'document_id'
                                        ),
 
+            'categories'		    => array('type' => 'alias', 'alias' => 'categories_ids'),                                       
+
             /* does current document need to be (re-)indexed */
             'indexed'               => array('type' => 'boolean'),
 

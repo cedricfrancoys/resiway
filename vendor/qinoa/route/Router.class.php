@@ -39,13 +39,13 @@ class Router {
         return $this->params;
     }
     
-    public function resolve($uri) {
+    public function resolve($uri, $method='GET') {
         $uri_parts = explode('/', ltrim($uri, '/'));
         $found_url = null;
 
         foreach($this->routes as $set) {
             // check routes and stop on first match
-            foreach($set as $route => $url) {
+            foreach($set as $route => $resolver) {
  
                 $route_parts = explode('/', ltrim($route, '/'));
                 // reset params
@@ -74,7 +74,22 @@ class Router {
                     }
                 }
                 // we have a match
-                $found_url = $url;
+                // 2 accepted formats : 
+                // 1) URI => controller resolver (GET method implied)
+                if(!is_array($resolver)) {
+                    // resolver is an URL
+                    $found_url = $resolver;
+                }
+                // 2) URI => map METHOD / controller resolver
+                else {
+                    foreach($resolver as $route_method => $route_details) {
+                        $url = $route_details['route'];
+                        if($route_method == $method) {
+                            $found_url = $url;
+                            break;
+                        }
+                    }
+                }                
                 break 2;
             }
         }

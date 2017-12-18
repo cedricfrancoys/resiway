@@ -30,6 +30,18 @@ use \Exception as Exception;
 
 class DataAdapter {
 
+    private function __construct() {
+    }
+
+// temp
+    public static function getInstance() {
+        return new DataAdapter();        
+    }
+    
+    public function __toString() {
+        return "DataManager instance";
+    }
+    
 	private static function &getConfig() {
 		if( !isset($GLOBALS['DataAdapter_config']) ) {
             $adapter = array();

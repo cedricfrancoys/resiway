@@ -4,7 +4,6 @@ require_once('../resi.api.php');
 
 use config\QNlib;
 use easyobject\orm\ObjectManager;
-use easyobject\orm\PersistentDataManager;
 use qinoa\http\HttpRequest;
 
 // force silent mode (debug output would corrupt json data)
@@ -49,7 +48,6 @@ function get_include_contents($filename) {
 try {
     
     $om = &ObjectManager::getInstance();
-    $pdm = &PersistentDataManager::getInstance();
     
     switch($network_name) {
     case 'facebook':
@@ -108,9 +106,12 @@ try {
             throw new Exception($json['error_message_ids'][0], $json['result']);
         }
         // retrieve user_id
-        $user_id = $pdm->get('user_id');        
+        $phpContext = &PhpContext::getInstance();    
+        $user_id = $phpContext->get('user_id', 0);
     }
-
+    
+    if($user_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN); 
+    
     // update user data
     $user_data = [
                     'verified'      => true, 
@@ -119,8 +120,10 @@ try {
                  ];
     $om->write('resiway\User', $user_id, $user_data);        
     
-    // make sure user is signed in
-    $pdm->set('user_id', $user_id);
+    // generate access_token
+    $access_token = ResiAPI::userToken($user_id);
+    // store token in cookie
+    setcookie('access_token', $access_token);
 
 }
 catch(Exception $e) {

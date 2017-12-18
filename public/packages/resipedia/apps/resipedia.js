@@ -255,6 +255,22 @@ var resiway = angular.module('resipedia', [
     }
 ])
 
+.factory('httpRequestInterceptor', [
+    '$cookies',    
+    function ($cookies) {
+        return {
+            request: function (config) {
+                config.headers['Authorization'] = 'Bearer ' + $cookies.get('access_token');
+                return config;
+            }
+        };
+    }
+])
+
+.config(['$httpProvider', function ($httpProvider) {
+  $httpProvider.interceptors.push('httpRequestInterceptor');
+}])
+
 .run( [
     '$window', 
     '$timeout', 
@@ -401,7 +417,7 @@ var resiway = angular.module('resipedia', [
         /*
         * auto-restore session or auto-login with cookie values    
         */
-        authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
+        // authenticationService.setCredentials($cookies.get('username'), $cookies.get('password'));
         // try to authenticate or restore the session
         authenticationService.authenticate();
 
@@ -507,7 +523,8 @@ var resiway = angular.module('resipedia', [
             var criteria = angular.extend({}, $rootScope.search.default, values || {});
             angular.copy(criteria, $rootScope.search.criteria);
 
-            var list_page = '';
+            var list_page = '/search';
+            /*
             switch($rootScope.config.application) {
                 case 'resiway':
                 case 'resiexchange':
@@ -521,6 +538,7 @@ var resiway = angular.module('resipedia', [
                     break;
                     
             }
+            */
             // go to list page
             if($location.path() == list_page) { 
                 $rootScope.$broadcast('$locationChangeStart');
@@ -1014,6 +1032,29 @@ angular.module('resipedia')
     };
 }])
 
+.service('routeSearchProvider', ['$http', '$rootScope', '$httpParamSerializerJQLike', function($http, $rootScope, $httpParamSerializerJQLike) {
+    this.load = function() {
+        return $http.get('index.php?get=resiway_search&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result != 'object') {
+                    $rootScope.search.criteria.total = 0;
+                    return [];
+                }
+                $rootScope.search.criteria.total = data.total;
+                return data.result;
+            },
+            function errorCallback(response) {
+                // something went wrong server-side
+                $rootScope.search.criteria.total = 0;
+                return [];
+            }
+        );
+    };
+}])
+
+
 /**
 *
 */
@@ -1026,8 +1067,9 @@ angular.module('resipedia')
         var $auth = this;
 
         // @init
-        $auth.username = '';
-        $auth.password = '';
+        // $auth.username = '';
+        // $auth.password = '';
+        // $auth.access_token = '';
         
         $auth.last_auth_time = 0;
         $auth.max_auth_delay = 1000 * 60 * 5;      // 5 minutes
@@ -1076,7 +1118,16 @@ angular.module('resipedia')
             return deferred.promise;
         };
 
-
+/*
+* @eprecated : acces_token is automatically stored in cookies/localStorage when receiving response from server
+        this.setAccessToken = function(jwt_access_token) {
+            $auth.access_token = jwt_access_token;
+            var now = new Date();
+            var exp = new Date(now.getFullYear()+1, now.getMonth(), now.getDate());            
+            $cookies.put('access_token', $auth.access_token, {expires: exp});
+        };
+*/
+        
         /**
         *
         * This method is called:
@@ -1086,6 +1137,8 @@ angular.module('resipedia')
         *
         */
         this.setCredentials = function (username, password, store) {
+// todo: deprecate            
+            /*
             $auth.username = username;
             $auth.password = password;
             // store crendentials in the cookie
@@ -1095,53 +1148,70 @@ angular.module('resipedia')
                 $cookies.put('username', username, {expires: exp});
                 $cookies.put('password', password, {expires: exp});
             }
+            */
         };
 
+// todo: deprecate
         this.clearCredentials = function () {
             console.log('clearing credentials');
+            /*
             $auth.username = '';
             $auth.password = '';
             $rootScope.user = {id: 0};
-            $cookies.remove('username');
-            $cookies.remove('password');
+            //$cookies.remove('username');
+            //$cookies.remove('password');
+            // $cookies.remove('access_token');
             if(localStorage){
                 localStorage.removeItem('hello');
             }
+            */
         };
 
-
-        this.signin = function() {
+        this.signout = function() {
+            $rootScope.user = {id: 0};
+            $cookies.remove('access_token');
+            if(localStorage){
+                localStorage.removeItem('hello');
+            }            
+        }
+    
+        this.signin = function(username, password) {
             var deferred = $q.defer();
-            if(typeof $auth.username == 'undefined'
-            || typeof $auth.password == 'undefined'
-            || !$auth.username.length
-            || !$auth.password.length) {
-                $auth.clearCredentials();
-                // reject with 'missing_param' error code
-                deferred.reject({'result': -2});
-            }
-            else {
-                $http.get('index.php?do=resiway_user_signin&login='+$auth.username+'&password='+$auth.password)
-                .then(
-                    function successCallback(response) {
-                        if(typeof response.data.result == 'undefined') {
-                            // something went wrong server-side
-                            return deferred.reject({'result': -1});
-                        }
-                        if(response.data.result < 0) {
-                            // given values not accepted
-                            // $auth.clearCredentials();
-                            return deferred.reject(response.data);
-                        }
-                        $auth.last_auth_time = new Date().getTime();
-                        return deferred.resolve(response.data.result);
-                    },
-                    function errorCallback(response) {
+
+            $http.get('index.php?do=resiway_user_signin&login='+username+'&password='+password)
+            .then(
+                function success(response) {
+                    if(typeof response.data.result == 'undefined') {
                         // something went wrong server-side
                         return deferred.reject({'result': -1});
                     }
-                );
-            }
+                    if(response.data.result < 0) {
+                        // given values not accepted
+                        // $auth.clearCredentials();
+                        return deferred.reject(response.data);
+                    }
+                    // result is the user identifier (number)
+                    $auth.last_auth_time = new Date().getTime();
+                    // we should have receive a cookie along with this response
+                    console.log($cookies.put('access_token'));
+                    return $auth.userData(response.data.result).then(
+                        function success(data) {
+                            $rootScope.user = data;
+                            return deferred.resolve(data);
+                        },
+                        function error(data) {
+                            // something went wrong server-side
+                            console.log('something went wrong server-side');
+                            return deferred.reject(data);
+                        }
+                    );                    
+                },
+                function error(response) {
+                    // something went wrong server-side
+                    return deferred.reject({'result': -1});
+                }
+            );
+            
             return deferred.promise;
         };
 
@@ -1149,13 +1219,13 @@ angular.module('resipedia')
             var deferred = $q.defer();
             $http.get('index.php?do=resiway_user_signup&login='+login+'&firstname='+firstname)
             .then(
-            function successCallback(response) {
+            function success(response) {
                 if(response.data.result < 0) {
                     return deferred.reject(response.data);
                 }
                 return deferred.resolve(response.data.result);
             },
-            function errorCallback(response) {
+            function error(response) {
                 // something went wrong server-side
                 return deferred.reject({'result': -1});
             }
@@ -1172,77 +1242,40 @@ angular.module('resipedia')
         */
         this.authenticate = function() {
             var deferred = $q.defer();        
-            var require_new_auth = true;
 
-            // we cannot trust $rootScope.user.id alone, since session might have expired server-side
-            if($rootScope.user.id > 0) {
-                var now = new Date().getTime();
-                if( (now - $auth.last_auth_time) < $auth.max_auth_delay ) {
-                    // we assume that $auth.autenticate is always walled just before sending request to the server
-                    // and thereby maintain the session active
-                    $auth.last_auth_time = now;
-                    require_new_auth = false;
-                    deferred.resolve($rootScope.user);
-                }
-            }
-        
-            if(require_new_auth) {
-                // request user_id (checks if session is set server-side)
-                $auth.userId()
-                .then(
-
-                    // session is already set
-                    function successHandler(user_id) {
-                        // we already have user data
-                        if($rootScope.user.id > 0) {
-                            deferred.resolve($rootScope.user);
-                        }
-                        // we still need user data
-                        else {
-                            // retrieve user data
-                            $auth.userData(user_id)
-                            .then(
-                                function successHandler(data) {
-                                    $rootScope.user = data;
-                                    deferred.resolve(data);
-                                },
-                                function errorHandler(data) {
-                                    // something went wrong server-side
-                                    console.log('something went wrong server-side');
-                                    deferred.reject(data);
-                                }
-                            );
-                        }
-                    },
-
-                    // user is not identified yet (or session has expired server-side)
-                    function errorHandler() {
-                        // try to sign in with current credentials
-                        $auth.signin()
-                        .then(
-                            function successHandler(user_id) {
-                                // retrieve user data
-                                $auth.userData(user_id)
-                                .then(
-                                    function successHandler(data) {
-                                        $rootScope.user = data;
-                                        deferred.resolve(data);
-                                    },
-                                    function errorHandler(data) {
-                                        // something went wrong server-side
-                                        deferred.reject(data);
-                                    }
-                                );
+            // request user_id (checks if access_token has been set)
+            $auth.userId()
+            .then(
+                // already set
+                function success(user_id) {
+                    // we already have user data
+                    if($rootScope.user.id > 0) {
+                        deferred.resolve($rootScope.user);
+                    }
+                    // we still need user data
+                    else {
+                        // retrieve user data
+                        $auth.userData(user_id).then(
+                            function success(data) {
+                                $rootScope.user = data;
+                                deferred.resolve(data);
                             },
-                            function errorHandler(data) {
-                                // given values were not accepted
-                                // or something went wrong server-side
+                            function error(data) {
+                                // something went wrong server-side
+                                console.log('something went wrong server-side');
                                 deferred.reject(data);
                             }
                         );
                     }
-                );
-            }
+                },
+                // user is not identified 
+                function error() {
+                    // not identified or something went wrong server-side
+                    deferred.reject();
+                    // from here we should be re-directed to the signin/signup page
+                }
+            );
+
             return deferred.promise;
         };
     }
@@ -1276,7 +1309,7 @@ angular.module('resipedia')
 
             authenticationService.authenticate().then(
             // user is authentified and can perform the action
-            function() {
+            function success() {
                 // pending action has been processed : reset it from global scope
                 $rootScope.pendingAction = null;
                 // submit action to the server, if any
@@ -1284,7 +1317,7 @@ angular.module('resipedia')
                 && task.action.length > 0) {
 
                     $http.post('index.php?do='+task.action, task.data).then(
-                    function successCallback(response) {
+                    function success(response) {
 
                         if(typeof task.callback == 'function') {
                             task.callback(task.scope, response.data);
@@ -1317,13 +1350,13 @@ angular.module('resipedia')
                         );
 
                     },
-                    function errorCallback() {
+                    function error() {
                         // something went wrong server-side
                     });
                 }
             },
             // user is still unidentified
-            function() {
+            function error() {
                 // store pending action for completion after identification
                 $rootScope.pendingAction = task;
                 // display signin / signup form
@@ -1480,6 +1513,7 @@ angular.module('resipedia')
             '/category/:id/:title?': '/categorie/:id/:title?',
             '/categories': '/categories',
             '/badges': '/badges',
+            '/search': '/recherche',
             '/article/edit/:id': '/article/edition/:id',
             '/article/:id/:title?': '/article/:id/:title?',
             '/articles': '/articles',            
@@ -1588,6 +1622,18 @@ angular.module('resipedia')
                         }]
                     }
         },
+        /**
+        * Badges related routes
+        */
+        '/search': {
+                    templateUrl : templatePath+'search.html',
+                    controller  : 'searchController as ctrl',
+                    resolve     : {
+                        search: ['routeSearchProvider', function (provider) {
+                            return provider.load();
+                        }]
+                    }
+        },        
         /**
         * Category related routes
         */
@@ -3140,7 +3186,9 @@ angular.module('resipedia')
 
         var ctrl = this;
 
-
+        // @data model
+        $scope.userBadges = [];
+        $scope.badgeCategories = categories;
         
         // @init
         // group badges inside each category
@@ -3162,19 +3210,13 @@ angular.module('resipedia')
                 start: 0,
                 limit: 100
             }).then(
-            function successCallback(response) {
+            function success(response) {
                 var data = response.data;
                 angular.forEach(data.result, function (badge, i) {
-                    $scope.userBadges.push(badge.badge_id);
+                    $scope.userBadges.push(+badge.badge_id);
                 });
             });
         });         
-  
-        
-        // @data model
-        $scope.userBadges = [];
-        $scope.badgeCategories = categories;
-        
       
     }
 ]);
@@ -6326,6 +6368,59 @@ angular.module('resipedia')
 ]);
 angular.module('resipedia')
 
+.controller('searchController', [
+    'search', 
+    '$scope',
+    '$rootScope',
+    '$route',
+    '$http',
+    '$httpParamSerializerJQLike',
+    '$window',
+    function(search, $scope, $rootScope, $route, $http, $httpParamSerializerJQLike, $window) {
+        console.log('search controller');
+
+        var ctrl = this;
+
+        // @data model
+        angular.merge(ctrl, {
+            search: {
+                items: search,
+                total: $rootScope.search.total,
+                currentPage: 1,
+                previousPage: -1,                
+                limit: $rootScope.search.criteria.limit
+            }
+        });
+
+        ctrl.load = function() {
+            if(ctrl.articles.currentPage != ctrl.articles.previousPage) {
+                ctrl.articles.previousPage = ctrl.articles.currentPage;
+                // reset objects list (triggers loader display)
+                ctrl.articles.items = -1;
+                $rootScope.search.criteria.start = (ctrl.articles.currentPage-1)*ctrl.articles.limit;
+                
+                $http.get('index.php?get=resiway_search&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') {
+                            ctrl.search.items = [];
+                        }
+                        ctrl.search.items = data.result;
+                        $window.scrollTo(0, 0);
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return [];
+                    }
+                );
+            }
+        };
+        
+    }
+]);
+angular.module('resipedia')
+
 /**
 * Top Bar Controller
 * 
@@ -6415,7 +6510,7 @@ angular.module('resipedia')
                 action: 'resiway_user_signout',
                 next_path: '/',
                 callback: function($scope, data) {
-                    authentication.clearCredentials();
+                    authentication.signout();
                 }
             });
         };
@@ -6758,7 +6853,7 @@ angular.module('resipedia')
                 var params = decoded.split(';');
                 $http.get('index.php?do=resiway_user_signin&login='+params[0]+'&password='+params[1])
                 .then(
-                function successCallback(response) {
+                function success(response) {
                     var data = response.data;
                     if(typeof response.data.result != 'undefined'
                     && response.data.result > 0) {
@@ -6767,7 +6862,7 @@ angular.module('resipedia')
                         authenticationService.authenticate();
                     }
                 },
-                function errorCallback() {
+                function error() {
                     // something went wrong server-side
                 });
             }
@@ -7003,10 +7098,10 @@ angular.module('resipedia')
                 ctrl.running = true;                
                 // form is complete
                 ctrl.closeSignInAlerts();                
-                authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
+                // authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
                 // attempt to log the user in
-                authenticationService.authenticate().then(
-                function successHandler(data) {
+                authenticationService.signin($scope.username, md5($scope.password)).then(
+                function success(data) {
                     ctrl.running = false;
                     // if some action is pending, return to URL where it occured
                     if($rootScope.pendingAction
@@ -7017,9 +7112,9 @@ angular.module('resipedia')
                         $location.path($rootScope.previousPath);
                     }
                 },
-                function errorHandler() {
+                function error() {
                     ctrl.running = false;
-                    authenticationService.clearCredentials();
+                    // authenticationService.clearCredentials();
                     $scope.signInAlerts = [{ type: 'danger', msg: 'Email ou mot de passe incorrect.' }];
                 });        
             }
@@ -7044,7 +7139,7 @@ angular.module('resipedia')
                 function successHandler(data) {
                     ctrl.running = false;
                     authenticationService.authenticate().then(
-                    function successHandler(data) {
+                    function success(data) {
                         // actively request emails
                         $http.get('index.php?do=resiway_user_pull');
                         // if some action is pending, return to URL where it occured
@@ -7056,12 +7151,12 @@ angular.module('resipedia')
                             $location.path($rootScope.previousPath);
                         }
                     },
-                    function errorHandler(data) {
-                        authenticationService.clearCredentials();
+                    function error(data) {
+                        // authenticationService.clearCredentials();
                         $scope.signUpAlerts = [{ type: 'danger', msg: 'Sorry, an unexpected error occured.' }];
                     });  
                 },
-                function errorHandler(data) {
+                function error(data) {
                     ctrl.running = false;
                     var error_id = data.error_message_ids[0];     
                     // server fault, email already registered, ...

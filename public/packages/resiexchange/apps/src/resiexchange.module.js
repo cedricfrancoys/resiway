@@ -113,6 +113,22 @@ var resiway = angular.module('resiexchange', [
     }
 ])
 
+.factory('httpRequestInterceptor', [
+    '$cookies',    
+    function ($cookies) {
+        return {
+            request: function (config) {
+                config.headers['Authorization'] = 'Bearer ' + $cookies.get('access_token');
+                return config;
+            }
+        };
+    }
+])
+
+.config(['$httpProvider', function ($httpProvider) {
+  $httpProvider.interceptors.push('httpRequestInterceptor');
+}])
+
 .run( [
     '$window', 
     '$timeout', 

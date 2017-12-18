@@ -307,11 +307,12 @@ namespace config {
 			// if(	count(array_intersect($mandatory_params, array_keys($_REQUEST))) != count($mandatory_params) 
             if( count($missing_params) || isset($_REQUEST['announce']) ) {
 				// output json data telling what is expected
-				echo json_encode(array(
-                                    'result'            => QN_ERROR_MISSING_PARAM,
-                                    'announcement'      => $announcement, 
-                                    'error_message_ids' => ['missing_'.array_values($missing_params)[0]]
-                                 ), JSON_FORCE_OBJECT|JSON_PRETTY_PRINT);
+                header('Content-type: application/json; charset=UTF-8');
+				echo json_encode([
+                                    'result'        => isset($_REQUEST['announce'])?0:QN_ERROR_MISSING_PARAM,
+                                    'announcement'  => $announcement, 
+                                    'errors'        => array_map(function($a) {return 'missing param '.$a;}, $missing_params)
+                                 ], JSON_PRETTY_PRINT);
 				// terminate script
 				exit();
 			}
@@ -361,6 +362,34 @@ namespace config {
 				}
 				$result[$param] = $_REQUEST[$param];
 			}
+            
+            // 4) check for requested providers
+            if(isset($announcement['providers']) && count($announcement['providers'])) {
+                // first pass : check for unknown providers
+                $unknown_providers = [];
+                foreach($announcement['providers'] as $provider) {
+                    if(!is_callable($provider.'::getInstance')) {
+                        $unknown_providers[] = $provider;
+                    }
+                }
+                if(count($unknown_providers)) {
+                    // output json data telling what is expected
+                    header('Content-type: application/json; charset=UTF-8');                    
+                    echo json_encode([
+                                        'result'            => QN_ERROR_INVALID_PARAM,
+                                        'announcement'      => $announcement, 
+                                        'errors' => array_map(function($a) {return 'unknown provider '.$a;}, $unknown_providers)
+                                     ], JSON_PRETTY_PRINT);
+                    // terminate script
+                    exit();                    
+                }
+                // second pass : instanciate providers
+                $providers = [];
+                foreach($announcement['providers'] as $provider) {                    
+                    $providers[$provider] = $provider::getInstance();
+                }
+                $result = [$result, $providers];                
+            }
 			return $result;
 		}
 		

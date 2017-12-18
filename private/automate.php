@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
-use easyobject\orm\ObjectManager as ObjectManager;
-use easyobject\orm\PersistentDataManager as PersistentDataManager;
+use easyobject\orm\ObjectManager;
+use qinoa\php\PhpContext;
 
 // run this script as if it were located in the public folder
 chdir('../public');
@@ -33,7 +33,6 @@ define('BOTS_INDEX_START', 25);
 
 try {
     $om = &ObjectManager::getInstance();   
-    $pdm = &PersistentDataManager::getInstance();
         
     // weighted actions
     $objects_classes = [
@@ -82,7 +81,7 @@ try {
         $action_id = ResiAPI::actionId($action_name);
         
         foreach($objects_ids as $object_id) {
-            // find out which bots haven't performed action on that object
+            // find out which bots haven't performed yet that action on current object
             $logs_ids = $om->search('resiway\ActionLog', [
                             ['action_id',   '=', $action_id], 
                             ['object_class','=', $object_class], 
@@ -95,7 +94,8 @@ try {
                 $bot_id = $missing_bots_ids[array_rand($missing_bots_ids)];
                 
                 // log in as selected user
-                $pdm->set('user_id', $bot_id);
+                $phpContext = &PhpContext::getInstance();
+                $phpContext->set('user_id', $user_id);
                 // echo "log as {$bot_id}\n";
                 
                 // perform action

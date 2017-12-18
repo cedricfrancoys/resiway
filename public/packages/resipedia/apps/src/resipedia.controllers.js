@@ -1113,7 +1113,9 @@ angular.module('resipedia')
 
         var ctrl = this;
 
-
+        // @data model
+        $scope.userBadges = [];
+        $scope.badgeCategories = categories;
         
         // @init
         // group badges inside each category
@@ -1135,19 +1137,13 @@ angular.module('resipedia')
                 start: 0,
                 limit: 100
             }).then(
-            function successCallback(response) {
+            function success(response) {
                 var data = response.data;
                 angular.forEach(data.result, function (badge, i) {
-                    $scope.userBadges.push(badge.badge_id);
+                    $scope.userBadges.push(+badge.badge_id);
                 });
             });
         });         
-  
-        
-        // @data model
-        $scope.userBadges = [];
-        $scope.badgeCategories = categories;
-        
       
     }
 ]);
@@ -4299,6 +4295,59 @@ angular.module('resipedia')
 ]);
 angular.module('resipedia')
 
+.controller('searchController', [
+    'search', 
+    '$scope',
+    '$rootScope',
+    '$route',
+    '$http',
+    '$httpParamSerializerJQLike',
+    '$window',
+    function(search, $scope, $rootScope, $route, $http, $httpParamSerializerJQLike, $window) {
+        console.log('search controller');
+
+        var ctrl = this;
+
+        // @data model
+        angular.merge(ctrl, {
+            search: {
+                items: search,
+                total: $rootScope.search.total,
+                currentPage: 1,
+                previousPage: -1,                
+                limit: $rootScope.search.criteria.limit
+            }
+        });
+
+        ctrl.load = function() {
+            if(ctrl.articles.currentPage != ctrl.articles.previousPage) {
+                ctrl.articles.previousPage = ctrl.articles.currentPage;
+                // reset objects list (triggers loader display)
+                ctrl.articles.items = -1;
+                $rootScope.search.criteria.start = (ctrl.articles.currentPage-1)*ctrl.articles.limit;
+                
+                $http.get('index.php?get=resiway_search&'+$httpParamSerializerJQLike($rootScope.search.criteria))
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') {
+                            ctrl.search.items = [];
+                        }
+                        ctrl.search.items = data.result;
+                        $window.scrollTo(0, 0);
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return [];
+                    }
+                );
+            }
+        };
+        
+    }
+]);
+angular.module('resipedia')
+
 /**
 * Top Bar Controller
 * 
@@ -4388,7 +4437,7 @@ angular.module('resipedia')
                 action: 'resiway_user_signout',
                 next_path: '/',
                 callback: function($scope, data) {
-                    authentication.clearCredentials();
+                    authentication.signout();
                 }
             });
         };
@@ -4731,7 +4780,7 @@ angular.module('resipedia')
                 var params = decoded.split(';');
                 $http.get('index.php?do=resiway_user_signin&login='+params[0]+'&password='+params[1])
                 .then(
-                function successCallback(response) {
+                function success(response) {
                     var data = response.data;
                     if(typeof response.data.result != 'undefined'
                     && response.data.result > 0) {
@@ -4740,7 +4789,7 @@ angular.module('resipedia')
                         authenticationService.authenticate();
                     }
                 },
-                function errorCallback() {
+                function error() {
                     // something went wrong server-side
                 });
             }
@@ -4976,10 +5025,10 @@ angular.module('resipedia')
                 ctrl.running = true;                
                 // form is complete
                 ctrl.closeSignInAlerts();                
-                authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
+                // authenticationService.setCredentials($scope.username, md5($scope.password), $scope.remember);
                 // attempt to log the user in
-                authenticationService.authenticate().then(
-                function successHandler(data) {
+                authenticationService.signin($scope.username, md5($scope.password)).then(
+                function success(data) {
                     ctrl.running = false;
                     // if some action is pending, return to URL where it occured
                     if($rootScope.pendingAction
@@ -4990,9 +5039,9 @@ angular.module('resipedia')
                         $location.path($rootScope.previousPath);
                     }
                 },
-                function errorHandler() {
+                function error() {
                     ctrl.running = false;
-                    authenticationService.clearCredentials();
+                    // authenticationService.clearCredentials();
                     $scope.signInAlerts = [{ type: 'danger', msg: 'Email ou mot de passe incorrect.' }];
                 });        
             }
@@ -5017,7 +5066,7 @@ angular.module('resipedia')
                 function successHandler(data) {
                     ctrl.running = false;
                     authenticationService.authenticate().then(
-                    function successHandler(data) {
+                    function success(data) {
                         // actively request emails
                         $http.get('index.php?do=resiway_user_pull');
                         // if some action is pending, return to URL where it occured
@@ -5029,12 +5078,12 @@ angular.module('resipedia')
                             $location.path($rootScope.previousPath);
                         }
                     },
-                    function errorHandler(data) {
-                        authenticationService.clearCredentials();
+                    function error(data) {
+                        // authenticationService.clearCredentials();
                         $scope.signUpAlerts = [{ type: 'danger', msg: 'Sorry, an unexpected error occured.' }];
                     });  
                 },
-                function errorHandler(data) {
+                function error(data) {
                     ctrl.running = false;
                     var error_id = data.error_message_ids[0];     
                     // server fault, email already registered, ...

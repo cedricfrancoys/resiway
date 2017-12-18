@@ -655,48 +655,48 @@ input[type="text"] {
 
 /* menu */
 
-.breadcrumb .search-input {
+.search-input {
     position: relative;
-    display: inline-block;
+    display: block;
+    float: left;
     vertical-align: middle;
     height: 34px;
-    width: 350px;    
+    width: 250px;    
     line-height: 34px;
     color: lightgrey;
-    margin-left: .5%;
-    padding-left: 10px;
+    padding-left: 20px;
+    padding-right: 30px;    
     padding-top: 2px;
     -webkit-transition: all .5s ease;
     -moz-transition: all .5s ease;
     transition: all .5s ease;      
 }
 
-/*
-.breadcrumb .search-input:hover {
+.search-input:hover, .search-input:focus {
     width: 400px;
 }
 
-.breadcrumb .search-input input:focus {
+.search-input input:focus {
     width: 358px;
 }
-*/
-.breadcrumb .search-input button, .breadcrumb .search-input button:focus {
+
+.search-input button, .search-input button:focus {
     outline:none !important;
 }
 
-.breadcrumb .search-input label {
+.search-input label {
     position: absolute;
     left: 10px;
 }
 
-.breadcrumb .search-input input[type=text] {
+.search-input input[type=text] {
     font-size: 15px;
 }
-.breadcrumb .search-input.form-group-sm .form-control, .breadcrumb .search-input.form-group-sm .input-group .btn-sm {
+.search-input.form-group-sm .form-control, .search-input.form-group-sm .input-group .btn-sm {
     height: 30px;
 }
 
-.breadcrumb .search-input.form-group-sm .input-group .btn-sm {
+.search-input.form-group-sm .input-group .btn-sm {
     vertical-align: top;
 }
 
@@ -2291,12 +2291,13 @@ body {
 
 .topbar {
     width: 100%;
-    background: rgb(54,59,64);
+    background: #eff0f0;
     font-size: 13px;
     position: fixed;
     z-index: 1000;
     top: 0;
     left: 0;
+    border-bottom: solid 1px darkgrey;
 }    
 
 .topbar .grid {
@@ -2330,7 +2331,7 @@ body {
     height: 34px;
     width: 115px;
     line-height: 34px;
-    color: lightgrey;
+    color: #848d95;
     cursor: pointer;
     user-select: none;
 }
@@ -2342,7 +2343,7 @@ body {
     height: 34px;
     width: 60px;    
     line-height: 34px;
-    color: lightgrey;
+    color: #848d95;
     padding-left: 10px;
     cursor: pointer;
     user-select: none;    
@@ -2356,20 +2357,20 @@ body {
     vertical-align: top;
     height: 34px;
     line-height: 34px;
-    color: white;
+    color: #848d95;
     padding-left: 10px;
     cursor: pointer;
     user-select: none;
 }
 
 .topbar .login-btn a {
-    color: white;
+    color: #848d95;
     padding: 10px 5px;
     text-decoration: none;
 }
 
 .topbar .login-btn a:hover {
-    background-color: #3b4045;
+    background-color: #dfe0e0;
 }
 
 .topbar .user-btn {
@@ -2379,7 +2380,7 @@ body {
     height: 34px;
     width: 200px;
     line-height: 34px;
-    color: lightgrey;
+    color: #848d95;
     padding-left: 10px;
     cursor: pointer;
     user-select: none;
@@ -2426,7 +2427,7 @@ body {
     left: 0;
     width: 355px;
     height: auto;
-    background-color: #eff0f1;
+    background-color: #eff0f0;
     border-left: 1px solid #e4e6e8;
     border-right: 1px solid #e4e6e8;
     border-bottom: 1px solid #e4e6e8;
@@ -2448,7 +2449,7 @@ body {
     width: 254px;
     height: auto;
     max-height: 200px;
-    background-color: #eff0f1;
+    background-color: #eff0f0;
     border-left: 1px solid #e4e6e8;
     border-right: 1px solid #e4e6e8;
     border-bottom: 1px solid #e4e6e8;
@@ -2463,7 +2464,7 @@ body {
     right: 0;
     width: 200px;
     height: auto;
-    background-color: #eff0f1;
+    background-color: #eff0f0;
     border-left: 1px solid #e4e6e8;
     border-right: 1px solid #e4e6e8;
     border-bottom: 1px solid #e4e6e8;
@@ -2539,7 +2540,7 @@ body {
     height: 34px;
     width: 36px;
     line-height: 34px;
-    color: lightgrey;
+    color: #848d95;
     cursor: pointer;
     user-select: none;
     text-align: center;
@@ -2558,7 +2559,7 @@ body {
     height: auto;
     max-height: 200px;
     overflow-y: scroll;
-    background-color: #eff0f1;
+    background-color: #eff0f0;
     border-left: 1px solid #e4e6e8;
     border-right: 1px solid #e4e6e8;
     border-bottom: 1px solid #e4e6e8;
@@ -2581,11 +2582,11 @@ body {
 }
 
 .topbar .platform-btn:hover, .topbar .help-btn:hover, .topbar .user-btn:hover, .topbar .notify-btn:hover{
-    background-color: #3b4045;
+    background-color: #dfe0e0;
 }
 
 .topbar .platform-btn.open, .topbar .help-btn.open, .topbar .user-btn.open, .topbar .notify-btn.open {
-    background-color: #eff0f1;
+    background-color: #eff0f0;
     color: grey;
 }
 

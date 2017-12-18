@@ -376,6 +376,46 @@ class HttpMessage {
         }
     }
     
+    /**
+     * Additional method using short name and get/set based on arguments
+     *
+     */
+    
+    public function body() {
+        $args = func_get_args();
+        if(count($args) <= 0) {
+            return $this->getBody();
+        }
+        else {
+            $body = $args[0];
+            return $this->setBody($body);
+        }
+    }
+
+    public function protocol() {
+        $args = func_get_args();
+        if(count($args) <= 0) {
+            return $this->getProtocol();
+        }
+        else {
+            $protocol = $args[0];
+            return $this->setProtocol($protocol);
+        }
+    }
+    
+    public function header() {
+        $args = func_get_args();
+        if(count($args) < 2) {
+            $header = $args[0];
+            return $this->getHeader($header);
+        }
+        else {
+            list($header, $value) = $args;
+            return $this->setHeader($header, $value);
+        }
+    }
+
+    
 
     /**
      * send method is defined in HttpResponse and HttpRequest classes

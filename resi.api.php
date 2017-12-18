@@ -18,11 +18,14 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, see <http://www.gnu.org/licenses/>
 */
-use easyobject\orm\ObjectManager as ObjectManager;
-use easyobject\orm\PersistentDataManager as PersistentDataManager;
-use easyobject\orm\DataAdapter as DataAdapter;
-use qinoa\html\HTMLPurifier_Config as HTMLPurifier_Config;
-use html\HtmlTemplate as HtmlTemplate;
+use easyobject\orm\ObjectManager;
+use easyobject\orm\PersistentDataManager;
+use easyobject\orm\DataAdapter;
+use qinoa\html\HTMLPurifier_Config;
+use html\HtmlTemplate;
+
+use qinoa\auth\JWT;
+use qinoa\php\PhpContext;
 
 // these utilities require inclusion of main configuration file 
 require_once('qn.lib.php');
@@ -178,11 +181,20 @@ class ResiAPI {
         if($ids < 0 || !count($ids)) return QN_ERROR_INVALID_PARAM;
         $user_id = $ids[0];
         // update 'last_login' field
-        $om->write('resiway\User', $user_id, [ 'last_login' => date("Y-m-d H:i:s") ]);        
-        $pdm = &PersistentDataManager::getInstance();
-        return $pdm->set('user_id', $user_id);                
+        $om->write('resiway\User', $user_id, [ 'last_login' => date("Y-m-d H:i:s") ]);
+        $phpContext = &PhpContext::getInstance();
+        $phpContext->set('user_id', $user_id);
+        return $user_id;
     }
-    
+
+    public static function userToken($user_id) {
+        $access_token = JWT::encode([
+                            'id' => $user_id,
+                            'exp' => time() + 3600
+                        ], 'temporary_secret_key');
+        return $access_token;
+    }
+        
     /**
     * Retrieves current user identifier.
     * If user is not logged in, returns 0 (GUEST_USER_ID)
@@ -190,8 +202,22 @@ class ResiAPI {
     * @return   integer
     */
     public static function userId() {
-        $pdm = &PersistentDataManager::getInstance();
-        return $pdm->get('user_id', 0);
+        // if user id cannot be resolved, fallback to zero, i.e. anonymous user (GUEST_USER_ID)
+        $user_id = 0;
+        $phpContext = &PhpContext::getInstance();
+        $user_id = $phpContext->get('user_id', 0);
+        if($user_id <= 0) {
+            // lookup the HTTP request for an access token, if any
+            $request = $phpContext->getHttpRequest();            
+            // along with an access_token    
+            list($jwt) = sscanf( $request->header('Authorization'), 'Bearer %s');    
+            // decode JWT
+            $auth = (array) JWT::decode($jwt, 'temporary_secret_key');
+            if(isset($auth['id']) && $auth['id'] > 0) {
+                $user_id = $auth['id'];
+            }
+        }
+        return $user_id;
     }
 
    
