@@ -203,7 +203,12 @@ class HttpMessage {
      * @param $headers  array
      */
     public function setHeaders($headers) {
-        $this->headers = new HttpHeaders($headers);
+        if($headers instanceof HttpHeaders) {
+            $this->headers = $headers;
+        }
+        else {
+            $this->headers = new HttpHeaders((array) $headers);
+        }
         return $this;        
     }
     
@@ -215,7 +220,12 @@ class HttpMessage {
         }
         return $this;
     }
-    
+
+    public function setCookie($cookie, $value) {
+        $this->headers->setCookie($cookie, $value);
+        return $this;
+    }
+        
     /**
      *
      * This method is invoked byt HttpRequest and HttpResponse constructors.
@@ -249,6 +259,7 @@ class HttpMessage {
      */
     public function setBody($body) {
         if(!is_array($body)) {
+            // attempt to convert body to an associative array 
             switch($this->getHeaders()->getContentType()) {
             case 'application/x-www-form-urlencoded':
                 $params = [];
@@ -264,7 +275,10 @@ class HttpMessage {
             case 'text/xml, application/xml':
                 $xml = simplexml_load_string($body, "SimpleXMLElement", LIBXML_NOCDATA);
                 $json = json_encode($xml);
-                $body = json_decode($json, true);                
+                $body = json_decode($json, true);
+                break;
+            default:
+                // fallback to raw content
             }
         }        
         $this->body = $body;
@@ -326,6 +340,10 @@ class HttpMessage {
     public function getHeader($header, $default=null) {
         return $this->headers->get($header, $default);
     }
+    
+    public function getCookie($cookie) {
+        return $this->headers->getCookie($cookie);
+    }    
 
     public function getMethod() {
         return $this->method;
@@ -383,7 +401,7 @@ class HttpMessage {
     
     public function body() {
         $args = func_get_args();
-        if(count($args) <= 0) {
+        if(count($args) < 1) {
             return $this->getBody();
         }
         else {
@@ -391,10 +409,13 @@ class HttpMessage {
             return $this->setBody($body);
         }
     }
+    
+
+
 
     public function protocol() {
         $args = func_get_args();
-        if(count($args) <= 0) {
+        if(count($args) < 1) {
             return $this->getProtocol();
         }
         else {
@@ -403,6 +424,27 @@ class HttpMessage {
         }
     }
     
+    /**
+     * Headers getter/setter method based on arguments list
+     *
+     *
+     */
+    public function headers() {
+        $args = func_get_args();
+        if(count($args) < 1) {            
+            return $this->getHeaders();
+        }
+        else {
+            $headers = $args[0];
+            return $this->setHeaders($headers);
+        }
+    }
+
+    /**
+     * Header getter/setter method based on arguments list
+     *
+     *
+     */
     public function header() {
         $args = func_get_args();
         if(count($args) < 2) {
@@ -415,8 +457,39 @@ class HttpMessage {
         }
     }
 
-    
+    /**
+     * Cookie getter/setter method based on arguments list
+     * reminder: cookies are just a special kind of header
+     *
+     */
+    public function cookie() {
+        $args = func_get_args();
+        if(count($args) < 2) {
+            $cookie = $args[0];
+            return $this->getCookie($cookie);
+        }
+        else {
+            list($cookie, $value) = $args;
+            return $this->setCookie($cookie, $value);
+        }
+    }    
 
+    /**
+     * Header getter/setter method based on arguments list
+     *
+     *
+     */
+    public function uri() {
+        $args = func_get_args();
+        if(count($args) < 1) {            
+            return $this->getUri();
+        }
+        else {
+            $uri = $args[0];
+            return $this->setUri($uri);
+        }
+    } 
+    
     /**
      * send method is defined in HttpResponse and HttpRequest classes
      *

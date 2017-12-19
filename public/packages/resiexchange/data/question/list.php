@@ -175,7 +175,7 @@ try {
         }
        
         // retrieve categories
-        $questions_categories = $om->read('resiway\Category', $categories_ids, ['title', 'path', 'parent_path', 'description']);        
+        $questions_categories = $om->read('resiway\Category', $categories_ids, ['title', 'title_url', 'path', 'parent_path', 'description']);        
         if($questions_categories < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
 
         foreach($res as $question_id => $question_data) {
@@ -185,6 +185,7 @@ try {
                 $questions[$question_id]['categories'][] = array(
                                             'id'            => $category_id,
                                             'title'         => $category_data['title'], 
+                                            'title_url'     => $category_data['title_url'],
                                             'path'          => $category_data['path'],
                                             'parent_path'   => $category_data['parent_path'],
                                             'description'   => $category_data['description']

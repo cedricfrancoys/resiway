@@ -27,18 +27,22 @@ $params = QNLib::announce(
 list($object_class, $object_id) = ['resilib\Document', $params['id']];
 
 try {
+    // base64 encoded 1x1 JPEG picture
+    $rawdata = "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
+    // make sure an image is always returned:
+    // set a fallback content, in case picture cannot be retrieved
+    $content = base64_decode($rawdata);
 
-    if($object_id <= 0) {
-        // base64 encoded 1x1 JPEG picture
-        $rawdata = "/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA=";
-        $content = base64_decode($rawdata);
-    }
-    else {
+    if($object_id > 0) {
         $om = &ObjectManager::getInstance();
         $res = $om->read($object_class, $object_id, ['id', 'thumbnail']);   
-        
-        if($res < 0 || !count($res)) throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
-        $content = $res[$object_id]['thumbnail'];
+
+        if($res > 0 && count($res) && strlen($res[$object_id]['thumbnail']) ) {
+            $content = $res[$object_id]['thumbnail'];
+        }
+        else {
+            // throw new Exception("document_unknown", QN_ERROR_INVALID_PARAM);
+        }
     }
     
     header("Content-Type: image/jpeg");

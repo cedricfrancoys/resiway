@@ -170,23 +170,12 @@ angular.module('resipedia')
         '/category/:id/:title?': {
                     templateUrl : templatePath+'category.html',
                     controller  : ['$location', '$route', '$rootScope', function($location, $route, $rootScope) {
-                        var criteria = angular.extend({}, $rootScope.search.default, {domain: [['categories_ids', 'contains', $route.current.params.id]]});
+                        var criteria = angular.extend({}, $rootScope.search.default, {q: '['+$route.current.params.title+']'});                        
                         angular.copy(criteria, $rootScope.search.criteria);
                         
-                        var list_page = '';
-                        switch($rootScope.config.application) {
-                            case 'resiway':
-                            case 'resiexchange':
-                                list_page = '/questions';
-                                break;
-                            case 'resilib':
-                                list_page = '/documents';
-                                break;
-                        }
-
 // todo : we shoud define a dedicated view (template) for category                            
                         // temp solution
-                        $location.path(list_page);          
+                        $location.path('/search');             
                     }]      
         },
         

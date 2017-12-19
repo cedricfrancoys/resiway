@@ -224,10 +224,6 @@ input[type="text"] {
     transition: all .5s ease-in-out;    
 }
 
-.search-input:hover, .search-input:focus {
-    width: 400px;
-}
-
 .search-input input[type=text] {
     width: 178px;
     font-size: 15px;
@@ -235,9 +231,19 @@ input[type="text"] {
     -moz-transition: all .5s ease-in-out;
     transition: all .5s ease-in-out;
 }
+
+.search-input:hover, .search-input:focus {
+    width: 400px;
+}
+
+.search-input:hover input[type=text], .search-input:focus input[type=text] {
+   width: 318px;    
+}
+
 .search-input input[type=text]:focus, .search-input input[type=text]:hover {
    width: 318px;
 }
+
 
 .search-input button, .search-input button:focus {
     outline:none !important;

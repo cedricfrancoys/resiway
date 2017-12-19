@@ -65,7 +65,7 @@
                 
                 <div class="categories col-8-12 nopad">
                     <a ng-repeat="category in question.categories" 
-                    ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', category.id]]})" 
+                    ng-click="rootCtrl.searchByCategory(category)" 
                     class="category" 
                     popover-trigger="'mouseenter'"
                     uib-popover-html="category.description"
@@ -86,7 +86,7 @@
                             <div class="user-details">
                                 <a href="/user/{{question.creator.id}}/{{question.creator.name_url}}">{{question.creator.display_name}}</a>
                                 <div>
-                                    <span class="reputation-score" title="score de reputation" dir="ltr">{{question.creator.reputation}}</span>
+                                    <span class="reputation-score" title="score de reputation" dir="ltr">{{question.creator.reputation | humanizeCount}}</span>
                                     <span class="badges" ng-show="question.creator.count_badges_1 > 0">
                                         <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                         <span class="badgecount">{{question.creator.count_badges_1}}</span>
@@ -154,7 +154,8 @@
                     <span class="small"><b>Catégories similaires:</b></span><br />
                     <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
                         <a 
-                            href="/category/{{category.id}}/{{category.title_url}}"
+                            href
+                            ng-click="rootCtrl.searchByCategory(category)"                           
                             class="category"
                             title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_questions}}&nbsp;</div>
@@ -164,8 +165,8 @@
                 <div ng-show="featured_categories.length > 0" class="container fade-in-out">                    
                     <span class="small"><b>Categories populaires:</b></span><br />
                     <div class="featured-categories categories" ng-repeat="category in featured_categories" style="display: inline-block;">
-                        <a 
-                            href="/category/{{category.id}}/{{category.title_url}}"
+                        <a  href
+                            ng-click="rootCtrl.searchByCategory(category)"
                             class="category"                            
                             title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_questions}}&nbsp;</div>

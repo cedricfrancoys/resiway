@@ -137,7 +137,7 @@ try {
                                 [
                                     'id',
                                     'creator'       => User::getPublicFields(), 
-                                    'categories'    => ['id', 'title', 'path', 'parent_path', 'description'],
+                                    'categories'    => ['id', 'title', 'title_url', 'path', 'parent_path', 'description'],
                                     'created', 
                                     'title', 
                                     'title_url', 

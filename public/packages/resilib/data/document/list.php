@@ -144,7 +144,7 @@ try {
     }
 
     
-    // total is not knwon yet
+    // total is not known yet
     if($params['total'] < 0) {        
         $ids = $om->search('resilib\Document', $params['domain'], $params['order'], $params['sort']);
         if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
@@ -214,7 +214,7 @@ try {
         }
         
         // retrieve categories
-        $documents_categories = $om->read('resiway\Category', $categories_ids, ['title', 'path', 'parent_path', 'description']);        
+        $documents_categories = $om->read('resiway\Category', $categories_ids, ['title', 'title_url', 'path', 'parent_path', 'description']);        
         if($documents_categories < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);     
 
         foreach($res as $document_id => $document_data) {
@@ -224,6 +224,7 @@ try {
                 $documents[$document_id]['categories'][] = array(
                                             'id'            => $category_id,
                                             'title'         => $category_data['title'], 
+                                            'title_url'     => $category_data['title_url'],                                            
                                             'path'          => $category_data['path'],
                                             'parent_path'   => $category_data['parent_path'],
                                             'description'   => $category_data['description']

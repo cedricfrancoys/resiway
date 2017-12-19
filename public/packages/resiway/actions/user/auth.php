@@ -123,7 +123,7 @@ try {
     // generate access_token
     $access_token = ResiAPI::userToken($user_id);
     // store token in cookie
-    setcookie('access_token', $access_token);
+    setcookie('access_token', $access_token, time()+60*60*24*365, '/');
 
 }
 catch(Exception $e) {

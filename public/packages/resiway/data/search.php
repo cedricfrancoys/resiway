@@ -10,6 +10,7 @@ use resiway\User;
 use resiway\Index;
 
 use qinoa\html\HTMLToText;
+use qinoa\text\TextTransformer;
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
 
@@ -32,7 +33,7 @@ $params = QNLib::announce(
                         'order'		=> array(
                                             'description'   => 'Column to use for sorting results.',
                                             'type'          => 'string',
-                                            'default'       => 'id'
+                                            'default'       => 'score'
                                             ),
                         'sort'		=> array(
                                             'description'   => 'The direction  (i.e. \'asc\' or \'desc\').',
@@ -83,25 +84,71 @@ try {
         'articles_ids'      => ['2' => 'title', '0.1' => 'content', '0.5' => 'categories.title']        
     ];    
     
-    // clear domain
-    $params['domain'] = [];
-   
 
-    if(strlen($params['q']) > 0) {
+   
+    // only handle queries with a minimum length of 2 chars
+    if(strlen($params['q']) > 2) {
 
         $objects = [];
-        
+
+/*        
+ As below process is quite heavy and can impact performances
+ search results are stored in FS to minimize computing
+*/
         // determine cache filename
-        $cache_filename = '../cache/index/'.md5(serialize(Index::normalizeQuery($params['q'])));
+        $cache_filename = '../cache/index/'.md5( serialize(Index::normalizeQuery($params['q'])).'-'.$params['order'].'-'.$params['sort'].'-'.$params['start'].'-'.$params['limit'] );
 
         // if request is cached, deliver result from cache
         if(file_exists($cache_filename)) {
             $content = file_get_contents($cache_filename);
-            $result = unserialize($content);
+            list($result, $total) = unserialize($content);
         }
         // generate the result
         else {
-            // look for matching indexes, if any
+
+            // 1) perform a query analysis
+// todo : improve this 
+// we should build update weights and keywords based on query syntax
+            
+            $parts = explode(' ', $params['q']);
+            
+            $categories = [];
+            foreach($parts as $part) {
+                $matches = [];
+                if(preg_match("/([+-]?)\[(.*)\]/U", $part, $matches)) {
+                    if(strlen($matches[1]) < 1 || $matches[1] == '+') {
+                        $categories[] = $matches[2];
+                    }
+                }
+            }
+            
+            if(count($categories)) {
+                // full-text search on category title : we need to extend to all subcategories 
+                $domain = [];
+                foreach($categories as $category) {
+                    $domain[] = ['path', 'like', '%'.TextTransformer::slugify($category).'%'];
+                }
+                // retrieve categories ids
+                $categories_ids = $om->search('resiway\Category', $domain);
+                $categories = $om->read('resiway\Category', $categories_ids, ['title', 'count_questions', 'count_documents', 'count_articles']);
+    /*
+                // update total (results count)
+                // this is an approximate since some resoureces might be counted several times
+                $params['total'] = array_reduce($categories, function($carry, $item) { return $carry + $item['count_questions']	+ $item['count_documents'] + $item['count_articles']; });
+    */            
+                // replace query
+                $params['q'] = implode(' ', array_map(function($a) { return $a['title']; }, $categories));
+                // limit search on categories indexes
+                $batches = [
+                    'questions_ids'     => ['1' => 'categories_ids.title'],
+                    'documents_ids'     => ['1' => 'categories_ids.title'],
+                    'articles_ids'      => ['1' => 'categories.title']        
+                ];    
+                            
+            }                        
+            
+            
+            // 2) look for matching indexes, if any
             $indexes_ids = Index::searchByQuery($om, $params['q']);
             
             if(count($indexes_ids)) {
@@ -131,8 +178,7 @@ try {
                     }
 
                     $query .=  "GROUP BY $object_field  
-                                ORDER BY `score` DESC
-                                LIMIT 0, {$params['limit']}".PHP_EOL;
+                                ORDER BY `score` DESC";
                                 
                     $res = $db->sendQuery($query);
                     
@@ -150,8 +196,7 @@ try {
                                     WHERE
                                     (index_id in (".implode(',', $indexes_ids)."))
                                     GROUP BY $object_field  
-                                    ORDER BY `score` DESC
-                                    LIMIT 0, {$params['limit']}";
+                                    ORDER BY `score` DESC";
                         $res = $db->sendQuery($query);                    
                     }
                     
@@ -162,14 +207,14 @@ try {
 
                 }               
 
-                // load objects values
+                // load objects values and pre-order by best search-match
                 $items = [];
                 foreach($batches as $index_field => $object_fields) {
                     $object_class = $schema[$index_field]['foreign_object'];
                             
                     $objects_scores = $objects[$object_class];
                                         
-                    $res = $om->read($object_class, array_keys($objects_scores), ['title', 'title_url', 'content_excerpt', 'count_views', 'score', 'creator' => User::getPublicFields(), 'categories' => ['id', 'title', 'title_url', 'path'] ]);
+                    $res = $om->read($object_class, array_keys($objects_scores), ['title', 'title_url', 'content_excerpt', 'count_views', 'score', 'created', 'creator' => User::getPublicFields(), 'categories' => ['id', 'title', 'title_url', 'path'] ]);
                     if($res > 0 && count($res)) {
                         foreach($objects_scores as $object_id => $score) {
                             if(!isset($items[$score])) $items[$score] = [];
@@ -183,28 +228,44 @@ try {
                                 'count_views'   => $res[$object_id]['count_views'], 
                                 'score'         => $res[$object_id]['score'],
                                 'creator'       => $res[$object_id]['creator'],
+                                'created'       => $res[$object_id]['created'],                                
                                 'categories'    => array_values($res[$object_id]['categories'])
                             ];
                         }            
                     }
                 }
-                
+
                 // order results by score
                 krsort($items);
+                // merge actual results
                 foreach($items as $score => $slice) {
                     $result = array_merge($result, $slice);
                 }
+                // remember total results count
+                $total = count($result);        
                 // limit result set
-                $result = array_slice($result, 0, $params['limit']);
+                $result = array_slice($result, $params['start'], $params['limit']);
+                // sort subset based on given order and sort parameters
+                usort($result, function ($a, $b) use($params) {
+                        $a = $a[$params['order']]; 
+                        $b = $b[$params['order']];
+                        $sort = ($params['sort'] == 'desc')?-1:1;
+                        if ($a == $b) {
+                            return 0;
+                        }
+                        return ($a < $b) ? (-1*$sort) : (1*$sort);
+                    }
+                );                
                 // cache search result
                 if(!is_dir(dirname($cache_filename))) mkdir(dirname($cache_filename), 0777, true);
-                file_put_contents($cache_filename, serialize($result));            
+                file_put_contents($cache_filename, serialize([$result, $total]));
             }
         }
+        // update total (results count)
+        $params['total'] = $total;        
     }
     
-    // update total (results count)
-    $params['total'] = count($result);
+
 }
 catch(Exception $e) {
     $result = $e->getCode();

@@ -377,11 +377,17 @@ var resiway = angular.module('resipedia', [
                 });                
             }            
         };        
+
+        rootCtrl.searchByCategory = function(category) {
+            $rootScope.category = category;
+            rootCtrl.search({q: '['+category.title_url+']'});
+        };
         
         rootCtrl.search = function(values) {
             var criteria = angular.extend({}, $rootScope.search.default, values || {});
             angular.copy(criteria, $rootScope.search.criteria);
 
+// todo : handle translations             
             var list_page = '/search';
             /*
             switch($rootScope.config.application) {
@@ -545,6 +551,7 @@ var resiway = angular.module('resipedia', [
                 if(typeof value == 'undefined' 
                 || typeof parseInt(value) != 'number') return 0;
                 if(value == 0) return 0;
+                value = +value;
                 var sign = value/Math.abs(value);
                 value = Math.abs(value);
                 var s = ['', 'k', 'M', 'G'];

@@ -29,6 +29,14 @@ class HttpHeaders {
         }
         return $this;
     }
+    
+    public function setCookie($cookie, $value) {
+        $cookies = $this->getCookies();
+        $cookies[$cookie] = $value;        
+        $rawcookie_parts = array_map(function ($cookie, $value) { return "$cookie=$value"; }, array_keys($cookies), $cookies);
+        $this->set('Cookie', implode('; ', $rawcookie_parts));        
+        return $this;
+    }    
 
     /**
      * Retrieves a message header value by the given case-insensitive name.
@@ -55,27 +63,39 @@ class HttpHeaders {
     public function getHeaders() {
         return $this->headers;
     }    
+
+    public function getCookies()  {
+        $cookies = [];
+        if(isset($this->headers['Cookie']) && strlen($this->headers['Cookie']) > 0) {
+            // general syntax: key=value
+            // example: Cookie: _gid=GA1.2.810697551.1513508707; PHPSESSID=3hhf6qekt89k9v0hkllvu4u815 
+            $lines = explode(';', $this->headers['Cookie']);
+            foreach($lines as $line) {
+                $parts = explode('=', $line);
+                // skip invalid items
+                if(count($parts) != 2) continue;
+                $cookies[trim($parts[0])] = trim($parts[1]);
+            }
+        }
+        return $cookies;
+    }
     
     public function getCharsets()  {
-        static $charsets = null;
-        
-        if (is_null($charsets)) {
-            $charsets = (array) 'utf-8';
-            if(isset($this->headers['Accept-Charset'])) {
-                // general syntax: character_set [q=qvalue]
-                // example: Accept-Charset: iso-8859-5, unicode-1-1; q=0.8
-                $parts = explode(',', $this->headers['Accept-Charset']);
-                if(count($parts)) {
-                    $charsets = array_map(function($a) { return trim(explode(';', $a)[0]); }, $parts);
-                }
+        $charsets = (array) 'utf-8';
+        if(isset($this->headers['Accept-Charset'])) {
+            // general syntax: character_set [q=qvalue]
+            // example: Accept-Charset: iso-8859-5, unicode-1-1; q=0.8
+            $parts = explode(',', $this->headers['Accept-Charset']);
+            if(count($parts)) {
+                $charsets = array_map(function($a) { return trim(explode(';', $a)[0]); }, $parts);
             }
-            else if(isset($this->headers['Content-Type'])) {
-                // general syntax: media-type
-                // example: Content-Type: text/html; charset=ISO-8859-4
-                $parts = explode(';', $this->headers['Content-Type']);
-                if(count($parts) > 1) {
-                    $charsets = trim($parts[1]);
-                }
+        }
+        else if(isset($this->headers['Content-Type'])) {
+            // general syntax: media-type
+            // example: Content-Type: text/html; charset=ISO-8859-4
+            $parts = explode(';', $this->headers['Content-Type']);
+            if(count($parts) > 1) {
+                $charsets = trim($parts[1]);
             }
         }
         return $charsets;
@@ -88,27 +108,24 @@ class HttpHeaders {
     }
     
     public function getLanguages()  {
-        static $languages = null;
-        
-        if (is_null($languages)) {
-            $languages = (array) 'en';
-            if(isset($this->headers['Accept-Language'])) {
-                // general syntax: language [q=qvalue]
-                // example: Accept-Language: da, en-gb;q=0.8, en;q=0.7
-                $parts = explode(',', $this->headers['Accept-Language']);
-                if(count($parts)) {
-                    $languages = array_map(function($a) { return trim(explode(';', $a)[0]); }, $parts);
-                }
-            }
-            else if(isset($this->headers['Content-Language'])) {
-                // general syntax: language-tag
-                // example: Content-Language: fr, en
-                $parts = explode(',', $this->headers['Content-Language']);
-                if(count($parts)) {
-                    $languages = array_map(function($a) { return trim($a); }, $parts);
-                }
+        $languages = (array) 'en';
+        if(isset($this->headers['Accept-Language'])) {
+            // general syntax: language [q=qvalue]
+            // example: Accept-Language: da, en-gb;q=0.8, en;q=0.7
+            $parts = explode(',', $this->headers['Accept-Language']);
+            if(count($parts)) {
+                $languages = array_map(function($a) { return trim(explode(';', $a)[0]); }, $parts);
             }
         }
+        else if(isset($this->headers['Content-Language'])) {
+            // general syntax: language-tag
+            // example: Content-Language: fr, en
+            $parts = explode(',', $this->headers['Content-Language']);
+            if(count($parts)) {
+                $languages = array_map(function($a) { return trim($a); }, $parts);
+            }
+        }
+
         return $languages;
     }
 
@@ -214,7 +231,7 @@ class HttpHeaders {
         else if(isset($this->headers['Content-Type'])) {
             // general syntax: media-type
             // example: Content-Type: text/html; charset=ISO-8859-4
-            $content_type = explode(';', $this->headers['Content-Type'])[0];
+            $content_type = trim(explode(';', $this->headers['Content-Type'])[0]);
             /*
             foreach($types as $type => $signatures) {
                 foreach($signatures as $signature) {
@@ -296,7 +313,6 @@ class HttpHeaders {
                 'maxforwards'                   => 'Max-Forwards',
                 'origin'                        => 'Origin',
                 'p3p'                           => 'P3P',
-                'pragma'                        => 'Pragma',
                 'pragma'                        => 'Pragma',
                 'proxyauthenticate'             => 'Proxy-Authenticate',
                 'proxyauthorization'            => 'Proxy-Authorization',

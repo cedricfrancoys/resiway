@@ -15,6 +15,20 @@ namespace qinoa\http;
  *  getters :   scheme, user, password, host, port, path, query, fragment
  */
 class HttpUri {
+
+/**
+ *
+ *
+ *                         hierarchical part
+ *           ┌────────────────────┴────────────────────┐
+ *                         authority             path
+ *           ┌────────────────┴──────────────┐┌────┴───┐
+ *     abc://username:password@example.com:123/path/data?key=value&key2=value2#fragid
+ *     └┬┘   └──────┬────────┘ └────┬────┘ └┬┘           └─────────┬─────────┘ └─┬──┘
+ *   scheme  user information      host    port                  query        fragment
+ *
+ */
+
  
     private $parts = null;
     
@@ -41,15 +55,6 @@ class HttpUri {
      * @return string
      */
     public function __toString() {
-        $uri = '';
-        $user_info = '';
-        if(isset($this->parts['user']) && strlen($this->parts['user']) > 0) {
-            $user_info = $this->parts['user'];
-            if(isset($this->parts['pass']) && strlen($this->parts['pass']) > 0) {
-                $user_info .= ':'.$this->parts['pass'];
-            }
-            $user_info .= '@';
-        }
         $query = $this->getQuery();
         $fragment = $this->getFragment();
         if(strlen($fragment) > 0) {
@@ -58,7 +63,7 @@ class HttpUri {
         if(strlen($query) > 0) {
             $query = '?'.$query;
         }
-        return $this->getScheme().'://'.$user_info.$this->getHost().':'.$this->getPort().$this->getPath().$query;
+        return $this->getScheme().'://'.$this->getAuthority().$this->getPath().$query;
     }
     
     public function setUri($uri) {
@@ -160,6 +165,18 @@ class HttpUri {
         return isset($this->parts['port'])?$this->parts['port']:$default_port;
     }
 
+    public function getAuthority() {
+        $user_info = '';
+        if(isset($this->parts['user']) && strlen($this->parts['user']) > 0) {
+            $user_info = $this->parts['user'];
+            if(isset($this->parts['pass']) && strlen($this->parts['pass']) > 0) {
+                $user_info .= ':'.$this->parts['pass'];
+            }
+            $user_info .= '@';
+        }
+        return $user_info.$this->getHost().':'.$this->getPort();
+    }
+    
     public function getPath() {
         return isset($this->parts['path'])?$this->parts['path']:'';
     }

@@ -518,11 +518,17 @@ var resiway = angular.module('resipedia', [
                 });                
             }            
         };        
+
+        rootCtrl.searchByCategory = function(category) {
+            $rootScope.category = category;
+            rootCtrl.search({q: '['+category.title_url+']'});
+        };
         
         rootCtrl.search = function(values) {
             var criteria = angular.extend({}, $rootScope.search.default, values || {});
             angular.copy(criteria, $rootScope.search.criteria);
 
+// todo : handle translations             
             var list_page = '/search';
             /*
             switch($rootScope.config.application) {
@@ -686,6 +692,7 @@ var resiway = angular.module('resipedia', [
                 if(typeof value == 'undefined' 
                 || typeof parseInt(value) != 'number') return 0;
                 if(value == 0) return 0;
+                value = +value;
                 var sign = value/Math.abs(value);
                 value = Math.abs(value);
                 var s = ['', 'k', 'M', 'G'];
@@ -1654,23 +1661,12 @@ angular.module('resipedia')
         '/category/:id/:title?': {
                     templateUrl : templatePath+'category.html',
                     controller  : ['$location', '$route', '$rootScope', function($location, $route, $rootScope) {
-                        var criteria = angular.extend({}, $rootScope.search.default, {domain: [['categories_ids', 'contains', $route.current.params.id]]});
+                        var criteria = angular.extend({}, $rootScope.search.default, {q: '['+$route.current.params.title+']'});                        
                         angular.copy(criteria, $rootScope.search.criteria);
                         
-                        var list_page = '';
-                        switch($rootScope.config.application) {
-                            case 'resiway':
-                            case 'resiexchange':
-                                list_page = '/questions';
-                                break;
-                            case 'resilib':
-                                list_page = '/documents';
-                                break;
-                        }
-
 // todo : we shoud define a dedicated view (template) for category                            
                         // temp solution
-                        $location.path(list_page);          
+                        $location.path('/search');             
                     }]      
         },
         
@@ -6379,6 +6375,17 @@ angular.module('resipedia')
     function(search, $scope, $rootScope, $route, $http, $httpParamSerializerJQLike, $window) {
         console.log('search controller');
 
+        
+        $scope.getClassFromType = function(type) {
+            switch(type) {
+            case 'question': return {'fa-comment-o':true};
+            case 'article':  return {'fa-file-text-o':true};
+            case 'document': return {'fa-book':true};
+            }
+            return {};
+        };
+        
+        // @init
         var ctrl = this;
 
         // @data model
@@ -6393,12 +6400,21 @@ angular.module('resipedia')
         });        
         
         
-        ctrl.load = function() {
-            if(ctrl.articles.currentPage != ctrl.articles.previousPage) {
-                ctrl.articles.previousPage = ctrl.articles.currentPage;
+        ctrl.load = function(criteria) {
+            if(arguments.length && typeof criteria == 'object') {
+                angular.extend($rootScope.search.criteria, criteria);
+                angular.merge(ctrl, {
+                    search: {
+                        currentPage: 1,
+                        previousPage: -1
+                    }
+                });                
+            }
+            if(ctrl.search.currentPage != ctrl.search.previousPage) {
+                ctrl.search.previousPage = ctrl.search.currentPage;
                 // reset objects list (triggers loader display)
-                ctrl.articles.items = -1;
-                $rootScope.search.criteria.start = (ctrl.articles.currentPage-1)*ctrl.articles.limit;
+                ctrl.search.items = -1;
+                $rootScope.search.criteria.start = (ctrl.search.currentPage-1)*ctrl.search.limit;
                 
                 $http.get('index.php?get=resiway_search&'+$httpParamSerializerJQLike($rootScope.search.criteria))
                 .then(
@@ -6418,14 +6434,26 @@ angular.module('resipedia')
             }
         };
 
-        $scope.getClassFromType = function(type) {
-            switch(type) {
-            case 'question': return {'fa-comment-o':true};
-            case 'article':  return {'fa-file-text-o':true};
-            case 'document': return {'fa-book':true};
-            }
-            return {};
+        // @async loads
+
+        
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        if(angular.isDefined($rootScope.category)) {            
+
+            $http.get('index.php?get=resiway_category_related&category_id='+$rootScope.category['id'])
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result == 'object') {
+                        $scope.related_categories = data.result;
+                    }
+                }
+            );
+            
         }
+        
     }
 ]);
 angular.module('resipedia')

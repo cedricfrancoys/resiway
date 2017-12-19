@@ -9,17 +9,17 @@
                 <form id="form-signin" class="form-horizontal" role="form">       
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
-                        <input ng-model="username" type="text" class="form-control" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
+                        <input ng-model="username" id="form-signin-username" name="username" type="text" class="form-control" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
                     </div>
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-lock"></i></span>
-                        <input ng-model="password" type="password" class="form-control" placeholder="{{'USER_EDIT_PLACEHOLDER_PASSWORD' | translate}}">
+                        <input ng-model="password" id="form-signin-password" name="password" type="password" class="form-control" placeholder="{{'USER_EDIT_PLACEHOLDER_PASSWORD' | translate}}">
                     </div>
 
                     <div class="input-group" ng-show="false">
                       <div class="checkbox">
                         <label>
-                          <input ng-model="remember" id="login-remember" type="checkbox" name="remember" value="1"> {{ 'USER_SIGN_REMEMBER_ME' | translate}}
+                          <input ng-model="remember" id="form-signin-remember" type="checkbox" name="remember" value="1"> {{ 'USER_SIGN_REMEMBER_ME' | translate}}
                         </label>
                       </div>
                     </div>
@@ -60,16 +60,16 @@
                 <form id="form-signup" class="form-horizontal" role="form">       
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
-                        <input ng-model="firstname" type="text" class="form-control" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_FIRSTNAME' | translate}}">                                        
+                        <input ng-model="firstname" id="form-signup-firstname" name="firstname" type="text" class="form-control" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_FIRSTNAME' | translate}}">                                        
                     </div>
                     <div class="input-group" style="margin-bottom: 25px">
                         <span class="input-group-addon"><i class="fa fa-at" aria-hidden="true"></i></span>
-                        <input ng-model="username" type="text" class="form-control" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
+                        <input ng-model="username" id="form-signup-username" name="username" type="text" class="form-control" value="" placeholder="{{'USER_EDIT_PLACEHOLDER_EMAIL' | translate}}">                                        
                     </div>
                     <div class="input-group">                     
                       <div class="checkbox">
                         <label>
-                          <input ng-model="accept" type="checkbox" name="accept" value="0"><span ng-bind-html="'USER_SIGN_ACCEPT_TERMS' | translate" style="line-height: 20px;"></span>
+                          <input type="checkbox" ng-model="accept" id="form-signup-accept" name="accept" value="0"><span ng-bind-html="'USER_SIGN_ACCEPT_TERMS' | translate" style="line-height: 20px;"></span>
                         </label>
                       </div>
                     </div>
@@ -104,7 +104,7 @@
                         </div>
                         <div class="input-group" style="margin-bottom: 25px;" >
                             <span class="input-group-addon"><i class="fa fa-user" aria-hidden="true"></i></span>
-                            <input ng-model="email" id="user-email" type="text" class="form-control" name="username" value="" placeholder="email">                                        
+                            <input ng-model="email" id="form-reset-email" type="text" class="form-control" name="username" value="" placeholder="email">                                        
                         </div>                    
                         <div class="input-group" style="visibility: hidden;">
                           <div class="checkbox">

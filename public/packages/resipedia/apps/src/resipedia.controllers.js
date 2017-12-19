@@ -4306,6 +4306,17 @@ angular.module('resipedia')
     function(search, $scope, $rootScope, $route, $http, $httpParamSerializerJQLike, $window) {
         console.log('search controller');
 
+        
+        $scope.getClassFromType = function(type) {
+            switch(type) {
+            case 'question': return {'fa-comment-o':true};
+            case 'article':  return {'fa-file-text-o':true};
+            case 'document': return {'fa-book':true};
+            }
+            return {};
+        };
+        
+        // @init
         var ctrl = this;
 
         // @data model
@@ -4320,12 +4331,21 @@ angular.module('resipedia')
         });        
         
         
-        ctrl.load = function() {
-            if(ctrl.articles.currentPage != ctrl.articles.previousPage) {
-                ctrl.articles.previousPage = ctrl.articles.currentPage;
+        ctrl.load = function(criteria) {
+            if(arguments.length && typeof criteria == 'object') {
+                angular.extend($rootScope.search.criteria, criteria);
+                angular.merge(ctrl, {
+                    search: {
+                        currentPage: 1,
+                        previousPage: -1
+                    }
+                });                
+            }
+            if(ctrl.search.currentPage != ctrl.search.previousPage) {
+                ctrl.search.previousPage = ctrl.search.currentPage;
                 // reset objects list (triggers loader display)
-                ctrl.articles.items = -1;
-                $rootScope.search.criteria.start = (ctrl.articles.currentPage-1)*ctrl.articles.limit;
+                ctrl.search.items = -1;
+                $rootScope.search.criteria.start = (ctrl.search.currentPage-1)*ctrl.search.limit;
                 
                 $http.get('index.php?get=resiway_search&'+$httpParamSerializerJQLike($rootScope.search.criteria))
                 .then(
@@ -4345,14 +4365,26 @@ angular.module('resipedia')
             }
         };
 
-        $scope.getClassFromType = function(type) {
-            switch(type) {
-            case 'question': return {'fa-comment-o':true};
-            case 'article':  return {'fa-file-text-o':true};
-            case 'document': return {'fa-book':true};
-            }
-            return {};
+        // @async loads
+
+        
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        if(angular.isDefined($rootScope.category)) {            
+
+            $http.get('index.php?get=resiway_category_related&category_id='+$rootScope.category['id'])
+            .then(
+                function successCallback(response) {
+                    var data = response.data;
+                    if(typeof data.result == 'object') {
+                        $scope.related_categories = data.result;
+                    }
+                }
+            );
+            
         }
+        
     }
 ]);
 angular.module('resipedia')

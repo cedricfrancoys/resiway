@@ -59,6 +59,14 @@ class Category extends \easyobject\orm\Object {
                                     'function'          => 'resiway\Category::getCountArticles',
                                     'onchange'          => 'resiway\Category::onchangeCountArticles'
                                    ),
+
+            /* total items in this category and its subcategories */
+            'count_items'       => array(
+                                    'type'              => 'function',
+                                    'result_type'       => 'integer',
+                                    'store'             => false, 
+                                    'function'          => 'resiway\Category::getCountItems'
+                                   ),
                                    
             /* number of times this category has been marked as favorite */
             'count_stars'		=> array('type' => 'integer'),
@@ -130,10 +138,10 @@ class Category extends \easyobject\orm\Object {
     */
     public static function onchangeTitle($om, $oids, $lang) {
         // invalidate path (force re-compute)
-        $om->write(__CLASS__, $oids, ['path' => null, 'title_url' => null], $lang);
+        $om->write(__CLASS__, $oids, ['title_url' => null, 'path' => null, 'parent_path' => null], $lang);
         // find children tags and force to re-compute path
-        $tags_ids = $om->search(__CLASS__, ['parent_id', 'in', $oids]);
-        if($tags_ids > 0 && count($tags_ids)) self::onchangeTitle($om, $tags_ids, $lang);
+        $categories_ids = $om->search(__CLASS__, ['parent_id', 'in', $oids]);
+        if($categories_ids > 0 && count($categories_ids)) self::onchangeTitle($om, $categories_ids, $lang);
     }
     
     public static function onchangeCountQuestions($om, $oids, $lang) {
@@ -217,6 +225,18 @@ class Category extends \easyobject\orm\Object {
                 }
             }
         }        
+        return $result;
+    }
+    
+    public static function getCountItems($om, $oids, $lang) {
+        $result = [];
+        $res = $om->read(__CLASS__, $oids, ['count_questions', 'count_documents', 'count_articles']);
+        foreach($oids as $oid) {
+            $result[$oid] = 0;
+            $result[$oid] += $res[$oid]['count_questions'];
+            $result[$oid] += $res[$oid]['count_documents'];
+            $result[$oid] += $res[$oid]['count_articles'];
+        }
         return $result;
     }
     

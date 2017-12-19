@@ -49,15 +49,15 @@
                 <div class="excerpt">{{rootCtrl.htmlToTxt(document.description)}}</div>
                 
                 <div class="tags col-8-12 nopad">
-                    <a ng-repeat="tag in document.categories" 
-                    ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" 
+                    <a ng-repeat="category in document.categories" 
+                    ng-click="rootCtrl.searchByCategory(category)" 
                     class="tag" 
                     popover-trigger="'mouseenter'"
-                    uib-popover-html="tag.description"
+                    uib-popover-html="category.description"
                     popover-append-to-body="true"
                     popover-placement="bottom-left"
-                    popover-title="{{tag.path}}"
-                    >{{tag.title}}</a> 
+                    popover-title="{{category.path}}"
+                    >{{category.title}}</a> 
                 </div>
                 <div class="started col-4-12 nopad">
                     <div class="signature owner">
@@ -71,7 +71,7 @@
                             <div class="user-details">
                                 <a href="/user/{{document.creator.id}}/{{document.creator.name_url}}">{{document.creator.display_name}}</a>
                                 <div>
-                                    <span class="reputation-score" title="score de reputation" dir="ltr">{{document.creator.reputation}}</span>
+                                    <span class="reputation-score" title="score de reputation" dir="ltr">{{document.creator.reputation | humanizeCount}}</span>
                                     <span class="badges" ng-show="document.creator.count_badges_1 > 0">
                                         <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                         <span class="badgecount">{{document.creator.count_badges_1}}</span>
@@ -127,7 +127,8 @@
                     <span class="small"><b>Catégories similaires:</b></span><br />
                     <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
                         <a 
-                            href="/category/{{category.id}}/{{category.title_url}}"
+                            href
+                            ng-click="rootCtrl.searchByCategory(category)"
                             class="category"
                             title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_documents}}&nbsp;</div>
@@ -137,9 +138,9 @@
                 <div ng-show="featured_categories.length > 0" class="container fade-in-out">                    
                     <span class="small"><b>Categories populaires:</b></span><br />
                     <div class="featured-categories categories" ng-repeat="category in featured_categories" style="display: inline-block;">
-                        <a 
+                        <a  href
+                            ng-click="rootCtrl.searchByCategory(category)"                        
                             class="category" 
-                            href="/category/{{category.id}}/{{category.title_url}}"                            
                             title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_documents}}&nbsp;</div>
                     </div>                

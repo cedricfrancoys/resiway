@@ -33,8 +33,14 @@ class HttpResponse extends HttpMessage {
         }
                 
     }
-    
-    public function send() {   
+    /**
+     * Sends a HTTP response to the output stream (stdout)
+     * This method can only be used with PHP context 
+     * and is used as a helper to build the actual response of the current request
+     *
+     */
+    public function send() {
+        // reset default headers, if any
         header_remove();
         
         // set status-line
@@ -42,9 +48,25 @@ class HttpResponse extends HttpMessage {
         // set headers
         $headers = $this->getHeaders(true);
         foreach($headers as $header => $value) {
+            // we'll set content length afterward
             if($header == 'Content-Length') continue;
+            // cookies are handled in a second pass
+            if($header == 'Cookie') continue;
             header($header.': '.$value);
         }
+        
+        // set cookies, if any
+        foreach($this->getHeaders()->getCookies() as $cookie => $value) {            
+            $host = $this->getUri()->getHost();
+            $host_parts = explode('.', $host);
+            $tld = array_pop($host_parts);
+            $domain = array_pop($host_parts);
+            // default validity to 1 year (according to cookies legislation - as of 2018)
+            setcookie($cookie, $value, time()+60*60*24*365, '/', $domain.'.'.$tld);
+            // equivalent to 
+            // header("Set-Cookie: cookiename=cookievalue; expires=Tue, 06-Jan-2018 23:39:49 GMT; path=/; domain=example.net");
+        }
+        
         // output body
         $body = $this->getBody();
 
