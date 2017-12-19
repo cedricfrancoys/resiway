@@ -95,7 +95,7 @@ try {
                 
                 // log in as selected user
                 $phpContext = &PhpContext::getInstance();
-                $phpContext->set('user_id', $user_id);
+                $phpContext->set('user_id', $bot_id);
                 // echo "log as {$bot_id}\n";
                 
                 // perform action
