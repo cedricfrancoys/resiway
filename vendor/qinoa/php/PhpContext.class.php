@@ -64,9 +64,18 @@ class PhpContext {
         }
         return $res;
     }
-    
+    /**
+     *
+     * HTTP message formatted protocol (i.e. HTTP/1.0 or HTTP/1.1)
+     *
+     */
     private function getHttpProtocol() {
-        return $_SERVER['SERVER_PROTOCOL'];
+        // default to HTTP 1.1
+        $protocol = 'HTTP/1.1';
+        if(isset($_SERVER['SERVER_PROTOCOL'])) {
+            $protocol = $_SERVER['SERVER_PROTOCOL'];
+        }
+        return $protocol;
     }
 
     /** 
@@ -178,7 +187,12 @@ class PhpContext {
         }
         $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'localhost';
         $port = isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:80;
-        return  $scheme. "://".$auth."$host:$port{$_SERVER['REQUEST_URI']}";
+        // fallback to current script name (i.e. using CLI, REQUEST_URI is not set)
+        $uri = $_SERVER['SCRIPT_NAME'];
+        if(isset($_SERVER['REQUEST_URI'])) {
+            $uri = $_SERVER['REQUEST_URI'];
+        }
+        return  $scheme. "://".$auth."$host:$port{$uri}";
     }
     
     private function getHttpBody() {
