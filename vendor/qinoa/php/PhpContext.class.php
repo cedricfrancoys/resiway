@@ -79,15 +79,18 @@ class PhpContext {
     private function getHttpMethod() {
         static $method = null;        
         if(!$method) {
-            $method = $_SERVER['REQUEST_METHOD'];
-            if (strcasecmp($method, 'POST') === 0) {
-                if (isset($_SERVER['X-HTTP-METHOD-OVERRIDE'])) {
-                    $method = $_SERVER['X-HTTP-METHOD-OVERRIDE'];
-                } 
-
+            // fallback to GET method (i.e. using CLI, REQUEST_METHOD is not set)
+            $method = 'GET';
+            if(isset($_SERVER['REQUEST_METHOD'])) {
+                $method = $_SERVER['REQUEST_METHOD'];
+                if (strcasecmp($method, 'POST') === 0) {
+                    if (isset($_SERVER['X-HTTP-METHOD-OVERRIDE'])) {
+                        $method = $_SERVER['X-HTTP-METHOD-OVERRIDE'];
+                    }
+                }
+                // normalize to upper case
+                $method = strtoupper($method);                
             }
-            // normalize to upper case
-            $method = strtoupper($method);
         }
         return $method;        
     }
@@ -146,16 +149,19 @@ class PhpContext {
                 }
             }
             // handle client's IP address
-            $client_ip = $_SERVER['REMOTE_ADDR'];            
-            if(!isset($headers['X-Forwarded-For']) || strpos($headers['X-Forwarded-For'], $client_ip) === false ) {
-                if(!isset($headers['X-Forwarded-For'])) {
-                    $headers['X-Forwarded-For'] = $_SERVER['REMOTE_ADDR'];
-                } 
-                else {
-                    $headers['X-Forwarded-For'] = $_SERVER['REMOTE_ADDR'].','.$headers['X-Forwarded-For'];
+            // fallback to localhost (i.e. using CLI, REMOTE_ADDR is not set)
+            $client_ip = '127.0.0.1';
+            if(isset($_SERVER['REMOTE_ADDR'])) {
+                $client_ip = $_SERVER['REMOTE_ADDR'];
+                if(!isset($headers['X-Forwarded-For']) || strpos($headers['X-Forwarded-For'], $client_ip) === false ) {
+                    if(!isset($headers['X-Forwarded-For'])) {
+                        $headers['X-Forwarded-For'] = $_SERVER['REMOTE_ADDR'];
+                    } 
+                    else {
+                        $headers['X-Forwarded-For'] = $_SERVER['REMOTE_ADDR'].','.$headers['X-Forwarded-For'];
+                    }
                 }
             }
-            
         }
         return $headers;
     }
@@ -183,7 +189,7 @@ class PhpContext {
         
         // append parameters from request URI if not already in (for internal requests and redirections)
         if($method == 'GET') {            
-            if(false !== strpos($_SERVER['REQUEST_URI'], '?')) {
+            if(isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
                 $params = [];            
                 parse_str(explode('?', $_SERVER['REQUEST_URI'])[1], $params);  
                 $_REQUEST = array_merge($_REQUEST, $params);            
