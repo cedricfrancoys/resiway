@@ -100,13 +100,14 @@ try {
     
     // retrieve categories
     $result['categories'] = [];
-    $res = $om->read('resiway\Category', $object_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
+    $res = $om->read('resiway\Category', $object_data['categories_ids'], ['title', 'title_url', 'description', 'path', 'parent_path']);        
     if($res > 0) {
         $categories = [];
         foreach($res as $cat_id => $cat_data) {           
             $categories[$cat_id] = array(
                                         'id'            => $cat_id,
                                         'title'         => $cat_data['title'], 
+                                        'title_url'     => $cat_data['title_url'],
                                         'description'   => $cat_data['description'],                                         
                                         'path'          => $cat_data['path'],
                                         'parent_path'   => $cat_data['parent_path']

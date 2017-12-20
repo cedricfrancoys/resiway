@@ -385,7 +385,13 @@ namespace config {
                 }
                 // second pass : instanciate providers
                 $providers = [];
-                foreach($announcement['providers'] as $provider) {                    
+                foreach($announcement['providers'] as $provider) {
+                    $providerClass = new ReflectionClass($provider);
+                    $constructor = $providerClass->getConstructor();
+                    $parameters = $constructor->getParameters();
+                    foreach($parameters as $parameter) {
+                        $dependance = $parameter->getClass();
+                    }
                     $providers[$provider] = $provider::getInstance();
                 }
                 $result = [$result, $providers];                

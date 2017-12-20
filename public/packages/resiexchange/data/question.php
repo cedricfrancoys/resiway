@@ -81,13 +81,14 @@ try {
     
     // retrieve tags
     $result['tags'] = [];
-    $res = $om->read('resiway\Category', $object_data['categories_ids'], ['title', 'description', 'path', 'parent_path']);        
+    $res = $om->read('resiway\Category', $object_data['categories_ids'], ['title', 'title_url', 'description', 'path', 'parent_path']);        
     if($res > 0) {
         $tags = [];
         foreach($res as $tag_id => $tag_data) {           
             $tags[$tag_id] = array(
                                         'id'            => $tag_id,
                                         'title'         => $tag_data['title'], 
+                                        'title_url'     => $tag_data['title_url'],
                                         'description'   => $tag_data['description'],                                         
                                         'path'          => $tag_data['path'],
                                         'parent_path'   => $tag_data['parent_path']
