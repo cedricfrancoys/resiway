@@ -8,7 +8,22 @@ namespace qinoa\http;
 
 
 class HttpHeaders {
-   
+
+    protected static $MIME_TYPES = [
+        'MIME_HTML'  => ['text/html', 'application/xhtml+xml'],
+        'MIME_TXT'   => ['text/plain'],
+        'MIME_JS'    => ['application/javascript', 'application/x-javascript', 'text/javascript'],
+        'MIME_CSS'   => ['text/css'],
+        'MIME_JSON'  => ['application/json', 'application/x-json'],
+        'MIME_XML'   => ['text/xml', 'application/xml', 'application/x-xml'],
+        'MIME_RDF'   => ['application/rdf+xml'],
+        'MIME_ATOM'  => ['application/atom+xml'],
+        'MIME_RSS'   => ['application/rss+xml'],
+        'MIME_FORM'  => ['application/x-www-form-urlencoded'],
+        'MIME_PDF'   => ['application/pdf'],
+        'MIME_JPEG'  => ['image/jpeg']
+    ];
+    
     private $headers;
     
     public function __construct($headers) {
@@ -38,6 +53,26 @@ class HttpHeaders {
         return $this;
     }    
 
+    public function setCharset($charset) {
+        if(isset($this->headers['Accept-Charset'])) {
+            return $this->set('Accept-Charset', $charset);
+        }
+        else {
+            $content_type = $this->getContentType();
+            return $this->set('Content-Type', $content_type.'; charset='.strtoupper($charset));
+        }
+    }
+
+    public function setContentType($content_type) {
+        if(isset($this->headers['Accept'])) {
+            return $this->set('Accept', $content_type);
+        }
+        else {
+            $charset = $this->getCharset();
+            return $this->set('Content-Type', $content_type.'; charset='.$charset);
+        }
+    }
+    
     /**
      * Retrieves a message header value by the given case-insensitive name.
      *
@@ -198,27 +233,7 @@ class HttpHeaders {
      *
      * @return string|null The format (null if no content type is present)
      */
-    public function getContentType() {
-        // init content-types mapping
-        static $types = null;
-        
-        if(is_null($types)) {
-            $types = [
-                'MIME_HTML'  => ['text/html', 'application/xhtml+xml'],
-                'MIME_TXT'   => ['text/plain'],
-                'MIME_JS'    => ['application/javascript', 'application/x-javascript', 'text/javascript'],
-                'MIME_CSS'   => ['text/css'],
-                'MIME_JSON'  => ['application/json', 'application/x-json'],
-                'MIME_XML'   => ['text/xml', 'application/xml', 'application/x-xml'],
-                'MIME_RDF'   => ['application/rdf+xml'],
-                'MIME_ATOM'  => ['application/atom+xml'],
-                'MIME_RSS'   => ['application/rss+xml'],
-                'MIME_FORM'  => ['application/x-www-form-urlencoded'],
-                'MIME_PDF'   => ['application/pdf'],
-                'MIME_JPEG'  => ['image/jpeg']
-            ];
-        }
-        
+    public function getContentType() {        
         $content_type = '';
         if(isset($this->headers['Accept'])) {
             // general syntax: type/subtype [q=qvalue]
@@ -232,16 +247,6 @@ class HttpHeaders {
             // general syntax: media-type
             // example: Content-Type: text/html; charset=ISO-8859-4
             $content_type = trim(explode(';', $this->headers['Content-Type'])[0]);
-            /*
-            foreach($types as $type => $signatures) {
-                foreach($signatures as $signature) {
-                    if($content_type == $signature) {
-                        $generic_type = $type;
-                        break 2;
-                    }
-                }
-            }
-            */
         }
         return $content_type;
     }

@@ -225,7 +225,17 @@ class HttpMessage {
         $this->headers->setCookie($cookie, $value);
         return $this;
     }
-        
+
+    public function setCharset($charset) {
+        $this->headers->setCharset($charset);
+        return $this;
+    }
+
+    public function setContentType($content_type) {
+        $this->headers->setContentType($content_type);
+        return $this;
+    }
+    
     /**
      *
      * This method is invoked byt HttpRequest and HttpResponse constructors.
@@ -341,12 +351,21 @@ class HttpMessage {
         return $this->headers->get($header, $default);
     }
     
+
+    public function getMethod() {
+        return $this->method;
+    }  
+
     public function getCookie($cookie) {
         return $this->headers->getCookie($cookie);
     }    
 
-    public function getMethod() {
-        return $this->method;
+    public function getCharset() {
+        return $this->headers->getCharset();
+    }    
+
+    public function getContentType() {
+        return $this->headers->getContentType();
     }    
     
     /**
@@ -394,10 +413,8 @@ class HttpMessage {
         }
     }
     
-    /**
-     * Additional method using short name and get/set based on arguments
-     *
-     */
+    // below are additional method using short name and get/set based on arguments
+
     
     public function body() {
         $args = func_get_args();
@@ -409,9 +426,6 @@ class HttpMessage {
             return $this->setBody($body);
         }
     }
-    
-
-
 
     public function protocol() {
         $args = func_get_args();
@@ -425,7 +439,6 @@ class HttpMessage {
     }
     
     /**
-     * Headers getter/setter method based on arguments list
      *
      *
      */
@@ -441,7 +454,6 @@ class HttpMessage {
     }
 
     /**
-     * Header getter/setter method based on arguments list
      *
      *
      */
@@ -459,7 +471,7 @@ class HttpMessage {
 
     /**
      * Cookie getter/setter method based on arguments list
-     * reminder: cookies are just a special kind of header
+     * reminder: cookies are just a special kind of header either 'cookie' or 'set-cookie'
      *
      */
     public function cookie() {
@@ -474,6 +486,38 @@ class HttpMessage {
         }
     }    
 
+    /**
+     * Charset getter/setter method based on arguments list
+     * reminder: charset in stored either in 'content-type' or 'accept-charset' header
+     *
+     */
+    public function charset() {
+        $args = func_get_args();
+        if(count($args) < 1) {
+            return $this->getCharset();
+        }
+        else {
+            $charset = $args[0];
+            return $this->setCharset($charset);
+        }
+    }
+
+    /**
+     * Content type getter/setter method based on arguments list
+     * reminder: content type in stored either in 'content-type' or 'accept' header
+     *
+     */
+    public function contentType() {
+        $args = func_get_args();
+        if(count($args) < 1) {
+            return $this->getContentType();
+        }
+        else {
+            $content_type = $args[0];
+            return $this->setContentType($content_type);
+        }
+    }
+    
     /**
      * Header getter/setter method based on arguments list
      *

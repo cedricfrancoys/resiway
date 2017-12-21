@@ -2887,11 +2887,11 @@ angular.module('resipedia')
                             title: '',                      
                             content: '',
                             categories: [],
-                            license: 'CC-by-nc-sa'
+                            source_license: 'CC-by-nc-sa'
                           }, 
                           article);
                           
-console.log(article);
+
         /**
         * for many2many field, as initial setting we mark all ids to be removed
         */

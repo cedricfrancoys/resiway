@@ -35,7 +35,7 @@ list($object_class, $object_id) = ['resilexi\Article', $params['id']];
 try {
     if(strpos($object_id, 'eko_') === 0) {
         $object_id = substr($object_id, 4);
-        header("Location: http://localhost/eko/article_json.php?id=$object_id");
+        header("Location: /index.php?resiway_eko_article.php&id=$object_id");
         exit();
     }
     $om = &ObjectManager::getInstance();

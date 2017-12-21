@@ -61,6 +61,8 @@ namespace {
 }
 namespace config {
     use easyobject\orm\ObjectManager;    
+    use \ReflectionClass;
+    use \ReflectionException;
     
 	/**
 	* Add some config-utility functions to the 'config' namespace
@@ -183,6 +185,47 @@ namespace config {
 			return false;
 		}
 
+        
+        private static function inject_dependency($dependency) {
+            $instance = null;
+            $unresolved_dependencies = [];
+            try {
+                $dependencyClass = new ReflectionClass($dependency);
+                $constructor = $dependencyClass->getConstructor();
+                $parameters = $constructor->getParameters();    
+                if(count($parameters)) {
+                    // check dependencies availability
+                    $instances = [];
+                    foreach($parameters as $parameter) {
+                        $constructor_dependancy = $parameter->getClass()->getName();
+                        // todo : no cyclic dependency check is done            
+                        $res = self::inject_dependency($constructor_dependancy);            
+                        if(count($res[1])) {
+                            $unresolved_dependencies = array_merge($unresolved_dependencies, $res[1]);
+                            continue;
+                        }
+                        if($res[0] instanceof $constructor_dependancy) {
+                            $instances[] = $res[0];
+                        }
+                    }
+                    if(!count($unresolved_dependencies)) {
+                        $instance = call_user_func_array($dependency.'::getInstance', $instances);
+                    }
+                }
+                else {
+                    if(!is_callable($dependency.'::getInstance')) {
+                        $unresolved_dependencies[] = $dependency;
+                    }
+                    else {
+                        $instance = $dependency::getInstance();
+                    }
+                }
+            }
+            catch(ReflectionException $e) {
+                $unresolved_dependencies[] = $dependency;
+            }
+            return [$instance, $unresolved_dependencies];
+        }        
 		/*
 		* public methods
 		*/
@@ -200,7 +243,7 @@ namespace config {
 			}
 			return $file_path;
 		}
-
+        
 		/**
 		* Adds the library folder to the include path (library folder should contain the Zend framework if required)
 		*
@@ -225,6 +268,7 @@ namespace config {
 		* @param	boolean	$query_string	display query_string (i.e.: script.php?...&...&...)
 		* @return	string
 		*/
+// todo : deprecate        
 		public static function get_url($server_port=true, $query_string=true) {
             $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
 			$url = $protocol.$_SERVER['SERVER_NAME'];
@@ -283,9 +327,7 @@ namespace config {
 		* @return	array	parameters and their final values
 		*/
 		public static function announce($announcement) {		
-			$result = array();
-
-            
+			$result = array();            
             
 			// 0) check presence of all mandatory parameters
 			// build mandatory fields array
@@ -362,16 +404,20 @@ namespace config {
 				}
 				$result[$param] = $_REQUEST[$param];
 			}
-            
+ 
             // 4) check for requested providers
             if(isset($announcement['providers']) && count($announcement['providers'])) {
-                // first pass : check for unknown providers
+                $providers = [];
+                // inject dependencies
                 $unknown_providers = [];
                 foreach($announcement['providers'] as $provider) {
-                    if(!is_callable($provider.'::getInstance')) {
-                        $unknown_providers[] = $provider;
+                    $res = self::inject_dependency($provider);
+                    $unknown_providers = array_merge($unknown_providers, $res[1]);
+                    if($res[0]) {
+                        $providers[$provider] = $res[0];
                     }
                 }
+                
                 if(count($unknown_providers)) {
                     // output json data telling what is expected
                     header('Content-type: application/json; charset=UTF-8');                    
@@ -383,17 +429,7 @@ namespace config {
                     // terminate script
                     exit();                    
                 }
-                // second pass : instanciate providers
-                $providers = [];
-                foreach($announcement['providers'] as $provider) {
-                    $providerClass = new ReflectionClass($provider);
-                    $constructor = $providerClass->getConstructor();
-                    $parameters = $constructor->getParameters();
-                    foreach($parameters as $parameter) {
-                        $dependance = $parameter->getClass();
-                    }
-                    $providers[$provider] = $provider::getInstance();
-                }
+                                
                 $result = [$result, $providers];                
             }
 			return $result;

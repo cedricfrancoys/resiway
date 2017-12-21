@@ -1087,7 +1087,7 @@ todo: signature differs from other methods	(returned value)
                             $field = explode('.', $field)[0];                        
                         }
                         // handle aliases
-                        if($schema[$field]['type'] == 'alias') {
+                        if(isset($schema[$field]) && $schema[$field]['type'] == 'alias') {
                             // remember alias                            
                             $aliases_fields[$schema[$field]['alias']] = $field;
                             // assign fields array with target field
@@ -1099,10 +1099,13 @@ todo: signature differs from other methods	(returned value)
 						unset($fields[$key]);
 						EventListener::ExceptionHandler(new Exception("unknown field '$field' for class : '$class'"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
 					}
-                }
-                
+                }                
 			}
 
+            if(empty($fields)) {
+                throw new Exception("nothing to fetch (emtpy array or wrong fields names)", MISSING_PARAM);
+            }
+            
 			// remove duplicate fields, if any 
             // removed: this is not an issue, since the value will be loaded once and returned as many times as requested
               

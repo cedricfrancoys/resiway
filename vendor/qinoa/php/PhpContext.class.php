@@ -88,7 +88,7 @@ class PhpContext {
     private function getHttpMethod() {
         static $method = null;        
         if(!$method) {
-            // fallback to GET method (i.e. using CLI, REQUEST_METHOD is not set)
+            // fallback to GET method (using CLI, REQUEST_METHOD is not set), i.e. 'GET'
             $method = 'GET';
             if(isset($_SERVER['REQUEST_METHOD'])) {
                 $method = $_SERVER['REQUEST_METHOD'];
@@ -158,7 +158,7 @@ class PhpContext {
                 }
             }
             // handle client's IP address
-            // fallback to localhost (i.e. using CLI, REMOTE_ADDR is not set)
+            // fallback to localhost (using CLI, REMOTE_ADDR is not set), i.e. '127.0.0.1'
             $client_ip = '127.0.0.1';
             if(isset($_SERVER['REMOTE_ADDR'])) {
                 $client_ip = $_SERVER['REMOTE_ADDR'];
@@ -187,7 +187,7 @@ class PhpContext {
         }
         $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'localhost';
         $port = isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:80;
-        // fallback to current script name (i.e. using CLI, REQUEST_URI is not set)
+        // fallback to current script name (using CLI, REQUEST_URI is not set), i.e. '/index.php'
         $uri = $_SERVER['SCRIPT_NAME'];
         if(isset($_SERVER['REQUEST_URI'])) {
             $uri = $_SERVER['REQUEST_URI'];

@@ -124,7 +124,7 @@ class HttpRequest extends HttpMessage {
                     'request_fulluri'   => true,
                     'header'            => $headers,
                     'ignore_errors'     => true,
-                    'timeout'           => 5,
+                    'timeout'           => 10,
                     'protocol_version'  => $this->getProtocolVersion()
             ]);
             // create the HTTP stream context
