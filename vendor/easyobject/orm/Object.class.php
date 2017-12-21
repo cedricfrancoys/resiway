@@ -136,7 +136,10 @@ class Object {
     public static function __callStatic($name, $arguments) {            
         if(is_callable('qinoa\orm\Collection::getInstance')) {
             $collection = new \qinoa\orm\Collection(ObjectManager::getInstance(), get_called_class());
-            return call_user_func_array(array($collection, $name), $arguments);
+            // check that the method actually exists
+            if(is_callable([$collection, $name])) {
+                return call_user_func_array([$collection, $name], $arguments);
+            }
         }
         return null;
     }   

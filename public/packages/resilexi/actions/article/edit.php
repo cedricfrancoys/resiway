@@ -121,7 +121,7 @@ try {
                 }
 
                 // update categories count_articles
-                $om->write('resiway\Category', $params['categories_ids'], ['count_articles' => null]);
+                $om->write('resiway\Category', $params['categories'], ['count_articles' => null]);
                 
                 // update global counters
                 ResiAPI::repositoryInc('resilexi.count_articles');

@@ -162,10 +162,20 @@ class Category extends \easyobject\orm\Object {
         $om->read(__CLASS__, $oids, ['count_documents']);
     }
     
+    public static function onchangeCountArticles($om, $oids, $lang) {
+        // invalidate parent documents-counter (force re-compute)
+        $res = $om->read(__CLASS__, $oids, ['parent_id']);
+        $parents_ids = array_map(function($a) { return $a['parent_id']; }, $res);
+        $om->write(__CLASS__, $parents_ids, ['count_articles' => null]);
+        // we assume counter has been set to null, and force immediate recomputing
+        $om->read(__CLASS__, $oids, ['count_articles']);
+    }    
+    
     public static function onchangeParentId($om, $oids, $lang) {
         self::onchangeTitle($om, $oids, $lang);
         self::onchangeCountQuestions($om, $oids, $lang);
-        self::onchangeCountDocuments($om, $oids, $lang);        
+        self::onchangeCountDocuments($om, $oids, $lang);
+        self::onchangeCountArticles($om, $oids, $lang);        
     }    
 
     public static function getRelatedQuestionsIds($om, $oids, $lang) {
