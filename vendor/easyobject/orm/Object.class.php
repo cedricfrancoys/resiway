@@ -140,6 +140,9 @@ class Object {
             if(is_callable([$collection, $name])) {
                 return call_user_func_array([$collection, $name], $arguments);
             }
+            else {
+                throw new \Exception('call to non-existing method in class Collection', QN_ERROR_INVALID_PARAM);
+            }
         }
         return null;
     }   

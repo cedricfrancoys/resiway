@@ -148,6 +148,9 @@ class HttpRequest extends HttpMessage {
                 }
                 $response = new HttpResponse($response_status, $headers, $data);
             }
+            else {
+                throw new \Exception('unable to send HTTP request', QN_ERROR_UNKNOWN);
+            }
         }
         return $response;
     }

@@ -8,7 +8,7 @@ use qinoa\http\HttpUriHelper;
 use resiway\Category;
 use resilexi\Article;
 
-set_silent(true);
+set_silent(false);
 
 list($params, $providers) = QNLib::announce([
     'description'   => 'Provides a id/title map of all ekopedia articles not imported yet',
@@ -30,6 +30,8 @@ try {
     $data = $request->send()->body();
     $available_articles = $data['result'];   
 
+    $available_articles = [1 => 'agriculture', 3 => 'catégories'];   
+    
     $processed_articles = [];
     $res = Article::search(['source_author', '=', 'ekopedia'])
            ->read(['source_url'])
