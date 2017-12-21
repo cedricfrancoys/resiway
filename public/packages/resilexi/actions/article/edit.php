@@ -104,7 +104,9 @@ try {
                 }
                 // Article objects expect a 'categories' field
                 $params['categories'][$key] = $params['categories_ids'][$key];
-            }        
+            }
+            // Article objects expect a 'categories' field
+            unset($params['categories_ids']);
             
             if($object_id == 0) {
             
@@ -167,9 +169,9 @@ try {
                     throw new Exception("article_title_length_invalid", QN_ERROR_INVALID_PARAM); 
                 }
                 $count_tags = 0;
-                foreach($params['categories_ids'] as $tag_id) {
-                    if(intval($tag_id) > 0) ++$count_tags;
-                    else if(intval($tag_id) == 0 && strlen($tag_id) > 0) ++$count_tags;
+                foreach($params['categories_ids'] as $category_id) {
+                    if(intval($category_id) > 0) ++$count_tags;
+                    else if(intval($category_id) == 0 && strlen($category_id) > 0) ++$count_tags;
                 }
                 if($count_tags < RESILEXI_ARTICLE_CATEGORIES_COUNT_MIN
                 || $count_tags > RESILEXI_ARTICLE_CATEGORIES_COUNT_MAX) {

@@ -339,6 +339,7 @@ var translations = {
     
     // Search results
     "SEARCH_STATS_ITEMS": "ressources",
+    "SEARCH_RESOURCES": "Résultats",
     
     // generic errors
     "action_failed": "L'action a échoué",

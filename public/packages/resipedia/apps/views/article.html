@@ -67,7 +67,12 @@
                 </div>
                 
                 <div class="tags">
-                    <a ng-repeat="tag in article.categories" href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', tag.id]]})" class="tag" title="{{tag.description}}" rel="tag">{{tag.title}}</a> 
+                    <a  href 
+                        ng-repeat="category in article.categories" 
+                        ng-click="rootCtrl.searchByCategory(category)"
+                        class="tag" 
+                        title="{{category.description}}" 
+                        rel="tag">{{category.title}}</a> 
                 </div>
                 
                 <div class="footer">
@@ -106,7 +111,7 @@
                                 <i class="fa fa-remove" aria-hidden="true"></i> <span ng-bind-html="'ARTICLE_ACTIONS_DELETE' | translate"></span>
                             </a>                            
                         </div>
-                        <div class="signature" ng-if="article.editor != 0 && article.editor.id != article.creator.id">
+                        <div class="signature" ng-if="article.editor && article.editor.id != article.creator.id">
                             <div class="user-info">
                                 <div class="user-action-time">
                                     <span class="relativetime"><span ng-bind-html="'ARTICLE_STATS_EDITED' | translate"></span> {{article.edited | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
