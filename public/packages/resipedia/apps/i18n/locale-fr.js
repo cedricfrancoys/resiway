@@ -233,7 +233,7 @@ var translations = {
     "ARTICLES_STATS_USERS": "participants",
     
     // Users
-    "USERS_TITLE": "ResiWay.org, la plateforme de ...",
+    "USERS_TITLE": "ResiPedia, la plateforme de ...",
     
     "USER_PROFILE_TAB_PROFILE": "Profil",    
     "USER_PROFILE_TAB_REPUTATION": "Réputation",

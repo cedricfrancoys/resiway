@@ -27,10 +27,18 @@ $token = md5(substr($rev, 12).rand(1, 100));
 
         <title>ResiPedia</title>
         <script>
-        // mistyped hashbang fix
+        // mistyped hashbang fix        
         if(location.href.indexOf("#/") > 0) {
-            location.href = location.href.replace(location.hash,'#!'+location.hash.substr(1));
+           location.href = location.href.replace(location.hash, '#!'+location.hash.substr(1));
         }
+        // redirect resilib to resipedia
+        if(location.href.indexOf("resilib.fr") > 0) {
+             location.href = location.href.replace('resilib.fr','resipedia.fr');
+        }
+        // redirect resiexchange to resipedia
+        if(location.href.indexOf("resiexchange.fr") > 0) {
+             location.href = location.href.replace('resiexchange.fr','resipedia.fr');
+        }            
         </script>
         <!-- favicons -->
         <?php echo file_get_contents("packages/resipedia/apps/views/parts/favicons.html"); ?>

@@ -1178,7 +1178,7 @@ angular.module('resipedia')
             domain: [],
             loading: true
         };
-
+/*
         switch($rootScope.config.application) {
         case 'resiexchange':
             ctrl.config.domain = ['count_questions', '>', '0'];
@@ -1187,7 +1187,7 @@ angular.module('resipedia')
             ctrl.config.domain = ['count_documents', '>', '0'];            
             break;
         }
-        
+        */
         ctrl.load = function(config) {
             if(config.currentPage != config.previousPage) {
                 config.previousPage = config.currentPage;
@@ -1201,13 +1201,16 @@ angular.module('resipedia')
                     limit: config.limit,
                     total: config.total
                 }).then(
-                function successCallback(response) {
+                function success(response) {
                     var data = response.data;
                     config.items = data.result;
                     config.total = data.total;
                     config.loading = false;
+                    angular.forEach(config.items, function(item, index) {
+                        config.items[index]['count_items'] = parseInt(item['count_questions']) + parseInt(item['count_documents']) + parseInt(item['count_articles']);
+                    });
                 },
-                function errorCallback() {
+                function error() {
                     // something went wrong server-side
                 });
             }

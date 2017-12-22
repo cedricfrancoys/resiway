@@ -42,7 +42,7 @@
                 href="/category/{{category.id}}/{{category.title_url}}"
                 class="category"
                 title="{{category.path}}">{{category.title}}</a>
-            <div class="category-count">x {{category.count_questions | humanizeCount}}</div>
+            <div class="category-count">x {{ category.count_items | humanizeCount}}</div>
             <!-- <div title="{{category.path}}" style="width: 100%; white-space: nowrap; overflow: hidden; font-size: 9px;">{{category.path}}</div> -->
             <div>
                 <img 

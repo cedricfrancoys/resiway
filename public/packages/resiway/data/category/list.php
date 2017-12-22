@@ -86,7 +86,7 @@ try {
 
     if(!empty($categories_ids)) {    
         // retrieve categories
-        $res = $om->read('resiway\Category', $categories_ids, ['id', 'title', 'title_url', 'description', 'path', 'parent_id', 'parent_path', 'count_questions', 'count_documents']);
+        $res = $om->read('resiway\Category', $categories_ids, ['id', 'title', 'title_url', 'description', 'path', 'parent_id', 'parent_path', 'count_questions', 'count_documents', 'count_articles']);
         if($res < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
 
         if($user_id > 0) {        
