@@ -86,36 +86,6 @@ class AccessController {
 		if(isset($this->permissionsTable[$user_id][$object_class][$object_id])) $user_rights = $this->permissionsTable[$user_id][$object_class][$object_id];
 		else {
 			try {
-                /* 
-				// we have to fetch data directly from database since we cannot call the Objet Manager
-				// (otherwise access would results in infinite loops of permissions check)
-			    $db = &DBConnection::getInstance();
-
-				// root user always has full rights
-				if($user_id == ROOT_USER_ID) $user_rights = R_CREATE | R_READ | R_WRITE | R_DELETE | R_MANAGE;
-				else {
-					// get user groups
-					if(isset($this->groupsTable[$user_id])) $groups_ids = $this->groupsTable[$user_id];
-					else {
-						$groups_ids = array(DEFAULT_GROUP_ID);
-						$result = $db->getRecords(array('core_rel_group_user'), array('group_id'), null, array(array(array('user_id', '=', $user_id))));
-						if($db->getAffectedRows()) while($row = $db->fetchArray($result)) $groups_ids[] = $row['group_id'];
-						$this->groupsTable[$user_id] = $groups_ids;
-					}
-
-					// check if permissions are defined for the current object class
-					$result = $db->getRecords(array('core_permission'), array('id', 'rights'), null, array(array(array('class_name', '=', $object_class), array('group_id', 'in', $groups_ids), array('deleted', '=', '0'), array('modifier', '>', '0'))));
-					// get the user permissions
-					if($db->getAffectedRows()) while($row = $db->fetchArray($result)) $user_rights |= $row['rights'];
-
-                    
-                    
-					if(!isset($this->permissionsTable[$user_id])) $this->permissionsTable[$user_id] = array();
-					if(!isset($this->permissionsTable[$user_id][$object_class])) $this->permissionsTable[$user_id][$object_class] = array();
-					// first element of the class-related array is used to store the user permissions for the whole class
-					$this->permissionsTable[$user_id][$object_class][0] = $user_rights;
-				}
-                */
 				// root user always has full rights
 				if($user_id == ROOT_USER_ID) $user_rights = R_CREATE | R_READ | R_WRITE | R_DELETE | R_MANAGE;
                 else if($user_id == GUEST_USER_ID) $user_rights = DEFAULT_RIGHTS;
@@ -187,7 +157,7 @@ class AccessController {
 		else {
 			$lang = DEFAULT_LANG;
 			$om = &ObjectManager::getInstance();
-			$values = $om->read('core\user', array($user_id), array('language'));
+			$values = $om->read('core\User', array($user_id), array('language'));
 			if(!empty($values[$user_id]['language'])) $lang = $values[$user_id]['language'];
 		}
 		return $lang;

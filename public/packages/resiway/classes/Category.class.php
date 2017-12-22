@@ -138,7 +138,9 @@ class Category extends \easyobject\orm\Object {
     */
     public static function onchangeTitle($om, $oids, $lang) {
         // invalidate path (force re-compute)
-        $om->write(__CLASS__, $oids, ['title_url' => null, 'path' => null, 'parent_path' => null], $lang);
+        $om->write(__CLASS__, $oids, ['title_url' => null, 'path' => null, 'parent_path' => null], $lang);        
+        // force values immediate re-computing 
+        $om->read(__CLASS__, $oids, ['title_url', 'path', 'parent_path']);        
         // find children tags and force to re-compute path
         $categories_ids = $om->search(__CLASS__, ['parent_id', 'in', $oids]);
         if($categories_ids > 0 && count($categories_ids)) self::onchangeTitle($om, $categories_ids, $lang);
