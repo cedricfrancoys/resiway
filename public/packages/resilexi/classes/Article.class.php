@@ -112,7 +112,22 @@ class Article extends \easyobject\orm\Object {
     }
 
     public static function getConstraints() {
-        return [];
+        return [
+				'content'		=> array(
+									'error_message_id' => 'invalid_length_content',
+									'function' => function ($content) {
+                                            $len = strlen($content);
+											return (bool) ($len >= RESILEXI_ARTICLE_CONTENT_LENGTH_MIN && $len <= RESILEXI_ARTICLE_CONTENT_LENGTH_MAX);
+										}
+									),
+				'title'		    => array(
+									'error_message_id' => 'invalid_length_title',
+									'function' => function ($title) {
+                                            $len = strlen($title);
+											return (bool) ($len >= RESILEXI_ARTICLE_TITLE_LENGTH_MIN && $len <= RESILEXI_ARTICLE_TITLE_LENGTH_MAX);
+										}
+									)
+			];        
     }
     
     public static function getDefaults() {

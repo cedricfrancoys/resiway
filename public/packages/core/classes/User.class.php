@@ -18,7 +18,7 @@ namespace core {
 		}
 
 		public static function getConstraints() {
-			return array(
+			return [
 				'login'			=> array(
 									'error_message_id' => 'invalid_login',
 									'function' => function ($login) {
@@ -31,7 +31,7 @@ namespace core {
 											return (bool) (preg_match('/^[0-9|a-z]{32}$/', $password, $matches));
 										}
 									),
-			);
+			];
 		}
 	}
 }
