@@ -14,7 +14,15 @@ angular.module('resipedia')
         var ctrl = this;   
       
         // @model
-        $scope.answer = answer;
+        // content is inside a textarea and do not need sanitize check
+        answer.content = $sce.valueOf(answer.content);
+        
+        $scope.answer = angular.merge({
+                            id: 0,
+                            content: ''
+                          }, 
+                          answer);
+                          
         $scope.noExternalSource = (answer.source_author.length <= 0);
         
         // @methods

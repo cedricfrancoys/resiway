@@ -128,8 +128,8 @@ try {
                 foreach($categories as $category) {
                     $domain[] = ['path', 'like', '%'.TextTransformer::slugify($category).'%'];
                 }
-                // retrieve categories ids
-                $categories_ids = $om->search('resiway\Category', $domain);
+                // retrieve categories ids (limit to 5 categories)
+                $categories_ids = $om->search('resiway\Category', $domain, 'id', 'asc', 0, 5);
                 $categories = $om->read('resiway\Category', $categories_ids, ['title', 'count_questions', 'count_documents', 'count_articles']);
     /*
                 // update total (results count)
@@ -144,13 +144,14 @@ try {
                     'documents_ids'     => ['1' => 'categories_ids.title'],
                     'articles_ids'      => ['1' => 'categories.title']        
                 ];    
-                            
-            }                        
-            
+            }
+            else {
+                $params['q'] = implode(' ', array_unique(array_slice($parts, 0, 5)));
+            }
             
             // 2) look for matching indexes, if any
             $indexes_ids = Index::searchByQuery($om, $params['q']);
-            
+
             if(count($indexes_ids)) {
             
                 $schema = $om->getObjectSchema('resiway\Index');

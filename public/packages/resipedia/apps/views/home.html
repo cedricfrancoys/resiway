@@ -19,7 +19,7 @@
         <div class="row">
 
             <div class="col-md-3">
-                <strong class="lead">ResiExchange</strong>
+                <strong class="lead">ResiPedia</strong>
             </div>
             <div class="col-md-9">
                 partager les <b>connaissances</b><br />
@@ -38,9 +38,9 @@
                 <div class="col-1-2 nopad">
                     <h3>Prendre soin de soi</h3>
                     <ul class="list-unstyled">
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 87]]})">Santé et soins</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 129]]})">Cosmétiques écologiques</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 117]]})">Liniment pour bébé</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'prendre-soin', title: 'Prendre soin'})">Santé et soins</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'cosmetiques', title: 'Cosmétiques'})">Cosmétiques écologiques</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'liniment', title: 'Liniment'})">Liniment pour bébé</a></li>
                     </ul>                    
                 </div>
             </div>
@@ -51,9 +51,9 @@
                 <div class="col-1-2 nopad">
                     <h3>Nettoyage sain et écologique</h3>
                     <ul class="list-unstyled">
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 83]]})">Hygiène et Ménage</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 84]]})">Savons et lessives éco</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 79]]})">Vermicompost</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'hygiene-et-menage', title: 'Hygiène et ménage'})">Hygiène et Ménage</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'savons-et-lessives', title: 'Savons et lessives'})">Savons et lessives éco</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'cuisine', title: 'Cuisine'})">Vermicompost</a></li>                    
                     </ul>                    
                 </div>            
             </div>            
@@ -64,9 +64,9 @@
                 <div class="col-1-2 nopad">
                     <h3>Naître et grandir</h3>
                     <ul class="list-unstyled">
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 89]]})">Éducation et Parentage</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 113]]})">Allaitement naturel</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 90]]})">Pédagogie Montessori</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'education-et-parentage', title: 'Éducation et Parentage'})">Éducation et Parentage</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'bebes', title: 'Bébés'})">Allaitement naturel</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'instruction-et-pedagogie', title: 'Instruction et pédagogie'})">Pédagogie Montessori</a></li>                                            
                     </ul>                    
                 </div>            
             </div>
@@ -77,9 +77,9 @@
                 <div class="col-1-2 nopad">
                     <h3>Manger sain</h3>
                     <ul class="list-unstyled">
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 57]]})">Alimentation</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 79]]})">Recettes avec légumes oubliés</a></li>
-                    <li><a href ng-click="rootCtrl.search({domain: [['categories_ids', 'contains', 57]]})">Assiette équilibrée</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 's-alimenter', title: 'S\'alimenter'})">Alimentation</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 'cuisine', title: 'Cuisine'})">Recettes avec légumes oubliés</a></li>
+                    <li><a href ng-click="rootCtrl.searchByCategory({title_url: 's-alimenter', title: 'S\'alimenter'})">Assiette équilibrée</a></li>                                                                
                     </ul>                    
                 </div>
             </div>

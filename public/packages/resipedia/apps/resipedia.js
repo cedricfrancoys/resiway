@@ -2083,7 +2083,15 @@ angular.module('resipedia')
         var ctrl = this;   
       
         // @model
-        $scope.answer = answer;
+        // content is inside a textarea and do not need sanitize check
+        answer.content = $sce.valueOf(answer.content);
+        
+        $scope.answer = angular.merge({
+                            id: 0,
+                            content: ''
+                          }, 
+                          answer);
+                          
         $scope.noExternalSource = (answer.source_author.length <= 0);
         
         // @methods
@@ -4767,68 +4775,71 @@ angular.module('resipedia')
     $scope.recent_activity = { actions: [] };
     $http.get('index.php?get=resiway_actionlog_recent')
     .then(
-    function successCallback(response) {
+    function success(response) {
         var data = response.data;
         if(typeof response.data.result == 'object') {
             $scope.recent_activity.actions = response.data.result;
         }
     },
-    function errorCallback() {
+    function error() {
         // something went wrong server-side
     });
 
     
     $http.get('index.php?get=resiway_stats')
     .then(
-    function successCallback(response) {
+    function success(response) {
         var data = response.data;
         if(typeof response.data.result == 'object') {
             ctrl.count_questions = parseInt(data.result['resiexchange.count_questions']);
             ctrl.count_answers = parseInt(data.result['resiexchange.count_answers']);
             ctrl.count_comments = parseInt(data.result['resiexchange.count_comments']);
-            ctrl.count_documents = data.result['resilib.count_documents'];                                    
-            ctrl.count_posts = ctrl.count_questions + ctrl.count_answers + ctrl.count_comments;
-            ctrl.count_users = data.result['resiway.count_users'];            
+            ctrl.count_comments += parseInt(data.result['resilib.count_comments']);
+            ctrl.count_comments += parseInt(data.result['resilexi.count_comments']);            
+            ctrl.count_documents = parseInt(data.result['resilib.count_documents']);
+            ctrl.count_articles = parseInt(data.result['resilib.count_documents']);            
+            ctrl.count_posts = ctrl.count_questions + ctrl.count_answers + ctrl.count_articles + ctrl.count_comments;
+            ctrl.count_users = parseInt(data.result['resiway.count_users']);
         }
     },
-    function errorCallback() {
+    function error() {
         // something went wrong server-side
     }); 
 
     
     $http.get('index.php?get=resiexchange_question_list&order=modified&limit=15&sort=desc')
     .then(
-    function successCallback(response) {
+    function success(response) {
         var data = response.data;
         if(typeof response.data.result == 'object') {
             ctrl.active_questions = response.data.result;
         }
     },
-    function errorCallback() {
+    function error() {
         // something went wrong server-side
     });
     
     $http.get('index.php?get=resiexchange_question_list&order=count_answers&limit=15&sort=asc')
     .then(
-    function successCallback(response) {
+    function success(response) {
         var data = response.data;
         if(typeof response.data.result == 'object') {
             ctrl.poor_questions = response.data.result;
         }
     },
-    function errorCallback() {
+    function error() {
         // something went wrong server-side
     });
 
     $http.get('index.php?get=resilib_document_list&order=count_stars&limit=10&sort=desc')
     .then(
-    function successCallback(response) {
+    function success(response) {
         var data = response.data;
         if(typeof response.data.result == 'object') {
             ctrl.last_documents = response.data.result;
         }
     },
-    function errorCallback() {
+    function error() {
         // something went wrong server-side
     });
     

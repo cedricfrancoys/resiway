@@ -67,7 +67,7 @@ class Index extends \easyobject\orm\Object {
             
     public static function normalizeQuery($query) {
         $query = TextTransformer::normalize($query);
-        $keywords = explode(' ', $query);
+        $keywords = array_unique(explode(' ', $query));
         // drop irrelevant words        
         foreach($keywords as $id => $keyword) {
             if(!TextTransformer::is_relevant($keyword)) {
@@ -81,15 +81,17 @@ class Index extends \easyobject\orm\Object {
     
     public static function searchByQuery($om, $query) {
         $result = [];
-        $keywords = self::normalizeQuery($query);
-        $hash_list = array_map(function($a) { return TextTransformer::hash($a); }, $keywords);
-        if(count($hash_list)) {
-            $db = $om->getDBHandler();
-            // obtain indexes ids for all relevant hashes (don't mind the collision / false-positive, unlikely enough to be ignored)
-            $res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in (".implode(",", $hash_list).");");
-            // assign found ids to result array
-            while($row = $db->fetchArray($res)) {
-                $result[] = $row['id'];
+        if(strlen($query)) {
+            $keywords = self::normalizeQuery($query);
+            $hash_list = array_map(function($a) { return TextTransformer::hash($a); }, $keywords);
+            if(count($hash_list)) {
+                $db = $om->getDBHandler();
+                // obtain indexes ids for all relevant hashes (don't mind the collision / false-positive, unlikely enough to be ignored)
+                $res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in (".implode(",", $hash_list).");");
+                // assign found ids to result array
+                while($row = $db->fetchArray($res)) {
+                    $result[] = $row['id'];
+                }
             }
         }
         return $result;        
