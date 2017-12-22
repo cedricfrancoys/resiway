@@ -86,19 +86,26 @@ try {
         [],                                                       // $object_fields
         false,                                                    // $toggle
         function ($om, $user_id, $object_class, $object_id)       // $do
-        use ($params) {    
-           
+        use ($params) {
+            // Article objects expect a 'categories' field
+            $params['categories'] = [];
             // check categories_ids consistency (we might have received a request for new categories)
             foreach($params['categories_ids'] as $key => $value) {
                 if(intval($value) == 0 && strlen($value) > 0) {
-// todo : check if a category by that name already exists                    
-                    // create a new category + write given value
-                    $cat_id = $om->create('resiway\Category', [ 
-                                    'creator'           => $user_id,     
-                                    'title'             => $value,
-                                    'description'       => '',
-                                    'parent_id'         => 0
-                                  ]);
+                    // check if a category by that name already exists
+                    $cats_ids = $om->search('resiway\Category', ['title', 'ilike', $value]);
+                    if($cats_ids && count($cats_ids)) {
+                        $cat_id = $cats_ids[0];
+                    }
+                    else {
+                        // create a new category + write given value
+                        $cat_id = $om->create('resiway\Category', [ 
+                                        'creator'           => $user_id,     
+                                        'title'             => $value,
+                                        'description'       => '',
+                                        'parent_id'         => 0
+                                      ]);
+                    }
                     // update entry
                     $params['categories_ids'][$key] = sprintf("+%d", $cat_id);
                 }
@@ -137,7 +144,7 @@ try {
                 $om->write($object_class, $object_id, array_merge(['editor' => $user_id, 'edited' => date("Y-m-d H:i:s")], $params));
 
                 // update categories count_articles
-                $categories_ids = array_map(function($i) { return abs(intval($i)); }, $params['categories_ids']);
+                $categories_ids = array_map(function($i) { return abs(intval($i)); }, $params['categories']);
                 $om->write('resiway\Category', $categories_ids, ['count_articles' => null]);
             }
             

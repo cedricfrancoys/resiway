@@ -56,7 +56,7 @@ class Document extends \easyobject\orm\Object {
 
             'content_excerpt'       => array(
                                         'type'              => 'function',
-                                        'result_type'       => 'short_text',
+                                        'result_type'       => 'text',
                                         'store'             => true, 
                                         'function'          => 'resilib\Document::getContentExcerpt'
                                        ),

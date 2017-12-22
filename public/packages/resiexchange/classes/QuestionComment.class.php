@@ -14,7 +14,7 @@ class QuestionComment extends \easyobject\orm\Object {
                                         ),  
                                         
             /* text of the comment */
-            'content'			=> array('type' => 'short_text'),
+            'content'			=> array('type' => 'text'),
             
             'question_id'       => array('type' => 'many2one', 'foreign_object' => 'resiexchange\Question'),
             

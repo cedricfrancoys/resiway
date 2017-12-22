@@ -52,16 +52,16 @@ class ObjectManager {
 	private $db;
 
     public static $virtual_types = array('alias');
-	public static $simple_types	 = array('boolean', 'integer', 'float', 'string', 'short_text', 'text', 'html', 'date', 'time', 'datetime', 'timestamp', 'selection', 'file', 'binary', 'many2one');
+	public static $simple_types	 = array('boolean', 'integer', 'float', 'string', 'text', 'html', 'date', 'time', 'datetime', 'timestamp', 'file', 'binary', 'many2one');
 	public static $complex_types = array('one2many', 'many2many', 'function');
 
+// todo : add large integer support (using GNU GMP library)    
 	public static $valid_attributes = array(
 			'alias'		    => array('type', 'alias'),    
 			'boolean'		=> array('type', 'onchange'),
 			'integer'		=> array('type', 'onchange', 'selection', 'unique'),
 			'float'			=> array('type', 'onchange', 'precision'),
 			'string'		=> array('type', 'onchange', 'multilang', 'selection', 'unique'),
-			'short_text'	=> array('type', 'onchange', 'multilang'),
 			'text'			=> array('type', 'onchange', 'multilang'),
 			'html'			=> array('type', 'onchange', 'multilang'),            
 			'date'			=> array('type', 'onchange'),
@@ -82,7 +82,6 @@ class ObjectManager {
 			'integer'		=> array('type'),
 			'float'			=> array('type'),
 			'string'		=> array('type'),
-			'short_text'	=> array('type'),
 			'text'			=> array('type'),
 			'html'			=> array('type'),            
 			'date'			=> array('type'),
@@ -1300,7 +1299,6 @@ todo: signature differs from other methods	(returned value)
 				'integer'		=> array('in', 'not in', '=', '<>', '<', '>', '<=', '>='),
 				'float'			=> array('=', '<>', '<', '>', '<=', '>='),
 				'string'		=> array('like', 'ilike', 'in', '=', '<>'),
-				'short_text'	=> array('like', 'ilike', '='),
 				'text'			=> array('like', 'ilike', '='),
 				'html'			=> array('like', 'ilike', '='),                
 				'date'			=> array('=', '<>', '<', '>', '<=', '>=', 'like'),

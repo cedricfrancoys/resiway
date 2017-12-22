@@ -106,9 +106,11 @@ class TextTransformer {
     
     
     /**
-    * Generate a 64-bits integer hash from given string
-    * returned value is intended to be stored in a UNISGNED BIGINT DBMS column (8 bytes/20 digits)
-    */
+     * Generate a 64-bits integer hash from given string
+     * returned value is intended to be stored in a UNISGNED BIGINT DBMS column (8 bytes/20 digits)
+     *
+     * @return  string  20 digits hash
+     */
     public static function hash($value) {
         return gmp_strval(gmp_init(substr(md5($value), 0, 16), 16), 10);
     }

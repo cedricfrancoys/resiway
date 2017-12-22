@@ -16,7 +16,8 @@ class Index extends \easyobject\orm\Object {
             
             'value'             => array('type' => 'string'),
             
-
+            // hash is a 20 digits number intended to be stored as an UNISGNED BIGINT DBMS column (8 bytes/20 digits)
+            // as 8 bytes numbers are not handled by PHP, so we use a string
             'hash'              => array('type' => 'string'),
 
             /* list of documents related to this keyword */
@@ -84,7 +85,7 @@ class Index extends \easyobject\orm\Object {
         $hash_list = array_map(function($a) { return TextTransformer::hash($a); }, $keywords);
         if(count($hash_list)) {
             $db = $om->getDBHandler();
-            // obtain indexes ids for all relevant hashes (don't mind the collision / false-positive)
+            // obtain indexes ids for all relevant hashes (don't mind the collision / false-positive, unlikely enough to be ignored)
             $res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash in (".implode(",", $hash_list).");");
             // assign found ids to result array
             while($row = $db->fetchArray($res)) {
@@ -94,4 +95,20 @@ class Index extends \easyobject\orm\Object {
         return $result;        
     }    
 
+    /**
+     *
+     * @param hash  string  the SQL query handle this value as an integer (no quotes)
+     *
+     */
+    public static function searchByHash($om, $hash) {
+        $result = [];
+        $hash = (string) $hash;
+        $db = $om->getDBHandler();            
+        $res = $db->sendQuery("SELECT id FROM resiway_index WHERE hash = $hash;");
+        // assign found ids to result array
+        while($row = $db->fetchArray($res)) {
+            $result[] = $row['id'];
+        }
+        return $result;        
+    }        
 }

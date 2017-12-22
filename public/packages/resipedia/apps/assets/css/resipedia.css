@@ -785,7 +785,7 @@ input[type="text"] {
     height: 17px;
     font-size: 13px;
     font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
-    white-sapce: nowrap;
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }

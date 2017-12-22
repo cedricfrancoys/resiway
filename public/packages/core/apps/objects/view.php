@@ -371,7 +371,6 @@ else {
 								if(isset($values[$id][$field])) {
 									switch($type) {
 											case 'string':
-											case 'short_text':
 											case 'text':
 												$parent->append(str_replace(array("\n", "\r\n"), "<br />", $values[$id][$field]));
 												break;

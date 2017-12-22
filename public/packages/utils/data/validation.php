@@ -175,7 +175,6 @@ $allowed_associations = array(
 	'integer' 		=> array('tinyint', 'smallint', 'mediumint', 'int', 'bigint'),
 	'float' 		=> array('float', 'decimal'),	
 	'string' 		=> array('char', 'varchar', 'tinytext', 'text', 'mediumtext', 'longtext', 'blob', 'mediumblob'),
-	'short_text' 	=> array('char', 'varchar', 'tinytext', 'text', 'mediumtext', 'longtext', 'blob', 'mediumblob'),
 	'text' 			=> array('tinytext', 'text', 'mediumtext', 'longtext', 'blob'),
 	'html' 			=> array('tinytext', 'text', 'mediumtext', 'longtext', 'blob'),    
 	'date' 			=> array('date', 'datetime'),

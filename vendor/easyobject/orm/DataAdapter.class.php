@@ -96,7 +96,6 @@ class DataAdapter {
                     // return htmlspecialchars($value);
                     return $value;
             };
-            $adapter['short_text']['ui']['orm'] = $adapter['text']['ui']['orm'];
             $adapter['string']['ui']['orm'] = $adapter['text']['ui']['orm'];
             $adapter['html']['ui']['orm'] =	function($value, $class, $oid, $field, $lang) {
                     // clean HTML input html

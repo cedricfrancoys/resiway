@@ -80,16 +80,23 @@ try {
             // check tags_ids consistency (we might have received a request for new categories)
             foreach($params['tags_ids'] as $key => $value) {
                 if(intval($value) == 0 && strlen($value) > 0) {
-                    // create a new category + write given value
-                    $tag_id = $om->create('resiway\Category', [ 
-                                    'creator'           => $user_id,     
-                                    'title'             => $value,
-                                    'description'       => '',
-                                    'parent_id'         => 0,
-                                    'channel_id'        => $pdm->get('channel', 1)
-                                  ]);
+                    // check if a category by that name already exists
+                    $cats_ids = $om->search('resiway\Category', ['title', 'ilike', $value]);
+                    if($cats_ids && count($cats_ids)) {
+                        $cat_id = $cats_ids[0];
+                    }
+                    else {                    
+                        // create a new category + write given value
+                        $cat_id = $om->create('resiway\Category', [ 
+                                        'creator'           => $user_id,     
+                                        'title'             => $value,
+                                        'description'       => '',
+                                        'parent_id'         => 0,
+                                        'channel_id'        => $pdm->get('channel', 1)
+                                      ]);
+                    }
                     // update entry
-                    $params['tags_ids'][$key] = sprintf("+%d", $tag_id);
+                    $params['tags_ids'][$key] = sprintf("+%d", $cat_id);
                 }
             }        
             

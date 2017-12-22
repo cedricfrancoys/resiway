@@ -17,7 +17,7 @@ class ArticleComment extends \easyobject\orm\Object {
             'creator'			=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
                                         
             /* text of the comment */
-            'content'			=> array('type' => 'short_text'),
+            'content'			=> array('type' => 'text'),
             
             'article_id'        => array('type' => 'many2one', 'foreign_object' => 'resilexi\Article'),
             

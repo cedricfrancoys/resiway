@@ -64,7 +64,6 @@ $types_associations = array(
 	'integer' 		=> 'int(11)',
 	'float' 		=> 'decimal(10,2)',	
 	'string' 		=> 'varchar(255)',
-	'short_text' 	=> 'text',
 	'text' 			=> 'mediumtext',
 	'html' 			=> 'mediumtext',    
 	'date' 			=> 'date',

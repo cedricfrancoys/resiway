@@ -37,7 +37,7 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids) = [true, []];
 
-set_silent(true);
+set_silent(false);
 
 
 try {
@@ -94,14 +94,20 @@ try {
                         $hash = TextTransformer::hash($keyword);
                         // we treat hash as a string in case PHP engine does not handle 20 digits numbers 
                         // we expect SQL to deal with the conversion
-                        $res = $om->search('resiway\Index', ['hash', '=', $hash]);
+                        // $res = $om->search('resiway\Index', ['hash', '=', $hash]); // unexpected behavior !
+                        $res = Index::searchByHash($om, $hash);
                         // skip index if already exists
                         if($res > 0 && count($res)) {
                             $index_id = $res[0];
                             $indexes_ids[$index_id] = (isset($indexes_ids[$index_id]))?$indexes_ids[$index_id]+1:1;
                             continue;
                         }
-                        $new_id = $om->create('resiway\Index', ['hash' => $hash, 'value' => $keyword]);
+                        
+                        
+                        // $new_id = $om->create('resiway\Index', ['hash' => $hash, 'value' => $keyword]); // unexpected behavior !
+                        
+                        $db->sendQuery("INSERT IGNORE INTO `resiway_index` (`created`, `modified`, `state`, `hash`, `value`) VALUES (NOW(), NOW(), 'instance', $hash, '$keyword');");
+                        $new_id = $db->getLastId();
                         if($new_id > 0) {
                             $indexes_ids[$new_id] = 1;
                         }
