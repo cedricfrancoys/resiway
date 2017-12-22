@@ -116,7 +116,7 @@ tr.angular-ui-tree-empty {
 }
 </style>
 <script>
-  angular.module('catManager', ['ui.tree', 'ui.bootstrap']);
+  angular.module('catManager', [ 'ngCookies', 'ui.tree', 'ui.bootstrap']);
 
   
   
