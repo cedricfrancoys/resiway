@@ -773,16 +773,14 @@
                                 </a>
                             </strong>
                         </div>
-                    </div>                        
-                    <div class="stat-row">                        
-                        <div class="title">
-                            
-                        </div>
+                    </div>
+                    
+                    <div class="stat-row">                            
+                        <div class="title"></div>
                         <div class="content about">
                             <p ng-bind-html="question.creator.about"></p>
                         </div>
                     </div>                        
-
 
                     <div class="stat-row" ng-if="question.answers.length">                        
                         <div class="title">
@@ -791,7 +789,6 @@
                         <div class="content">                            
                         </div>
                     </div>
-
 
                     <div class="stat-row" ng-repeat-start="answer in question.answers"> 
                         <div class="title">

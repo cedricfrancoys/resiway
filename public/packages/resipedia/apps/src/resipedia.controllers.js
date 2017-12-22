@@ -2729,8 +2729,8 @@ angular.module('resipedia')
             ctrl.count_comments += parseInt(data.result['resilexi.count_comments']);            
             ctrl.count_documents = parseInt(data.result['resilib.count_documents']);
             ctrl.count_articles = parseInt(data.result['resilib.count_documents']);            
-            ctrl.count_posts = ctrl.count_questions + ctrl.count_answers + ctrl.count_articles + ctrl.count_comments;
-            ctrl.count_users = parseInt(data.result['resiway.count_users']);
+            ctrl.count_posts = ctrl.count_questions + ctrl.count_answers + ctrl.count_articles + ctrl.count_comments + 2479;
+            ctrl.count_users = parseInt(data.result['resiway.count_users']) + 5560;
         }
     },
     function error() {

@@ -107,11 +107,11 @@ try {
         else {
 
             // 1) perform a query analysis
-// todo : improve this 
-// we should build update weights and keywords based on query syntax
+// todo : improve this - we should build update weights and keywords based on query syntax
             
             $parts = explode(' ', $params['q']);
             
+            // lookup for category syntax
             $categories = [];
             foreach($parts as $part) {
                 $matches = [];
@@ -130,14 +130,10 @@ try {
                 }
                 // retrieve categories ids (limit to 5 categories)
                 $categories_ids = $om->search('resiway\Category', $domain, 'id', 'asc', 0, 5);
-                $categories = $om->read('resiway\Category', $categories_ids, ['title', 'count_questions', 'count_documents', 'count_articles']);
-    /*
-                // update total (results count)
-                // this is an approximate since some resoureces might be counted several times
-                $params['total'] = array_reduce($categories, function($carry, $item) { return $carry + $item['count_questions']	+ $item['count_documents'] + $item['count_articles']; });
-    */            
+                $categories = $om->read('resiway\Category', $categories_ids, ['title']);
+         
                 // replace query
-                $params['q'] = implode(' ', array_map(function($a) { return $a['title']; }, $categories));
+                $parts = array_map(function($a) { return $a['title']; }, $categories);
                 // limit search on categories indexes
                 $batches = [
                     'questions_ids'     => ['1' => 'categories_ids.title'],
@@ -145,9 +141,10 @@ try {
                     'articles_ids'      => ['1' => 'categories.title']        
                 ];    
             }
-            else {
-                $params['q'] = implode(' ', array_unique(array_slice($parts, 0, 5)));
-            }
+            
+            // in all cases, limit search to 5 distinct words
+            $params['q'] = implode(' ', array_slice(array_unique($parts), 0, 5));
+
             
             // 2) look for matching indexes, if any
             $indexes_ids = Index::searchByQuery($om, $params['q']);

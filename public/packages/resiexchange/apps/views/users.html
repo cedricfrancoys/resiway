@@ -37,7 +37,7 @@
                 <div class="user-details">
                     <a href="/user/{{user.id}}/{{user.name_url}}">{{user.display_name}}</a>
                     <div>
-                        <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}" dir="ltr">{{user.reputation}}</span>
+                        <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}" dir="ltr">{{user.reputation | humanizeCount}}</span>
                         <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="user.count_badges_3 > 0">
                             <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
                             <span class="badgecount">{{ answer.creator.count_badges_3 }}</span>

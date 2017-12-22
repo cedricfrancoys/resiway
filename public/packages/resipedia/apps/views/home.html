@@ -133,11 +133,11 @@
                 </div>
             
                 <div class="col-3-12" style="display: inline-block;">
-                    <span class="item-number">{{ctrl.count_posts}}</span>
+                    <span class="item-number">{{ctrl.count_posts | humanizeCount}}</span>
                     <span class="item-label">{{'QUESTIONS_STATS_POSTS' | translate}}</span>
                 </div>
                 <div class="col-3-12" style="display: inline-block;">
-                    <span class="item-number">{{ctrl.count_users}}</span>
+                    <span class="item-number">{{ctrl.count_users | humanizeCount}}</span>
                     <span class="item-label">{{'QUESTIONS_STATS_USERS' | translate}}</span>
                 </div>
                 <div class="col-6-12" style="display: inline-block; ">

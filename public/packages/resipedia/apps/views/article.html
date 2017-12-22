@@ -365,23 +365,40 @@
                         <div class="content">
                             <b>{{article.modified | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</b>
                         </div>
-                    </div>                        
-                    <div class="stat-row">                        
+                    </div>
+                    
+                    <div class="stat-row" ng-if="(article.source_author.length > 0)"> 
                         <div class="title">
-                            {{(article.source_author.length > 0) ? 'Partage' : 'Auteur'}}
+                        Auteur
                         </div>
-                        <div class="content">
-                            <b><a href="/user/{{article.creator.id}}/{{article.creator.name_url}}">{{article.creator.display_name}}</a></b>
+                        <div class="content"> 
+                            <div class="cc-license" style="display: inline-block; vertical-align: bottom;">
+                                <a  href="https://creativecommons.org/licenses/by-sa/3.0/fr/"
+                                    target="_blank"
+                                    class="cc-link" 
+                                    title="Creative Commons - attribution / partage dans les mêmes conditions">
+                                    <i class="cc cc-cc" aria-hidden="true"></i>
+                                    <i class="cc cc-by" aria-hidden="true"></i>
+                                    <i class="cc cc-sa" aria-hidden="true"></i>
+                                </a>
+                            </div>
+                            <span ng-if="article.source_author.length > 0">
+                                <a href="{{article.source_url}}">{{article.source_author}}</a><br />
+                                <span>partage <b><a href="/user/{{article.creator.id}}/{{article.creator.name_url}}">{{article.creator.display_name}}</a></b></span>
+                            </span>
+                            <span ng-if="!article.source_author.length">
+                                <strong>
+                                    <a href="/user/{{article.creator.id}}/{{article.creator.name_url}}">{{article.creator.display_name}}</a>
+                                </strong>
+                            </span>                            
                         </div>
-                    </div>                        
-                    <div class="stat-row">                        
-                        <div class="title">
-                            
-                        </div>
+                    </div>
+                    <div class="stat-row">                            
+                        <div class="title"></div>
                         <div class="content about">
                             <p ng-bind-html="article.creator.about"></p>
                         </div>
-                    </div>                                            
+                    </div>                    
 			    </div>
             </div>
             
