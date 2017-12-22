@@ -12,7 +12,7 @@ use resiway\Index;
 use qinoa\html\HTMLToText;
 use qinoa\text\TextTransformer;
 // force silent mode (debug output would corrupt json data)
-set_silent(false);
+set_silent(true);
 
 /*
  @actions   this is a data provider: no change is made to the stored data
@@ -99,7 +99,7 @@ try {
         $cache_filename = '../cache/index/'.md5( serialize(Index::normalizeQuery($params['q'])).'-'.$params['order'].'-'.$params['sort'].'-'.$params['start'].'-'.$params['limit'] );
 
         // if request is cached, deliver result from cache
-        if(false && file_exists($cache_filename)) {
+        if(file_exists($cache_filename)) {
             $content = file_get_contents($cache_filename);
             list($result, $total) = unserialize($content);
         }

@@ -37,7 +37,7 @@ $params = QNLib::announce(
 
 list($result, $error_message_ids) = [true, []];
 
-set_silent(false);
+set_silent(true);
 
 
 try {
@@ -102,10 +102,8 @@ try {
                             $indexes_ids[$index_id] = (isset($indexes_ids[$index_id]))?$indexes_ids[$index_id]+1:1;
                             continue;
                         }
-                        
-                        
-                        // $new_id = $om->create('resiway\Index', ['hash' => $hash, 'value' => $keyword]); // unexpected behavior !
-                        
+                        // create a new index entry
+                        // $new_id = $om->create('resiway\Index', ['hash' => $hash, 'value' => $keyword]); // unexpected behavior !                        
                         $db->sendQuery("INSERT IGNORE INTO `resiway_index` (`created`, `modified`, `state`, `hash`, `value`) VALUES (NOW(), NOW(), 'instance', $hash, '$keyword');");
                         $new_id = $db->getLastId();
                         if($new_id > 0) {
