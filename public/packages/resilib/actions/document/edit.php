@@ -112,12 +112,18 @@ try {
             // check authors_ids consistency (we might have received a request for new authors)            
             foreach($params['authors_ids'] as $key => $value) {
                 if(intval($value) == 0 && strlen($value) > 0) {
-// todo : check if an author by that name already exists                    
-                    // create a new category + write given value
-                    $author_id = $om->create('resiway\Author', [ 
-                                    'creator'           => $user_id,     
-                                    'name'              => $value
-                                  ]);
+                    // check if an author by that name already exists                    
+                    $authors_ids = $om->search('resiway\Author', ['name', 'ilike', $value]);
+                    if($authors_ids && count($authors_ids)) {
+                        $author_id = $authors_ids[0];
+                    }
+                    else {
+                        // create a new category + write given value
+                        $author_id = $om->create('resiway\Author', [ 
+                                        'creator'           => $user_id,     
+                                        'name'              => $value
+                                      ]);
+                    }
                     // update entry
                     $params['authors_ids'][$key] = sprintf("+%d", $author_id);
                 }
@@ -126,14 +132,20 @@ try {
             // check categories_ids consistency (we might have received a request for new categories)
             foreach($params['categories_ids'] as $key => $value) {
                 if(intval($value) == 0 && strlen($value) > 0) {
-// todo : check if a category by that name already exists                    
-                    // create a new category + write given value
-                    $cat_id = $om->create('resiway\Category', [ 
-                                    'creator'           => $user_id,     
-                                    'title'             => $value,
-                                    'description'       => '',
-                                    'parent_id'         => 0
-                                  ]);
+                    // check if a category by that name already exists
+                    $cats_ids = $om->search('resiway\Category', ['title', 'ilike', $value]);
+                    if($cats_ids && count($cats_ids)) {
+                        $cat_id = $cats_ids[0];
+                    }
+                    else {    
+                        // create a new category + write given value
+                        $cat_id = $om->create('resiway\Category', [ 
+                                        'creator'           => $user_id,     
+                                        'title'             => $value,
+                                        'description'       => '',
+                                        'parent_id'         => 0
+                                      ]);
+                    }
                     // update entry
                     $params['categories_ids'][$key] = sprintf("+%d", $cat_id);
                 }
