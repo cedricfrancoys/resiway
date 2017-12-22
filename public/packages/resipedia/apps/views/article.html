@@ -367,8 +367,8 @@
                         </div>
                     </div>                        
                     <div class="stat-row">                        
-                        <div class="title">
-                            Auteur
+                        <div class="title" ng-if="article.source_author.length > 0">
+                            {{(article.source_author.length > 0) ? 'Partage' : 'Auteur'}}
                         </div>
                         <div class="content">
                             <b><a href="/user/{{article.creator.id}}/{{article.creator.name_url}}">{{article.creator.display_name}}</a></b>

@@ -120,7 +120,25 @@ tr.angular-ui-tree-empty {
 
   
   
-angular.module('catManager').controller('catCtrl', [
+angular.module('catManager')
+
+.factory('httpRequestInterceptor', [
+    '$cookies',    
+    function ($cookies) {
+        return {
+            request: function (config) {
+                config.headers['Authorization'] = 'Bearer ' + $cookies.get('access_token');
+                return config;
+            }
+        };
+    }
+])
+
+.config(['$httpProvider', function ($httpProvider) {
+  $httpProvider.interceptors.push('httpRequestInterceptor');
+}])
+
+.controller('catCtrl', [
 '$scope', 
 '$http',
 '$uibModal',
