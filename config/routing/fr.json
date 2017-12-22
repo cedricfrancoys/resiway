@@ -1,8 +1,8 @@
 {
-    "/recherche/:q?":"/resipedia.fr#!/recherche/:q?",
+    "/recherche/:q?":"/resipedia.fr#!/recherche/:q",
     "/auteur/:name":"/resipedia.fr#!/auteur/:name",
     "/participant/:id/:name?":"/resipedia.fr#!/participant/:id/:name",    
-    "/categorie/:id/:title?":"/resipedia.fr#!/category/:id/:title?",    
-    "/aide/categorie/:id/:title?":"/resipedia.fr#!/aide/categorie/:id/:title?",
+    "/categorie/:id/:title?":"/resipedia.fr#!/category/:id/:title",    
+    "/aide/categorie/:id/:title?":"/resipedia.fr#!/aide/categorie/:id/:title",
     "/aide/categories":"/resipedia.fr#!/help/categories"
 }
