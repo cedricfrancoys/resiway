@@ -259,7 +259,8 @@ try {
                     $result = array_merge($result, $slice);
                 }                
                 // remember total results count
-                $total = count($result);        
+                $total = count($result);
+// todo : cache could be done here                
                 // limit result set
                 $result = array_slice($result, $params['start'], $params['limit']);
                 // perform additional sort if required
