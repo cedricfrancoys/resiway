@@ -31,14 +31,14 @@ $params = QNLib::announce(
                                             'default'       => ''
                                             ),
                         'order'		=> array(
-                                            'description'   => 'Column to use for sorting results.',
+                                            'description'   => 'Column to use for sorting results (ignored if user does not set it).',
                                             'type'          => 'string',
-                                            'default'       => 'score'
+                                            'default'       => ''
                                             ),
                         'sort'		=> array(
-                                            'description'   => 'The direction  (i.e. \'asc\' or \'desc\').',
+                                            'description'   => 'The direction of the order (i.e. \'asc\' or \'desc\') (ignored if user does not set it).',
                                             'type'          => 'string',
-                                            'default'       => 'desc'
+                                            'default'       => ''
                                             ),
                         'start'		=> array(
                                             'description'   => 'The row from which results have to start.',
@@ -111,14 +111,19 @@ try {
             
             $parts = explode(' ', $params['q']);
             
-            // lookup for category syntax
+            // analyse query syntaxsyntax
             $categories = [];
+            $keywords = [];
+            
             foreach($parts as $part) {
                 $matches = [];
                 if(preg_match("/([+-]?)\[(.*)\]/U", $part, $matches)) {
                     if(strlen($matches[1]) < 1 || $matches[1] == '+') {
                         $categories[] = $matches[2];
                     }
+                }
+                else {
+                    $keywords[] = $part;
                 }
             }
             
@@ -130,22 +135,36 @@ try {
                 }
                 // retrieve categories ids (limit to 5 categories)
                 $categories_ids = $om->search('resiway\Category', $domain, 'id', 'asc', 0, 5);
-                $categories = $om->read('resiway\Category', $categories_ids, ['title']);
-         
-                // replace query
-                $parts = array_map(function($a) { return $a['title']; }, $categories);
+                $categories = $om->read('resiway\Category', $categories_ids, ['title']);         
+                // convert categories array to string (titles might contain spaces)
+                $categories_titles = implode(' ', array_map(function($a) { return $a['title']; }, $categories));
+                // append related keywords 
+                $keywords = array_merge($keywords, explode(' ', $categories_titles));
                 // limit search on categories indexes
-                $batches = [
-                    'questions_ids'     => ['1' => 'categories_ids.title'],
-                    'documents_ids'     => ['1' => 'categories_ids.title'],
-                    'articles_ids'      => ['1' => 'categories.title']        
-                ];    
+                unset($batches['questions_ids']['0.5']);
+                unset($batches['documents_ids']['0.5']);
+                unset($batches['articles_ids']['0.5']);
+                $batches['questions_ids']['3'] = 'categories_ids.title';
+                $batches['documents_ids']['3'] = 'categories_ids.title';
+                $batches['articles_ids']['3'] = 'categories.title';
             }
             
-            // in all cases, limit search to 5 distinct words
-            $params['q'] = implode(' ', array_slice(array_unique($parts), 0, 5));
-
+            // in all cases, limit search to 5 distinct/most-relevant words            
+            if(count($keywords)) {
+                $keywords = array_unique($keywords);
+                
+                if(count($keywords) > 5) {
+                    usort($keywords, function($a, $b) {
+                        return strlen($b) - strlen($a);
+                    });
+                    $keywords = array_slice($keywords, 0, 5);
+                }
+            }
             
+            $params['q'] = implode(' ', $keywords);
+//            print_r($params['q']);
+//            print_r($batches);
+
             // 2) look for matching indexes, if any
             $indexes_ids = Index::searchByQuery($om, $params['q']);
 
@@ -238,22 +257,26 @@ try {
                 // merge actual results
                 foreach($items as $score => $slice) {
                     $result = array_merge($result, $slice);
-                }
+                }                
                 // remember total results count
                 $total = count($result);        
                 // limit result set
                 $result = array_slice($result, $params['start'], $params['limit']);
-                // sort subset based on given order and sort parameters
-                usort($result, function ($a, $b) use($params) {
-                        $a = $a[$params['order']]; 
-                        $b = $b[$params['order']];
-                        $sort = ($params['sort'] == 'desc')?-1:1;
-                        if ($a == $b) {
-                            return 0;
+                // perform additional sort if required
+                if(strlen($params['order']) > 0) {
+                    if(strlen($params['sort']) == 0) $params['sort'] = 'desc';
+                    // sort subset based on given order and sort parameters
+                    usort($result, function ($a, $b) use($params) {
+                            $a = $a[$params['order']]; 
+                            $b = $b[$params['order']];
+                            $sort = ($params['sort'] == 'desc')?-1:1;
+                            if ($a == $b) {
+                                return 0;
+                            }
+                            return ($a < $b) ? (-1*$sort) : (1*$sort);
                         }
-                        return ($a < $b) ? (-1*$sort) : (1*$sort);
-                    }
-                );                
+                    );
+                }
                 // cache search result
                 if(!is_dir(dirname($cache_filename))) mkdir(dirname($cache_filename), 0777, true);
                 file_put_contents($cache_filename, serialize([$result, $total]));

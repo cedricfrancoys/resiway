@@ -171,8 +171,8 @@ var resiway = angular.module('resipedia', [
             default: {
                 q: '',                  // query string (against question title)
                 domain: [],
-                order: 'created',       // show newest first
-                sort: 'desc',
+                order: '',       
+                sort: '',
                 start: 0,
                 limit: 25,
                 total: -1
