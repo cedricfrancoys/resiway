@@ -64,6 +64,7 @@ try {
                             'created',         
                             'edited', 
                             'modified', 
+                            'term'          => ['id', 'title', 'title_url'],
                             'title', 
                             'title_url', 
                             'source_author', 

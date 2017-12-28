@@ -25,6 +25,9 @@ class Article extends \easyobject\orm\Object {
             (we need this field to make a distinction with ORM writes using special field 'modified' */
             'edited'				=> array('type' => 'datetime'),
             
+            /* term to which the article refer to (several articles can coexist for a same lexical term) */
+            'term'                  => array('type' => 'many2one', 'foreign_object' => 'resilexi\Term', 'onchange' => 'resilexi\Article::onchangeTerm'),
+            
             'title'				    => array('type' => 'string', 'onchange' => 'resilexi\Article::onchangeTitle'),
             
             /* title URL-formatted (for links) */
@@ -137,6 +140,7 @@ class Article extends \easyobject\orm\Object {
              'channel_id'       => function() { return 1; },
              'editor'           => function() { return 0; },
              'count_views'      => function() { return 0; },
+             'count_downloads'  => function() { return 0; },             
              'count_votes'      => function() { return 0; },
              'count_stars'      => function() { return 0; },
              'count_flags'      => function() { return 0; },
@@ -163,7 +167,15 @@ class Article extends \easyobject\orm\Object {
         }
         return $result;        
     }    
-   
+    
+    public static function onchangeTerm($om, $oids, $lang) {
+        $res = $om->read(__CLASS__, $oids, ['term' => ['id', 'title']]);
+        foreach($res as $oid => $odata) {
+            // force re-compute title_url and re-indexing the article
+            $om->write(__CLASS__, $oid, ['title' => $odata['term']['title']], $lang);
+        }
+    }    
+
     public static function onchangeTitle($om, $oids, $lang) {
         // force re-compute title_url and re-indexing the article
         $om->write(__CLASS__, $oids, ['title_url' => null, 'indexed' => false], $lang);

@@ -5,6 +5,18 @@
                     <div class="control-group">
                         <label class="control-label" ng-bind-html="'ARTICLE_EDIT_TITLE_LABEL' | translate">Titre</label>
                         <div class="controls">
+                        
+                            <oi-select
+                                        oi-options="item.title for item in loadTermsMatches($query)"
+                                        ng-model="article.term"
+                                        oi-select-options="{
+                                            newItem: true,
+                                            newItemModel: {id: null, title: $query},
+                                            saveTrigger: 'enter blur . , ;',
+                                            cleanModel: true
+                                        }"                                        
+                                        placeholder="Titre de l'article"></oi-select>
+<!--                                        
                             <input id="title" 
                                    ng-model="article.title"
                                    type="text"
@@ -12,6 +24,7 @@
                                    value="" 
                                    size="54" 
                                    maxlength="128">
+                                   -->
                             <p class="help-inline" ng-bind-html="'ARTICLE_EDIT_TITLE_HELP' | translate"></p>
                         </div>
                     </div>

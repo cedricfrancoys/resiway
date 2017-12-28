@@ -87,6 +87,27 @@ try {
         false,                                                    // $toggle
         function ($om, $user_id, $object_class, $object_id)       // $do
         use ($params) {
+            // retrieve related term
+            $terms_ids = $om->search('resilexi\Term', ['title', 'ilike', $params['title']]);
+            if($terms_ids < 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
+            if(count($terms_ids)) {
+                $term_id = $terms_ids[0];
+            }
+            else {
+                // create a new term + write given value
+                $term_id = $om->create('resilexi\Term', [ 
+                                'creator'           => $user_id,     
+                                'title'             => $params['title']
+                              ]);
+            }
+            $res = $om->read('resilexi\Term', $term_id, ['title', 'title_url']);
+            if($res <= 0 || !isset($res[$term_id])) {
+                throw new Exception("action_failed", QN_ERROR_UNKNOWN);
+            }
+            
+            $params['title'] = $res[$term_id]['title'];
+            $params['term'] = $term_id;
+            
             // Article objects expect a 'categories' field
             $params['categories'] = [];
             // check categories_ids consistency (we might have received a request for new categories)

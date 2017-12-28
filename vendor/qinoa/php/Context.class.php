@@ -13,7 +13,7 @@ class Context extends Singleton {
     private $session_id;
     
     /**
-     * This method cannot be call directly (should be invoked through Singleton::getInstance)
+     * This method cannot be called directly (should be invoked through Singleton::getInstance)
      *
      */
     protected function __construct(/* no dependency */) {
@@ -254,18 +254,17 @@ class Context extends Singleton {
             if(isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
                 $params = [];            
                 parse_str(explode('?', $_SERVER['REQUEST_URI'])[1], $params);  
-                $_REQUEST = array_merge($_REQUEST, $params);            
+                $_GET = array_merge($_GET, $params);            
+            }
+            // use PHP native HTTP request parser for GET method
+            if(!empty($_GET)) {
+                $body = $_GET;            
             }                    
-        }        
-        // use PHP native HTTP request parser for supported methods 
-        if( in_array($method, ['GET', 'POST']) && !empty($_REQUEST) ){            
-            $body = $_REQUEST;
         }
         // otherwise load raw content from input stream (HttpMessage class will be able to deal with it)
         else {            
             $body = @file_get_contents('php://input');            
-        }
-        
+        }        
         return $body;
     }    
 }

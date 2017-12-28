@@ -178,9 +178,11 @@ class HttpMessage {
      * @param $body mixed (array, string)   either associative array (of key-value pairs) or raw text for unknown content-type
      */
     public function __construct($headline, $headers=[], $body='') {        
-        // $headline is handled in HttpResponse and HttpRequest classes
-        $this->setStatus(null); 
+        // $headline is handled in HttpResponse and HttpRequest constructors (which might update protocol and method)
+        $this->setStatus(null);
+        // headers have to be set before body
         $this->setHeaders($headers);
+        // assign body and tries to convert raw content to an array, based on content-type from headers
         $this->setBody($body);
         // default protocol
         $this->setProtocol('HTTP/1.1');
@@ -270,19 +272,20 @@ class HttpMessage {
     public function setBody($body) {
         if(!is_array($body)) {
             // attempt to convert body to an associative array 
-            switch($this->getHeaders()->getContentType()) {
+            switch($this->contentType()) {
             case 'application/x-www-form-urlencoded':
                 $params = [];
                 parse_str($body, $params);
                 $body = (array) $params;
                 break;
             case 'application/json':
+            case 'application/javascript':
             case 'text/javascript':
                 $body = json_decode($body, true);
                 break;
             case 'text/xml':
             case 'application/xml':
-            case 'text/xml, application/xml':
+            case 'application/xhtml+xml':
                 $xml = simplexml_load_string($body, "SimpleXMLElement", LIBXML_NOCDATA);
                 $json = json_encode($xml);
                 $body = json_decode($json, true);

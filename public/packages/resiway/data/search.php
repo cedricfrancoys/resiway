@@ -264,6 +264,8 @@ try {
                 // limit result set
                 $result = array_slice($result, $params['start'], $params['limit']);
                 // perform additional sort if required
+// todo : for now, there is no way to distinguish default order given by controller or manually set order
+/*                
                 if(strlen($params['order']) > 0) {
                     if(strlen($params['sort']) == 0) $params['sort'] = 'desc';
                     // sort subset based on given order and sort parameters
@@ -278,6 +280,7 @@ try {
                         }
                     );
                 }
+*/
                 // cache search result
                 if(!is_dir(dirname($cache_filename))) mkdir(dirname($cache_filename), 0777, true);
                 file_put_contents($cache_filename, serialize([$result, $total]));

@@ -312,8 +312,8 @@ var resiway = angular.module('resipedia', [
             default: {
                 q: '',                  // query string (against question title)
                 domain: [],
-                order: '',       
-                sort: '',
+                order: 'created',
+                sort: 'desc',
                 start: 0,
                 limit: 25,
                 total: -1
@@ -2861,31 +2861,47 @@ angular.module('resipedia')
             };
         };
 
-        $scope.addAuthor = function(query) {
+        $scope.addTerm = function(query) {
             return {
                 id: null, 
-                name: query
+                title: query
             };
         };
-
         
         $scope.loadCategoriesMatches = function(query) {
             if(query.length < 2) return [];
             
             return $http.get('index.php?get=resiway_category_list&channel='+$rootScope.config.channel+'&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
             .then(
-                function successCallback(response) {
+                function success(response) {
                     var data = response.data;
                     if(typeof data.result != 'object') return [];
                     return data.result;
                 },
-                function errorCallback(response) {
+                function error(response) {
                     // something went wrong server-side
                     return [];
                 }
             );                
         };
 
+        $scope.loadTermsMatches = function(query) {
+            if(query.length < 2) return [];
+            
+            return $http.get('index.php?get=resilexi_term_list&order=title&'+$httpParamSerializerJQLike({domain: ['title', 'ilike', '%'+query+'%']}))
+            .then(
+                function success(response) {
+                    var data = response.data;
+                    if(typeof data.result != 'object') return [];
+                    return data.result;
+                },
+                function error(response) {
+                    // something went wrong server-side
+                    return [];
+                }
+            );                
+        };
+        
         
         // @model
         // content is inside a textarea and do not need sanitize check
@@ -2898,7 +2914,13 @@ angular.module('resipedia')
                             source_license: 'CC-by-nc-sa'
                           }, 
                           article);
-                          
+
+        if(!angular.isDefined(article.term) && angular.isDefined(article.title)) {
+            $scope.article.term = {
+                id: null, 
+                title: article.title
+            };
+        }
 
         /**
         * for many2many field, as initial setting we mark all ids to be removed
@@ -2922,6 +2944,11 @@ angular.module('resipedia')
             });
         });
 
+        $scope.$watch('article.term', function() {
+            if(angular.isDefined($scope.article.term)) {
+                $scope.article.title = $scope.article.term.title;
+            }
+        });        
   
 
         // @methods

@@ -60,7 +60,8 @@ namespace {
 	set_silent(false);
 }
 namespace config {
-    use easyobject\orm\ObjectManager;    
+    use easyobject\orm\ObjectManager;
+    use qinoa\data\DataValidator;
     use \ReflectionClass;
     use \ReflectionException;
     
@@ -328,7 +329,9 @@ namespace config {
 		*/
 		public static function announce($announcement) {		
 			$result = array();            
-            
+//todo : use context->request()->body() instead of $_REQUEST
+// use DataAdapter
+
 			// 0) check presence of all mandatory parameters
 			// build mandatory fields array
 			$mandatory_params = array();
@@ -342,8 +345,9 @@ namespace config {
             }
             
             // chek if all required parameters have been received
-			foreach($announcement['params'] as $param => $description)
-				if(isset($description['required']) && $description['required']) $mandatory_params[] = $param;
+			foreach($announcement['params'] as $param => $config) {
+				if(isset($config['required']) && $config['required']) $mandatory_params[] = $param;
+            }
 			// if at least one mandatory param is missing
             $missing_params = array_diff($mandatory_params, array_keys($_REQUEST));
 			// if(	count(array_intersect($mandatory_params, array_keys($_REQUEST))) != count($mandatory_params) 
@@ -365,48 +369,111 @@ namespace config {
 
 			// 3) build result array and set default values for optional missing parameters
 			foreach($announcement['params'] as $param => $config) {
-// note : at some point " empty($_REQUEST[$param]) " was commented, but list controllers for instance need parameters consistency (order cannot be left to '')
-				if(in_array($param, $missing_params) || empty($_REQUEST[$param])) {
-					if(!isset($config['default'])) $_REQUEST[$param] = null;
-					else $_REQUEST[$param] = $config['default'];
+                // note : at some point condition had a clause " || empty($_REQUEST[$param]) ", remember not to alter received data
+				if(in_array($param, $missing_params)) {
+					if(isset($config['default'])) {
+                        $result[$param] = $config['default'];
+                    }
 				}
-				// handle optional attributes, if any, and prevent some js/php misunderstanding
-				if(in_array($_REQUEST[$param], ['NULL', 'null'], true)) $_REQUEST[$param] = null;
-                
-				switch($config['type']) {
-					case 'bool':
-                    case 'boolean':
-						if(in_array($_REQUEST[$param], ['TRUE', 'true', '1', 1, true], true)) $_REQUEST[$param] = true;
-						else $_REQUEST[$param] = false;								
-						break;
-					case 'array':
-						if(!is_array($_REQUEST[$param])) {
-							if(empty($_REQUEST[$param])) $_REQUEST[$param] = array();
-							else $_REQUEST[$param] = explode(',', str_replace(array("'", '"'), '', $_REQUEST[$param]));
-						}
-						break;
-                    case 'string':
-                        if($_REQUEST[$param] == null) $_REQUEST[$param] = '';
-                        break;
-					case 'int':
-                    case 'integer':
-                        if(in_array($_REQUEST[$param], ['TRUE', 'true'], true)) $_REQUEST[$param] = 1;
-                        else if(in_array($_REQUEST[$param], ['FALSE', 'false'], true)) $_REQUEST[$param] = 0;
-                        else $_REQUEST[$param] = intval($_REQUEST[$param]);
-                        if(isset($config['min'])) {
-                            $min = $config['min'];
-                            if($_REQUEST[$param] < $min) $_REQUEST[$param] = $min;
-                        }
-                        if(isset($config['max'])) {
-                            $max = $config['max'];
-                            if($_REQUEST[$param] > $max) $_REQUEST[$param] = $max;
-                        }
-                        break;                        
-				}
-				$result[$param] = $_REQUEST[$param];
+                else {
+// DataAdapter (all inputs are handled as text, conversion is made based on expected type)                    
+                    // prevent some js/php misunderstanding
+                    if(in_array($_REQUEST[$param], ['NULL', 'null'])) $_REQUEST[$param] = null;
+                    
+                    switch($config['type']) {
+                        case 'bool':
+                        case 'boolean':
+                            if(in_array($_REQUEST[$param], ['TRUE', 'true', '1', 1, true], true)) $_REQUEST[$param] = true;
+                            else if(in_array($_REQUEST[$param], ['FALSE', 'false', '0', 0, false], true)) $_REQUEST[$param] = false;
+                            break;
+                        case 'array':
+                            if(!is_array($_REQUEST[$param])) {
+                                if(empty($_REQUEST[$param])) $_REQUEST[$param] = array();
+                                else $_REQUEST[$param] = explode(',', str_replace(array("'", '"'), '', $_REQUEST[$param]));
+                            }
+                            break;
+                        case 'string':
+                            if($_REQUEST[$param] == null) $_REQUEST[$param] = '';
+                            break;
+                        case 'float':
+                        case 'double':
+                            if(is_numeric($_REQUEST[$param])) {
+                                $_REQUEST[$param] = floatval($_REQUEST[$param]);
+                            }
+                            break;
+                        case 'int':
+                        case 'integer':
+                            if(in_array($_REQUEST[$param], ['TRUE', 'true'])) $_REQUEST[$param] = 1;
+                            else if(in_array($_REQUEST[$param], ['FALSE', 'false'])) $_REQUEST[$param] = 0;
+                            if(is_numeric($_REQUEST[$param])) {
+                                $_REQUEST[$param] = intval($_REQUEST[$param]);
+                            }                            
+                            break;                        
+                    }
+                    $result[$param] = $_REQUEST[$param];                    
+                }				
 			}
  
-            // 4) check for requested providers
+ 
+            // 4) validate result array values types and handle optional attributes, if any
+            $invalid_params = [];
+            foreach($result as $param => $value) {
+                $config = $announcement['params'][$param];
+                // build constraints array
+                $constraints = [];
+                // adapt type to match PHP internals
+                switch($config['type']) {
+                case 'bool':
+                case 'boolean':
+                    $constraints[] = ['kind' => 'type', 'rule' => 'boolean'];
+                    break;
+                case 'float':
+                case 'double':
+                    $constraints[] = ['kind' => 'type', 'rule' => 'double'];                
+                    break;
+                case 'int':
+                case 'integer':
+                    $constraints[] = ['kind' => 'type', 'rule' => 'integer'];
+                    break;
+                default:
+                    $constraints[] = ['kind' => 'type', 'rule' => $config['type']];
+                    break;
+                }
+                // append specific constraints
+                if(isset($config['min'])) {
+                    $constraints[] = ['kind' => 'min', 'rule' => $config['min']];
+                }
+                if(isset($config['max'])) {
+                    $constraints[] = ['kind' => 'max', 'rule' => $config['max']];
+                }
+                if(isset($config['in'])) {
+                    $constraints[] = ['kind' => 'in', 'rule' => $config['in']];
+                }
+                if(isset($config['not in'])) {
+                    $constraints[] = ['kind' => 'not in', 'rule' => $config['not in']];
+                }
+                // validate parameter's value 
+                if(!DataValidator::validate($value, $constraints)) {
+                    if(!in_array($param, $mandatory_params)) {
+                        // warning
+                        unset($result[$param]);
+                    }
+                    else $invalid_params[] = $param;
+                }
+            }
+            if(count($invalid_params)) {
+                // output json data telling what is expected
+                header('Content-type: application/json; charset=UTF-8');                    
+                echo json_encode([
+                                    'result'            => QN_ERROR_INVALID_PARAM,
+                                    'announcement'      => $announcement, 
+                                    'errors' => array_map(function($a) {return "invalid value received for param '".$a."' (check announcement rules)";}, $invalid_params)
+                                 ], JSON_PRETTY_PRINT);
+                // terminate script
+                exit();                    
+            }            
+            
+            // 5) check for requested providers
             if(isset($announcement['providers']) && count($announcement['providers'])) {
                 $providers = [];
                 // inject dependencies

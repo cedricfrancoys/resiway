@@ -20,8 +20,8 @@
 */
 namespace easyobject\orm;
 
-use easyobject\orm\db\DBConnection as DBConnection;
-use easyobject\orm\DataAdapter as DataAdapter;
+use easyobject\orm\db\DBConnection;
+use easyobject\orm\DataAdapter;
 use \Exception as Exception;
 
 

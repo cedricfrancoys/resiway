@@ -188,7 +188,7 @@ var translations = {
     "ARTICLE_ACTIONS_DELETE_TOOLTIP": "Il ne faut supprimer les articles que si on a une bonne raison de le faire",
     
     "ARTICLE_EDIT_TITLE_LABEL": "Titre",
-    "ARTICLE_EDIT_TITLE_HELP": "Indiquer un titre aussi clair et concis que possible pour l'article. (max 400 caractères)",
+    "ARTICLE_EDIT_TITLE_HELP": "Choisir ou indiquer le terme lexical que décrit l'article (équivalent du titre principal) : aussi clair et concis que possible.",
     "ARTICLE_EDIT_CATEGORIES_LABEL": "Catégories",
     "ARTICLE_EDIT_CATEGORIES_HELP": "Sélectionner ou créer une ou plusieurs catégories",
     "ARTICLE_EDIT_CONTENT_LABEL": "Contenu",
