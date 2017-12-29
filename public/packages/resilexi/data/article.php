@@ -38,6 +38,10 @@ try {
         header("Location: /index.php?get=resiway_eko_article&article_id=$object_id");
         exit();
     }
+    if(!is_numeric($object_id)) {
+        header("Location: /index.php?get=resilexi_term&title=$object_id");
+        exit();        
+    }
     $om = &ObjectManager::getInstance();
     
     // 0) retrieve parameters

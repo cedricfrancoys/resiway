@@ -808,11 +808,24 @@ angular.module('resipedia')
                 commentsLimit: 5,
                 newCommentShow: false,
                 newCommentContent: ''
+            }            
+            // might receive an article or a term
+            if(angular.isDefined(result.articles)) {
+                // this is a term
+                // process each article
+                angular.forEach(result.articles, function(value, index) {
+                    // mark html as safe
+                    result.articles[index].content = $sce.trustAsHtml(result.articles[index].content);
+                    // add meta info attributes
+                    angular.extend(result.articles[index], attributes);
+                });                
             }
-            // add meta info attributes
-            angular.extend(result, attributes);
-            // mark html as safe
-            result.content = $sce.trustAsHtml(result.content);
+            else {
+                // add meta info attributes
+                angular.extend(result, attributes);
+                // mark html as safe
+                result.content = $sce.trustAsHtml(result.content);
+            }
             return result;
         });
     };
@@ -822,7 +835,7 @@ angular.module('resipedia')
     this.load = function() {
         return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
         .then(
-            function successCallback(response) {
+            function success(response) {
                 var data = response.data;
                 if(typeof data.result != 'object') {
                     $rootScope.search.criteria.total = 0;
@@ -831,7 +844,7 @@ angular.module('resipedia')
                 $rootScope.search.criteria.total = data.total;
                 return data.result;
             },
-            function errorCallback(response) {
+            function error(response) {
                 // something went wrong server-side
                 $rootScope.search.criteria.total = 0;
                 return [];
@@ -864,7 +877,7 @@ angular.module('resipedia')
     this.load = function() {
         return $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
         .then(
-            function successCallback(response) {
+            function success(response) {
                 var data = response.data;
                 if(typeof data.result != 'object') {
                     $rootScope.search.criteria.total = 0;
@@ -873,7 +886,7 @@ angular.module('resipedia')
                 $rootScope.search.criteria.total = data.total;
                 return data.result;
             },
-            function errorCallback(response) {
+            function error(response) {
                 // something went wrong server-side
                 $rootScope.search.criteria.total = 0;
                 return [];
@@ -1429,12 +1442,20 @@ angular.module('resipedia')
             popover.id = 'popover-'+elem.attr('id');
             popover.classname = 'popover-' + (classname || 'danger');
 
+// todo : move this elsewhere            
+            function offset(el) {
+                var rect = el.getBoundingClientRect(),
+                scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+                scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+            }
+            
             // scroll to element, if outside viewport
-            var elemYOffset = elem[0].offsetTop;
+            var elemYOffset = offset(elem[0]).top;            
 
             if(elemYOffset < $window.pageYOffset
             || elemYOffset > ($window.pageYOffset + $window.innerHeight)) {
-                $window.scrollTo(0, elemYOffset-($window.innerHeight/4));
+                $window.scrollTo(0, elemYOffset-($window.innerHeight/5));
             }
 
             if(msg.length > 0) {
@@ -2158,14 +2179,27 @@ angular.module('resipedia')
         var ctrl = this;
 
         // @model
-        $scope.article = article;
+        if(angular.isDefined(article.articles)) {
+            $scope.term = article;
+            $scope.article = article.articles[0];
+        }
+        else {
+            $scope.term = {
+                id: null,
+                title: article.title,
+                title_url: article.title_url,
+                articles: [ article ]
+            };
+            $scope.article = article;
+        }
+        
 
         
         /*
         * async load and inject $scope.related_articles
         */
         $scope.related_articles = [];
-        $http.get('index.php?get=resilexi_article_related&article_id='+article.id)
+        $http.get('index.php?get=resilexi_article_related&article_id='+$scope.article.id)
         .then(
             function (response) {
                 $scope.related_articles = response.data.result;
@@ -2221,11 +2255,11 @@ angular.module('resipedia')
         
         $scope.rollback = function () {
             if(angular.isDefined($scope.previous) && typeof $scope.previous == 'object') {
-                angular.merge($scope.article, $scope.previous);
+                angular.merge($scope.term, $scope.previous);
             }
         };
         
-        $scope.articleComment = function($event) {
+        $scope.articleComment = function($event, index) {
 
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
@@ -2235,8 +2269,8 @@ angular.module('resipedia')
                 action: 'resilexi_article_comment',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                    article_id: $scope.article.id,
-                    content: $scope.article.newCommentContent
+                    article_id: $scope.term.articles[index].id,
+                    content: $scope.term.articles[index].newCommentContent
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -2254,46 +2288,41 @@ angular.module('resipedia')
                     else {
                         var comment_id = data.result.id;
                         // add new comment to the list
-                        $scope.article.comments.push(data.result);
-                        $scope.article.newCommentShow = false;
-                        $scope.article.newCommentContent = '';
+                        $scope.term.articles[index].comments.push(data.result);
+                        $scope.term.articles[index].newCommentShow = false;
+                        $scope.term.articles[index].newCommentContent = '';
                         // wait for next digest cycle
                         $timeout(function() {
                             // scroll to newly created comment
-                            feedbackService.popover('#comment-'+comment_id, '');
+                            feedbackService.popover('#comment-'+$scope.term.articles[index].id+'-'+comment_id, '');
                         });
                     }
                 }        
             });
         };
 
-        $scope.articleFlag = function ($event) {
+        $scope.articleFlag = function ($event, index) {
 
             // define transaction
             var commit = function ($scope) {
                 // prevent action if it has already been committed
                 if(!angular.isDefined($scope.committed) || !$scope.committed) {
                     // make sure impacted properties are set
-                    if(!angular.isDefined($scope.article.history['resilexi_article_flag'])) {
-                        $scope.article.history['resilexi_article_flag'] = false;
+                    if(!angular.isDefined($scope.term.articles[index].history['resilexi_article_flag'])) {
+                        $scope.term.articles[index].history['resilexi_article_flag'] = false;
                     }
                     // update current state to new values
-                    if($scope.article.history['resilexi_article_flag'] === true) {
-                        $scope.article.history['resilexi_article_flag'] = false;
+                    if($scope.term.articles[index].history['resilexi_article_flag'] === true) {
+                        $scope.term.articles[index].history['resilexi_article_flag'] = false;
                     }
                     else {
-                        $scope.article.history['resilexi_article_flag'] = true;
+                        $scope.term.articles[index].history['resilexi_article_flag'] = true;
                     }
                 }
             };
 
             // set previous state and begin transaction
-            $scope.begin(commit, 
-                         { 
-                            history: {
-                                resilexi_article_flag: $scope.article.history['resilexi_article_flag'] 
-                            }
-                         });     
+            $scope.begin(commit, { articles: $scope.term.articles });   
             
             // remember selector for popover location        
             var selector = feedbackService.selector($event.target);
@@ -2303,7 +2332,7 @@ angular.module('resipedia')
                 action: 'resilexi_article_flag',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                        article_id: $scope.article.id
+                        article_id: $scope.term.articles[index].id
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -2330,47 +2359,40 @@ angular.module('resipedia')
 
          
         
-        $scope.articleVoteUp = function ($event) {            
+        $scope.articleVoteUp = function ($event, index) {            
 
             // normalize : make sure impacted properties are set
-            if(!angular.isDefined($scope.article.history['resilexi_article_votedown'])) {
-                $scope.article.history['resilexi_article_votedown'] = false;
+            if(!angular.isDefined($scope.term.articles[index].history['resilexi_article_votedown'])) {
+                $scope.term.articles[index].history['resilexi_article_votedown'] = false;
             }
-            if(!angular.isDefined($scope.article.history['resilexi_article_voteup'])) {
-                $scope.article.history['resilexi_article_voteup'] = false;
+            if(!angular.isDefined($scope.term.articles[index].history['resilexi_article_voteup'])) {
+                $scope.term.articles[index].history['resilexi_article_voteup'] = false;
             }           
             // define transaction
             var commit = function ($scope) {
                 // prevent action if it has already been committed
                 if(!angular.isDefined($scope.committed) || !$scope.committed) {                 
                     // update current state to new values
-                    if($scope.article.history['resilexi_article_voteup'] === true) {
+                    if($scope.term.articles[index].history['resilexi_article_voteup'] === true) {
                         // toggle voteup
-                        $scope.article.history['resilexi_article_voteup'] = false;
-                        $scope.article.score--;
+                        $scope.term.articles[index].history['resilexi_article_voteup'] = false;
+                        $scope.term.articles[index].score--;
                     }
                     else {
                         // undo votedown
-                        if($scope.article.history['resilexi_article_votedown'] === true) {
-                            $scope.article.history['resilexi_article_votedown'] = false;
-                            $scope.article.score++;
+                        if($scope.term.articles[index].history['resilexi_article_votedown'] === true) {
+                            $scope.term.articles[index].history['resilexi_article_votedown'] = false;
+                            $scope.term.articles[index].score++;
                         }
                         // voteup
-                        $scope.article.history['resilexi_article_voteup'] = true;
-                        $scope.article.score++;
+                        $scope.term.articles[index].history['resilexi_article_voteup'] = true;
+                        $scope.term.articles[index].score++;
                     }
                 }
             };
 
             // set previous state and begin transaction
-            $scope.begin(commit, 
-                         {
-                            history: {
-                                resilexi_article_votedown: $scope.article.history['resilexi_article_votedown'],
-                                resilexi_article_voteup:   $scope.article.history['resilexi_article_voteup']                        
-                            },
-                            score: $scope.article.score
-                         });
+            $scope.begin(commit, { articles: $scope.term.articles });
                          
             // remember selector for popover location    
             var selector = feedbackService.selector($event.target);
@@ -2379,7 +2401,7 @@ angular.module('resipedia')
                 // valid name of the action to perform server-side
                 action: 'resilexi_article_voteup',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
-                data: {article_id: $scope.article.id},
+                data: {article_id: $scope.term.articles[index].id},
                 // scope in wich callback function will apply 
                 scope: $scope,
                 // callback function to run after action completion (to handle error cases, ...)
@@ -2390,8 +2412,8 @@ angular.module('resipedia')
                         // commit if it hasn't been done already
                         commit($scope);
                         if(data.result === true) feedbackService.popover(selector, 'ARTICLE_ACTIONS_VOTEUP_OK', 'info', true);
-                        // $scope.article.history['resilexi_article_voteup'] = true;
-                        // $scope.article.score++;
+                        // $scope.term.articles[index].history['resilexi_article_voteup'] = true;
+                        // $scope.term.articles[index].score++;
                     }
                     else {
                         // rollback
@@ -2409,47 +2431,40 @@ angular.module('resipedia')
             });
         };
         
-        $scope.articleVoteDown = function ($event) {
+        $scope.articleVoteDown = function ($event, index) {
 
             // normalize : make sure impacted properties are set
-            if(!angular.isDefined($scope.article.history['resilexi_article_votedown'])) {
-                $scope.article.history['resilexi_article_votedown'] = false;
+            if(!angular.isDefined($scope.term.articles[index].history['resilexi_article_votedown'])) {
+                $scope.term.articles[index].history['resilexi_article_votedown'] = false;
             }
-            if(!angular.isDefined($scope.article.history['resilexi_article_voteup'])) {
-                $scope.article.history['resilexi_article_voteup'] = false;
+            if(!angular.isDefined($scope.term.articles[index].history['resilexi_article_voteup'])) {
+                $scope.term.articles[index].history['resilexi_article_voteup'] = false;
             }           
             // define transaction
             var commit = function ($scope) {
                 // prevent action if it has already been committed
                 if(!angular.isDefined($scope.committed) || !$scope.committed) {                                 
                     // update current state to new values
-                    if($scope.article.history['resilexi_article_votedown'] === true) {
+                    if($scope.term.articles[index].history['resilexi_article_votedown'] === true) {
                         // toggle votedown
-                        $scope.article.history['resilexi_article_votedown'] = false;
-                        $scope.article.score++;
+                        $scope.term.articles[index].history['resilexi_article_votedown'] = false;
+                        $scope.term.articles[index].score++;
                     }
                     else {
                         // undo voteup
-                        if($scope.article.history['resilexi_article_voteup'] === true) {
-                            $scope.article.history['resilexi_article_voteup'] = false;
-                            $scope.article.score--;
+                        if($scope.term.articles[index].history['resilexi_article_voteup'] === true) {
+                            $scope.term.articles[index].history['resilexi_article_voteup'] = false;
+                            $scope.term.articles[index].score--;
                         }
                         // votedown
-                        $scope.article.history['resilexi_article_votedown'] = true;
-                        $scope.article.score--;
+                        $scope.term.articles[index].history['resilexi_article_votedown'] = true;
+                        $scope.term.articles[index].score--;
                     }
                 }
             };
 
             // set previous state and begin transaction
-            $scope.begin(commit, 
-                         {
-                            history: {
-                                resilexi_article_votedown: $scope.article.history['resilexi_article_votedown'],
-                                resilexi_article_voteup:   $scope.article.history['resilexi_article_voteup']                        
-                            },
-                            score: $scope.article.score
-                         });
+            $scope.begin(commit, { articles: $scope.term.articles });
                          
             // remember selector for popover location
             var selector = feedbackService.selector($event.target);
@@ -2458,7 +2473,7 @@ angular.module('resipedia')
                 // valid name of the action to perform server-side
                 action: 'resilexi_article_votedown',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
-                data: {article_id: $scope.article.id},
+                data: {article_id: $scope.term.articles[index].id},
                 // scope in wich callback function will apply 
                 scope: $scope,
                 // callback function to run after action completion (to handle error cases, ...)
@@ -2483,11 +2498,11 @@ angular.module('resipedia')
             });
         };    
 
-        $scope.articleStar = function ($event) {
+        $scope.articleStar = function ($event, index) {
 
             // normalize : make sure impacted properties are set
-            if(!angular.isDefined($scope.article.history['resilexi_article_star'])) {
-                $scope.article.history['resilexi_article_star'] = false;
+            if(!angular.isDefined($scope.term.articles[index].history['resilexi_article_star'])) {
+                $scope.term.articles[index].history['resilexi_article_star'] = false;
             }
             // define transaction
             var commit = function ($scope) {
@@ -2495,25 +2510,19 @@ angular.module('resipedia')
                 if(!angular.isDefined($scope.committed) || !$scope.committed) {
 
                     // update current state to new values
-                    if($scope.article.history['resilexi_article_star'] === true) {
-                        $scope.article.history['resilexi_article_star'] = false;
-                        $scope.article.count_stars--;
+                    if($scope.term.articles[index].history['resilexi_article_star'] === true) {
+                        $scope.term.articles[index].history['resilexi_article_star'] = false;
+                        $scope.term.articles[index].count_stars--;
                     }
                     else {
-                        $scope.article.history['resilexi_article_star'] = true;
-                        $scope.article.count_stars++;
+                        $scope.term.articles[index].history['resilexi_article_star'] = true;
+                        $scope.term.articles[index].count_stars++;
                     }
                 }
             };
 
             // set previous state and begin transaction
-            $scope.begin(commit, 
-                         { 
-                            history: {
-                                resilexi_article_star: $scope.article.history['resilexi_article_star']
-                            },
-                            count_stars: $scope.article.count_stars            
-                         });    
+            $scope.begin(commit, { articles: $scope.term.articles });  
             
             // remember selector for popover location
             var selector = feedbackService.selector($event.target);
@@ -2522,7 +2531,7 @@ angular.module('resipedia')
                 // valid name of the action to perform server-side
                 action: 'resilexi_article_star',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
-                data: {article_id: $scope.article.id},
+                data: {article_id: $scope.term.articles[index].id},
                 // scope in wich callback function will apply 
                 scope: $scope,
                 // callback function to run after action completion (to handle error cases, ...)
@@ -2547,29 +2556,29 @@ angular.module('resipedia')
             });
         };      
 
-        $scope.articleCommentVoteUp = function ($event, index) {
+        $scope.articleCommentVoteUp = function ($event, article_index, index) {
             // normalize : make sure impacted properties are set
-            if(!angular.isDefined($scope.article.comments[index].history['resilexi_articlecomment_voteup'])) {
-                $scope.article.comments[index].history['resilexi_articlecomment_voteup'] = false;
+            if(!angular.isDefined($scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_voteup'])) {
+                $scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_voteup'] = false;
             }    
             // define transaction
             var commit = function ($scope) {
                 // prevent action if it has already been committed
                 if(!angular.isDefined($scope.committed) || !$scope.committed) {                                   
                     // update current state to new values
-                    if($scope.article.comments[index].history['resilexi_articlecomment_voteup'] === true) {
-                        $scope.article.comments[index].history['resilexi_articlecomment_voteup'] = false;
-                        $scope.article.comments[index].score--;
+                    if($scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_voteup'] === true) {
+                        $scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_voteup'] = false;
+                        $scope.term.articles[article_index].comments[index].score--;
                     }
                     else {
-                        $scope.article.comments[index].history['resilexi_articlecomment_voteup'] = true;
-                        $scope.article.comments[index].score++;
+                        $scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_voteup'] = true;
+                        $scope.term.articles[article_index].comments[index].score++;
                     }
                 }
             };
             
             // set previous state and begin transaction
-            $scope.begin(commit, { comments: $scope.article.comments });
+            $scope.begin(commit, { articles: $scope.term.articles });
             
             // remember selector for popover location            
             var selector = feedbackService.selector($event.target);
@@ -2579,7 +2588,7 @@ angular.module('resipedia')
                 action: 'resilexi_articlecomment_voteup',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                        comment_id: $scope.article.comments[index].id
+                        comment_id: $scope.term.articles[article_index].comments[index].id
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -2605,10 +2614,10 @@ angular.module('resipedia')
             });
         };
 
-        $scope.articleCommentFlag = function ($event, index) {
+        $scope.articleCommentFlag = function ($event, article_index, index) {
             // normalize : make sure impacted properties are set
-            if(!angular.isDefined($scope.article.comments[index].history['resilexi_articlecomment_flag'])) {
-                $scope.article.comments[index].history['resilexi_articlecomment_flag'] = false;
+            if(!angular.isDefined($scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_flag'])) {
+                $scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_flag'] = false;
             }  
                     
             // define transaction
@@ -2617,17 +2626,17 @@ angular.module('resipedia')
                 if(!angular.isDefined($scope.committed) || !$scope.committed) {                    
                   
                     // update current state to new values (toggle flag)
-                    if($scope.article.comments[index].history['resilexi_articlecomment_flag'] === true) {
-                        $scope.article.comments[index].history['resilexi_articlecomment_flag'] = false;
+                    if($scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_flag'] === true) {
+                        $scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_flag'] = false;
                     }
                     else {
-                        $scope.article.comments[index].history['resilexi_articlecomment_flag'] = true;
+                        $scope.term.articles[article_index].comments[index].history['resilexi_articlecomment_flag'] = true;
                     }
                 }
             };
             
             // set previous state and begin transaction
-            $scope.begin(commit, { comments: $scope.article.comments });
+            $scope.begin(commit, { articles: $scope.term.articles });
             
             // remember selector for popover location             
             var selector = feedbackService.selector($event.target);
@@ -2637,7 +2646,7 @@ angular.module('resipedia')
                 action: 'resilexi_articlecomment_flag',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                        comment_id: $scope.article.comments[index].id
+                        comment_id: $scope.term.articles[article_index].comments[index].id
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -2663,7 +2672,7 @@ angular.module('resipedia')
             });
         };        
 
-        $scope.articleCommentEdit = function ($event, index) {
+        $scope.articleCommentEdit = function ($event, article_index, index) {
                        
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
@@ -2673,8 +2682,8 @@ angular.module('resipedia')
                 action: 'resilexi_articlecomment_edit',
                 // string representing the data to submit to action handler (i.e.: serialized value of a form)
                 data: {
-                        comment_id: $scope.article.comments[index].id,
-                        content: $scope.article.comments[index].content
+                        comment_id: $scope.term.articles[article_index].comments[index].id,
+                        content: $scope.term.articles[article_index].comments[index].content
                 },
                 // scope in wich callback function will apply 
                 scope: $scope,
@@ -2693,26 +2702,26 @@ angular.module('resipedia')
                         feedbackService.popover(selector, msg);                    
                     }                
                     else {
-                        $scope.article.comments[index].editMode = false;
+                        $scope.term.articles[article_index].comments[index].editMode = false;
                     }
                 }        
             });
         };
 
 
-        $scope.articleCommentDelete = function ($event, index) {
+        $scope.articleCommentDelete = function ($event, article_index, index) {
             
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
             
-            ctrl.openModal('MODAL_COMMENT_DELETE_TITLE', 'MODAL_COMMENT_DELETE_HEADER', $scope.article.comments[index].content)
+            ctrl.openModal('MODAL_COMMENT_DELETE_TITLE', 'MODAL_COMMENT_DELETE_HEADER', $scope.term.articles[article_index].comments[index].content)
             .then(
                 function () {
                     actionService.perform({
                         // valid name of the action to perform server-side
                         action: 'resilexi_articlecomment_delete',
                         // string representing the data to submit to action handler (i.e.: serialized value of a form)
-                        data: {comment_id: $scope.article.comments[index].id},
+                        data: {comment_id: $scope.term.articles[article_index].comments[index].id},
                         // scope in wich callback function will apply 
                         scope: $scope,
                         // callback function to run after action completion (to handle error cases, ...)
@@ -2721,7 +2730,7 @@ angular.module('resipedia')
                             // (if route is changed to signin form)
                             if(data.result === true) {                  
                                 // update view
-                                $scope.article.comments.splice(index, 1);
+                                $scope.term.articles[article_index].comments.splice(index, 1);
                             }
                             else if(data.result === false) { 
                                 // deletion toggle : we shouldn't reach this point with this controller
@@ -2740,19 +2749,19 @@ angular.module('resipedia')
         };
 
         
-        $scope.articleDelete = function ($event) {
+        $scope.articleDelete = function ($event, index) {
             
             // remember selector for popover location 
             var selector = feedbackService.selector($event.target);
             
-            ctrl.openModal('MODAL_ARTICLE_DELETE_TITLE', 'MODAL_ARTICLE_DELETE_HEADER', $scope.article.title)
+            ctrl.openModal('MODAL_ARTICLE_DELETE_TITLE', 'MODAL_ARTICLE_DELETE_HEADER', $scope.term.articles[index].title)
             .then(
                 function () {
                     actionService.perform({
                         // valid name of the action to perform server-side
                         action: 'resilexi_article_delete',
                         // string representing the data to submit to action handler (i.e.: serialized value of a form)
-                        data: {article_id: $scope.article.id},
+                        data: {article_id: $scope.term.articles[index].id},
                         // scope in wich callback function will apply 
                         scope: $scope,
                         // callback function to run after action completion (to handle error cases, ...)
@@ -2780,7 +2789,7 @@ angular.module('resipedia')
         };
 
         
-        $scope.showShareModal = function() {
+        $scope.showShareModal = function(index) {
 
             return $uibModal.open({
                 animation: true,
@@ -2791,7 +2800,7 @@ angular.module('resipedia')
                     var ctrl = this;
                     ctrl.title_id = 'Partager';
 
-                    $uibModalInstance.article = $scope.article;
+                    $uibModalInstance.article = $scope.term.articles[index];
                     
                     ctrl.ok = function () {
                         $uibModalInstance.close();

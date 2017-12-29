@@ -9,7 +9,7 @@ namespace qinoa\pdf {
     // interface class for autoload
     class DOMPDF extends \DOMPDF {
         
-        public function __construct($args) {
+        public function __construct($args=null) {
             parent::__construct($args);
         }
         

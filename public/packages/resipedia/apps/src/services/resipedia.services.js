@@ -89,11 +89,24 @@ angular.module('resipedia')
                 commentsLimit: 5,
                 newCommentShow: false,
                 newCommentContent: ''
+            }            
+            // might receive an article or a term
+            if(angular.isDefined(result.articles)) {
+                // this is a term
+                // process each article
+                angular.forEach(result.articles, function(value, index) {
+                    // mark html as safe
+                    result.articles[index].content = $sce.trustAsHtml(result.articles[index].content);
+                    // add meta info attributes
+                    angular.extend(result.articles[index], attributes);
+                });                
             }
-            // add meta info attributes
-            angular.extend(result, attributes);
-            // mark html as safe
-            result.content = $sce.trustAsHtml(result.content);
+            else {
+                // add meta info attributes
+                angular.extend(result, attributes);
+                // mark html as safe
+                result.content = $sce.trustAsHtml(result.content);
+            }
             return result;
         });
     };
@@ -103,7 +116,7 @@ angular.module('resipedia')
     this.load = function() {
         return $http.get('index.php?get=resilib_document_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
         .then(
-            function successCallback(response) {
+            function success(response) {
                 var data = response.data;
                 if(typeof data.result != 'object') {
                     $rootScope.search.criteria.total = 0;
@@ -112,7 +125,7 @@ angular.module('resipedia')
                 $rootScope.search.criteria.total = data.total;
                 return data.result;
             },
-            function errorCallback(response) {
+            function error(response) {
                 // something went wrong server-side
                 $rootScope.search.criteria.total = 0;
                 return [];
@@ -145,7 +158,7 @@ angular.module('resipedia')
     this.load = function() {
         return $http.get('index.php?get=resiexchange_question_list&'+$httpParamSerializerJQLike($rootScope.search.criteria)+'&channel='+$rootScope.config.channel)
         .then(
-            function successCallback(response) {
+            function success(response) {
                 var data = response.data;
                 if(typeof data.result != 'object') {
                     $rootScope.search.criteria.total = 0;
@@ -154,7 +167,7 @@ angular.module('resipedia')
                 $rootScope.search.criteria.total = data.total;
                 return data.result;
             },
-            function errorCallback(response) {
+            function error(response) {
                 // something went wrong server-side
                 $rootScope.search.criteria.total = 0;
                 return [];
@@ -710,12 +723,20 @@ angular.module('resipedia')
             popover.id = 'popover-'+elem.attr('id');
             popover.classname = 'popover-' + (classname || 'danger');
 
+// todo : move this elsewhere            
+            function offset(el) {
+                var rect = el.getBoundingClientRect(),
+                scrollLeft = window.pageXOffset || document.documentElement.scrollLeft,
+                scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                return { top: rect.top + scrollTop, left: rect.left + scrollLeft }
+            }
+            
             // scroll to element, if outside viewport
-            var elemYOffset = elem[0].offsetTop;
+            var elemYOffset = offset(elem[0]).top;            
 
             if(elemYOffset < $window.pageYOffset
             || elemYOffset > ($window.pageYOffset + $window.innerHeight)) {
-                $window.scrollTo(0, elemYOffset-($window.innerHeight/4));
+                $window.scrollTo(0, elemYOffset-($window.innerHeight/5));
             }
 
             if(msg.length > 0) {

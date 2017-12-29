@@ -175,7 +175,8 @@ var translations = {
 
     // Articles
     "ARTICLES_ARTICLES": "Articles",    
-
+    "ARTICLES_ARTICLES_COUNT_LABEL": "Articles",
+    
     "ARTICLE_ACTIONS_VOTEUP_TOOLTIP": "Cet article est utile, merci de l'avoir partagé !",
     "ARTICLE_ACTIONS_VOTEDOWN_TOOLTIP": "Cet article est inutile ou ne s'intègre pas dans les thématiques de l'autonomie, la transition et la permaculture",
     "ARTICLE_ACTIONS_STAR_TOOLTIP": "Un clic pour ajouter cet article à tes favoris (un second clic pour le retirer)",

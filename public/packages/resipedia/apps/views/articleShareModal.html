@@ -1,0 +1,31 @@
+<div class="modal-header">
+    <h3 class="modal-title" id="modal-title"><i class="fa fa-share-alt" aria-hidden="true"></i> {{ctrl.title_id | translate}}</h3>
+</div>
+<div class="modal-body" id="modal-body">
+
+        <i class="fa fa-cloud-download" aria-hidden="true"></i>
+        <a href="/pdf/article/{{article.id}}/{{article.title_url}}?download=1" target="_self">{{ 'MODAL_DOCUMENT_SHARE_DOWNLOAD' | translate }}</a>       
+
+        
+        &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;
+        
+        <i class="fa fa-link" aria-hidden="true"></i>
+        <a href="/article/{{article.id}}/{{article.title_url}}" target="_blank">{{ 'MODAL_DOCUMENT_SHARE_LINK' | translate }}</a> 
+
+        
+        &nbsp;&nbsp;<i class="fa fa-ellipsis-v" aria-hidden="true"></i>&nbsp;&nbsp;                    
+          
+        <i class="fa fa-facebook-square" aria-hidden="true"></i>
+        <a href="https://www.facebook.com/dialog/feed?
+app_id=1786954014889199
+&display=page
+&redirect_uri=https%3A//www.resiway.org/resilib.fr%23/article/{{article.id}}/{{article.title_url}}
+&caption={{ article.title }}
+&link=https%3A//www.resiway.org/article/{{article.id}}/{{article.title_url}}
+&picture=https%3A//www.resiway.org/index.php%3Fget%3Dresilib_document_thumbnail%26id%3D{{article.id}}
+&description={{ rootCtrl.htmlToURL(article.description) }}">{{ 'MODAL_DOCUMENT_SHARE_SHARE' | translate }}</a>
+
+</div>
+<div class="modal-footer">
+    <button class="btn btn-success" type="button" autofocus="true" ng-click="ctrl.ok()">{{'MODAL_CLOSE' | translate}}</button>
+</div>
