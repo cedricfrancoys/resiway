@@ -413,16 +413,18 @@ var resiway = angular.module('resipedia', [
         };
         
         
-        rootCtrl.makeLink = function(object_class, object_id) {
+        rootCtrl.makeLink = function(object_class, object_id, object_title) {
+            if(arguments.length < 3) object_title = '';
             switch(object_class) {    
-            case 'resiway\\Author': return '#!/author/'+object_id;            
-            case 'resiway\\Category': return '#!/category/'+object_id;
-            case 'resiexchange\\Question': return '/question/'+object_id;
-            case 'resiexchange\\Answer': return '/answer/'+object_id;
-            case 'resiexchange\\QuestionComment': return '/questionComment/'+object_id;               
-            case 'resiexchange\\AnswerComment': return '/answerComment/'+object_id;
-            case 'resilib\\Document': return '/document/'+object_id;            
-            case 'resilexi\\Article': return '/article/'+object_id;                        
+            case 'resiway\\Author': return '#!/author/'+object_id+'/'+object_title;
+            case 'resiway\\Category': return '#!/category/'+object_id+'/'+object_title;
+            case 'resiexchange\\Question': return '/question/'+object_id+'/'+object_title;
+            case 'resiexchange\\Answer': return '/answer/'+object_id+'/'+object_title;
+            case 'resiexchange\\QuestionComment': return '/questionComment/'+object_id+'/'+object_title;
+            case 'resiexchange\\AnswerComment': return '/answerComment/'+object_id+'/'+object_title;
+            case 'resilib\\Document': return '/document/'+object_id+'/'+object_title;
+            // case 'resilexi\\Article': return '/article/'+object_id+'/'+object_title;
+            case 'resilexi\\Article': return '/article/'+object_title;
             }
         };
 

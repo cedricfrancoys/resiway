@@ -239,7 +239,9 @@ try {
                             $items[$score][] = [
                                 'id'            => $object_id, 
                                 'title'         => $res[$object_id]['title'], 
+                                'title_url'     => $res[$object_id]['title_url'],
                                 'type'          => $pseudo_type,
+                                'class'         => $object_class,
                                 'url'           => $pseudo_type.'/'.$object_id.'/'.$res[$object_id]['title_url'],
                                 'description'   => $res[$object_id]['content_excerpt'],
                                 'count_views'   => $res[$object_id]['count_views'], 
