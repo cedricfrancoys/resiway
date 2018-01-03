@@ -28,6 +28,7 @@
     "/user/:id/:name?":"/resipedia.fr#!/user/:id/:name",
     "/help/category/:id/:title?":"/resipedia.fr#!/help/category/:id/:title",
     "/help/categories":"/resipedia.fr#!/help/categories",
+    "/help/topic/:id/:title?":"/resipedia.fr#!/help/topic/:id/:title",    
     "/meta.resiexchange.fr":"?show=resiway_meta.resiexchange.fr",    
     "/resiway.fr":"?show=resiway_resiway.fr",
     "/resiexchange.fr":"?show=resipedia_resipedia.fr",
