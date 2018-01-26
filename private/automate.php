@@ -95,8 +95,9 @@ try {
                 
                 // log in as selected user
                 $context = Context::getInstance();
+                
+                trigger_error("QN_APP::logging as bot $bot_id", QN_REPORT_DEBUG);                
                 $context->set('user_id', $bot_id);
-                trigger_error("QN_PHP::logging as bot $bot_id", QN_REPORT_DEBUG);
                 
                 // reset request parameters
                 $context->httpRequest()->del(['document_id', 'question_id', 'article_id']);                
@@ -118,8 +119,7 @@ try {
                     break;                    
                 }
                 
-                trigger_error("QN_PHP::relaying to {$package}/actions/{$class}/{$action}", QN_REPORT_DEBUG);
-                // echo "perform {$action} on {$class} {$object_id}\n";                
+                trigger_error("QN_APP::relaying to {$package}/actions/{$class}/{$action}", QN_REPORT_DEBUG);
                 $json = get_include_contents("packages/{$package}/actions/{$class}/{$action}.php");
                 
                 $res = json_decode($json, true);
