@@ -101,10 +101,20 @@ try {
                 // perform action
                 list($package, $class, $action) = explode('_', $action_name);
 
-                $context->httpRequest()->set([
-                    'document_id' => $object_id,
-                    'question_id' => $object_id                    
-                ]);
+                // inject required parameter to current HTTP request
+                switch($object_class) {
+                case 'resilib\Document':
+                    $context->httpRequest()->set([
+                        'document_id' => $object_id,
+                    ]);
+                
+                    break;
+                case 'resiexchange\Question':
+                    $context->httpRequest()->set([
+                        'question_id' => $object_id                    
+                    ]);                
+                    break;                    
+                }
                 
                 trigger_error("QN_PHP::relaying to {$package}/actions/{$class}/{$action}", QN_REPORT_DEBUG);
                 // echo "perform {$action} on {$class} {$object_id}\n";                
