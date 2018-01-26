@@ -12,7 +12,7 @@ use qinoa\php\Context;
 
 class Reporter extends Singleton {
 	
-    // current process id for backward identification
+    // PHP context instance
     private $context;
     
     /**
@@ -20,7 +20,7 @@ class Reporter extends Singleton {
     *
     */
 	public function __construct(Context $context) {
-        $this->context = $context;             
+        $this->context = $context;
 		set_error_handler(__NAMESPACE__."\Reporter::errorHandler");
 		set_exception_handler(__NAMESPACE__."\Reporter::uncaughtExceptionHandler");
 	}
@@ -36,7 +36,7 @@ class Reporter extends Singleton {
     public function getThreadId() {
         // assign a unique thread ID (using apache pid, current unix time, and invoked script with operation, if any)
         $operation = $this->context->get('operation');
-        $data = getmypid().';'.time().';'.$_SERVER['SCRIPT_NAME'].(($operation)?" ($operation)":'');
+        $data = $this->context->getPid().';'.$this->context->getTime().';'.$_SERVER['SCRIPT_NAME'].(($operation)?" ($operation)":'');
         // return a base64 URL-safe encoded identifier
         return strtr(base64_encode($data), '+/', '-_');
     }

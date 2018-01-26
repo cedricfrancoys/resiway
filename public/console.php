@@ -122,6 +122,7 @@ for($j = $i;$j < $len-1; ++$j){
 // retrieve current thread infos
 $info = base64_decode(strtr($thread_id, '-_', '+/'));
 list($thread_pid, $thread_time, $thread_script) = explode(';', $info);
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -132,9 +133,9 @@ list($thread_pid, $thread_time, $thread_script) = explode(';', $info);
 </head>
 <body>
 <?php
-echo "<div style=\"margin-left: 10px;\"><a title=\"$thread_pid\" href=\"?thread_id=$thread_id\">".date('Y-m-d H:i:s', $thread_time)." ".$thread_script."</a>&nbsp;<a href=\"?thread_id=$previous_thread\"><i class=\"fa fa-caret-up\"></i></a>&nbsp;<a href=\"?thread_id=$next_thread\"><i class=\"fa fa-caret-down\"></i></a></div>".PHP_EOL;
+echo "<div style=\"margin-left: 10px;\"><a title=\"PID $thread_pid\" href=\"?thread_id=$thread_id\">".date('Y-m-d H:i:s', explode(' ', $thread_time)[1])." ".$thread_script."</a>&nbsp;<a href=\"?thread_id=$previous_thread\"><i class=\"fa fa-caret-up\"></i></a>&nbsp;<a href=\"?thread_id=$next_thread\"><i class=\"fa fa-caret-down\"></i></a></div>".PHP_EOL;
 
-// todo : add fatal errors from error.log (check if last line is newer than qn_error.log last line) 
+// todo : add fatal errors from error.log (check if last line is newer than qn_error.log's last line) 
 
 
 // now skip all lines that dont belong to that thread

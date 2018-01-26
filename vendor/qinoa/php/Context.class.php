@@ -8,15 +8,26 @@ use qinoa\http\HttpResponse;
 
 class Context extends Singleton {
     
-    private $httpRequest;
-    private $httpResponse;
+    private $pid;
+    
+    private $time;
+
     private $session_id;
+    
+    private $httpRequest;
+    
+    private $httpResponse;
+    
     
     /**
      * This method cannot be called directly (should be invoked through Singleton::getInstance)
      *
      */
     protected function __construct(/* no dependency */) {
+        // get PID from HTTP server / PHP cli
+        $this->pid = getmypid();
+        // get current unix time in microseconds
+        $this->time = microtime();
         // retrieve current session identifier
         $this->session_id = session_id();
         // init session if not yet started
@@ -46,6 +57,14 @@ class Context extends Singleton {
     public function set($var, $value) {
         $GLOBALS[$var] = $value;
         return $this;
+    }
+    
+    public function getTime() {
+        return $this->time;
+    }
+    
+    public function getPid() {
+        return $this->pid;
     }
     
     public function getHttpRequest() {
