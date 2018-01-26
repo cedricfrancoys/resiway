@@ -1,7 +1,7 @@
 <?php
 /* 
     This file is part of the qinoa framework <http://www.github.com/cedricfrancoys/qinoa>
-    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Some Rights Reserved, Cedric Francoys, 2017, Yegen
     Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
 */
 namespace qinoa\http;
@@ -64,6 +64,62 @@ class HttpUri {
             $query = '?'.$query;
         }
         return $this->getScheme().'://'.$this->getAuthority().$this->getPath().$query;
+    }
+
+    /**
+     * Get the value of specified param from the query string, fallback to $default if not found.
+     *
+     *
+     * @return mixed If $param is an array of parameters names, returns an assiociative array containing values for each given parameter, otherwise returns the value of a single parameter. If given parameter is not found, returns specified default value (fallback to null)     
+     */
+    public function get($param, $default=null) {
+        $params = [];
+        // retrieve parameters associative array from current query string
+        parse_str($this->getQuery(), $params);
+        // bulk get : $param is an array of parameters names
+        if(is_array($param)) {
+            $res = [];
+            foreach($param as $p) {
+                if(isset($params[$p])) {
+                    $res[$p] = $params[$p];
+                }
+                else {
+                    $res[$p] = null;
+                }
+            }
+        }
+        // $param is a single parameter name
+        else {
+            $res = $default;
+            if(isset($params[$param])) $res = $params[$param];
+        }
+        return $res;        
+    }
+
+    /**
+     * Assign a new parameter to URI query string, or update an existing one to a new value.
+     * This method overwrites existing parameter(s) from query string, if any.
+     * 
+     * @param   $param  mixed(string|array)    For single assignement, $param is the name of the parameter to be set. In case of bulk assign, $param is an associative array with keys and values respectively holding parameters names and values.
+     * @param   $value  mixed   If $param is an array, $value is not taken under account (this argument is therefore optional)
+     * @return  HttpUri Returns current instance
+     */    
+    public function set($param, $value=null) {    
+        $params = [];
+        // retrieve parameters associative array from current query string
+        parse_str($this->getQuery(), $params);
+        // update parameters associative array
+        if(is_array($param)) {
+            foreach($param as $p => $val) {
+                $params[$p] = $val;
+            }
+        }
+        else {
+            $params[$param] = $value;
+        }
+        // update query string
+        $this->setQuery(http_build_query($params)); 
+        return $this;
     }
     
     public function setUri($uri) {
@@ -200,5 +256,15 @@ class HttpUri {
     public function getBasePath() {
         return str_replace(DIRECTORY_SEPARATOR, '/', dirname($this->parts['path']));        
     }
-    
+
+    public function query() {
+        $args = func_get_args();
+        if(count($args) < 1) {
+            return $this->getQuery();
+        }
+        else {
+            $query = $args[0];
+            return $this->setQuery($query);
+        }
+    }    
 }

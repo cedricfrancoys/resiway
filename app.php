@@ -1,7 +1,7 @@
 <?php
 /**
-*    This file is part of the easyObject project.
-*    http://www.cedricfrancoys.be/easyobject
+*    This file is part of the qinoa project.
+*    http://www.cedricfrancoys.be/qinoa
 *
 *    Copyright (C) 2012  Cedric Francoys
 *
@@ -28,6 +28,8 @@
 * Include dependencies
 */
 
+use qinoa\php\Context;
+
 // load bootstrap library : system constants and functions definitions
 /*
     QN library allows to include required files and classes	
@@ -36,6 +38,7 @@ include_once('../qn.lib.php');
 
 // 3) load current user settings
 // try to start or resume the session
+// todo : deprecate : init in context
 if(!strlen(session_id())) session_start() or die(__FILE__.', line '.__LINE__.", unable to start session.");
 
 
@@ -60,8 +63,10 @@ define('BASE_DIR', substr($_SERVER['SCRIPT_NAME'], 0, strrpos($_SERVER['SCRIPT_N
 
 // Content items :
 //		- for unidentified users, language is DEFAULT_LANG
-//		- for identified users language is the one defined in the session
+//		- for identified users, language is the one defined in their preferences
 //		- if a parameter lang is defined in the HTTP request, it overrides user's language
+
+// todo : store chosen language in JWT header
 isset($_SESSION['LANG']) or $_SESSION['LANG'] = DEFAULT_LANG;
 $params = config\QNlib::get_params(array('lang'=>$_SESSION['LANG']));
 $_SESSION['LANG'] = $params['lang'];
@@ -69,67 +74,121 @@ $_SESSION['LANG'] = $params['lang'];
 // from now on, we let the requested script decide whether or not to output error messages if any
 set_silent(false);
 
-// we need to prevent double escaping (especially for class names)
-if (get_magic_quotes_gpc()) {
-	function stripslashes_deep($value) {
-		return is_array($value) ?  array_map('stripslashes_deep', $value) : stripslashes($value);
-	}
-	$_REQUEST = array_map('stripslashes_deep', $_REQUEST);
-}
 
-// We need the whole $_FILES array in order to let the manager handle binary fields
-// So we merge superglobal arrays $_FILES and $_REQUEST
-$_REQUEST = array_merge($_REQUEST, $_FILES);
+$context = Context::getInstance();
+$request = $context->getHttpRequest();
 
 /**
-* Dispatching : include the requested script
+* Dispatching : try to resolve targetted controller, if specified and include related script file
 */
-$accepted_requests = array(
-    'do'	=> array('type' => 'action handler','dir' => 'actions'),    // do something server-side
-    'get'	=> array('type' => 'data provider',	'dir' => 'data'),       // return some data (json)
-    'show'	=> array('type' => 'application',	'dir' => 'apps')        // output rendering information (html/js)
+$resolved = [
+    'type'      => null,
+    'operation' => null,
+    'package'   => null,   
+    'script'    => null
+];
+
+// define accepted operations specifications
+$accepted_operations = array(
+    'do'	=> array('kind' => 'ACTION_HANDLER','dir' => 'actions'),    // do something server-side
+    'get'	=> array('kind' => 'DATA_PROVIDER',	'dir' => 'data'),       // return some data 
+    'show'	=> array('kind' => 'APPLICATION',	'dir' => 'apps')        // output rendering information (UI)
 );
 
-
-// check current request for package specification
-foreach($accepted_requests as $request_key => $request_conf) {
-	if(isset($_REQUEST[$request_key])) {
-		$parts = explode('_', $_REQUEST[$request_key]);
-		$package = array_shift($parts);
-		config\define('DEFAULT_PACKAGE', $package);	
-		break;
-	}
-}
-
-// if no package is pecified in the URL, check for DEFAULT_PACKAGE constant (defined in root config.inc.php)
-if(!config\defined('DEFAULT_PACKAGE') && defined('DEFAULT_PACKAGE')) config\define('DEFAULT_PACKAGE', DEFAULT_PACKAGE);
-
-if(config\defined('DEFAULT_PACKAGE')) {
-	// if package has a custom configuration file, load it
-	if(is_file('packages/'.config\config('DEFAULT_PACKAGE').'/config.inc.php')) include('packages/'.config\config('DEFAULT_PACKAGE').'/config.inc.php');
-}
-
-// if no request is specified, set DEFAULT_PACKAGE/DEFAULT_APP as requested script
-if(count(array_intersect_key($accepted_requests, $_REQUEST)) == 0) {
-	if(config\defined('DEFAULT_PACKAGE') && config\defined('DEFAULT_APP')) {
-        $_REQUEST['show'] = config\config('DEFAULT_PACKAGE').'_'.config\config('DEFAULT_APP');
+// retrieve current query string parameters
+$uri_params = [];        
+parse_str($request->uri()->query(), $uri_params);
+// lookup amongst accepted request kinds
+foreach($uri_params as $param => $operation_val) {
+    foreach($accepted_operations as $operation_key => $operation_conf) {    
+        if($param == $operation_key) {
+            $resolved['type'] = $operation_key;
+            $resolved['operation'] = $operation_val;
+            $parts = explode('_', $resolved['operation']);
+            if(count($parts) > 0) {
+                // use first part as package name
+                $resolved['package'] = array_shift($parts);
+                // use reamining parts to build script path
+                if(count($parts) > 0) {
+                    $resolved['script'] = implode('/', $parts).'.php';     
+                }
+            }
+            break 2;            
+        }
     }
 }
 
-// try to include requested script
-foreach($accepted_requests as $request_key => $request_conf) {
-	if(isset($_REQUEST[$request_key])) {
-		$parts = explode('_', $_REQUEST[$request_key]);
-		$package = array_shift($parts);
-		// if no app is specified, use the default app (if any)
-		if(empty($parts) && config\defined('DEFAULT_APP')) $parts[] = config\config('DEFAULT_APP');
-		$filename = 'packages/'.$package.'/'.$request_conf['dir'].'/'.implode('/', $parts).'.php';
-		is_file($filename) or die ("'{$_REQUEST[$request_key]}' is not a valid {$request_conf['type']}.");
-		// export as constants all parameters declared with config\define() to make them accessible through global scope
-		config\export_config();
+// if no package is pecified in the URI, check for DEFAULT_PACKAGE constant (which might be defined in root config.inc.php)
+if(is_null($resolved['package']) && defined('DEFAULT_PACKAGE')) $resolved['package'] = DEFAULT_PACKAGE;
 
-		// include and execute requested script
-		include($filename);
-		break;
-	}
+// if package has a custom configuration file, load it
+if(!is_null($resolved['package']) && is_file('packages/'.$resolved['package'].'/config.inc.php')) {	
+	include('packages/'.$resolved['package'].'/config.inc.php');
+}
+
+// if no request is specified, if possible set DEFAULT_PACKAGE/DEFAULT_APP as requested script
+if(is_null($resolved['type'])) {
+    if(is_null($resolved['package'])) {
+        // send HTTP response
+        $context->httpResponse()
+                        // set response code to NOT FOUND                
+                        ->status(404)
+                        // output json data telling what is expected                                    
+                        ->body([
+                            'errors'    => ['NO_DEFAULT_PACKAGE' => '']
+                        ])
+                        ->send();
+        // terminate script
+        exit();        
+    }
+	if(config\defined('DEFAULT_APP')) {
+        $resolved['type'] = 'show';
+        $resolved['script'] = config\config('DEFAULT_APP').'.php';
+        // maintain current URI consistency
+        $request->uri()->set('show', $resolved['package'].'_'.config\config('DEFAULT_APP'));
+    }
+    else {
+        // send HTTP response
+        $context->httpResponse()
+                        // set response code to NOT FOUND               
+                        ->status(404)
+                        // output json data telling what is expected                                    
+                        ->body([
+                            'errors'    => ['NO_DEFAULT_APP_FOR_PACKAGE' => $resolved['package']]
+                        ])
+                        ->send();
+        // terminate script
+        exit();
+    }
+}
+
+// include resolved script, if any
+if(isset($accepted_operations[$resolved['type']])) {
+    $operation_conf = $accepted_operations[$resolved['type']];
+    // remove operation parameter from request body, if any
+    if($request->get($resolved['type']) == $resolved['operation']) {
+        $request->del($resolved['type']);
+    }
+    // store current operation into context
+    $context->set('operation', $resolved['operation']);
+    // if no app is specified, use the default app (if any)
+    if(empty($resolved['script']) && config\defined('DEFAULT_APP')) $resolved['script'] = config\config('DEFAULT_APP').'.php';
+    $filename = 'packages/'.$resolved['package'].'/'.$operation_conf['dir'].'/'.$resolved['script'];
+    if(!is_file($filename)) {
+        // send HTTP response
+        $context->httpResponse()
+                        // set response code to NOT FOUND               
+                        ->status(404)
+                        // output json data telling what is expected                                    
+                        ->body([
+                            'errors'    => ['INVALID_'.$operation_conf['kind'] => $resolved['operation']]
+                        ])
+                        ->send();
+        // terminate script
+        exit();        
+    }
+    // export as constants all parameters declared with config\define() to make them accessible through global scope
+    config\export_config();
+    // include and execute requested script
+    include($filename);        
 }

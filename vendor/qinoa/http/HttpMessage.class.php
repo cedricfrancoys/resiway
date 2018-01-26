@@ -1,7 +1,7 @@
 <?php
 /* 
     This file is part of the qinoa framework <http://www.github.com/cedricfrancoys/qinoa>
-    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Some Rights Reserved, Cedric Francoys, 2017, Yegen
     Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
 */
 namespace qinoa\http;
@@ -61,7 +61,27 @@ use qinoa\http\HttpHeaders;
 
 
 class HttpMessage {
-   
+      
+    // @var string      (ex.: POST)
+    private $method;
+    
+    // @var string      (ex.: HTTP/1.1)
+    private $protocol;
+    
+    // @var mixed (string | array)
+    // The body part is intended to be an associative array mapping keys (parameters) with their related values.
+    // However, if HTTP message content-type cannot be determined, we fallback to a raw string.
+    private $body;
+    
+    // @var string
+    private $status;
+
+    // @var HttpUri
+    private $uri;     
+    
+    // @var HttpHeader
+    private $headers;    
+
     protected static $HTTP_METHODS = ['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE', 'PURGE', 'OPTIONS', 'TRACE', 'CONNECT'];
 
     /**
@@ -150,26 +170,7 @@ class HttpMessage {
         '525' => 'SSL Handshake Failed',
         '526' => 'Invalid SSL Certificate',
         '527' => 'Railgun Error'
-    ];
-    
-    // @var string      (ex.: POST)
-    private $method;
-    
-    // @var string      (ex.: HTTP/1.1)
-    private $protocol;
-    
-    // @var mixed (string | array)
-    private $body;
-    
-    // @var string
-    private $status;
-
-    // @var HttpUri
-    private $uri;     
-    
-    // @var HttpHeader
-    private $headers;    
-
+    ];    
     
     /**
      *
@@ -257,10 +258,17 @@ class HttpMessage {
         if($query = $this->uri->getQuery()) {
             $body = [];
             parse_str($query, $body);
-            $this->setBody($body);
+            $this->extendBody($body);
         }
         return $this;
     }    
+    
+    public function extendBody($params) {
+        if(is_array($params) && is_array($this->body)) {
+            $this->body = array_merge($this->body, $params);
+        }
+        return $this;
+    }
     
     /**
      * Tries to force conversion to an associative array based on content-type.
@@ -270,9 +278,39 @@ class HttpMessage {
      * @param $body mixed (string | array)
      */
     public function setBody($body) {
+
         if(!is_array($body)) {
             // attempt to convert body to an associative array 
             switch($this->contentType()) {
+            case 'multipart/form-data':                
+                // retrieve boundary from content type header
+                preg_match('/boundary=(.*)$/', $this->getHeader('Content-Type'), $matches);
+                $boundary = $matches[1];
+                // split content by boundary and get rid of last -- element
+                $blocks = preg_split("/-+$boundary/", $body);
+                array_pop($blocks);
+                // build request array
+                $request = [];
+                // loop data blocks
+                foreach ($blocks as $id => $block) {
+                    // skip empty blocks
+                    if (empty($block)) continue;
+                    // parse uploaded files
+                    if (strpos($block, 'application/octet-stream') !== FALSE) {
+                      // match "name", then everything after "stream" (optional) except for prepending newlines 
+                      preg_match("/name=\"([^\"]*)\".*stream[\n|\r]+([^\n\r].*)?$/s", $block, $matches);
+                    }
+                    // parse all other fields
+                    else {
+                      // match "name" and optional value in between newline sequences
+                      preg_match('/name=\"([^\"]*)\"[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
+                    }
+                    // assign param/value pair to related body index
+                    $request[$matches[1]] = $matches[2];
+                }            
+                $body = http_build_query($request);                
+                // we can now deal with the body as form-urlencoded data
+                // hence no break !
             case 'application/x-www-form-urlencoded':
                 $params = [];
                 parse_str($body, $params);
@@ -312,7 +350,7 @@ class HttpMessage {
         // handle single status code argument
         if(is_numeric($status)) {
             // retrieve the 'reason' part
-            $reason = isset(self::$HTTP_STATUS_CODES[$status])?' '.$status_codes[$status]:'';
+            $reason = isset(self::$HTTP_STATUS_CODES[$status])?' '.self::$HTTP_STATUS_CODES[$status]:'';
             $status = $status.$reason;
         }
         $this->status = $status;
@@ -397,26 +435,73 @@ class HttpMessage {
     }
     
     /**
-     * tries to retrieve a value from message body based on a given param name
+     * Retrieve a value from message body based on a given param name
      *
+     * @return mixed If $param is an array of parameters names, returns an assiociative array containing values for each given parameter, otherwise returns the value of a single parameter. If given parameter is not found, returns specified default value (fallback to null)
      */
     public function get($param, $default=null) {
-        $res = $default;
-        if(isset($this->body) && is_array($this->body)) {
-            if(isset($this->body[$param])) {
-                $res = $this->body[$param];
+        if(is_array($param)) {
+            $res = [];
+            foreach($param as $p) {
+                if(isset($this->body[$p])) {
+                    $res[$p] = $this->body[$p];
+                }
+                else {
+                    $res[$p] = null;
+                }
+            }
+        }
+        else {
+            $res = $default;
+            if(isset($this->body) && is_array($this->body)) {
+                if(isset($this->body[$param])) {
+                    $res = $this->body[$param];
+                }
             }
         }
         return $res;
     }
     
-    public function set($param, $value) {
-        if(isset($this->body) && is_array($this->body)) {
-            $this->body[$param] = $value;
+    /**
+     * Assign a new parameter to message body, or update an existing one to a new value.
+     * This method overwrites raw string value, if any.
+     * 
+     * @param   $param  mixed(string|array)    For single assignement, $param is the name of the parameter to be set. In case of bulk assign, $param is an associative array with keys and values respectively holding parameters names and values.
+     * @param   $value  mixed   If $param is an array, $value is not taken under account (this argument is therefore optional)
+     * @return  HttpMessage Returns current instance
+     */
+    public function set($param, $value=null) {        
+        if(!is_array($this->body)) {
+            $this->body = [];
         }
+        if(is_array($this->body)) {
+            if(is_array($param)) {
+                foreach($param as $p => $val) {
+                    $this->body[$p] = $val;
+                }
+            }
+            else {
+                $this->body[$param] = $value;
+            }
+        }
+        return $this;
     }
     
-    // below are additional method using short name and get/set based on arguments
+    public function del($param) {        
+        if(is_array($this->body)) {
+            if(is_array($param)) {
+                foreach($param as $p) {
+                    unset($this->body[$p]);
+                }
+            }
+            else {
+                unset($this->body[$param]);
+            }
+        }
+        return $this;
+    }
+        
+    // Here-below are additional method using short name and get/set based on arguments
 
     
     public function body() {
@@ -491,7 +576,7 @@ class HttpMessage {
 
     /**
      * Charset getter/setter method based on arguments list
-     * reminder: charset in stored either in 'content-type' or 'accept-charset' header
+     * reminder: charset is stored either in 'content-type' or 'accept-charset' header
      *
      */
     public function charset() {
@@ -505,6 +590,22 @@ class HttpMessage {
         }
     }
 
+    /**
+     * Status getter/setter method based on arguments list
+     * Argument might be a full status line or a numeric code
+     *
+     */
+    public function status() {
+        $args = func_get_args();
+        if(count($args) < 1) {
+            return $this->getStatus();
+        }
+        else {
+            $status = $args[0];
+            return $this->setStatus($status);
+        }
+    }
+    
     /**
      * Content type getter/setter method based on arguments list
      * reminder: content type in stored either in 'content-type' or 'accept' header

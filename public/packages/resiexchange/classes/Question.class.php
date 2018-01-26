@@ -150,18 +150,18 @@ class Question extends \easyobject\orm\Object {
            
     public static function onchangeContent($om, $oids, $lang) {
         // force re-compute content_excerpt
-        $om->write('resiexchange\Question', $oids, ['content_excerpt' => null, 'indexed' => false], $lang);        
+        $om->write(__CLASS__, $oids, ['content_excerpt' => null, 'indexed' => false], $lang);        
     }
 
     public static function onchangeTitle($om, $oids, $lang) {
         // force re-compute title_url
-        $om->write('resiexchange\Question', $oids, ['title_url' => null], $lang);        
+        $om->write(__CLASS__, $oids, ['title_url' => null, 'indexed' => false], $lang);        
     }    
 
     // Returns excerpt of the content of max 200 chars cutting on a word-basis   
     public static function getContentExcerpt($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiexchange\Question', $oids, ['content']);
+        $res = $om->read(__CLASS__, $oids, ['content']);
         foreach($res as $oid => $odata) {
             $result[$oid] = TextTransformer::excerpt(HTMLToText::convert($odata['content'], false), RESIEXCHANGE_QUESTION_CONTENT_EXCERPT_LENGTH_MAX);
         }
@@ -171,7 +171,7 @@ class Question extends \easyobject\orm\Object {
     // todo: define slug length in config file
     public static function getTitleURL($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiexchange\Question', $oids, ['title']);
+        $res = $om->read(__CLASS__, $oids, ['title']);
         foreach($res as $oid => $odata) {
             // note: final format will be: #/question/{id}/{title}
             $result[$oid] = TextTransformer::slugify($odata['title'], 200);

@@ -2,7 +2,7 @@
 /* voteup.php - resiexchange_answer_voteup controller
 
     This file is part of the resiway application <http://www.github.com/cedricfrancoys/resiway>
-    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Some Rights Reserved, Cedric Francoys, 2017, Yegen
     Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
 */
 

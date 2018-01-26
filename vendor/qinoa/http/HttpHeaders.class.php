@@ -1,7 +1,7 @@
 <?php
 /* 
     This file is part of the qinoa framework <http://www.github.com/cedricfrancoys/qinoa>
-    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Some Rights Reserved, Cedric Francoys, 2017, Yegen
     Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
 */
 namespace qinoa\http;
@@ -114,9 +114,19 @@ class HttpHeaders {
         }
         return $cookies;
     }
+
+    public function getCookie($cookie, $default=null)  {
+        $cookies = $this->getCookies();
+        if(isset($cookies[$cookie])) {
+            return $cookies[$cookie];
+        }
+        return $default;
+    }
+    
+// todo: make explicit distinction between charset used in the message and expected charset in response
     
     public function getCharsets()  {
-        $charsets = (array) 'utf-8';
+        $charsets = [];
         if(isset($this->headers['Accept-Charset'])) {
             // general syntax: character_set [q=qvalue]
             // example: Accept-Charset: iso-8859-5, unicode-1-1; q=0.8
@@ -130,8 +140,14 @@ class HttpHeaders {
             // example: Content-Type: text/html; charset=ISO-8859-4
             $parts = explode(';', $this->headers['Content-Type']);
             if(count($parts) > 1) {
-                $charsets = trim($parts[1]);
+                list($key, $val) = explode('=', $parts[1]);
+                if(trim($key) == 'charset') {
+                    $charsets[] = trim($val);
+                }                
             }
+        }
+        if(empty($charsets)) {
+            $charsets = (array) 'utf-8';
         }
         return $charsets;
     }
@@ -235,18 +251,19 @@ class HttpHeaders {
      */
     public function getContentType() {        
         $content_type = '';
-        if(isset($this->headers['Accept'])) {
+        // use content-type header, if defined
+        if(isset($this->headers['Content-Type'])) {
+            // general syntax: media-type
+            // example: Content-Type: text/html; charset=ISO-8859-4
+            $content_type = trim(explode(';', $this->headers['Content-Type'])[0]);
+        }
+        else if(isset($this->headers['Accept'])) {
             // general syntax: type/subtype [q=qvalue]
             // example: Accept: text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c
             $parts = explode(',', $this->headers['Accept']);
             if(count($parts)) {
                 $content_type = array_map(function($a) { return trim(explode(';', $a)[0]); }, $parts);
             }
-        }
-        else if(isset($this->headers['Content-Type'])) {
-            // general syntax: media-type
-            // example: Content-Type: text/html; charset=ISO-8859-4
-            $content_type = trim(explode(';', $this->headers['Content-Type'])[0]);
         }
         return $content_type;
     }

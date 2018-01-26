@@ -108,8 +108,6 @@ class ObjectManager {
         $this->packages = null;
         $this->cache = [];
 		$this->instances = [];
-		// initialize error handler
-		new EventListener(); 
 	}
     
     
@@ -196,7 +194,7 @@ class ObjectManager {
 			return $this->instances[$class];
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+			trigger_error($e->getMessage(), E_USER_ERROR);
 			throw new Exception('unable to get static instance', $e->getCode());
 		}
 	}
@@ -213,7 +211,7 @@ class ObjectManager {
 			$object = &$this->getStaticInstance($object_class);
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+			trigger_error($e->getMessage(), E_USER_ERROR);
 			return $e->getCode();
 		}
 		return $object->getTable();
@@ -305,7 +303,7 @@ class ObjectManager {
             foreach(array_diff($ids, $found_ids) as $missing_id) {
                 $index = array_search($missing_id, $valid_ids);
                 unset($valid_ids[$index]);
-                EventListener::ExceptionHandler(new Exception("unknown object #'$missing_id' of class '$class"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
+                trigger_error("unknown object #'$missing_id' of class '$class", E_USER_WARNING);
             }
             // remember valid identifiers
             foreach($valid_ids as $id) $this->identifiers[$class][$id] = true;
@@ -366,7 +364,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);                    
 				}
 			},
 			'simple'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -390,7 +388,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'one2many'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -424,7 +422,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'many2many'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -455,7 +453,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'function'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -468,7 +466,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'dotted'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -514,7 +512,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
             'related' => function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -558,7 +556,7 @@ class ObjectManager {
                     }
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
                 
             });
@@ -622,7 +620,7 @@ class ObjectManager {
 
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 			throw new Exception('unable to load object fields', $e->getCode());
 		}
 	}
@@ -670,7 +668,7 @@ class ObjectManager {
                     );                    
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'simple'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -682,7 +680,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'one2many' 	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -709,7 +707,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'many2many' =>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -718,7 +716,7 @@ class ObjectManager {
 						foreach($fields as $field) {
 							$value = $om->cache[$class][$oid][$field][$lang];
 							if(!is_array($value)) {
-                                EventListener::ExceptionHandler(new Exception("wrong value for field '$field' of class '$class', should be an array"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
+                                trigger_error("wrong value for field '$field' of class '$class', should be an array", E_USER_ERROR);                               
                                 continue;
                             }
 							$ids_to_remove = array();
@@ -756,7 +754,7 @@ class ObjectManager {
 					}
 				}
 				catch(Exception $e) {
-					EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                    trigger_error($e->getMessage(), E_USER_ERROR);
 				}
 			},
 			'function' =>	function($om, $ids, $fields) use ($schema, $class, $lang){
@@ -792,7 +790,7 @@ class ObjectManager {
 
 		}
 		catch (Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 		}
 	}
 
@@ -806,7 +804,7 @@ class ObjectManager {
                 $instance = &$this->getStaticInstance($object_class);
             }
             catch(Exception $e) {
-                EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+                trigger_error($e->getMessage(), E_USER_ERROR);
             }
         }
 		return $instance;
@@ -832,7 +830,6 @@ class ObjectManager {
                 $constraints = $static_instance->getConstraints();
                 //(unexisting fields are ignored by write method)
                 foreach($values as $field => $value) {
-// todo: add a default constraint to check that syntax matches field type (use regexp)
                     if(isset($constraints[$field]) 
                     && isset($constraints[$field]['function']) ) {
                         $validation_func = $constraints[$field]['function'];
@@ -845,7 +842,7 @@ class ObjectManager {
             }
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 			$res = $e->getCode();
 		}
 		return $res;
@@ -863,8 +860,6 @@ todo : to validate
         $db = $this->getDBHandler();
         
 		try {
-            // this has been moved to qn.api.php
-			// if(!AccessController::hasRight($uid, $class, 0, R_CREATE)) throw new Exception("user '$uid' does not have permission to create new objects of class '$class'", NOT_ALLOWED);
 			$object = &$this->getStaticInstance($class);
             
 			$object_table = $this->getObjectTableName($class);
@@ -901,7 +896,7 @@ todo : to validate
                 // remove fields not defined in related schema
                 if(!in_array($field, $allowed_fields)) {
                     unset($fields[$field]);
-                    EventListener::ExceptionHandler(new Exception('unknown field ('.$field.') in $fields arg'), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
+                    trigger_error('unknown field ('.$field.') in $fields arg', E_USER_WARNING);
                 }
             }
             
@@ -912,7 +907,7 @@ todo : to validate
             }
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __FILE__.', '.__METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 			$res = $e->getCode();
 		}
 		return $res;
@@ -962,7 +957,7 @@ todo: signature differs from other methods	(returned value)
 					// remove fields not defined in related schema
 					if(!in_array($field, $allowed_fields)) {
 						unset($fields[$field]);
-						EventListener::ExceptionHandler(new Exception('unknown field ('.$field.') in $fields arg'), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
+                        trigger_error('unknown field ('.$field.') in $fields arg', E_USER_WARNING);
 					}
 				}
 			}
@@ -1002,7 +997,7 @@ todo: signature differs from other methods	(returned value)
 
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 			$res = $e->getCode();
 		}
 		return $res;
@@ -1096,7 +1091,7 @@ todo: signature differs from other methods	(returned value)
 					// remove fields not defined in related schema
 					if(!in_array($field, $allowed_fields)) {
 						unset($fields[$key]);
-						EventListener::ExceptionHandler(new Exception("unknown field '$field' for class : '$class'"), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);
+                        trigger_error("unknown field '$field' for class : '$class'", E_USER_WARNING);
 					}
                 }                
 			}
@@ -1136,7 +1131,7 @@ todo: signature differs from other methods	(returned value)
 			// 4) build result by reading from internal buffer
 			foreach($ids as $oid) {
                 if(!isset($this->cache[$class][$oid]) || empty($this->cache[$class][$oid])) {
-                    EventListener::ExceptionHandler(new Exception("unknown object #'$oid' for class : '$class'", UNKNOWN_OBJECT), __CLASS__.'::'.__METHOD__, E_USER_NOTICE);                        
+                    trigger_error("unknown object #'$oid' for class : '$class'", E_USER_WARNING);
                     continue;
                 }
                 // init result for given id, if missing
@@ -1179,7 +1174,7 @@ todo: signature differs from other methods	(returned value)
 			}
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __CLASS__.'::'.__METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 			$res = $e->getCode();
 		}
 		return $res;
@@ -1217,8 +1212,6 @@ todo: signature differs from other methods	(returned value)
             $ids = $this->filterValidIdentifiers($object_class, $ids);
             
 			foreach($ids as $object_id) {
-                // this has been moved to qn.api.php
-				// if(!AccessController::hasRight($user_id, $object_class, (array) $object_id, R_DELETE)) throw new Exception("user($user_id) does not have permission to remove object($object_class)", NOT_ALLOWED);
 				foreach($schema as $field => $def) {
 // todo : handle cascading for other relation types
 					if($def['type'] == 'one2many') {
@@ -1233,18 +1226,13 @@ todo: signature differs from other methods	(returned value)
 			$table_name = $this->getObjectTableName($object_class);
 			if ($permanent) {
 				$db->deleteRecords($table_name, $ids);
-				$log_action = R_DELETE;
-				$log_fields = NULL;
 			}
 			else {
 				$db->setRecords($table_name, $ids, array('deleted'=>1));
-				$log_action = R_WRITE;
-				$log_fields = array('deleted');
 			}
-//			foreach($ids as $object_id) $this->setLog($user_id, $log_action, $object_class, $object_id, $log_fields);
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __FILE__.', '.__METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 			$result = $e->getCode();
 		}
 		return $result;	
@@ -1279,8 +1267,6 @@ todo: signature differs from other methods	(returned value)
         $db = $this->getDBHandler();
         
 		try {
-            // this has been moved to qn.api.php
-			// if(!AccessController::hasRight($user_id, $object_class, array(0), R_READ)) throw new Exception("user($user_id) does not have permission to read objects of class ($object_class)", NOT_ALLOWED);
 			if(empty($order)) throw new Exception("sorting order field cannot be empty", MISSING_PARAM);
             
             // check and fix domain format
@@ -1465,7 +1451,7 @@ todo: signature differs from other methods	(returned value)
             }
 		}
 		catch(Exception $e) {
-			EventListener::ExceptionHandler($e, __METHOD__);
+            trigger_error($e->getMessage(), E_USER_ERROR);
 			$res_list = $e->getCode();
 		}
 		return $res_list;

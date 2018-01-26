@@ -27,7 +27,7 @@
 // load Qinoa bootstrap library : system constants and functions definitions
 include_once('../qn.lib.php');
 
-use qinoa\php\PhpContext;
+use qinoa\php\Context;
 use qinoa\route\Router;
 
 /**
@@ -39,8 +39,8 @@ use qinoa\route\Router;
 set_silent(true);
 
 
-$phpContext = &PhpContext::getInstance();
-$request = $phpContext->getHttpRequest();
+$context = &Context::getInstance();
+$request = $context->getHttpRequest();
 
 try {
     // load routes definition
@@ -70,40 +70,47 @@ catch(Exception $e) {
 }
 
 if(!$found_url) {
-	// set the header to HTTP 404 and exit
-	header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
-	header('Status: 404 Not Found');
-	include_once('packages/core/html/page_not_found.html');    
+    // send HTTP response
+    $context->httpResponse()
+            // set response code to NOT FOUND
+            ->status(404)
+            // output json data telling what is expected                                    
+            ->body([
+                'errors' => ['UNKNOWN_ROUTE' => $request->getUri()->getPath()]
+            ])
+            ->send();       
+//	include_once('packages/core/html/page_not_found.html');    
 }
 // URL match found 
 else {
     // extract resolved params, if any
-    $params = [];
-    if($found_url[0] == '?') {
-        parse_str(substr($found_url, 1), $params);        
-    }
-    // merge resolved params with URL params
-    $params = array_merge($params, $router->getParams());
-    // set the header to HTTP 200 and relay processing to index.php
+    $params = $router->getParams();    
+    // set the response header to HTTP 200
     header($_SERVER['SERVER_PROTOCOL'].' 200 OK');
     header('Status: 200 OK');
-    // if found URL is another location    
+    // if found URL is another location, redirect to it
     if($found_url[0] == '/') {
-        // insert resolved params to pointed location, if any
+        // resolve params in pointed location, if any
         foreach($params as $param => $value) {
             $found_url = str_replace(':'.$param, $value, $found_url);
         }
-        // redirect to new URL
+        // redirect to resulting URL
         header('Location: '.$found_url);
     }
-    else {        
-        // merge resolved params with original URL params, if any
-        if($request->getMethod() == 'GET') {
-            $params = array_merge((array) $request->getBody(), $params);            
-        }
-        // inject resolved params to global '$_REQUEST' (if a param is already set, its value is overwritten)    
+    // otherwise, relay processing to index.php
+    else {
+        $uri_params = [];        
+        // handle resolution notation
+        if($found_url[0] == '?') {
+            // merge current query string with the one from found URL
+            parse_str(substr($found_url, 1), $uri_params);
+            // update query string of current request URI 
+            $request->uri()->set($uri_params);
+        }        
+        // in most cases, parameters from query string will be expected as body parameters
+        $params = array_merge($params, $uri_params);
+        // inject resolved parameters into current HTTP request body (if a param is already set, its value is overwritten)    
         foreach($params as $key => $value) {
-            $_REQUEST[$key] = $value;
             $request->set($key, $value);
         }
         include_once('index.php');

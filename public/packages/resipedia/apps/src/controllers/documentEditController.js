@@ -186,13 +186,29 @@ angular.module('resipedia')
                 }
                 else $scope.document.authors_ids.push('+'+author.id);
             });
-        });        
-
+        });
+        
+        $scope.documentThumbnailSelected = false;
+        
+        $scope.thumbnailChange = function($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event) {            
+            if(angular.isDefined($newFiles) && $newFiles.length) {
+                var elem = angular.element(window.document.querySelector('#document-thumbnail'));
+                elem.detach();
+                window.setTimeout(function() {
+                    $scope.documentThumbnailSelected = true;
+                }, 250);                
+            }
+        }
+        
         // @methods
         $scope.documentPost = function($event) {
+            console.log($scope.document.thumbnail);
             if(typeof $scope.document.last_update !== 'object' || $scope.document.last_update === null) {
                 $scope.alerts.push({ type: 'warning', msg: 'Oups, il manque la date de publication du document (en cas de doute, une approximation suffit).' });                
             }
+            else if($scope.document.thumbnail == null) {
+                $scope.alerts.push({ type: 'warning', msg: 'La vignette n\'est pas reconnue: vérifiez le format d\'image (jpeg) et la taille (<1MB).' });                
+            }            
             else {
                 var selector = feedbackService.selector(angular.element($event.target));                               
                 ctrl.running = true;   

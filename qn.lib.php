@@ -61,7 +61,11 @@ namespace {
 }
 namespace config {
     use easyobject\orm\ObjectManager;
+    use qinoa\data\DataAdapter;    
     use qinoa\data\DataValidator;
+    use qinoa\php\Context;
+    use qinoa\error\Reporter;
+    
     use \ReflectionClass;
     use \ReflectionException;
     
@@ -196,7 +200,7 @@ namespace config {
                 $parameters = $constructor->getParameters();    
                 if(count($parameters)) {
                     // check dependencies availability
-                    $instances = [];
+                    $dependencies_instances = [];
                     foreach($parameters as $parameter) {
                         $constructor_dependancy = $parameter->getClass()->getName();
                         // todo : no cyclic dependency check is done            
@@ -206,11 +210,11 @@ namespace config {
                             continue;
                         }
                         if($res[0] instanceof $constructor_dependancy) {
-                            $instances[] = $res[0];
+                            $dependencies_instances[] = $res[0];
                         }
                     }
                     if(!count($unresolved_dependencies)) {
-                        $instance = call_user_func_array($dependency.'::getInstance', $instances);
+                        $instance = call_user_func_array($dependency.'::getInstance', $dependencies_instances);
                     }
                 }
                 else {
@@ -218,6 +222,10 @@ namespace config {
                         $unresolved_dependencies[] = $dependency;
                     }
                     else {
+                        // check for required constants availability
+                        if(is_callable($dependency.'::constants')) {
+// todo                            
+                        }
                         $instance = $dependency::getInstance();
                     }
                 }
@@ -251,14 +259,26 @@ namespace config {
 		* @static
 		*/
 		public static function init() {
-			$library_folder = self::get_script_path().'/vendor';
+            $library_folder = self::get_script_path().'/vendor';
 			if(is_dir($library_folder))	set_include_path($library_folder.PATH_SEPARATOR.get_include_path());            
             // register own class loader
-            spl_autoload_register(__NAMESPACE__.'\QNlib::load_class');            
+            spl_autoload_register(__NAMESPACE__.'\QNlib::load_class');
+            // make sure dependencies are available
+            $dependencies = ['qinoa\error\Reporter', 'qinoa\php\Context', 'qinoa\data\DataValidator', 'qinoa\data\DataAdapter'];
+            foreach($dependencies as $dependency) {
+                if(!is_callable($dependency.'::getInstance')) {
+                    die( $dependency);
+                    throw new \Exception('mandatory dependency missing or cannot be instanciated', QN_REPORT_FATAL);
+                    exit();
+                }
+            }            
             // now we can autoload the ORM manager
             $om = &ObjectManager::getInstance();
             // register ORM classes autoloader
             spl_autoload_register([$om, 'getStatic']);
+            
+            // init error reporting
+            $reporter = Reporter::getInstance();
 		}
 
 		/**
@@ -320,17 +340,24 @@ namespace config {
 		* This method describes the current script and its parameters. It also ensures that required parameters have been transmitted.
 		* And, if necessary, sets default values for missing optional params.
 		*
-		* Accepted types for parameters types are : int, bool, float, string, array
-		* Note: invalid parameters in $_REQUEST will not be taken under consideration
+		* Accepted types for parameters types are PHP basic types: int, bool, float, string, array
+		* Note: invalid parameters in current HTTP request are not taken under consideration
         *
 		* @static
 		* @param	array	$announcement	array holding the description of the script and its parameters
 		* @return	array	parameters and their final values
 		*/
 		public static function announce($announcement) {		
-			$result = array();            
-//todo : use context->request()->body() instead of $_REQUEST
-// use DataAdapter
+			$result = array();
+
+            // retrieve providers instances
+            $context = Context::getInstance();
+            $reporter = Reporter::getInstance();
+            $dataValidator = DataValidator::getInstance();
+            $dataAdapter = DataAdapter::getInstance();    
+                        
+            $request = $context->httpRequest()->body();
+            if(!is_array($request)) $request = array(); 
 
 			// 0) check presence of all mandatory parameters
 			// build mandatory fields array
@@ -340,7 +367,7 @@ namespace config {
             // 1) fetch values from command line, in case script was invoked by CLI
             if( $options = getopt("", array_map(function ($a) { return $a.'::'; }, array_keys($announcement['params']))) ) {
                 foreach($options as $param => $value) {
-                    $_REQUEST[$param] = $value;
+                    $request[$param] = $value;
                 }
             }
             
@@ -349,72 +376,49 @@ namespace config {
 				if(isset($config['required']) && $config['required']) $mandatory_params[] = $param;
             }
 			// if at least one mandatory param is missing
-            $missing_params = array_diff($mandatory_params, array_keys($_REQUEST));
-			// if(	count(array_intersect($mandatory_params, array_keys($_REQUEST))) != count($mandatory_params) 
-            if( count($missing_params) || isset($_REQUEST['announce']) ) {
-				// output json data telling what is expected
-                header('Content-type: application/json; charset=UTF-8');
-				echo json_encode([
-                                    'result'        => isset($_REQUEST['announce'])?0:QN_ERROR_MISSING_PARAM,
-                                    'announcement'  => $announcement, 
-                                    'errors'        => array_map(function($a) {return 'missing param '.$a;}, $missing_params)
-                                 ], JSON_PRETTY_PRINT);
+            $missing_params = array_values(array_diff($mandatory_params, array_keys($request)));
+			// if(	count(array_intersect($mandatory_params, array_keys($request))) != count($mandatory_params) 
+            if( count($missing_params) || isset($request['announce']) ) {
+                $errors = [];
+                if(count($missing_params)) {
+                    $errors = ['MISSING_PARAM' => $missing_params];
+                }
+				// send HTTP response
+                $context->httpResponse()
+                        // set response code to BAD REQUEST                
+                        ->status(400)
+                        // output json data telling what is expected                                    
+                        ->body([
+                            'announcement'  => $announcement, 
+                            'errors'        => $errors
+                        ])
+                        ->send();
 				// terminate script
 				exit();
 			}
 		
 			// 2) find any missing parameters            
 			$allowed_params = array_keys($announcement['params']);
-			$missing_params = array_diff($allowed_params, array_intersect($allowed_params, array_keys($_REQUEST)));
+            $invalid_params = array_diff(array_keys($request), $allowed_params);
+            foreach($invalid_params as $invalid_param) {
+                $reporter->warning("dropped unexpected parameter '{$invalid_param}'");
+                unset($request[$invalid_param]);
+            }
+			$missing_params = array_diff($allowed_params, array_intersect($allowed_params, array_keys($request)));
 
-			// 3) build result array and set default values for optional missing parameters
+			// 3) build result array and set default values for optional missing parameters        
 			foreach($announcement['params'] as $param => $config) {
-                // note : at some point condition had a clause " || empty($_REQUEST[$param]) ", remember not to alter received data
-				if(in_array($param, $missing_params)) {
-					if(isset($config['default'])) {
-                        $result[$param] = $config['default'];
-                    }
+                // note : at some point condition had a clause " || empty($request[$param]) ", remember not to alter received data
+				if(in_array($param, $missing_params) && isset($config['default'])) {
+                        $request[$param] = $config['default'];
 				}
-                else {
-// DataAdapter (all inputs are handled as text, conversion is made based on expected type)                    
-                    // prevent some js/php misunderstanding
-                    if(in_array($_REQUEST[$param], ['NULL', 'null'])) $_REQUEST[$param] = null;
-                    
-                    switch($config['type']) {
-                        case 'bool':
-                        case 'boolean':
-                            if(in_array($_REQUEST[$param], ['TRUE', 'true', '1', 1, true], true)) $_REQUEST[$param] = true;
-                            else if(in_array($_REQUEST[$param], ['FALSE', 'false', '0', 0, false], true)) $_REQUEST[$param] = false;
-                            break;
-                        case 'array':
-                            if(!is_array($_REQUEST[$param])) {
-                                if(empty($_REQUEST[$param])) $_REQUEST[$param] = array();
-                                else $_REQUEST[$param] = explode(',', str_replace(array("'", '"'), '', $_REQUEST[$param]));
-                            }
-                            break;
-                        case 'string':
-                            if($_REQUEST[$param] == null) $_REQUEST[$param] = '';
-                            break;
-                        case 'float':
-                        case 'double':
-                            if(is_numeric($_REQUEST[$param])) {
-                                $_REQUEST[$param] = floatval($_REQUEST[$param]);
-                            }
-                            break;
-                        case 'int':
-                        case 'integer':
-                            if(in_array($_REQUEST[$param], ['TRUE', 'true'])) $_REQUEST[$param] = 1;
-                            else if(in_array($_REQUEST[$param], ['FALSE', 'false'])) $_REQUEST[$param] = 0;
-                            if(is_numeric($_REQUEST[$param])) {
-                                $_REQUEST[$param] = intval($_REQUEST[$param]);
-                            }                            
-                            break;                        
-                    }
-                    $result[$param] = $_REQUEST[$param];                    
-                }				
+                if(isset($request[$param])) {
+                    // prevent type confusion while converting data from text
+                    // all inputs are handled as text, conversion is made based on expected type
+                    $result[$param] = $dataAdapter->adapt($request[$param], $config['type']);
+                }
 			}
- 
- 
+
             // 4) validate result array values types and handle optional attributes, if any
             $invalid_params = [];
             foreach($result as $param => $value) {
@@ -452,25 +456,28 @@ namespace config {
                 if(isset($config['not in'])) {
                     $constraints[] = ['kind' => 'not in', 'rule' => $config['not in']];
                 }
-                // validate parameter's value 
-                if(!DataValidator::validate($value, $constraints)) {
+                // validate parameter's value
+                if(!$dataValidator->validate($value, $constraints)) {
                     if(!in_array($param, $mandatory_params)) {
-                        // warning
+                        $reporter->warning("dropped invalid non-mandatory parameter '{$param}'");
                         unset($result[$param]);
                     }
                     else $invalid_params[] = $param;
                 }
             }
             if(count($invalid_params)) {
-                // output json data telling what is expected
-                header('Content-type: application/json; charset=UTF-8');                    
-                echo json_encode([
-                                    'result'            => QN_ERROR_INVALID_PARAM,
-                                    'announcement'      => $announcement, 
-                                    'errors' => array_map(function($a) {return "invalid value received for param '".$a."' (check announcement rules)";}, $invalid_params)
-                                 ], JSON_PRETTY_PRINT);
-                // terminate script
-                exit();                    
+				// send HTTP response
+                $context->httpResponse()
+                        // set response code to BAD REQUEST                
+                        ->status(400)
+                        // output json data telling what is expected                                    
+                        ->body([
+                            'announcement'  => $announcement, 
+                            'errors'        => ['INVALID_PARAM' => $invalid_params]
+                        ])
+                        ->send();
+				// terminate script
+				exit();                
             }            
             
             // 5) check for requested providers
@@ -487,17 +494,20 @@ namespace config {
                 }
                 
                 if(count($unknown_providers)) {
-                    // output json data telling what is expected
-                    header('Content-type: application/json; charset=UTF-8');                    
-                    echo json_encode([
-                                        'result'            => QN_ERROR_INVALID_PARAM,
-                                        'announcement'      => $announcement, 
-                                        'errors' => array_map(function($a) {return 'unknown provider '.$a;}, $unknown_providers)
-                                     ], JSON_PRETTY_PRINT);
+                    // send HTTP response
+                    $context->httpResponse()
+                            // set response code to BAD REQUEST                
+                            ->status(400)
+                            // output json data telling what is expected                                    
+                            ->body([
+                                'announcement'  => $announcement, 
+                                'errors'        => ['UNKNOWN_PROVIDER' => $unknown_providers]
+                            ])
+                            ->send();                    
                     // terminate script
                     exit();                    
                 }
-                                
+                // set result as an array holding params and providers
                 $result = [$result, $providers];                
             }
 			return $result;
@@ -585,6 +595,7 @@ namespace config {
         }
 
         public static function domain_check($domain) {
+// too: when creating a domain, operand should be checked based on value/type compatibility            
             if(!is_array($domain)) return false;
             foreach($domain as $clause) {
                 if(!self::domain_clause_check($clause)) return false;

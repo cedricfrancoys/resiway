@@ -23,11 +23,10 @@ class Context extends Singleton {
         if(!strlen($this->session_id)) {
             session_start();
             $this->session_id = session_id();
-        }
+        }        
         // retrieve current request 
         $this->httpRequest = new HttpRequest($this->getHttpMethod().' '.$this->getHttpUri().' '.$this->getHttpProtocol(), $this->getHttpRequestHeaders(), $this->getHttpBody());
-        
-        // build response (retrieive default headers set by PHP)
+        // build response (set protocol to HTTP 1.1, status to success, and retrieve default headers set by PHP)
         $this->httpResponse = new HttpResponse('HTTP/1.1 200 OK', $this->getHttpResponseHeaders());       
     }
     
@@ -106,6 +105,8 @@ class Context extends Singleton {
     private function getHttpResponseHeaders() {
         $res = [];
         $headers = headers_list();
+        // set default content type to JSON and default charset to UTF-8
+        $headers[] = 'Content-type: application/json; charset=UTF-8';
         foreach($headers as $header) {
             list($name, $value) = explode(':', $header, 2);
             $res[$name] = trim($value);
@@ -220,6 +221,10 @@ class Context extends Singleton {
                 }
             }
         }
+        // adapt Content-Type for multipart/form-data (already parsed by PHP)
+        if(isset($headers['Content-Type']) && strpos($headers['Content-Type'], 'multipart/form-data') == 0) {
+            $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        }
         return $headers;
     }
     
@@ -240,31 +245,24 @@ class Context extends Singleton {
         if(isset($_SERVER['REQUEST_URI'])) {
             $uri = $_SERVER['REQUEST_URI'];
         }
-        return  $scheme. "://".$auth."$host:$port{$uri}";
+        return $scheme."://".$auth."$host:$port{$uri}";
     }
     
     private function getHttpBody() {
-        $body = '';
-        
-        // retrieve current method
-        $method = $this->getHttpMethod();
-        
-        // append parameters from request URI if not already in (for internal requests and redirections)
-        if($method == 'GET') {            
-            if(isset($_SERVER['REQUEST_URI']) && strpos($_SERVER['REQUEST_URI'], '?') !== false) {
-                $params = [];            
-                parse_str(explode('?', $_SERVER['REQUEST_URI'])[1], $params);  
-                $_GET = array_merge($_GET, $params);            
+        // load raw content from input stream (HttpMessage class in in charge of turning it into an associative array)
+        $body = file_get_contents('php://input');
+        // in some cases, PHP consumes the input to populate $_REQUEST and $_FILES (i.e. with multipart/form-data content-type)
+        if(empty($body)) {
+            // for GET methods, PHP improperly fills $_GET and $_REQUEST with query string parameters
+            // we allow this only when there's nothing from ://stdin
+            if(isset($_FILES) && !empty($_FILES)) {
+                $body = array_merge($_REQUEST, $_FILES);
             }
-            // use PHP native HTTP request parser for GET method
-            if(!empty($_GET)) {
-                $body = $_GET;            
-            }                    
+            else {
+                $body = $_REQUEST;
+            }
+            // we should have set content-type accordingly while retrieving headers (in getHttpRequestHeaders())
         }
-        // otherwise load raw content from input stream (HttpMessage class will be able to deal with it)
-        else {            
-            $body = @file_get_contents('php://input');            
-        }        
         return $body;
     }    
 }

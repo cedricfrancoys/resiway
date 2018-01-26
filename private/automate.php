@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 use easyobject\orm\ObjectManager;
-use qinoa\php\PhpContext;
+use qinoa\php\Context;
 
 // run this script as if it were located in the public folder
 chdir('../public');
@@ -94,17 +94,21 @@ try {
                 $bot_id = $missing_bots_ids[array_rand($missing_bots_ids)];
                 
                 // log in as selected user
-                $phpContext = &PhpContext::getInstance();
-                $phpContext->set('user_id', $bot_id);
+                $context = Context::getInstance();
+                $context->set('user_id', $bot_id);
                 // echo "log as {$bot_id}\n";
                 
                 // perform action
                 list($package, $class, $action) = explode('_', $action_name);
-                $_REQUEST['document_id'] = $object_id;
-                $_REQUEST['question_id'] = $object_id;
+
+                $context->httpRequest()->set([
+                    'document_id' => $object_id,
+                    'question_id' => $object_id                    
+                ]);
 
                 // echo "perform {$action} on {$class} {$object_id}\n";                
                 $json = get_include_contents("packages/{$package}/actions/{$class}/{$action}.php");
+                
                 $res = json_decode($json, true);
                 $result = $res['result'];
 

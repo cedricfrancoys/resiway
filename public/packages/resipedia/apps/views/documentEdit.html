@@ -141,13 +141,16 @@
                                 <div class="controls">
                                     <div class="btn btn-default" 
                                          style="width: 25%; vertical-align: top;"
-                                         ngf-select 
+                                         ngf-select=""
                                          ng-model="document.thumbnail"
-                                         ngf-accept="'image/jpg'" 
+                                         ngf-change="thumbnailChange($files, $file, $newFiles, $duplicateFiles, $invalidFiles, $event)"
+                                         ngf-accept="'image/jpg,image/jpeg'"
                                          ngf-max-size="1MB">
                                          Choisir
                                     </div> 
-                                    <img class="form-control" width="100" height="133" style="width: 100px; height: 133px; padding: 0; border: solid 1px lightgrey; display: inline-block !important;" ngf-thumbnail="document.thumbnail" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}">
+                                    <!-- this is a temporary img if document already a thumbnail (detached when a new image is selected) -->
+                                    <img ng-hide="documentThumbnailSelected" id="document-thumbnail" class="form-control" width="100" height="133" style="width: 100px; height: 133px; padding: 0; border: solid 1px lightgrey; display: inline-block !important;" ng-src="index.php?get=resilib_document_thumbnail&id={{document.id}}" />
+                                    <img ng-show="documentThumbnailSelected" class="form-control" width="100" height="133" style="width: 100px; height: 133px; padding: 0; border: solid 1px lightgrey; display: inline-block;" ngf-thumbnail="document.thumbnail" src="" />                                    
                                     <p class="help-inline">&nbsp;</p>
                                 </div>
                             </div>                        

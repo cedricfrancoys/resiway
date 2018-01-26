@@ -2,7 +2,7 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 
 use config\QNlib;
-use qinoa\php\PhpContext;
+use qinoa\php\Context;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -16,8 +16,8 @@ $params = QNLib::announce(
 
 
 // destroy persistent data
-$phpContext = &PhpContext::getInstance();    
-$phpContext->set('user_id', 0);
+$context = Context::getInstance();    
+$context->set('user_id', 0);
 foreach ($_COOKIE as $name => $value) setcookie($name, null);
 setcookie(session_name(), '');
 session_regenerate_id(true);

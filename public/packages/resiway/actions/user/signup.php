@@ -6,7 +6,7 @@ use config\QNlib;
 use easyobject\orm\ObjectManager;
 use html\HtmlTemplate;
 use maxmind\geoip\GeoIP;
-use qinoa\php\PhpContext;
+use qinoa\php\Context;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -114,8 +114,8 @@ try {
     ResiAPI::repositoryInc('resiway.count_users');     
     
     // update context data
-    $phpContext = &PhpContext::getInstance();    
-    $phpContext->set('user_id', $user_id);
+    $context = Context::getInstance();    
+    $context->set('user_id', $user_id);
 
     
     if($send_confirm) {

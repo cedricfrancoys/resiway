@@ -1,9 +1,9 @@
 <?php
-namespace qinoa\data;
+namespace qinoa\access;
 
 use qinoa\organic\Singleton;
 
-class DataValidator extends Singleton {
+class AccessManager extends Singleton {
     
 
     /**

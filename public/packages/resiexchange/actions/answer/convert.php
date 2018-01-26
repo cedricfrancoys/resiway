@@ -5,7 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib;
 use easyobject\orm\ObjectManager;
-use qinoa\php\PhpContext;
+use qinoa\php\Context;
 
 // announce script and fetch parameters values
 $params = QNLib::announce(	
@@ -30,7 +30,7 @@ list($object_class, $object_id) = ['resiexchange\Answer', $params['answer_id']];
 set_silent(true);
 
 try {
-    $phpContext = &PhpContext::getInstance();    
+    $context = &Context::getInstance();    
     $om = &ObjectManager::getInstance();    
     $db = $om->getDBHandler();   
 
@@ -89,12 +89,16 @@ try {
     $db->sendQuery("DELETE FROM resiexchange_answer WHERE id = {$object_id};");
     
     
-    // 5) create a new comment with answer data
-    $_REQUEST['question_id'] = $object['question_id'];    
-    $_REQUEST['content'] = $object['content'];
+    // 5) create a new comment with answer data       
     
-    // log as the author : update context data
-    $phpContext->set('user_id', $object['creator']);
+    // update context data
+    $context->httpRequest()->set([
+        'question_id'   => $object['question_id'],
+        'content'       => $object['content']  
+    ]);
+    
+    // act as the author    
+    $context->set('user_id', $object['creator']);
 
     function get_include_contents($filename) {
         ob_start();	
@@ -106,7 +110,7 @@ try {
     $result = $json['result'];
     
     // restore user id
-    $phpContext->set('user_id', $user_id); 
+    $context->set('user_id', $user_id); 
 }
 catch(Exception $e) {
     $result = $e->getCode();

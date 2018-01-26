@@ -8,7 +8,7 @@ include_once('../qn.lib.php');
 use qinoa\php\Context;
 
 $context = &Context::getInstance();
-$request = $context->getHttpRequest();
+$request = $context->httpRequest();
 
 function getAppOutput() {
     ob_start();	
@@ -17,8 +17,8 @@ function getAppOutput() {
 };
 
 // handle the '_escaped_fragment_' parameter in case page is requested by a crawler
-if(isset($_REQUEST['_escaped_fragment_'])) {
-    $uri = $_REQUEST['_escaped_fragment_'];
+if(!is_null($request->get('_escaped_fragment_', null))) {
+    $uri = $request->get('_escaped_fragment_');
     header('Status: 200 OK');
     header('Location: '.$uri);
     exit();
@@ -27,7 +27,7 @@ if(isset($_REQUEST['_escaped_fragment_'])) {
 // This script is used to cache result of 'show' requests 
 // ('show' requests should always return static HTML, and expect no params)
 if( $request->get('show')) {
-    $cache_filename = '../cache/'.$_REQUEST['show'];
+    $cache_filename = '../cache/'.$request->get('show');
     if(file_exists($cache_filename)) {
         print(file_get_contents($cache_filename));
         exit();

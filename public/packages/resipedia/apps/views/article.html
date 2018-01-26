@@ -93,7 +93,7 @@
 
                         <button ng-hide="opened[article_id]" class="btn btn-default btn-xs" ng-click="opened[article_id] = !opened[article_id]" title="Déplier pour voir tout l'article"><span style="font-weight: bold; font-size: 100%;">&nbsp;&bull; &bull; &bull;&nbsp;</span></button>
                         
-                        <div ng-show="article.source_author.length > 0" class="cc-license mt-2" ng-switch="article.source_license">
+                        <div ng-show="article.source_author.length > 0" class="cc-license mt-3" ng-switch="article.source_license">
                             Source: 
                             <a ng-switch-when="CC-by" class="cc-link" href="http://creativecommons.org/licenses/by/3.0/fr/" title="Creative Commons - attribution">
                                 <i class="cc cc-cc" aria-hidden="true"></i> <i class="cc cc-by" aria-hidden="true"></i>

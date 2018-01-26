@@ -3,7 +3,7 @@
 *    This file is part of the Qinoa project <<<http://www.cedricfrancoys.be/qinoa>
 *
 *    Copyright (C) Cedric Francoys, 2015, Yegen
-*    Some Right Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
+*    Some Rights Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
 */
 
 

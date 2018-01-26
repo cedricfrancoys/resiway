@@ -61,10 +61,13 @@ class Router {
                     }
                     if($is_param) {
                         if(isset($uri_parts[$i])) {
+                            // store value from URI as parameter (omit leading ':')
                             if($is_mandatory) $this->params[substr($route_part, 1)] = $uri_parts[$i];
+                            // omit trailing '?' as well
                             else $this->params[substr($route_part, 1, -1)] = $uri_parts[$i];
                         }
                         else {
+                            // if no value is defined in URI, assign parameter to an empty string
                             if($i == $j-1 && !$is_mandatory) $this->params[substr($route_part, 1, -1)] = '';
                             else continue 2;
                         }

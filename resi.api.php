@@ -3,7 +3,7 @@
 
     This file is part of the resiway program <http://www.github.com/cedricfrancoys/resiway>
     Copyright (C) ResiWay.org, 2017
-    Some Right Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
+    Some Rights Reserved, GNU GPL 3 license <http://www.gnu.org/licenses/>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ use qinoa\html\HTMLPurifier_Config;
 use html\HtmlTemplate;
 
 use qinoa\auth\JWT;
-use qinoa\php\PhpContext;
+use qinoa\php\Context;
 
 // these utilities require inclusion of main configuration file 
 require_once('qn.lib.php');
@@ -182,8 +182,8 @@ class ResiAPI {
         $user_id = $ids[0];
         // update 'last_login' field
         $om->write('resiway\User', $user_id, [ 'last_login' => date("Y-m-d H:i:s") ]);
-        $phpContext = &PhpContext::getInstance();
-        $phpContext->set('user_id', $user_id);
+        $context = Context::getInstance();
+        $context->set('user_id', $user_id);
         return $user_id;
     }
 
@@ -204,11 +204,11 @@ class ResiAPI {
     public static function userId() {
         // if user id cannot be resolved, fallback to zero, i.e. anonymous user (GUEST_USER_ID)
         $user_id = 0;
-        $phpContext = &PhpContext::getInstance();
-        $user_id = $phpContext->get('user_id', 0);
+        $context = Context::getInstance();
+        $user_id = $context->get('user_id', 0);
         if($user_id <= 0) {
             // lookup the HTTP request for an access token, if any
-            $request = $phpContext->getHttpRequest();            
+            $request = $context->getHttpRequest();            
             // along with an access_token    
             list($jwt) = sscanf( $request->header('Authorization'), 'Bearer %s');    
             // decode JWT

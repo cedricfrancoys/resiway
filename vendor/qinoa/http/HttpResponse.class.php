@@ -1,7 +1,7 @@
 <?php
 /* 
     This file is part of the qinoa framework <http://www.github.com/cedricfrancoys/qinoa>
-    Some Right Reserved, Cedric Francoys, 2017, Yegen
+    Some Rights Reserved, Cedric Francoys, 2017, Yegen
     Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
 */
 namespace qinoa\http;
@@ -45,6 +45,8 @@ class HttpResponse extends HttpMessage {
         
         // set status-line
         header($this->getProtocol().' '.$this->getStatus());
+        // CGI SAPI 
+        header('Status:  '.$this->getStatus());
         // set headers
         $headers = $this->getHeaders(true);
         foreach($headers as $header => $value) {
@@ -57,7 +59,7 @@ class HttpResponse extends HttpMessage {
         
         // set cookies, if any
         foreach($this->getHeaders()->getCookies() as $cookie => $value) {            
-            $host = $this->getUri()->getHost();
+            $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'localhost';
             $host_parts = explode('.', $host);
             $tld = array_pop($host_parts);
             $domain = array_pop($host_parts);
@@ -87,7 +89,7 @@ class HttpResponse extends HttpMessage {
             }
         }
         header('Content-Length: '.strlen($body));
-        echo $body;
+        print($body);
         // no output should be emitted after this point
         return $this;        
     }

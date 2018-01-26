@@ -21,4 +21,15 @@ class Singleton {
         }
         return $GLOBALS[$class_id];
     }
+    
+    /**
+     * Provide an access to singleton instance in static call context
+     *
+     */
+    public static function _isStatic() {
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+        // retrieve info from where the error was actually raised 
+        return $backtrace[1]['type'] == '::';
+        
+    }    
 }
