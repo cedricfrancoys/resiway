@@ -72,7 +72,7 @@ $len = count($lines);
 //get the last line
 $k = 1;
 
-if(isset($_GET['thread_id']) && strlen($_GET['thread_id']) == 32) {
+if(isset($_GET['thread_id']) && strlen($_GET['thread_id']) > 0) {
     $thread_id = $_GET['thread_id'];
 }
 else {
@@ -99,7 +99,6 @@ for($i = 0; $i < $len-1; ++$i) {
     // fetch the thread_id
     list($tid, $timestamp, $errcode, $origin, $file, $line, $msg) = explode(';', $entry);    
     if($tid == $thread_id) {
-        $date = date('Y-m-d H:i:s', $timestamp);        
         break;        
     }
     // remebrer previous thread id
@@ -120,6 +119,9 @@ for($j = $i;$j < $len-1; ++$j){
     ++$j;
 }
 
+// retrieve current thread infos
+$info = base64_decode(strtr($thread_id, '-_', '+/'));
+list($thread_pid, $thread_time, $thread_script) = explode(';', $info);
 ?>
 <!DOCTYPE html>
 <html>
@@ -130,9 +132,9 @@ for($j = $i;$j < $len-1; ++$j){
 </head>
 <body>
 <?php
-echo "<div style=\"margin-left: 10px;\"><a title=\"$thread_id\" href=\"?thread_id=$thread_id\">$date</a>&nbsp;<a href=\"?thread_id=$previous_thread\"><i class=\"fa fa-caret-up\"></i></a>&nbsp;<a href=\"?thread_id=$next_thread\"><i class=\"fa fa-caret-down\"></i></a></div>".PHP_EOL;
+echo "<div style=\"margin-left: 10px;\"><a title=\"$thread_pid\" href=\"?thread_id=$thread_id\">".date('Y-m-d H:i:s', $thread_time)." ".$thread_script."</a>&nbsp;<a href=\"?thread_id=$previous_thread\"><i class=\"fa fa-caret-up\"></i></a>&nbsp;<a href=\"?thread_id=$next_thread\"><i class=\"fa fa-caret-down\"></i></a></div>".PHP_EOL;
 
-// todo : add fatal errors from error.log (check if last line is newer than qn_error.log last line)
+// todo : add fatal errors from error.log (check if last line is newer than qn_error.log last line) 
 
 
 // now skip all lines that dont belong to that thread

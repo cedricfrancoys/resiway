@@ -266,8 +266,8 @@ namespace config {
             // make sure dependencies are available
             $dependencies = ['qinoa\error\Reporter', 'qinoa\php\Context', 'qinoa\data\DataValidator', 'qinoa\data\DataAdapter'];
             foreach($dependencies as $dependency) {
-                if(!is_callable($dependency.'::getInstance')) {
-                    die( $dependency);
+                $res = self::inject_dependency($dependency);
+                if(count($res[1])) {
                     throw new \Exception('mandatory dependency missing or cannot be instanciated', QN_REPORT_FATAL);
                     exit();
                 }

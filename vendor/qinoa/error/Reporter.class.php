@@ -7,19 +7,20 @@
 namespace qinoa\error;
 
 use qinoa\organic\Singleton;
+use qinoa\php\Context;
+
 
 class Reporter extends Singleton {
 	
     // current process id for backward identification
-    private $thread_id;
+    private $context;
     
     /**
     * Contructor defines which methods have to be called when errors and uncaught exceptions occur
     *
     */
-	public function __construct(/* no dependencies */) {
-        // assign a unique thread ID (using a hash apache pid and current unix time)
-        $this->setThreadId(md5(getmypid().microtime()));        
+	public function __construct(Context $context) {
+        $this->context = $context;             
 		set_error_handler(__NAMESPACE__."\Reporter::errorHandler");
 		set_exception_handler(__NAMESPACE__."\Reporter::uncaughtExceptionHandler");
 	}
@@ -32,9 +33,12 @@ class Reporter extends Singleton {
         return ['LOG_STORAGE_DIR', 'QN_REPORT_FATAL', 'QN_REPORT_ERROR', 'QN_REPORT_WARNING', 'QN_REPORT_DEBUG'];
     }
     
-    public function setThreadId($id) {
-        $this->thread_id = $id;
-        return $this;
+    public function getThreadId() {
+        // assign a unique thread ID (using apache pid, current unix time, and invoked script with operation, if any)
+        $operation = $this->context->get('operation');
+        $data = getmypid().';'.time().';'.$_SERVER['SCRIPT_NAME'].(($operation)?" ($operation)":'');
+        // return a base64 URL-safe encoded identifier
+        return strtr(base64_encode($data), '+/', '-_');
     }
     
  	/**
@@ -123,7 +127,7 @@ class Reporter extends Singleton {
                 else $origin = $trace['function'].'()';
             }
 
-            $error =  $this->thread_id.';'.microtime(true).';'.$code.';'.$origin.';'.$trace['file'].';'.$trace['line'].';'.$msg.PHP_EOL;
+            $error =  $this->getThreadId().';'.microtime(true).';'.$code.';'.$origin.';'.$trace['file'].';'.$trace['line'].';'.$msg.PHP_EOL;
             
             // append backtrace if required (fatal errors)
             if($code == QN_REPORT_FATAL) {
