@@ -96,18 +96,20 @@ try {
                 // log in as selected user
                 $context = Context::getInstance();
                 $context->set('user_id', $bot_id);
-                // echo "log as {$bot_id}\n";
+                trigger_error("QN_PHP::logging as bot $bot_id", QN_REPORT_DEBUG);
                 
-                // perform action
+                // reset request parameters
+                $context->httpRequest()->del(['document_id', 'question_id', 'article_id']);                
+                
+                // operation to perform
                 list($package, $class, $action) = explode('_', $action_name);
 
                 // inject required parameter to current HTTP request
                 switch($object_class) {
                 case 'resilib\Document':
                     $context->httpRequest()->set([
-                        'document_id' => $object_id,
-                    ]);
-                
+                        'document_id' => $object_id
+                    ]);                
                     break;
                 case 'resiexchange\Question':
                     $context->httpRequest()->set([

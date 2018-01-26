@@ -487,14 +487,21 @@ class HttpMessage {
         return $this;
     }
     
+    /**
+     * Remove a parameter from the message body, if existing
+     *
+     *
+     */    
     public function del($param) {        
         if(is_array($this->body)) {
             if(is_array($param)) {
                 foreach($param as $p) {
-                    unset($this->body[$p]);
+                    if(isset($this->body[$p])) {
+                        unset($this->body[$p]);
+                    }
                 }
             }
-            else {
+            else if(isset($this->body[$param])) {
                 unset($this->body[$param]);
             }
         }
