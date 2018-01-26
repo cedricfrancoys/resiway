@@ -105,7 +105,8 @@ try {
                     'document_id' => $object_id,
                     'question_id' => $object_id                    
                 ]);
-
+                
+                trigger_error("QN_PHP::relaying to {$package}/actions/{$class}/{$action}", QN_REPORT_DEBUG);
                 // echo "perform {$action} on {$class} {$object_id}\n";                
                 $json = get_include_contents("packages/{$package}/actions/{$class}/{$action}.php");
                 
