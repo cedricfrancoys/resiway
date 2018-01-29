@@ -8,7 +8,8 @@
 * This file is supposed to remain standalone (free of any dependency other than the qn_error.log file)
 * For security reasons its access should be restricted to development environment only.
 */
-define('LOG_FILE', '../log/qn_error.log');
+define('QN_LOG_FILE', '../log/qn_error.log');
+define('PHP_LOG_FILE', '../log/error.log');
  
 function display_stack($stack) {    
     echo "<table style=\"margin-left: 20px;\">".PHP_EOL;
@@ -28,42 +29,47 @@ function display_stack($stack) {
 function display_line($entry) {
     list($thread_id, $timestamp, $errcode, $origin, $file, $line, $msg) = explode(';', $entry);
     if(strpos($timestamp, '.') > 0) {
-        $date = str_pad(explode('.', $timestamp)[1], 4, '0');
+        $time = str_pad(explode('.', $timestamp)[1], 4, '0').'ms';
     }
     else {
-        $date = date('H:i:s', $timestamp);
+        $time = date('H:i:s', $timestamp);
     }
 
-    $type = 'unknown';
+    $type = $errcode;
     $icon = 'fa-info';
     $class= '';
     switch($errcode) {
+        case 'Notice':
         case E_USER_NOTICE:
-            $type = 'debug';
+            $type = 'Debug';
             $icon = 'fa-bug';
             $class = 'text-success';
             break;
         case E_USER_WARNING:
-            $type = 'warning';
+            $type = 'Warning';
             $icon = 'fa-warning';
             $class = 'text-warning';
             break;
         case E_USER_ERROR:
-            $type = 'error';
+            $type = 'Error';
             $icon = 'fa-times-circle';
             $class = 'text-danger';
-            break;
+            break;        
         case E_ERROR:
-            $type = 'fatal error';
+            $type = 'Fatal error';
+        case 'Fatal error':
+        case 'Parse error':
             $icon = 'fa-ban';
             $class = 'text-danger';
             break;
     }
-    echo "<div style=\"margin-left: 10px;\"><a class=\"$class\" title=\"$type\" ><i class=\"fa $icon\" aria-hidden=\"true\"></i> $date</a> [<code class=\"$class\">{$file}:{$line}</code>] <b>in</b> <code class=\"$class\">$origin</code>: ".$msg."</div>".PHP_EOL;
+    $in = (strlen($origin))?"<b>in</b> <code class=\"$class\">$origin</code>":'';
+    echo "<div style=\"margin-left: 10px;\"><a class=\"$class\" title=\"$type\" ><i class=\"fa $icon\" aria-hidden=\"true\"></i> $time $type</a> <b>@</b> [<code class=\"$class\">{$file}:{$line}</code>] $in: $msg</div>".PHP_EOL;
 }
 
-if(!file_exists(LOG_FILE)) die('no log found');
-$log = file_get_contents(LOG_FILE);
+// todo : && if(!file_exists(PHP_LOG_FILE))
+if(!file_exists(QN_LOG_FILE)) die('no log found');
+$log = file_get_contents(QN_LOG_FILE);
 
 $lines = explode(PHP_EOL, $log);
 
@@ -92,7 +98,7 @@ else {
 $previous_thread = false;
 $next_thread = $thread_id;
 
-// now skip all lines that dont belongto that thread
+// now skip all lines that dont belong to that thread
 for($i = 0; $i < $len-1; ++$i) {
     $entry = $lines[$i];
     if(substr($entry, 0, 1) == '#') continue;    
@@ -119,7 +125,7 @@ for($j = $i;$j < $len-1; ++$j){
     ++$j;
 }
 
-// retrieve current thread infos
+// retrieve current thread infos (thread time is in micro seconds)
 $info = base64_decode(strtr($thread_id, '-_', '+/'));
 list($thread_pid, $thread_time, $thread_script) = explode(';', $info);
 
@@ -133,10 +139,30 @@ list($thread_pid, $thread_time, $thread_script) = explode(';', $info);
 </head>
 <body>
 <?php
+// first check for errors from error.log (check if last line is newer than qn_error.log's last line) 
+if(file_exists(PHP_LOG_FILE)) {
+    $php_log = file_get_contents(PHP_LOG_FILE);
+    $php_lines = explode(PHP_EOL, $php_log);
+
+    $php_len = count($php_lines);
+    for($l = 1; $l <= $php_len; ++$l) {
+        $line = $php_lines[$php_len-$l];
+        $match = [];
+        if(preg_match("/\[([^\s]*) ([^\s]*) ([^\s]*)\] ([^\s]*) (.*): (.*) in ([^\s]*) on line ([0-9]+)/", $line, $match)) {
+            $timestamp = strtotime($match[1].' '.$match[2]);
+            
+            if($timestamp > intval(explode(' ', $thread_time)[1])) {
+                echo "<div style=\"margin-left: 10px;\"><a title=\"PHP log\" href=\"\">".date('Y-m-d H:i:s', $timestamp)." </a></div>".PHP_EOL;
+                display_line("0;$timestamp;{$match[5]};;{$match[7]};{$match[8]};{$match[6]}");
+                die();
+            }
+
+            break;
+        }
+    }
+}
+
 echo "<div style=\"margin-left: 10px;\"><a title=\"PID $thread_pid\" href=\"?thread_id=$thread_id\">".date('Y-m-d H:i:s', explode(' ', $thread_time)[1])." ".$thread_script."</a>&nbsp;<a href=\"?thread_id=$previous_thread\"><i class=\"fa fa-caret-up\"></i></a>&nbsp;<a href=\"?thread_id=$next_thread\"><i class=\"fa fa-caret-down\"></i></a></div>".PHP_EOL;
-
-// todo : add fatal errors from error.log (check if last line is newer than qn_error.log's last line) 
-
 
 // now skip all lines that dont belong to that thread
 while(true) {
