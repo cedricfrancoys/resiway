@@ -42,7 +42,7 @@ try {
 
 
     // 'resiway_user_signup'
-    $actions_names = ['resiexchange_question_post', 'resilib_document_post', 'resiexchange_answer_post', 'resiexchange_questioncomment_post', 'resiexchange_answercomment_post', 'resilib_documentcomment_post'];
+    $actions_names = ['resilexi_article_post', 'resiexchange_question_post', 'resilib_document_post', 'resiexchange_answer_post', 'resiexchange_questioncomment_post', 'resiexchange_answercomment_post', 'resilib_documentcomment_post'];
     
     $actions_ids = $om->search('resiway\Action', ['name', 'in', $actions_names]);    
     // 0) retrieve matching logs identifiers    
