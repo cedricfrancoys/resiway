@@ -170,7 +170,13 @@
                                 {{action.user.location}}, {{action.user.country}} | {{action.user.about | limitTo : 60}} ...
                             </span>
                         </div>                            
-                                                        
+
+                        <div ng-switch-when="resilexi_article_post" style="display: table-cell; vertical-align: top;">
+                            <a href="/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> a partagé un nouvel article 
+                            <a href="/article/{{action.object.id}}/{{action.object.title_url}}" target="_self">{{action.object.title}}</a>                                 
+                            dans la catégorie <a href="/category/{{action.object['categories'][0]['id']}}" target="_self">{{action.object['categories'][0]['name']}}</a>
+                            <!-- <div style="display: inline-block; color: light-grey; font-size: 11px;">{{action.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amTimeAgo}}</div> -->
+                        </div>                        
                         <div ng-switch-when="resiexchange_question_post" style="display: table-cell; vertical-align: top;">
                             <a href="/user/{{action.user.id}}/{{action.user.name_url}}" target="_self">{{action.user.display_name}}</a> a posé une nouvelle question 
                             <a href="/question/{{action.object.id}}/{{action.object.title_url}}" target="_self">{{action.object.title}}</a>                                 
