@@ -97,7 +97,11 @@ try {
                 $logs[$oid]['object']['answer'] = $om->read('resiexchange\Answer', $answer_id, ['id', 'creator', 'question_id', 'question_id.creator', 'question_id.title', 'question_id.title_url'])[$answer_id];
                 $logs[$oid]['object']['answer']['creator'] = ResiAPI::loadUserPublic($logs[$oid]['object']['answer']['creator']);
                 break;
-                
+
+            case 'resilexi_article_post':
+                $article_id = $logs[$oid]['object_id'];
+                $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $article_id, ['id', 'title', 'title_url', 'categories' => ['id', 'name']])[$article_id];
+                break;                
             }
             
         }
