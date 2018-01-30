@@ -101,6 +101,7 @@ try {
             case 'resilexi_article_post':
                 $article_id = $logs[$oid]['object_id'];
                 $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $article_id, ['id', 'title', 'title_url', 'categories' => ['id', 'name']])[$article_id];
+                $logs[$oid]['object']['categories'] = (array) $logs[$oid]['object']['categories'];
                 break;                
             }
             
