@@ -64,12 +64,12 @@ try {
                 
             case 'resiexchange_question_post':
                 $question_id = $logs[$oid]['object_id'];
-                $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $question_id, ['id', 'title', 'title_url', 'categories_ids', 'categories_ids.name'])[$question_id];
+                $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $question_id, ['id', 'title', 'title_url', 'categories_ids', 'categories_ids.name', 'categories_ids.title_url'])[$question_id];
                 break;
                 
             case 'resilib_document_post':
                 $document_id = $logs[$oid]['object_id'];
-                $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $document_id, ['id', 'title', 'title_url', 'categories_ids', 'categories_ids.name'])[$document_id];
+                $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $document_id, ['id', 'title', 'title_url', 'categories_ids', 'categories_ids.name', 'categories_ids.title_url'])[$document_id];
                 break;
 
             case 'resiexchange_answer_post':
@@ -100,7 +100,7 @@ try {
 
             case 'resilexi_article_post':
                 $article_id = $logs[$oid]['object_id'];
-                $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $article_id, ['id', 'title', 'title_url', 'categories' => ['id', 'name']])[$article_id];
+                $logs[$oid]['object'] = $om->read($logs[$oid]['object_class'], $article_id, ['id', 'title', 'title_url', 'categories' => ['id', 'name', 'title_url']])[$article_id];
                 $logs[$oid]['object']['categories'] = array_values($logs[$oid]['object']['categories']);
                 break;                
             }
