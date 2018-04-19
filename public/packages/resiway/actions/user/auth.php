@@ -82,9 +82,27 @@ try {
         $context->httpRequest()->set([
             'login'     => $data['emails'][0]['value'],
             'firstname' => $data['name']['givenName'],
-            'lastname'  => $data['name']['familyName']
-        
+            'lastname'  => $data['name']['familyName']        
         ]);
+        break;
+    case 'lescommuns':
+        $oauthRequest = new HttpRequest('https://login.lescommuns.org:8443/auth/realms/master/protocol/openid-connect/userinfo');
+        $response = $oauthRequest
+                    ->header('Authorization', 'Bearer '.$network_token)
+                    ->setBody([
+                        'access_token' => $network_token
+                    ])->send();
+        if(!is_null($response->get('error'))) {
+            throw new Exception("user_invalid_auth", QN_ERROR_NOT_ALLOWED);
+        }
+        $account_type = 'lescommuns';
+        $avatar_url = 'https://seccdn.libravatar.org/avatar/'.md5($response->get('email')).'?s=@size';
+        $context->httpRequest()->set([
+            'login'     => $response->get('email'),
+            'firstname' => $response->get('given_name'),
+            'lastname'  => $response->get('family_name')          
+        ]);
+    
         break;
     default:
         throw new Exception("user_invalid_network", QN_ERROR_INVALID_PARAM);           
