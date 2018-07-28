@@ -6,11 +6,11 @@
 */
 namespace qinoa\error;
 
-use qinoa\organic\Singleton;
+use qinoa\organic\Service;
 use qinoa\php\Context;
 
 
-class Reporter extends Singleton {
+class Reporter extends Service {
 	
     // PHP context instance
     private $context;
@@ -30,15 +30,20 @@ class Reporter extends Singleton {
      *
      */
     public static function constants() {
-        return ['LOG_STORAGE_DIR', 'QN_REPORT_FATAL', 'QN_REPORT_ERROR', 'QN_REPORT_WARNING', 'QN_REPORT_DEBUG'];
+        return ['QN_LOG_STORAGE_DIR', 'QN_REPORT_FATAL', 'QN_REPORT_ERROR', 'QN_REPORT_WARNING', 'QN_REPORT_DEBUG'];
     }
     
     public function getThreadId() {
-        // assign a unique thread ID (using apache pid, current unix time, and invoked script with operation, if any)
-        $operation = $this->context->get('operation');
-        $data = $this->context->getPid().';'.$this->context->getTime().';'.$_SERVER['SCRIPT_NAME'].(($operation)?" ($operation)":'');
-        // return a base64 URL-safe encoded identifier
-        return strtr(base64_encode($data), '+/', '-_');
+        static $thread_id = null;
+        
+        if(!$thread_id){
+            // assign a unique thread ID (using apache pid, current unix time, and invoked script with operation, if any)
+            $operation = $this->context->get('operation');
+            $data = $this->context->getPid().';'.$this->context->getTime().';'.$_SERVER['SCRIPT_NAME'].(($operation)?" ($operation)":'');
+            // return a base64 URL-safe encoded identifier
+            $thread_id = strtr(base64_encode($data), '+/', '-_');
+        }
+        return $thread_id;
     }
     
  	/**
@@ -47,19 +52,20 @@ class Reporter extends Singleton {
      */
     public static function uncaughtExceptionHandler($exception) {
         $code = $exception->getCode();
-        $msg = $e->getMessage();
+        $msg = $exception->getMessage();
         if($code != QN_REPORT_FATAL) {
             $msg = '[uncaught exception]-'.$msg;
         }
         // retrieve instance and log error
         $instance = self::getInstance();
-        $instance->log($code, $msg, self::getTrace(1));
+//        $instance->log($code, $msg, self::getTrace(1));
+        $instance->log($code, $msg, $exception->getTrace()[0]);
         die();
 	}
 
 	/**
     * Main method for error handling.
-    * This is invoked either in scripts using trigger_error calls or when a internal PHP eror is raised.
+    * This is invoked either in scripts using trigger_error calls or when a internal PHP error is raised.
 	*
 	* @param mixed $errno
 	* @param mixed $errmsg
@@ -68,30 +74,37 @@ class Reporter extends Singleton {
 	* @param mixed $errcontext
 	*/
 	public static function errorHandler($errno, $errmsg, $errfile, $errline, $errcontext) {      
+        // dismiss handler if not required
+        if (!(error_reporting() & $errno)) return;
         // adapt error code
         $code = $errno;
+        
         $depth = 1;
         switch($errno) {
-            case E_ERROR:
+            // handler was invoked using trigger_error()
+            case QN_REPORT_DEBUG:       // E_USER_NOTICE
+            case QN_REPORT_WARNING:     // E_USER_WARNING
+            case QN_REPORT_ERROR:       // E_USER_ERROR
+            case QN_REPORT_FATAL:       // E_ERROR
+                $depth = 2;
+                break;
+            // handler was invoked by PHP internals
             case E_CORE_ERROR:
             case E_COMPILE_ERROR:
             case E_PARSE:
                 $code = QN_REPORT_FATAL;
-                $depth = 0;                
                 break;
             case E_RECOVERABLE_ERROR:
                 $code = QN_REPORT_ERROR;
-                $depth = 0;                
                 break;
-            case E_NOTICE:
-            case E_STRICT:
-            case E_DEPRECATED:
             case E_WARNING:
             case E_CORE_WARNING:
             case E_COMPILE_WARNING:
+            case E_NOTICE:
+            case E_STRICT:
+            case E_DEPRECATED:
             case E_USER_DEPRECATED:
                 $code = QN_REPORT_WARNING;
-                $depth = 0;
                 break;
         }
         // retrieve instance and log error
@@ -103,7 +116,7 @@ class Reporter extends Singleton {
         // check reporting level 
         if($code <= error_reporting()) {
             // handle debug messages
-            if($code == QN_REPORT_DEBUG) {                
+            if($code == QN_REPORT_DEBUG) {
                 // default to arbitrary '1' mask debug info 
                 $source = '1';
                 $parts = explode('::', $msg, 2);
@@ -127,9 +140,13 @@ class Reporter extends Singleton {
                 else $origin = $trace['function'].'()';
             }
 
-            $error =  $this->getThreadId().';'.microtime(true).';'.$code.';'.$origin.';'.$trace['file'].';'.$trace['line'].';'.$msg.PHP_EOL;
+            $file = (isset($trace['file']))?$trace['file']:'';
+            $line = (isset($trace['line']))?$trace['line']:'';
+            
+            $error =  $this->getThreadId().';'.microtime(true).';'.$code.';'.$origin.';'.$file.';'.$line.';'.$msg.PHP_EOL;
             
             // append backtrace if required (fatal errors)
+            
             if($code == QN_REPORT_FATAL) {
                 $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
                 $n = count($backtrace);
@@ -144,31 +161,66 @@ class Reporter extends Singleton {
                 }
             }
             // append error message to log file
-            file_put_contents(LOG_STORAGE_DIR.'/qn_error.log', $error, FILE_APPEND);                        
+            file_put_contents(QN_LOG_STORAGE_DIR.'/qn_error.log', $error, FILE_APPEND);                        
         }
     }
     
-    private static function getTrace($depth=0) {
-        // we need to go up of 3 levels (minimum)
-        $limit = 3+$depth;
-        $n = $limit-1;
+    private static function getTrace($increment=0) {
+        // we need to go down 4 levels max
+        $limit = 2+$increment;
+        
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $limit);
-        // retrieve info from where the error was actually raised 
-        $trace = $backtrace[$n-1];
-        // unset unwanted values, if present
-        if(isset($trace['function'])) unset($trace['function']);
-        if(isset($trace['class'])) unset($trace['class']);            
-        if(isset($trace['type'])) unset($trace['type']);                        
 
-        // if there is additional information about the class/object where the error was raised, use it
-        if( count($backtrace) > $n && (!isset($backtrace[$n]['type']) || in_array($backtrace[$n]['type'], ['::', '->'])) ) {
-            // we're not interested in inclusions calls
-            if(!isset($backtrace[$n]['function']) || !in_array($backtrace[$n]['function'], ['include', 'require', 'include_once', 'require_once'])) {
-                if(isset($backtrace[$n]['file'])) unset($backtrace[$n]['file']);
-                if(isset($backtrace[$n]['line'])) unset($backtrace[$n]['line']);
-                $trace = array_merge($trace, $backtrace[$n]);
+        // retrieve info from where the error was actually raised  ($backtrace[0] being related to current getTrace() call)
+        $n = 1+$increment;
+        // get last item from backtrace
+        $trace = $backtrace[$n];
+
+        if(isset($trace['function']) && isset($trace['class']) && in_array($trace['function'], ['errorHandler', 'debug'])) {
+            unset($trace['function']);
+        }
+        else if(isset($trace['function']) && isset($trace['args']) && in_array($trace['function'], ['include', 'require', 'include_once', 'require_once'])) {
+            unset($trace['function']);
+            $trace['file'] = $backtrace[$n-1]['file'];
+            $trace['line'] = $backtrace[$n-1]['line'];
+        }
+        else if(!isset($trace['file'])) {
+            $trace['file'] = $backtrace[$n-1]['file'];
+            $trace['line'] = $backtrace[$n-1]['line'];
+        }        
+        
+/*        
+        if($trace['function'] == 'trigger_error') {
+                $trace['file'] = $backtrace[$n-1]['file'];
+                $trace['line'] = $backtrace[$n-1]['line'];                
+            
+        }            
+        if(in_array($trace['function'], ['include', 'require', 'include_once', 'require_once'])) {
+            unset($trace['function']);
+            if(isset($backtrace[$n-1]['function']) && in_array($backtrace[$n-1]['function'], ['include', 'require', 'include_once', 'require_once'])) {
+                $trace['file'] = $backtrace[$n-2]['file'];
+                $trace['line'] = $backtrace[$n-2]['line'];     
+            }
+            else {
+                $trace['file'] = $backtrace[$n-1]['file'];
+                $trace['line'] = $backtrace[$n-1]['line'];                
             }
         }
+        else if(!isset($trace['function'])) {
+            if(isset($backtrace[$n-2]['file'])) {
+                $trace['file'] = $backtrace[$n-2]['file'];
+                $trace['line'] = $backtrace[$n-2]['line'];                
+            }
+            else {
+                $trace['file'] = $backtrace[$n-1]['file'];
+                $trace['line'] = $backtrace[$n-1]['line'];                                
+            }
+        }
+        else if(!isset($trace['file'])) {
+            $trace['file'] = $backtrace[$n-1]['file'];
+            $trace['line'] = $backtrace[$n-1]['line'];
+        }
+     */
         return $trace;        
     }
 

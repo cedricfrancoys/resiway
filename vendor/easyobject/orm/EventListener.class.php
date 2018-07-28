@@ -84,11 +84,7 @@ class EventListener {
         // append to appropriate log file based on error type
         file_put_contents(LOG_STORAGE_DIR.'/error.log', $error, FILE_APPEND);
         
-		// if we are in debug mode, output error message to stdout
-		if(function_exists('debug_mode') && (debug_mode() & DEBUG_PHP)) {
-			if(empty($errors_stack)) print '<pre>';
-			print $error;
-		}
+        trigger_error("QN_DEBUG_SQL::$error", E_USER_NOTICE);
         
         // pile up current error
         $errors_stack[] = $error;

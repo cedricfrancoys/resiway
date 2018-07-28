@@ -11,7 +11,10 @@ class DocumentComment extends \easyobject\orm\Object {
                                         'result_type'       => 'string', 
                                         'store'             => false,
                                         'function'          => 'resilib\DocumentComment::getName'
-                                        ),  
+                                   ),  
+
+            /* override default creator field to make it explicitly point to resiway\User objects */
+            'creator'			=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
                                         
             /* text of the comment */
             'content'			=> array('type' => 'text'),

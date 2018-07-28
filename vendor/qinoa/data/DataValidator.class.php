@@ -1,9 +1,9 @@
 <?php
 namespace qinoa\data;
 
-use qinoa\organic\Singleton;
+use qinoa\organic\Service;
 
-class DataValidator extends Singleton {
+class DataValidator extends Service {
     
 
     /**
@@ -17,12 +17,16 @@ class DataValidator extends Singleton {
     }
     
     /**  
+     * Tells if given $value comply with related $constraints set.
      *
-     * constraints is an array holding constraints description specific to the given value 
+     * Accepted elementary types are: 'boolean' (or 'bool'), 'integer' (or 'int'), 'double' (or 'float'), 'string', 'array', 'file'
+     * 'file' is a pseudo type whic covers PHP file structure from multipart/form-data, base64 encoded binary value
+     *
+     * Constraints is an array holding constraints description specific to the given value 
      * it is an array of validation rules, each rule consist of a kind
-     * - type (boolean, integer, double, string, array)
+     * - type (boolean, integer, double, string, date, array)
      * - 'min', 'max', 'in', 'not in'
-     * - regex
+     * - 'regex' or 'pattern'
      * - (custom) function (any callable accepting one parameter and returning a boolean)
      *
      * and the description of the rule itself
@@ -43,31 +47,42 @@ class DataValidator extends Singleton {
             }
             switch($constraint['kind']) {
             case 'type':
-                // value's type should be amongst elementary PHP types
-                if(!in_array($constraint['rule'], ['boolean', 'integer', 'double', 'string', 'array'])) {
-                    // raise error
-                    continue;
+                // fix alternate names to the expected value
+                foreach(['bool' => 'boolean', 'int' => 'integer', 'float' => 'double'] as $key => $type) {
+                    if($constraint['rule'] == $key) {
+                        $constraint['rule'] = $type;
+                        break;
+                    }
                 }
-                if(gettype($value) != $constraint['rule']) return false;
+                // $value type should be amongst elementary PHP types
+                if(!in_array($constraint['rule'], ['boolean', 'integer', 'double', 'string', 'date', 'array', 'file'])) {
+                    throw new \Exception("Invalid type {$constraint['rule']}", QN_ERROR_INVALID_CONFIG);
+                }
+                if($constraint['rule'] == 'file') {
+                    if(!in_array(gettype($value), ['string', 'array'])) return false;
+                }
+                else if($constraint['rule'] == 'date') {
+                    // dates are internally handed as Unix timestamps
+                    if(!gettype($value) == 'integer') return false;
+                }
+                else if(gettype($value) != $constraint['rule']) return false;
                 break;
+            case 'pattern':
             case 'regex':
                 if(!preg_match("/^\/.+\/[a-z]*$/i", $constraint['rule'])) {
-                    // "error in constraints parameter : invalid regex for constraint $id"
-                    continue;
+                    throw new \Exception("Invalid pattern {$constraint['rule']}", QN_ERROR_INVALID_CONFIG);
                 }
                 if(!preg_match($constraint['rule'], $value)) return false;
                 break;                
             case 'function':            
                 if(!is_callable($constraint['rule'])) {
-                    // "error in constraints parameter : function for constraint $id cannot be called"
-                    continue;
+                    throw new \Exception("Unknown function {$constraint['rule']}", QN_ERROR_INVALID_CONFIG);
                 }
                 if(call_user_func($constraint['rule'], $value) !== true) return false;
                 break;
             case 'min':
                 if(!is_numeric($constraint['rule'])) {
-                    // error : 'min' constraint has to be numeric
-                    continue;
+                    throw new \Exception("Non numeric min constraint {$constraint['rule']}", QN_ERROR_INVALID_CONFIG);
                 }
                 switch(gettype($value)) {
                 case 'string':
@@ -87,8 +102,7 @@ class DataValidator extends Singleton {
                 break;
             case 'max':
                 if(!is_numeric($constraint['rule'])) {
-                    // error : 'max' constraint has to be numeric
-                    continue;
+                    throw new \Exception("Non numeric max constraint {$constraint['rule']}", QN_ERROR_INVALID_CONFIG);
                 }
                 switch(gettype($value)) {
                 case 'string':

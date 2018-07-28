@@ -52,6 +52,21 @@ String.prototype.toURL = function () {
 *
 *
 */
+String.prototype.base64EncodeUrl = function () {
+	var str = this;
+    str = window.btoa(unescape(encodeURIComponent( str )));
+    return str.replace(/\+/g, '-').replace(/\//g, '_').replace(/\=+$/, '');
+};
+
+String.prototype.base64DecodeUrl = function () {
+	var str = this, str_pad = (str + '===');
+    str = str_pad.slice(0, str.length + (str.length % 4));
+    str = str.replace(/-/g, '+').replace(/_/g, '/');
+    return decodeURIComponent(escape(window.atob( str )));
+};
+
+
+// todo: deprecate
 (function() {
     var BASE64_PADDING = '=';
 

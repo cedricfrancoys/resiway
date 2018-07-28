@@ -43,6 +43,8 @@ class Document extends \easyobject\orm\Object {
                                         'rel_local_key'     => 'document_id',
                                         'onchange'          => 'resilib\Document::onchangeAuthorsIds'
                                        ),
+
+            'authors'   		    => array('type' => 'alias', 'alias' => 'authors_ids'),
             
             /* language into which the document is written */
             'lang'			        => array('type' => 'string'),
@@ -72,6 +74,7 @@ class Document extends \easyobject\orm\Object {
             
             'content'			    => array('type' => 'file', 'onchange' => 'resilib\Document::onchangeContent'),
             
+            /* MIME type */
             'content_type'		    => array('type' => 'string'),
             
             'size'				    => array('type' => 'integer'),
@@ -122,7 +125,9 @@ class Document extends \easyobject\orm\Object {
                                         'foreign_object'=> 'resilib\DocumentComment', 
                                         'foreign_field'	=> 'document_id'
                                         ),
-
+                                        
+            'comments'	    	    => array('type' => 'alias', 'alias' => 'comments_ids'),
+            
             /* list of keywords indexes related to this document */
             'indexes_ids'	        => array(
                                         'type' 			    => 'many2many', 
@@ -179,12 +184,18 @@ class Document extends \easyobject\orm\Object {
    
    
     public static function onchangeContent($om, $oids, $lang) {
-        if(isset($_FILES['content'])) {
-            $om->write('resilib\Document', $oids, 
+        $res = $om->read(__CLASS__, $oids, ['content']);
+        
+        foreach($res as $oid => $odata) {
+            $content = $odata['content'];
+            $size = strlen($content);
+            // retrieve content_type from MIME
+            $finfo = new \finfo(FILEINFO_MIME);    
+            $content_type = explode(';', $finfo->buffer($content))[0];
+            $om->write('resilib\Document', $oid, 
                 array(
-                        'original_filename'	=> $_FILES['content']['name'], 
-                        'size'		        => $_FILES['content']['size'], 
-                        'content_type'		=> $_FILES['content']['type'],
+                        'size'		        => $size, 
+                        'content_type'		=> $content_type,
                         'notice'            => false
                 ), 
                 $lang);

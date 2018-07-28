@@ -9,14 +9,15 @@ angular.module('resipedia')
     '$rootScope',
     '$window', 
     '$location', 
-    '$sce', 
+    '$sce',
+    '$translate',
     'feedbackService', 
     'actionService', 
     '$http',
     '$q',
     '$httpParamSerializerJQLike',
     'Upload',
-    function(document, $scope, $rootScope, $window, $location, $sce, feedbackService, actionService, $http, $q, $httpParamSerializerJQLike, Upload) {
+    function(document, $scope, $rootScope, $window, $location, $sce, $translate, feedbackService, actionService, $http, $q, $httpParamSerializerJQLike, Upload) {
         console.log('documentEdit controller');
         
         var ctrl = this;   
@@ -143,7 +144,10 @@ angular.module('resipedia')
                             categories_ids: [{}],
                             license: 'CC-by-nc-sa',
                             content: {
-                                name: document.original_filename
+                                name: document.title
+                            },
+                            thumbnail: {
+                                name: 'thumbnail'
                             }
                           }, 
                           document);
@@ -202,12 +206,15 @@ angular.module('resipedia')
         
         // @methods
         $scope.documentPost = function($event) {
-            console.log($scope.document.thumbnail);
+
             if(typeof $scope.document.last_update !== 'object' || $scope.document.last_update === null) {
-                $scope.alerts.push({ type: 'warning', msg: 'Oups, il manque la date de publication du document (en cas de doute, une approximation suffit).' });                
+                $scope.alerts.push({ type: 'warning', msg: 'Il manque la date de publication du document (en cas de doute, une approximation suffit).' });                
             }
-            else if($scope.document.thumbnail == null) {
+            else if($scope.document.id == 0 && typeof $scope.document.thumbnail.size == 'undefined') {
                 $scope.alerts.push({ type: 'warning', msg: 'La vignette n\'est pas reconnue: vérifiez le format d\'image (jpeg) et la taille (<1MB).' });                
+            }
+            else if($scope.document.id == 0 && typeof $scope.document.content.size == 'undefined') {
+                $scope.alerts.push({ type: 'warning', msg: 'Le document n\'est pas reconnu: vérifiez le format (pdf) et la taille (<64MB).' });                
             }            
             else {
                 var selector = feedbackService.selector(angular.element($event.target));                               
@@ -252,10 +259,20 @@ angular.module('resipedia')
                             $location.path('/document/'+document_id);
                         }
 
-                    }, function (resp) {
+                    }, function (response) {
                         ctrl.running = false;
-                        feedbackService.popover(selector, 'network error');
-                        console.log('Error status: ' + resp.status);
+                        var feedback = '';
+                        console.log(response);
+                        angular.forEach(response.data.errors, function(message, error) {
+                            console.log(error+': '+message+' ('+response.status+')');
+                            if(error == 'MISSING_PARAM') {
+                                feedback += $translate.instant('document_missing_'+message);
+                            }
+                            else {
+                                feedback += $translate.instant(message);
+                            }
+                        });
+                        feedbackService.popover(selector, feedback);
                     }, function (evt) {
                         // var progressPercentage = parseInt(100.0 * evt.loaded / evt.total);
                         // console.log('progress: ' + progressPercentage + '% ' + evt.config.data.file.name);

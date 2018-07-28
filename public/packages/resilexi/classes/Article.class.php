@@ -99,7 +99,7 @@ class Article extends \easyobject\orm\Object {
                                         'type'		    => 'one2many', 
                                         'foreign_object'=> 'resilexi\ArticleComment', 
                                         'foreign_field'	=> 'article_id'
-                                        ),
+                                       ),
 
             /* list of keywords indexes related to this article */
             'indexes_ids'	        => array(

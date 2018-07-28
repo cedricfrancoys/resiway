@@ -159,8 +159,9 @@ class HttpRequest extends HttpMessage {
         if (isset($this->is_bot)) return $this->is_bot;
 
         $res = false;
-        if(isset($_REQUEST['bot'])) {
-            $res = $_REQUEST['bot'];
+
+        if(array_key_exists('bot', $this->uri()->getParams())) {
+            $res = true;
         }
         /* Google */
         // $_SERVER['HTTP_USER_AGENT'] = 'Googlebot';
@@ -192,7 +193,9 @@ class HttpRequest extends HttpMessage {
         return $this->is_bot;
     }
     
-    
+    public function isThing() {
+        return false;
+    }
     
     public function isMobile() {
         if (isset($this->is_mobile)) return $this->is_mobile;

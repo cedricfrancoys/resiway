@@ -6,11 +6,9 @@ class Singleton {
 
     protected function __clone() {}
 
-    public function __sleep() {}
+//    public function __sleep() {}
     
-    public function __wakeup() {
-        throw new Exception("Cannot unserialize singleton");
-    }
+//    public function __wakeup() {}
 
     public static function &getInstance() {
         // late-static-bound class name

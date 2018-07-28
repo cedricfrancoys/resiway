@@ -66,6 +66,14 @@ class HttpUri {
         return $this->getScheme().'://'.$this->getAuthority().$this->getPath().$query;
     }
 
+    // retrieve parameters associative array from current query string    
+    public function getParams() {
+        $params = [];
+        // retrieve parameters associative array from current query string
+        parse_str($this->getQuery(), $params);
+        return $params;
+    }
+    
     /**
      * Get the value of specified param from the query string, fallback to $default if not found.
      *
@@ -73,9 +81,8 @@ class HttpUri {
      * @return mixed If $param is an array of parameters names, returns an assiociative array containing values for each given parameter, otherwise returns the value of a single parameter. If given parameter is not found, returns specified default value (fallback to null)     
      */
     public function get($param, $default=null) {
-        $params = [];
-        // retrieve parameters associative array from current query string
-        parse_str($this->getQuery(), $params);
+        // retrieve parameters associative array from current query string        
+        $params = $this->getParams();
         // bulk get : $param is an array of parameters names
         if(is_array($param)) {
             $res = [];

@@ -103,7 +103,8 @@ var resiway = angular.module('resipedia', [
                 // RW public keys
                 facebook: '1786954014889199',
                 google: '900821912326-epas7m1sp2a85p02v8d1i21kcktp7grl.apps.googleusercontent.com',
-                twitter: '6MV5s7IYX2Uqi3tD33s9VSEKb'
+                twitter: '6MV5s7IYX2Uqi3tD33s9VSEKb',
+                lescommuns: 'resiway.org'
             }, 
             {
                 scope: 'basic, email',
@@ -281,8 +282,28 @@ var resiway = angular.module('resipedia', [
         authenticationService.authenticate();
 
         /* 
-        * relay hello.js login notifications
+        * Add custom OAuth servers
         */
+        hello.init({
+            'lescommuns': {
+                oauth: {
+                    version: '2',
+                    auth: 'https://login.lescommuns.org:8443/auth/realms/master/protocol/openid-connect/auth',
+                    grant: 'https://login.lescommuns.org:8443/auth/realms/master/protocol/openid-connect/token'
+                },
+                scope: {
+                    basic: 'openid email'
+                },
+                response_type: 'token id_token',
+                login: function(p) {
+                    p.qs.nonce = '' + Math.floor((Math.random() * 100000) + 1);;
+                }                
+            }
+        });        
+
+        /* 
+        * relay hello.js login notifications
+        */        
         hello.on("auth.login", function (auth) {
             console.log('auth notification received in rootscope');
             console.log(auth);

@@ -3,8 +3,9 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
-use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
+use config\QNLib;
+use easyobject\orm\ObjectManager;
+use qinoa\orm\Domain;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -46,7 +47,7 @@ try {
     $res = $om->read($object_class, $object_id, ['categories_ids', 'categories_ids.path']);    
     if($res < 0 || !isset($res[$object_id])) throw new Exception("object_unknown", QN_ERROR_INVALID_PARAM);       
     
-    $domain = QNLib::domain_condition_add([], ['channel_id','=', $params['channel']]);
+    $domain = Domain::conditionAdd([], ['channel_id','=', $params['channel']]);
 
     $categories_ids = $res[$object_id]['categories_ids'];
     $extra_categories_ids = [];
@@ -54,12 +55,12 @@ try {
     if(count($categories_ids) < 4) {
         $subdomain = [];
         foreach($res[$object_id]['categories_ids.path'] as $category_path) {
-            $subdomain = QNLib::domain_clause_add($subdomain, [['path', 'like', $category_path.'%']]);
+            $subdomain = Domain::clauseAdd($subdomain, [['path', 'like', $category_path.'%']]);
         }
         $extra_categories_ids = $om->search('resiway\Category', $subdomain, 'count_questions', 'desc', 0, 5);
     }
     
-    $domain = QNLib::domain_condition_add($domain, ['categories_ids', 'contains', array_merge($categories_ids, $extra_categories_ids)]);    
+    $domain = Domain::conditionAdd($domain, ['categories_ids', 'contains', array_merge($categories_ids, $extra_categories_ids)]);    
    
     $documents_ids = $om->search($object_class, $domain, 'score', 'desc', 0, $params['limit']);
     

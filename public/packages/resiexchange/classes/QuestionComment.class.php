@@ -1,6 +1,7 @@
 <?php
 namespace resiexchange;
 
+
 class QuestionComment extends \easyobject\orm\Object {
 
     public static function getColumns() {
@@ -12,6 +13,9 @@ class QuestionComment extends \easyobject\orm\Object {
                                         'store'             => false,
                                         'function'          => 'resiexchange\QuestionComment::getName'
                                         ),  
+
+            /* override default creator field to make it explicitly point to resiway\User objects */
+            'creator'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
                                         
             /* text of the comment */
             'content'			=> array('type' => 'text'),
@@ -20,7 +24,8 @@ class QuestionComment extends \easyobject\orm\Object {
             
             'score'             => array('type' => 'integer'),
             
-            'count_flags'       => array('type' => 'integer')            
+            'count_flags'       => array('type' => 'integer')
+            
         );
     }
     

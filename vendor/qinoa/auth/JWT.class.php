@@ -42,14 +42,13 @@ class JWT
                 return null;
             }
             $sig = JWT::urlsafeB64Decode($cryptob64);
+
             if ($verify) {
                 if (empty($header->alg)) {
-                    // throw new DomainException('Empty algorithm');
-                    return null;
+                    throw new \Exception('JWT - Invalid token: empty algorithm');
                 }
                 if ($sig != JWT::sign("$headb64.$bodyb64", $key, $header->alg)) {
-                    // throw new UnexpectedValueException('Signature verification failed');
-                    return null;
+                    throw new \Exception('JWT - Signature do not match server\'s private key');
                 }
             }
         }

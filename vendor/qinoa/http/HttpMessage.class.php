@@ -510,6 +510,16 @@ class HttpMessage {
         
     // Here-below are additional method using short name and get/set based on arguments
 
+    public function method() {
+        $args = func_get_args();
+        if(count($args) < 1) {
+            return $this->getMethod();
+        }
+        else {
+            $method = $args[0];
+            return $this->setMethod($method);
+        }
+    }
     
     public function body() {
         $args = func_get_args();

@@ -89,6 +89,9 @@ catch(Exception $e) {
 }
 
 // send json result
+header('Access-Control-Allow-Origin: *');
+header('X-Total-Count: '.$total);
+header('Access-Control-Expose-Headers: *');
 header('Content-type: application/json; charset=UTF-8');
 echo json_encode([
                     'result'            => $result, 

@@ -10,6 +10,9 @@ class Category extends \easyobject\orm\Object {
             /* all objects must define a 'name' column (default is id) */
             'name'				=> array('type' => 'alias', 'alias' => 'title'),
 
+            /* override creator to explicitely target a resiway\User object */            
+            'creator'           => array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
+            
             /* channel of the current question (1:'default', 2:'help', 3:'meta', ...) */
             'channel_id'        => array('type' => 'many2one', 'foreign_object'=> 'resiway\Channel'),
             
@@ -290,13 +293,13 @@ class Category extends \easyobject\orm\Object {
     
     public static function getPath($om, $oids, $lang) {
         $result = [];
-        $res = $om->read(__CLASS__, $oids, ['title', 'parent_id', 'parent_id.path'], $lang);        
+        $res = $om->read(__CLASS__, $oids, ['title', 'parent_id', 'parent_path'], $lang);        
         foreach($oids as $oid) {
             $result[$oid] = '';
             if(isset($res[$oid])) {
                 $object_data = $res[$oid];
                 if(isset($object_data['parent_id']) && $object_data['parent_id'] > 0) {
-                    $result[$oid] = $object_data['parent_id.path'].'/'.TextTransformer::slugify($object_data['title']);
+                    $result[$oid] = $object_data['parent_path'].'/'.TextTransformer::slugify($object_data['title']);
                 }
                 else $result[$oid] = TextTransformer::slugify($object_data['title']);
             }
@@ -306,11 +309,14 @@ class Category extends \easyobject\orm\Object {
 
     public static function getParentPath($om, $oids, $lang) {
         $result = [];
-        $res = $om->read(__CLASS__, $oids, ['parent_id.path'], $lang);
+        $categories = $om->read(__CLASS__, $oids, ['parent_id'], $lang);
+        $parents_ids = [];
+        foreach($categories as $oid => $odata) {$parents_ids[] = $odata['parent_id'];}
+        $parents = $om->read(__CLASS__, $parents_ids, ['path'], $lang);
         foreach($oids as $oid) {
             $result[$oid] = '';
-            if(isset($res[$oid]) && isset($res[$oid]['parent_id.path'])) { 
-                $result[$oid] = $res[$oid]['parent_id.path'];
+            if(isset($categories[$oid]['parent_id'])) {
+                $result[$oid] = $parents[$categories[$oid]['parent_id']]['path'];
             }
         }
         return $result;        

@@ -1,0 +1,12 @@
+[
+    {
+        "field":  "id"
+    },
+    {
+        "field": "created"
+    },    
+    {
+        "field": "name",
+        "readonly": true
+    }    
+]

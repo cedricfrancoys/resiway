@@ -1,5 +1,0 @@
-{
-    "/question/:id/:title?":"?get=resiway_html&class=question",
-    "/document/:id/:title?":"?get=resiway_html&class=document",
-    "/article/:id/:title?":"?get=resiway_html&class=article"
-}

@@ -576,6 +576,10 @@ input[type="text"] {
     margin-top: 2rem !important;
 }
 
+.mt-3 {
+    margin-top: 3rem !important;
+}
+
 
 /* styles bootstrap-like that might be defined in further bootstrap versions */
 .list-noindent {

@@ -96,6 +96,25 @@ class ObjectManager {
 			'function'		=> array('type', 'result_type', 'function')
 	);
 
+    public static $valid_operators = array(
+            'boolean'		=> array('=', '<>', '<', '>'),
+            'integer'		=> array('in', 'not in', '=', '<>', '<', '>', '<=', '>='),
+            'float'			=> array('=', '<>', '<', '>', '<=', '>='),
+            'string'		=> array('like', 'ilike', 'in', '=', '<>'),
+            'text'			=> array('like', 'ilike', '='),
+            'html'			=> array('like', 'ilike', '='),                
+            'date'			=> array('=', '<>', '<', '>', '<=', '>=', 'like'),
+            'time'			=> array('=', '<>', '<', '>', '<=', '>='),
+            'datetime'		=> array('=', '<>', '<', '>', '<=', '>='),
+            'timestamp'		=> array('=', '<>', '<', '>', '<=', '>='),
+            'file'		    => array('like', 'ilike', '='),                
+            'binary'		=> array('like', 'ilike', '='),
+            // for compatibilty reasons, 'contains' is allowed for many2one field (in such case 'contains' operator means 'list contains *at least one* of the following ids')
+            'many2one'		=> array('is', 'in', '=', '<>', 'contains'),
+            'one2many'		=> array('contains'),
+            'many2many'		=> array('contains'),
+    );
+
 
 
 	private function __construct() {
@@ -158,7 +177,7 @@ class ObjectManager {
 		if (!isset($GLOBALS['ObjectManager_instance'])) $GLOBALS['ObjectManager_instance'] = new ObjectManager();
 		return $GLOBALS['ObjectManager_instance'];
 	}
-
+    
     public function getPackages() {
         if(!$this->packages) {
             $this->packages = [];
@@ -174,29 +193,24 @@ class ObjectManager {
 	* Returns a static instance for the specified object class (does not create a new object)
 	*
 	* @param string $class
+    * @throws Exception
 	*/
 	private function &getStaticInstance($class) {
-		try {
-			// if class is unknown, load the file containing the class declaration of the requested object
-			if(!class_exists($class)) {
-				// first, read the file to see if the class extends from another (which could not be loaded yet)
-				$filename = 'packages/'.self::getObjectPackageName($class).'/classes/'.self::getObjectName($class).'.class.php';
-				if(!is_file($filename)) throw new Exception("unknown object class : '$class'", UNKNOWN_OBJECT);
-				preg_match('/\bextends\b(.*)\{/iU', file_get_contents($filename), $matches);
-				if(!isset($matches[1])) throw new Exception("malformed class file for object '$class' : parent class name not found", INVALID_PARAM);
-				else $parent_class = trim($matches[1]);
-				// caution : no mutual inclusion check is done, so this call might result in an infinite loop
-                // no longer necessary
-				// if($parent_class != '\easyobject\orm\Object') $this->getStaticInstance($parent_class);
-				if(!(include $filename)) throw new Exception("unknown object class : '$class'", UNKNOWN_OBJECT);
-			}
-			if(!isset($this->instances[$class])) $this->instances[$class] = new $class();
-			return $this->instances[$class];
-		}
-		catch(Exception $e) {
-			trigger_error($e->getMessage(), E_USER_ERROR);
-			throw new Exception('unable to get static instance', $e->getCode());
-		}
+        // if class is unknown, load the file containing the class declaration of the requested object
+        if(!class_exists($class)) {
+            // first, read the file to see if the class extends from another (which could not be loaded yet)
+            $filename = 'packages/'.self::getObjectPackageName($class).'/classes/'.self::getObjectName($class).'.class.php';
+            if(!is_file($filename)) throw new Exception("unknown object class : '$class'", UNKNOWN_OBJECT);
+            preg_match('/\bextends\b(.*)\{/iU', file_get_contents($filename), $matches);
+            if(!isset($matches[1])) throw new Exception("malformed class file for object '$class' : parent class name not found", INVALID_PARAM);
+            else $parent_class = trim($matches[1]);
+            // caution : no mutual inclusion check is done, so this call might result in an infinite loop
+            // no longer necessary
+            // if($parent_class != '\easyobject\orm\Object') $this->getStaticInstance($parent_class);
+            if(!(include $filename)) throw new Exception("unknown object class : '$class'", UNKNOWN_OBJECT);
+        }
+        if(!isset($this->instances[$class])) $this->instances[$class] = new $class();
+        return $this->instances[$class];
 	}
 
 	
@@ -281,32 +295,35 @@ class ObjectManager {
     * Ids that do not match an object in the database are removed from the list.
     */
     private function filterValidIdentifiers($class, $ids) {
-        // working copy
-        $valid_ids = $ids;        
-        // remove alreay loaded objects from list, if any
+        $valid_ids = [];
+        // remove duplicate ids, if any        
+        $ids = array_unique($ids);
+        // ensure ids are positive numeric values
+        foreach($ids as $key => $oid) {
+            $ids[$key] = intval($oid);
+            if($ids[$key] <= 0) unset($ids[$key]);
+        }                
+        // remove already loaded objects from missing list
+        $missing_ids = $ids;        
         foreach($ids as $index => $id) {
             if(isset($this->identifiers[$class][$id]) || isset($this->cache[$class][$id])) {
-                unset($ids[$index]);
+                $valid_ids[] = $id;
+                unset($missing_ids[$index]);
             }
         }
         // process remaining identifiers    
-        if(!empty($ids)) {
+        if(!empty($missing_ids)) {
             // get DB handler (init DB connection if necessary)
             $db = $this->getDBHandler();        
             $table_name = $this->getObjectTableName($class);
             // get all records at once
-            $result = $db->getRecords($table_name, 'id', $ids);
+            $result = $db->getRecords($table_name, 'id', $missing_ids);
             // store all found ids in an array
-            $found_ids = [];
-            while($row = $db->fetchArray($result)) $found_ids[] = $row['id'];
-            // remove invalid ids from result array
-            foreach(array_diff($ids, $found_ids) as $missing_id) {
-                $index = array_search($missing_id, $valid_ids);
-                unset($valid_ids[$index]);
-                trigger_error("unknown object #'$missing_id' of class '$class", E_USER_WARNING);
+            while($row = $db->fetchArray($result)) {
+                $valid_ids[] = $row['id'];
+                // remember valid identifiers                
+                $this->identifiers[$class][$row['id']] = true;
             }
-            // remember valid identifiers
-            foreach($valid_ids as $id) $this->identifiers[$class][$id] = true;
         }
         return $valid_ids;
     }
@@ -428,7 +445,7 @@ class ObjectManager {
 			'many2many'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
 				try {
 					foreach($fields as $field) {
-						if(!ObjectManager::checkFieldAttributes(ObjectManager::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory attribute for field '$field' of class '$class'", INVALID_PARAM);
+						if(!ObjectManager::checkFieldAttributes(self::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory attribute for field '$field' of class '$class'", INVALID_PARAM);
 						// obtain the ids by searching inside relation table
 						$result = $om->db->getRecords(	
 							array('t0' => $om->getObjectTableName($schema[$field]['foreign_object']), 't1' => $schema[$field]['rel_table']), 
@@ -459,7 +476,7 @@ class ObjectManager {
 			'function'	=>	function($om, $ids, $fields) use ($schema, $class, $lang){
 				try {
 					foreach($fields as $field) {
-						if(!ObjectManager::checkFieldAttributes(ObjectManager::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory attribute for field '$field' of class '$class'", INVALID_PARAM);
+						if(!ObjectManager::checkFieldAttributes(self::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory attribute for field '$field' of class '$class'", INVALID_PARAM);
 						if(!is_callable($schema[$field]['function'])) throw new Exception("error in schema parameter for function field '$field' of class '$class' : function cannot be called");
 						$res = call_user_func($schema[$field]['function'], $om, $ids, $lang);
 						foreach($ids as $oid) $om->cache[$class][$oid][$field][$lang] = $res[$oid];
@@ -527,6 +544,9 @@ class ObjectManager {
                         if($objects > 0) {
 
                             // 2) get all ids of related objects
+// todo: improve
+// handling loading this way prevents from checking permissions on sub objects
+// +paginate (so far, all sub-items are loaded)
                             $sub_ids = [];
                             foreach($objects as $object_data) {
                                 $sub_ids = array_merge($sub_ids, (array) $object_data[$field]);
@@ -809,6 +829,12 @@ class ObjectManager {
         }
 		return $instance;
 	}
+    
+    // alias for getStatic
+    public function &getModel($object_class) {
+        $instance = $this->getStatic($object_class);
+        return $instance;
+    }
 
 	/**
 	* Checks whether the values of given object fields are valid or not.
@@ -819,32 +845,29 @@ class ObjectManager {
 
 	* @param string $class object class
 	* @param array $values
-	* @return mixed (int or array) error code OR resulting associative array
+	* @return array resulting associative array
 	*/
 	public function validate($class, $values) {
 // todo : check unicity in case the 'unique' attribute is set in field description        
+// todo : based on types, check that given value is not bigger than storage capacity (DBMS type)
 		$res = array();
-		try {
-			$static_instance = &$this->getStaticInstance($class);	
-            if(method_exists($static_instance, 'getConstraints')) {
-                $constraints = $static_instance->getConstraints();
-                //(unexisting fields are ignored by write method)
-                foreach($values as $field => $value) {
-                    if(isset($constraints[$field]) 
-                    && isset($constraints[$field]['function']) ) {
-                        $validation_func = $constraints[$field]['function'];
-                        if(is_callable($validation_func) && !call_user_func($validation_func, $value)) {
-                            if(!isset($constraints[$field]['error_message_id'])) $res[$field] = 'invalid';
-                            else $res[$field] = $constraints[$field]['error_message_id'];
-                        }
+
+        $static_instance = &$this->getStaticInstance($class);	
+        if(method_exists($static_instance, 'getConstraints')) {
+            $constraints = $static_instance->getConstraints();
+            //(unexisting fields are ignored by write method)
+            foreach($values as $field => $value) {
+                if(isset($constraints[$field]) 
+                && isset($constraints[$field]['function']) ) {
+                    $validation_func = $constraints[$field]['function'];
+                    if(is_callable($validation_func) && !call_user_func($validation_func, $value)) {
+                        if(!isset($constraints[$field]['error_message_id'])) $res[$field] = 'invalid';
+                        else $res[$field] = $constraints[$field]['error_message_id'];
                     }
                 }
             }
-		}
-		catch(Exception $e) {
-            trigger_error($e->getMessage(), E_USER_ERROR);
-			$res = $e->getCode();
-		}
+        }
+
 		return $res;
 	}
 
@@ -925,46 +948,34 @@ todo: signature differs from other methods	(returned value)
         
 		try {
 			// 1) do some pre-treatment
+            
 			if(!is_array($ids))		$ids = (array) $ids;
 			// cast fields to an array (passing a single field is accepted)
 			if(!is_array($fields))	$fields = (array) $fields;
 			// if no ids were specified, we do nothing
 			if(empty($ids))	return $res;
-            // remove duplicate ids, if any
-			$ids = array_unique($ids);   
-            // ensure ids are positive numerical values
-            foreach($ids as $key => $oid) {
-                $ids[$key] = intval($oid);
-                if($ids[$key] <= 0) unset($ids[$key]);
-            }
-
-   			// 3) check $fields arg validity
-            
-            // get stattic instance and check that given class exists
+            // get stattic instance (checks that given class exists)
 			$object = &$this->getStaticInstance($class);
-            
 			// check validity of objects identifiers
             $ids = $this->filterValidIdentifiers($class, $ids);
+
+   			// 2) check $fields arg validity
             
             // remove unknown fields
 			$allowed_fields = $object->getFields();
-			// if no fields have been specified, we store the whole object
-			if(empty($fields)) $fields = $allowed_fields;
-			else {
-				foreach($fields as $field => $values) {
-					// handle 'dot' notation (ignore '.' and following chars)
-					$field = explode('.', $field)[0];
-					// remove fields not defined in related schema
-					if(!in_array($field, $allowed_fields)) {
-						unset($fields[$field]);
-                        trigger_error('unknown field ('.$field.') in $fields arg', E_USER_WARNING);
-					}
-				}
-			}
+            foreach($fields as $field => $values) {
+                // handle 'dot' notation (ignore '.' and following chars)
+                $field = explode('.', $field)[0];
+                // remove fields not defined in related schema
+                if(!in_array($field, $allowed_fields)) {
+                    unset($fields[$field]);
+                    trigger_error('unknown field ('.$field.') in $fields arg', E_USER_WARNING);
+                }
+            }
             $fields = array_merge($fields, array('state' => 'instance', 'modified' => date("Y-m-d H:i:s")));
 
             
-			// 4) update internal buffer with given values
+			// 3) update internal buffer with given values
 // todo : handle dot notation            
 			$schema = $object->getSchema();
 			$onchange_fields = array();
@@ -978,7 +989,7 @@ todo: signature differs from other methods	(returned value)
 			}
 
 			
-			// 5) write selected fields to DB
+			// 4) write selected fields to DB
 			$this->store($class, $ids, array_keys($fields), $lang);
 
 			// second pass : handle onchange events, if any 
@@ -1015,7 +1026,6 @@ todo: signature differs from other methods	(returned value)
 	* @return mixed (int or array) error code OR resulting associative array
 	*/
 	public function read($class, $ids, $fields=NULL, $lang=DEFAULT_LANG) {
-
 		$res = array();
         // get DB handler (init DB connection if necessary)
         $db = $this->getDBHandler();
@@ -1023,6 +1033,9 @@ todo: signature differs from other methods	(returned value)
 		try {
 			// 1) do some pre-treatment
             
+            if(!isset($ids)) {
+                throw new Exception('missing mandatory $ids argument', MISSING_PARAM);
+            }            
 			// force cast ids to array (passing a single id is accepted)
 			if(!is_array($ids)) {
                 $ids = (array) $ids;
@@ -1031,74 +1044,58 @@ todo: signature differs from other methods	(returned value)
 			if(!is_array($fields)) {
                 $fields = (array) $fields;
             }
-			// remove duplicate ids, if any
-			$ids = array_unique($ids);
-            // ensure ids are positive numerical values
-            foreach($ids as $key => $oid) {
-                $ids[$key] = intval($oid);
-                if($ids[$key] <= 0) unset($ids[$key]);
-            }
-            
+            // get static instance (checks that given class exists)
+			$object = &$this->getStaticInstance($class);
+			// checks validity of objects identifiers
+            $ids = $this->filterValidIdentifiers($class, $ids);
             // if no ids were specified, the result is an empty list (array)
 			if(empty($ids)) return $res;
 
-
             // 2) check $fields arg validity
 
-            // get static instance and check that given class exists
-			$object = &$this->getStaticInstance($class);
-            $schema = $object->getSchema();
-
-			// checks validity of objects identifiers
-            $ids = $this->filterValidIdentifiers($class, $ids);
-            
+            $schema = $object->getSchema();            
             // remove unknown fields
 			$allowed_fields = $object->getFields();
             // remember aliases, if any
             $aliases_fields = [];
-			// if no fields have been specified, we load the whole object
-			if(empty($fields)) $fields = $allowed_fields;
-			else {
-                // check fields validity
-                foreach($fields as $key => $field) {
-                    // handle array notation, key is the actual field to load
-                    if(!is_int($key)) {
-                        // handle aliases
-                        if($schema[$key]['type'] == 'alias') {
-                            // remember alias                            
-                            $aliases_fields[$schema[$key]['alias']] = $key;
-                            // assign fields array with target field
-                            $fields[$schema[$key]['alias']] = $field;
-                            // remove alias from fields array
-                            unset($fields[$key]);
-                        }
-                        // key is the actual field name
-                        $field = $key;                        
-                    }                    
-                    else {
-                        // handle 'dot' notation (check will apply on root field)
-                        if(strpos($field, '.') !== false) {
-                            $field = explode('.', $field)[0];                        
-                        }
-                        // handle aliases
-                        if(isset($schema[$field]) && $schema[$field]['type'] == 'alias') {
-                            // remember alias                            
-                            $aliases_fields[$schema[$field]['alias']] = $field;
-                            // assign fields array with target field
-                            $fields[$key] = $schema[$field]['alias'];                            
-                        }                        
+            // check fields validity
+            foreach($fields as $key => $field) {
+                // handle array notation, key is the actual field to load
+                if(!is_int($key)) {
+                    // handle aliases
+                    if($schema[$key]['type'] == 'alias') {
+                        // remember alias                            
+                        $aliases_fields[$schema[$key]['alias']] = $key;
+                        // assign fields array with target field
+                        $fields[$schema[$key]['alias']] = $field;
+                        // remove alias from fields array
+                        unset($fields[$key]);
                     }
-					// remove fields not defined in related schema
-					if(!in_array($field, $allowed_fields)) {
-						unset($fields[$key]);
-                        trigger_error("unknown field '$field' for class : '$class'", E_USER_WARNING);
-					}
-                }                
-			}
+                    // key is the actual field name
+                    $field = $key;                        
+                }                    
+                else {
+                    // handle 'dot' notation (check will apply on root field)
+                    if(strpos($field, '.') !== false) {
+                        $field = explode('.', $field)[0];                        
+                    }
+                    // handle aliases
+                    if(isset($schema[$field]) && $schema[$field]['type'] == 'alias') {
+                        // remember alias                            
+                        $aliases_fields[$schema[$field]['alias']] = $field;
+                        // assign fields array with target field
+                        $fields[$key] = $schema[$field]['alias'];                            
+                    }                        
+                }
+                // remove fields not defined in related schema
+                if(!in_array($field, $allowed_fields)) {
+                    unset($fields[$key]);
+                    trigger_error("unknown field '$field' for class : '$class'", E_USER_WARNING);
+                }
+            }               
 
-            if(empty($fields)) {
-                throw new Exception("nothing to fetch (emtpy array or wrong fields names)", MISSING_PARAM);
-            }
+            if(empty($fields)) $fields = $allowed_fields;
+
             
 			// remove duplicate fields, if any 
             // removed: this is not an issue, since the value will be loaded once and returned as many times as requested
@@ -1210,25 +1207,59 @@ todo: signature differs from other methods	(returned value)
 			$schema = $object->getSchema();
 			// checks validity of objects identifiers
             $ids = $this->filterValidIdentifiers($object_class, $ids);
+            $result = $ids;
             
-			foreach($ids as $object_id) {
-				foreach($schema as $field => $def) {
-// todo : handle cascading for other relation types
-					if($def['type'] == 'one2many') {
-						$res = $this->read($object_class, array($object_id), array($field));
-						$this->write($def['foreign_object'], $res[$object_id][$field], array($def['foreign_field'] => '0'));
-					}
-				}
-                $result[] = $ids;
-			}
-
 			// 2) remove object from DB
 			$table_name = $this->getObjectTableName($object_class);
-			if ($permanent) {
+			if (!$permanent) {
+                // soft deletion
+                $db->setRecords($table_name, $ids, ['deleted' => 1]);
+            }
+            else {
+                // hard deletion
 				$db->deleteRecords($table_name, $ids);
-			}
-			else {
-				$db->setRecords($table_name, $ids, array('deleted'=>1));
+                // 3) cascade deletions / relations updates
+                foreach($schema as $field => $def) {
+                    if(in_array($def['type'], ['one2many', 'many2many'])) {
+                        switch($def['type']) {
+                        case 'one2many':
+                            $res = $this->read($object_class, $ids, $field);
+                            $rel_ids = array_map(function ($item) use($field) { return $item[$field];}, array_values($res));
+                            // foregin field is many2one
+                            $rel_schema = $this->getObjectSchema($def['foreign_object']);
+                            // call ondelete method when defined (to allow cascade deletion)
+                            if(isset($rel_schema[$def['foreign_field']]['ondelete'])) {
+                                $ondelete = $rel_schema[$def['foreign_field']]['ondelete'];
+                                if(is_callable($ondelete)) {
+                                    call_user_func($ondelete, $this, $rel_ids);
+                                }
+                                else {
+                                    switch($ondelete) {
+                                        case 'cascade':
+                                            $this->remove($def['foreign_object'], $rel_ids, $permanent);
+                                            break;
+                                        case 'null':
+                                            $this->write($def['foreign_object'], $rel_ids, [$def['foreign_field'] => '0']);
+                                            break;
+                                        default:
+                                    }
+                                }
+
+                            }
+                            
+                            break;
+                        case 'many2many':
+                            // delete * from $def['rel_table'] where $def['rel_local_key'] in $ids
+                            $this->db->deleteRecords(
+                                $def['rel_table'], 
+                                $ids, 
+                                null, 
+                                $schema[$field]['rel_local_key']
+                            );                        
+                            break;                    
+                        }
+                    }
+                }                
 			}
 		}
 		catch(Exception $e) {
@@ -1280,26 +1311,6 @@ todo: signature differs from other methods	(returned value)
             
 			$res_list = array();
 			$res_assoc_db = array();
-			$valid_operators = array(
-				'boolean'		=> array('=', '<>', '<', '>'),
-				'integer'		=> array('in', 'not in', '=', '<>', '<', '>', '<=', '>='),
-				'float'			=> array('=', '<>', '<', '>', '<=', '>='),
-				'string'		=> array('like', 'ilike', 'in', '=', '<>'),
-				'text'			=> array('like', 'ilike', '='),
-				'html'			=> array('like', 'ilike', '='),                
-				'date'			=> array('=', '<>', '<', '>', '<=', '>=', 'like'),
-				'time'			=> array('=', '<>', '<', '>', '<=', '>='),
-				'datetime'		=> array('=', '<>', '<', '>', '<=', '>='),
-				'timestamp'		=> array('=', '<>', '<', '>', '<=', '>='),
-				'selection'		=> array('in', '=', '<>'),
-				'file'		    => array('like', 'ilike', '='),                
-				'binary'		=> array('like', 'ilike', '='),
-				// for compatibilty reasons, 'contains' is allowed for many2one field
-				// note: in that case 'contains' operator means 'list contains *at least one* of the following ids'
-				'many2one'		=> array('is', 'in', '=', '<>', 'contains'),
-				'one2many'		=> array('contains'),
-				'many2many'		=> array('contains'),
-			);
 
 			$conditions = array(array());
 			$tables = array();
@@ -1326,18 +1337,26 @@ todo: signature differs from other methods	(returned value)
 						if(!isset($domain[$j][$i]) || !is_array($domain[$j][$i])) throw new Exception("malformed domain", INVALID_PARAM);
 						if(!isset($domain[$j][$i][0]) || !isset($domain[$j][$i][1]) || !isset($domain[$j][$i][2])) throw new Exception("invalid domain, a mandatory attribute is missing", INVALID_PARAM);
 						$field		= $domain[$j][$i][0];
-                        if($schema[$field]['type'] == 'alias') $field = $schema[$field]['alias'];    
-						$operator	= strtolower($domain[$j][$i][1]);
-						$value		= $domain[$j][$i][2]; 
-                        if(!self::checkFieldAttributes(self::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory parameter for field '$field' of class '$object_class'", INVALID_PARAM);
-						$type 		= $schema[$field]['type'];
-
-						if($type == 'function') $type = $schema[$field]['result_type'];
-
-						// check the validity of the field name and the operator
+                        $value		= $domain[$j][$i][2];                            
+						$operator	= strtolower($domain[$j][$i][1]);						
+                        
+                        // check field validity
 						if(!in_array($field, array_keys($schema))) throw new Exception("invalid domain, unexisting field '$field' for object '$object_class'", INVALID_PARAM);
-						if(!in_array($operator, $valid_operators[$type])) throw new Exception("invalid operator '$operator' for field '$field' of type '{$schema[$field]['type']}' (result type: $type) in object '$object_class'", INVALID_PARAM);
-						// remember special fields involved in the domain (by removing them from the special_fields list)
+                        // get final target field
+                        if($schema[$field]['type'] == 'alias') {
+                            $field = $schema[$field]['alias'];
+                            if(!in_array($field, array_keys($schema))) throw new Exception("invalid domain, unexisting field '$field' for object '$object_class'", INVALID_PARAM);
+                        }
+                        // get final type
+                        $type = $schema[$field]['type'];
+						if($type == 'function') $type = $schema[$field]['result_type'];                        
+                        // check the validity of the field name and the operator
+                        if(!self::checkFieldAttributes(self::$mandatory_attributes, $schema, $field)) throw new Exception("missing at least one mandatory parameter for field '$field' of class '$object_class'", INVALID_PARAM);						                        
+						if(!in_array($operator, self::$valid_operators[$type])) throw new Exception("invalid operator '$operator' for field '$field' of type '{$schema[$field]['type']}' (result type: $type) in object '$object_class'", INVALID_PARAM);						
+
+
+						
+                        // remember special fields involved in the domain (by removing them from the special_fields list)
 						if(isset($special_fields[$field])) unset($special_fields[$field]);
 
 						// note: we don't test user permissions on foreign objects here
@@ -1416,7 +1435,10 @@ todo: signature differs from other methods	(returned value)
 			$order_table_alias = $table_alias;
 
             // if invalid order field is given, fallback on id
-            if(!isset($schema[$order])) $order = 'id'; 
+            if(!isset($schema[$order]) || ($schema[$order]['type'] == 'function' && (!isset($schema[$order]['store']) || !$schema[$order]['store']) )) {
+                trigger_error("invalid order field '$order' for class '$object_class'", E_USER_WARNING);
+                $order = 'id';                 
+            }
             if($schema[$order]['type'] == 'alias') $order = $schema[$order]['alias'];
             
 			$order_field = $order;
@@ -1434,6 +1456,10 @@ todo: signature differs from other methods	(returned value)
             $order_clause = [$order_table_alias.'.'.$order_field];
             if($order != 'id') $order_clause[] = $table_alias.'.id';
                 
+            if(!in_array($sort, ['asc', 'desc', 'ASC', 'DESC'])) {
+                trigger_error("invalid sort option '$sort' for search method", E_USER_WARNING);
+                $sort = 'asc';
+            }
 			// get the matching records by generating the resulting SQL query
 			$res = $db->getRecords($tables, $select_fields, NULL, $conditions, $table_alias.'.id', $order_clause, $sort, $start, $limit);
 			while ($row = $db->fetchArray($res)) {

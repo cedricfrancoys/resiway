@@ -1,13 +1,11 @@
 <?php
 /*
- * KNINE php library
- *
- * DBConnection class
- *
- */
+* KNINE php library
+*
+* DBConnection class
+*
+*/
 namespace easyobject\orm\db;
-//function_exists('load_class') or die(__FILE__.' requires qn.lib.php');
-// load_class('db/DBManipulatorMySQL');
 // ... : add other DBMS manipulator classes files here
 
 class DBConnection {

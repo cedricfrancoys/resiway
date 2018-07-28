@@ -1,0 +1,24 @@
+[
+    {
+        "field":  "id"
+    },
+    {
+        "field": "created"
+    },    
+    {
+        "field": "display_name",
+        "label": "Name",
+        "link": true
+    },
+    {
+        "field": "login",
+        "label": "Email"
+    },
+    {
+        "field": "account_type",
+        "label": "SSO"
+    },
+    {
+        "field": "verified"
+    }    
+]

@@ -1,0 +1,38 @@
+[
+    {
+        "field":  "id"
+    },
+    {
+        "field": "created"
+    },    
+    {
+        "field": "firstname"
+    },
+    {
+        "field": "lastname"
+    },    
+    {
+        "field": "login",
+        "label": "Email"
+    },
+    {
+        "field": "verified",
+        "readonly": true
+    },
+    {
+        "field": "avatar_url"
+    },
+    {
+        "field": "location"
+    },
+    {
+        "field": "country"
+    },
+    {
+        "field": "about"
+    },
+    {
+        "field": "favorites_ids",
+        "label": "Favorites"
+    }    
+]

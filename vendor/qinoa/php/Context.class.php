@@ -1,12 +1,14 @@
 <?php
 namespace qinoa\php;
 
-use qinoa\organic\Singleton;
+use qinoa\organic\Service;
 use qinoa\http\HttpRequest;
 use qinoa\http\HttpResponse;
 
 
-class Context extends Singleton {
+class Context extends Service {
+    
+    private $params;
     
     private $pid;
     
@@ -16,14 +18,15 @@ class Context extends Singleton {
     
     private $httpRequest;
     
-    private $httpResponse;
-    
-    
+    private $httpResponse;   
+
+
     /**
      * This method cannot be called directly (should be invoked through Singleton::getInstance)
      *
      */
-    protected function __construct(/* no dependency */) {
+    protected function __construct() {
+        $this->params = [];
         // get PID from HTTP server / PHP cli
         $this->pid = getmypid();
         // get current unix time in microseconds
@@ -34,13 +37,15 @@ class Context extends Singleton {
         if(!strlen($this->session_id)) {
             session_start();
             $this->session_id = session_id();
-        }        
-        // retrieve current request 
-        $this->httpRequest = new HttpRequest($this->getHttpMethod().' '.$this->getHttpUri().' '.$this->getHttpProtocol(), $this->getHttpRequestHeaders(), $this->getHttpBody());
-        // build response (set protocol to HTTP 1.1, status to success, and retrieve default headers set by PHP)
-        $this->httpResponse = new HttpResponse('HTTP/1.1 200 OK', $this->getHttpResponseHeaders());       
+        }
+        $this->httpRequest = null;
+        $this->httpResponse = null;
     }
-    
+
+    public function __clone() {
+        if($this->httpRequest)  $this->httpRequest = clone $this->httpRequest;
+        if($this->httpResponse) $this->httpResponse = clone $this->httpResponse;
+    }
     
     public function __toString() {
         return 'This is the PHP context instance';
@@ -48,14 +53,14 @@ class Context extends Singleton {
     
    
     public function get($var, $default=null) {
-        if(isset($GLOBALS[$var])) {
-            return $GLOBALS[$var];
+        if(isset($this->params[$var])) {
+            return $this->params[$var];
         }
         return $default;
     }
 
     public function set($var, $value) {
-        $GLOBALS[$var] = $value;
+        $this->params[$var] = $value;
         return $this;
     }
     
@@ -68,10 +73,18 @@ class Context extends Singleton {
     }
     
     public function getHttpRequest() {
+        if(is_null($this->httpRequest)) {
+            // retrieve current request 
+            $this->httpRequest = new HttpRequest($this->getHttpMethod().' '.$this->getHttpUri().' '.$this->getHttpProtocol(), $this->getHttpRequestHeaders(), $this->getHttpBody());
+        }
         return $this->httpRequest;
     }
 
     public function getHttpResponse() {
+        if(is_null($this->httpResponse)) {
+            // build response (set protocol to HTTP 1.1, status to success, content-type to 'application/json; charset=UTF-8', and retrieve default headers set by PHP)
+            $this->httpResponse = new HttpResponse('HTTP/1.1 200 OK', $this->getHttpResponseHeaders());            
+        }
         return $this->httpResponse;
     }
     
@@ -124,14 +137,25 @@ class Context extends Singleton {
     private function getHttpResponseHeaders() {
         $res = [];
         $headers = headers_list();
-        // set default content type to JSON and default charset to UTF-8
-        $headers[] = 'Content-type: application/json; charset=UTF-8';
         foreach($headers as $header) {
             list($name, $value) = explode(':', $header, 2);
             $res[$name] = trim($value);
         }
+        $request_headers = $this->getHttpRequestHeaders();
+        // set default content type to JSON and default charset to UTF-8
+        $res['Content-Type'] = 'application/json; charset=UTF-8';        
+        if(isset($request_headers['Accept'])) {
+            // example: Accept: text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c
+            $parts = explode(',', $request_headers['Accept']);
+            $parts = explode(';', $parts[0]);
+            $content_type = trim($parts[0]);
+            if(strpos($request_headers['Accept'], '*/*') === false) {
+                $res['Content-Type'] = $content_type;
+            }
+        }
         return $res;
     }
+    
     /**
      *
      * HTTP message formatted protocol (i.e. HTTP/1.0 or HTTP/1.1)
@@ -209,10 +233,12 @@ class Context extends Singleton {
             if (!isset($headers['Authorization'])) {
                 if (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
                     $headers['Authorization'] = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
-                } elseif (isset($_SERVER['PHP_AUTH_USER'])) {
+                } 
+                elseif (isset($_SERVER['PHP_AUTH_USER'])) {
                     $basic_pass = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '';
                     $headers['Authorization'] = 'Basic ' . base64_encode($_SERVER['PHP_AUTH_USER'] . ':' . $basic_pass);
-                } elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
+                } 
+                elseif (isset($_SERVER['PHP_AUTH_DIGEST'])) {
                     $headers['Authorization'] = $_SERVER['PHP_AUTH_DIGEST'];
                 }
             }              
@@ -241,7 +267,13 @@ class Context extends Singleton {
             }
         }
         // adapt Content-Type for multipart/form-data (already parsed by PHP)
-        if(isset($headers['Content-Type']) && strpos($headers['Content-Type'], 'multipart/form-data') == 0) {
+        if(isset($headers['Content-Type'])) {
+            if(strpos($headers['Content-Type'], 'multipart/form-data') === 0) {
+                $headers['Content-Type'] = 'application/x-www-form-urlencoded';
+            }
+        }
+        else {
+            // will be parsed using parse_str
             $headers['Content-Type'] = 'application/x-www-form-urlencoded';
         }
         return $headers;
@@ -260,18 +292,51 @@ class Context extends Singleton {
         $host = isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'localhost';
         $port = isset($_SERVER['SERVER_PORT'])?$_SERVER['SERVER_PORT']:80;
         // fallback to current script name (using CLI, REQUEST_URI is not set), i.e. '/index.php'
-        $uri = $_SERVER['SCRIPT_NAME'];
+        $uri = '/'.$_SERVER['SCRIPT_NAME'];
         if(isset($_SERVER['REQUEST_URI'])) {
             $uri = $_SERVER['REQUEST_URI'];
         }
+        else if(php_sapi_name() === 'cli' || defined('STDIN')) {
+            $args = [];
+            // follow getopt long options specs (http://www.gnu.org/software/libc/manual/html_node/Getopt-Long-Options.html)
+            for($i = 1; $i < $_SERVER['argc']; ++$i) {
+                if(strpos($_SERVER['argv'][$i], '--') === 0) {
+                    $parts = explode('=', substr($_SERVER['argv'][$i], 2));
+                    $value = (isset($parts[1]))?$parts[1]:null;
+                    $args[$parts[0]] = $value;
+                    // mimic PHP behaviour: inject query string args to the body (if not already set)
+                    if(!isset($_REQUEST[$parts[0]])) {
+                        $_REQUEST[$parts[0]] = $value;
+                    }
+                }
+            }
+            $uri .= '?'.http_build_query($args);
+        }            
         return $scheme."://".$auth."$host:$port{$uri}";
     }
     
     private function getHttpBody() {
-        // load raw content from input stream (HttpMessage class in in charge of turning it into an associative array)
-        $body = file_get_contents('php://input');
+        // in case script was invoked by CLI
+        if(php_sapi_name() === 'cli' || defined('STDIN')) {
+            // fetch body from stdin
+            $body = '';
+            $stdin = fopen('php://stdin', "r");
+            $read  = array($stdin);
+            $write = null;
+            $except = null;
+            if ( stream_select( $read, $write, $except, 0 ) === 1 ) {
+                while ($line = fgets( $stdin )) {
+                    $body .= $line;
+                }
+            }
+        }
+        else {
+            // load raw content from input stream (HttpMessage class in in charge of turning it into an associative array)
+            $body = file_get_contents('php://input');
+        }
         // in some cases, PHP consumes the input to populate $_REQUEST and $_FILES (i.e. with multipart/form-data content-type)
-        if(empty($body)) {
+        if(empty($body) 
+            || strlen($body) < 3) { // we could have received a formatted empty body (e.g.: {})
             // for GET methods, PHP improperly fills $_GET and $_REQUEST with query string parameters
             // we allow this only when there's nothing from ://stdin
             if(isset($_FILES) && !empty($_FILES)) {
@@ -280,7 +345,7 @@ class Context extends Singleton {
             else {
                 $body = $_REQUEST;
             }
-            // we should have set content-type accordingly while retrieving headers (in getHttpRequestHeaders())
+            // we should have set content-type accordingly while retrieving headers (@see getHttpRequestHeaders())
         }
         return $body;
     }    

@@ -101,14 +101,18 @@ class Question extends \easyobject\orm\Object {
                                         'order'         => 'score',
                                         'sort'          => 'desc'
                                         ),
-                                        
+
+            'answers'			    => array('type' => 'alias', 'alias' => 'answers_ids'),
+            
             /* identifiers of the comments for this question */                                        
-            'comments_ids'           => array(
+            'comments_ids'          => array(
                                         'type'		    => 'one2many', 
                                         'foreign_object'=> 'resiexchange\QuestionComment', 
                                         'foreign_field'	=> 'question_id'
                                         ),
-
+                                        
+            'comments'			    => array('type' => 'alias', 'alias' => 'comments_ids'),
+            
             /* list of keywords indexes related to this document */
             'indexes_ids'	        => array(
                                         'type' 			    => 'many2many', 
@@ -127,8 +131,8 @@ class Question extends \easyobject\orm\Object {
                                         'rel_table'		    => 'resiexchange_rel_question_question', 
                                         'rel_foreign_key'	=> 'related_id', 
                                         'rel_local_key'		=> 'question_id'
-                                        ),
-            
+                                        )
+                                        
         );
     }
     

@@ -1,0 +1,31 @@
+[
+    {
+        "field":  "id"
+    },
+    {
+        "field": "firstname"
+    },
+    {
+        "field": "created"
+    },    
+    {
+        "field": "lastname"
+    },    
+    {
+        "field": "verified",
+        "readonly": true
+    },
+    {
+        "field": "avatar_url"
+    },
+    {
+        "field": "location"
+    },
+    {
+        "field": "country"
+    },
+    {
+        "field": "about",
+        "widget": "wysiwyg"
+    }
+]

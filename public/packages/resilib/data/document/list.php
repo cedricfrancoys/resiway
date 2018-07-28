@@ -4,8 +4,9 @@ defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
 use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
-use qinoa\text\TextTransformer as TextTransformer;
+use easyobject\orm\ObjectManager;
+use qinoa\orm\Domain;
+use qinoa\text\TextTransformer;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -119,11 +120,11 @@ try {
         else $params['domain'][] = ['id','=', -1];        
     }
     else {
-        $params['domain'] = QNLib::domain_normalize($params['domain']);
-        if(!QNLib::domain_check($params['domain'])) $params['domain'] = [];
+        $params['domain'] = Domain::normalize($params['domain']);
+        if(!Domain::validate($params['domain'])) $params['domain'] = [];
         
         // adapt domain to restrict results to given channel
-        $params['domain'] = QNLib::domain_condition_add($params['domain'], ['channel_id','=', $params['channel']]);
+        $params['domain'] = Domain::conditionAdd($params['domain'], ['channel_id','=', $params['channel']]);
 
 // we shouldn't request documents by categories using the domain, but rather use a specific syntax for the query
 // quick and dirty workaround: 

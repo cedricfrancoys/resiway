@@ -25,10 +25,6 @@ use \Exception as Exception;
  * DBManipulatorMySQL class
  *
  */
-// this script requires debugging constants and methods
-// defined('__QN_LIB') or die(__FILE__.' requires qn.lib.php');
-// load interface class
-// load_class('db/DBManipulator');
 
 class DBManipulatorMySQL extends DBManipulator {
     
@@ -79,7 +75,8 @@ class DBManipulatorMySQL extends DBManipulator {
 	* @return resource Returns a resource identifier or -1 if the query was not executed correctly.
 	*/
 	function sendQuery($query) {
-	    if(function_exists('debug_mode') && (debug_mode() & DEBUG_SQL)) print("$query\n");
+        // debug
+	    trigger_error("QN_DEBUG_SQL::$query", E_USER_NOTICE);
 		$this->setLastQuery($query);
 		if(($result = mysqli_query($this->dbms_handler, $query)) === false) throw new Exception(__METHOD__.' : query failure. '.mysqli_error($this->dbms_handler).'. For query: "'.$query.'"', SQL_ERROR);
 		else {

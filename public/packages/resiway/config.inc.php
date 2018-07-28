@@ -1,6 +1,8 @@
 <?php
 namespace config;
 
+register('access', 'resiway\access\AccessController');
+
 // maximum number of categories a user is allowed to post daily
 define('RESIWAY_CATEGORIES_DAILY_MAX', 30);
 

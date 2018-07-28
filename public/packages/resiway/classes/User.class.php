@@ -146,7 +146,13 @@ class User extends \easyobject\orm\Object {
                                             'rel_foreign_key'   => 'badge_id', 
                                             'rel_local_key'     => 'user_id'
                                             ),
-                                    
+
+            'questions_ids'             => array(
+                                            'type'              => 'one2many', 
+                                            'foreign_object'    => 'resiexchange\Question', 
+                                            'foreign_field'     => 'creator'
+                                           ),
+                                                
             /* identifiers of the tags marked by user as favorite */
 /*
 // deprecated : use favorites_ids            
@@ -287,9 +293,7 @@ class User extends \easyobject\orm\Object {
                 'firstname',
                 'lastname', 
                 'publicity_mode',
-// todo : remove relation fields from this list
-                'notifications_ids',
-                'notify_reputation_update', 
+                'notify_reputation_update',
                 'notify_badge_awarded', 
                 'notify_question_comment', 
                 'notify_answer_comment', 

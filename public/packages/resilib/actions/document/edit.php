@@ -1,85 +1,90 @@
 <?php
-// Dispatcher (index.php) is in charge of setting the context and should include easyObject library
-defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
-require_once('../resi.api.php');
+/*
+    This file is part of the Resipedia project <http://www.github.com/cedricfrancoys/resipedia>
+    Some Rights Reserved, Cedric Francoys, 2018, Yegen
+    Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
+*/
+use config\QNLib;
 
-use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
-use easyobject\orm\PersistentDataManager as PersistentDataManager;
+use resilib\Document;
+use resiway\Author;
+use resiway\User;
+use resiway\Category;
 
-// force silent mode (debug output would corrupt json data)
-set_silent(true);
-
-// announce script and fetch parameters values
-$params = QNLib::announce([
-    'description'	=>	"Edit a document or submit a new one",
-    'params' 		=>	[
-        'id'	            => array(
-                                'description'   => 'Identifier of the document being edited (a null identifier means creation of a new document).',
-                                'type'          => 'integer', 
-                                'default'       => 0
-                            ),    
-        'title'	            => array(
-                                'description'   => 'Title of the submitted document.',
-                                'type'          => 'string', 
-                                'required'      => true
-                            ),
-        'authors_ids'       => array(
-                                'description'   => 'List of names of the authors of the document.',
-                                'type'          => 'array',
-                                'required'      => true
-                            ),
-                            
-        'last_update'		=> array(
-                                'description'   => 'Publication date of the submitted document.',
-                                'type'          => 'date',
-                                'required'      => true
-                            ),
-        'original_url'		=> array(
-                                'description'   => 'Original location of the submitted document.',
-                                'type'          => 'string',
-                                'default'       => ''
-                            ),
-        'description'       => array(
-                                'description'   => 'Description of the submitted document.',
-                                'type'          => 'string', 
-                                'default'       => ''
-                            ),
-        'license'           => array(
-                                'description'   => 'Licence under which is published the submitted document.',
-                                'type'          => 'string', 
-                                'default'       => 'CC-by-nc-sa' 
-                            ),                            
-        'lang'              => array(
-                                'description'   => 'Language of the submitted document.',
-                                'type'          => 'string', 
-                                'default'       => 'fr'
-                            ),
-        'pages'             => array(
-                                'description'   => 'Number of pages of the submitted document.',
-                                'type'          => 'integer', 
-                                'required'       => true
-                            ),                                                        
-        'content'	        => array(
-                                'description'   => 'Content of the submitted document.',
-                                'type'          => 'file', 
-                                'default'       => []
-                            ),
-        'thumbnail'	        => array(
-                                'description'   => 'Thumbnail picture fot the submitted document.',
-                                'type'          => 'file', 
-                                'default'       => []
-                            ),                            
-        'categories_ids'    => array(
-                                'description'   => 'List of tags assigned to the document.',
-                                'type'          => 'array',
-                                'required'      => true
-                            )
-    ]
+list($params, $providers) = QNLib::announce([
+    'description'   => 'Edit a document or submit a new one',
+    'params'        => [
+        'id' => [
+            'description'   => "Identifier of the document being edited.",
+            'type'          => 'integer',
+            'min'           => 0,
+            'required'      => true
+        ],
+        'content'   => [
+            'description'   => 'Content of the submitted document (either base64 encoded or multipart/form-data).',
+            'type'          => 'file', 
+            'default'       => ''
+        ],
+        'thumbnail'	=> [
+            'description'   => 'Thumbnail picture fot the submitted document.',
+            'type'          => 'file', 
+            'default'       => ''
+        ],
+        'title' => [
+            'description'   => 'Title of the submitted document.',
+            'type'          => 'string', 
+            'required'      => true
+        ],
+        'authors_ids' => [
+            'description'   => 'List of names of the authors of the document.',
+            'type'          => 'array',
+            'required'      => true
+        ],                            
+        'last_update' => [
+            'description'   => 'Publication date of the submitted document.',
+            'type'          => 'date',
+            'required'      => true
+        ],
+        'original_url' => [
+            'description'   => 'Original location of the submitted document.',
+            'type'          => 'string',
+            'default'       => ''
+        ],
+        'description' => [
+            'description'   => 'Description of the submitted document.',
+            'type'          => 'string', 
+            'default'       => ''
+        ],
+        'license' => [
+            'description'   => 'Licence under which is published the submitted document.',
+            'type'          => 'string', 
+            'default'       => 'CC-by-nc-sa' 
+        ],
+        'lang' => [
+            'description'   => 'Language of the submitted document.',
+            'type'          => 'string', 
+            'default'       => 'fr'
+        ],
+        'pages' => [
+            'description'   => 'Number of pages of the submitted document.',
+            'type'          => 'integer', 
+            'required'       => true
+        ],
+        'categories_ids' => [
+            'description'   => 'List of tags assigned to the document.',
+            'type'          => 'array',
+            'required'      => true
+        ]
+        
+    ],
+    'response'      => [
+        'content-type'  => 'application/json',
+        'charset'       => 'utf-8'
+    ],
+    'providers'     => ['context', 'api' => 'resiway\Api'] 
 ]);
 
-
-list($result, $error_message_ids, $notifications) = [true, [], []];
+list($context, $api) = [$providers['context'], $providers['api']];
 
 list($action_name, $object_class, $object_id) = [ 
     'resilib_document_edit',
@@ -88,167 +93,134 @@ list($action_name, $object_class, $object_id) = [
 ];
 
 
+if($object_id == 0) {
+    $action_name = 'resilib_document_post';
+    unset($params['id']);
+}
+else {
+    // prevent deleting binary content when patching
+    if(empty($params['content'])) {
+        unset($params['content']);
+    }
+    if(empty($params['thumbnail'])) {
+        unset($params['thumbnail']);
+    }    
+}
 
-// handle case of new document submission (which has a distinct reputation requirement)
-if($object_id == 0) $action_name = 'resilib_document_post';
 
 
-try {
-    
-    // reset file fields if no data have been received
-    if(empty($params['content']) || !isset($params['content']['tmp_name'])) unset($params['content']);
-    if(empty($params['thumbnail']) || !isset($params['thumbnail']['tmp_name'])) unset($params['thumbnail']);    
-    
-    // try to perform action
-    $result = ResiAPI::performAction(
-        $action_name,                                             // $action_name
-        $object_class,                                            // $object_class
-        $object_id,                                               // $object_id
-        [],                                                       // $object_fields
-        false,                                                    // $toggle
-        function ($om, $user_id, $object_class, $object_id)       // $do
-        use ($params) {    
+$result = $api->performAction(
+    $action_name,                                             // $action_name
+    $object_class,                                            // $object_class
+    $object_id,                                               // $object_id
+    [],                                                       // $object_fields
+    false,                                                    // $toggle
+    function ($om, $user_id, $object_class, $object_id)       // $do
+    use ($api, $params) {    
 
-            // check authors_ids consistency (we might have received a request for new authors)            
-            foreach($params['authors_ids'] as $key => $value) {
-                if(intval($value) == 0 && strlen($value) > 0) {
-                    // check if an author by that name already exists                    
-                    $authors_ids = $om->search('resiway\Author', ['name', 'ilike', $value]);
-                    if($authors_ids && count($authors_ids)) {
-                        $author_id = $authors_ids[0];
-                    }
-                    else {
-                        // create a new category + write given value
-                        $author_id = $om->create('resiway\Author', [ 
-                                        'creator'           => $user_id,     
-                                        'name'              => $value
-                                      ]);
-                    }
-                    // update entry
-                    $params['authors_ids'][$key] = sprintf("+%d", $author_id);
+        // check authors_ids consistency (we might have received a request for new authors)            
+        foreach($params['authors_ids'] as $key => $value) {
+            if(intval($value) == 0 && strlen($value) > 0) {
+                // check if an author by that name already exists                    
+                $authors_ids = Author::search(['name', 'ilike', $value])->limit(1)->ids();
+                if(!count($authors_ids)) {
+                    // create a new category + write given value
+                    $authors_ids = Author::create([ 
+                                       'creator'   => $user_id,     
+                                       'name'      => $value
+                                   ])
+                                   ->ids();
                 }
+                // update entry
+                $params['authors_ids'][$key] = sprintf("+%d", $authors_ids[0]);
             }
-            
-            // check categories_ids consistency (we might have received a request for new categories)
-            foreach($params['categories_ids'] as $key => $value) {
-                if(intval($value) == 0 && strlen($value) > 0) {
-                    // check if a category by that name already exists
-                    $cats_ids = $om->search('resiway\Category', ['title', 'ilike', $value]);
-                    if($cats_ids && count($cats_ids)) {
-                        $cat_id = $cats_ids[0];
-                    }
-                    else {    
-                        // create a new category + write given value
-                        $cat_id = $om->create('resiway\Category', [ 
-                                        'creator'           => $user_id,     
-                                        'title'             => $value,
-                                        'description'       => '',
-                                        'parent_id'         => 0
-                                      ]);
-                    }
-                    // update entry
-                    $params['categories_ids'][$key] = sprintf("+%d", $cat_id);
+        }
+        
+        // check categories_ids consistency (we might have received a request for new categories)
+        foreach($params['categories_ids'] as $key => $value) {
+            if(intval($value) == 0 && strlen($value) > 0) {
+                // check if a category by that name already exists
+                $cats_ids = Category::search(['title', 'ilike', $value])->limit(1)->ids();
+                if(!count($cats_ids)) {
+                    // create a new category + write given value
+                    $cats_ids = Category::create([ 
+                                    'creator'           => $user_id,     
+                                    'title'             => $value,
+                                    'description'       => '',
+                                    'parent_id'         => 0
+                                ])
+                                ->ids();
                 }
-            }        
-            
-            if($object_id == 0) {
-            
-                // create a new document + write given value
-                unset($params['id']);
-                $object_id = $om->create($object_class, array_merge(['creator' => $user_id], $params));                
-                
-                if($object_id <= 0) throw new Exception("action_failed", QN_ERROR_UNKNOWN);
-
-                // update user count_documents
-                $res = $om->read('resiway\User', $user_id, ['count_documents']);
-                if($res > 0 && isset($res[$user_id])) {
-                    $om->write('resiway\User', $user_id, [ 'count_documents'=> $res[$user_id]['count_documents']+1 ]);
-                }
-
-                // update categories count_documents
-                $om->write('resiway\Category', $params['categories_ids'], ['count_documents' => null]);
-                
-                // update global counters
-                ResiAPI::repositoryInc('resilib.count_documents');
-                ResiAPI::repositoryInc('resilib.count_pages', $params['pages']);
+                // update entry
+                $params['categories_ids'][$key] = sprintf("+%d", $cats_ids[0]);
             }
-            else {
-                /*
-                 note : expected notation of categories_ids involve a sign 
-                 '+': relation to be added
-                 '-': relation to be removed
-                */
-                $om->write($object_class, $object_id, array_merge(['editor' => $user_id, 'edited' => date("Y-m-d H:i:s")], $params));
+        }        
+        
+        if($object_id == 0) {        
+            // create a new document + write given value
+            $document = Document::create(array_merge(['creator' => $user_id], $params))->adapt('txt')->first();
+           
+            // update user count_documents
+            $collection = User::id($user_id)->read(['count_documents']);            
+            $user = $collection->first();
+            $collection->update([ 'count_documents'=> $user['count_documents']+1 ]);
 
-                // update categories count_documents
-                $categories_ids = array_map(function($i) { return abs(intval($i)); }, $params['categories_ids']);
-                $om->write('resiway\Category', $categories_ids, ['count_documents' => null]);
+            // update categories count_documents
+            Category::ids($params['categories_ids'])->update(['count_documents' => null]);
+            
+            // update global counters
+            $api->increment('resilib.count_documents');
+            $api->increment('resilib.count_pages', $params['pages']);
+        }
+        else {
+            /*
+             note : expected notation of categories_ids involve a sign 
+             '+': relation to be added
+             '-': relation to be removed
+            */
+
+            $document = Document::id($object_id)->update(array_merge(['editor' => $user_id, 'edited' => time()], $params))->adapt('txt')->first();
+
+            // update categories count_documents
+            $categories_ids = array_map(function($i) { return abs(intval($i)); }, $params['categories_ids']);
+            Category::ids($categories_ids)->update(['count_documents' => null]);            
+        }
+
+        return ['id' => $document['id']];
+    },
+    null,                                                      // $undo
+    [                                                          // $limitations
+        function ($om, $user_id, $action_id, $object_class, $object_id) 
+        use ($params) {
+            if(strlen($params['title']) < RESILIB_DOCUMENT_TITLE_LENGTH_MIN
+            || strlen($params['title']) > RESILIB_DOCUMENT_TITLE_LENGTH_MAX) {
+                throw new Exception("document_title_length_invalid", QN_ERROR_INVALID_PARAM); 
+            }
+            $count_tags = 0;
+            foreach($params['categories_ids'] as $tag_id) {
+                if(intval($tag_id) > 0) ++$count_tags;
+                else if(intval($tag_id) == 0 && strlen($tag_id) > 0) ++$count_tags;
+            }
+            if($count_tags < RESILIB_DOCUMENT_CATEGORIES_COUNT_MIN
+            || $count_tags > RESILIB_DOCUMENT_CATEGORIES_COUNT_MAX) {
+                throw new Exception("document_tags_count_invalid", QN_ERROR_INVALID_PARAM); 
             }
             
-            // read created document as returned value
-            $res = $om->read($object_class, $object_id, ['creator', 'created', 'title', 'authors_ids', 'last_update', 'description', 'score', 'categories_ids']);
-            if($res > 0) {
-                $result = array(
-                                'id'                => $object_id,
-                                'creator'           => ResiAPI::loadUserPublic($user_id), 
-                                'created'           => $res[$object_id]['created'], 
-                                'title'             => $res[$object_id]['title'],                             
-                                'last_update'       => $res[$object_id]['last_update'],
-                                'description'       => $res[$object_id]['description'],                                 
-                                'score'             => $res[$object_id]['score'],
-                                'authors_ids'       => $res[$object_id]['authors_ids'],                                
-                                'categories_ids'    => $res[$object_id]['categories_ids'],
-                                'comments'          => [],                                
-                                'history'           => []
-                          );
-            }
-            else $result = $res;
-            return $result;
         },
-        null,                                                      // $undo
-        [                                                          // $limitations
-            function ($om, $user_id, $action_id, $object_class, $object_id) 
-            use ($params) {
-                if(strlen($params['title']) < RESILIB_DOCUMENT_TITLE_LENGTH_MIN
-                || strlen($params['title']) > RESILIB_DOCUMENT_TITLE_LENGTH_MAX) {
-                    throw new Exception("document_title_length_invalid", QN_ERROR_INVALID_PARAM); 
-                }
-                $count_tags = 0;
-                foreach($params['categories_ids'] as $tag_id) {
-                    if(intval($tag_id) > 0) ++$count_tags;
-                    else if(intval($tag_id) == 0 && strlen($tag_id) > 0) ++$count_tags;
-                }
-                if($count_tags < RESILIB_DOCUMENT_CATEGORIES_COUNT_MIN
-                || $count_tags > RESILIB_DOCUMENT_CATEGORIES_COUNT_MAX) {
-                    throw new Exception("document_tags_count_invalid", QN_ERROR_INVALID_PARAM); 
-                }
-                
-            },
-            // user cannot perform given action more than daily maximum
-            function ($om, $user_id, $action_id, $object_class, $object_id) {
-                $res = $om->search('resiway\ActionLog', [
-                            ['user_id',     '=',  $user_id], 
-                            ['action_id',   '=',  $action_id], 
-                            ['object_class','=',  $object_class], 
-                            ['created',     '>=', date("Y-m-d")]
-                       ]);
-                if($res > 0 && count($res) > RESILIB_DOCUMENT_DAILY_MAX) {
-                    throw new Exception("action_max_reached", QN_ERROR_NOT_ALLOWED);
-                }        
-            }
-        ]
-    );
+        // user cannot perform given action more than daily maximum
+        function ($om, $user_id, $action_id, $object_class, $object_id) {
+            $res = $om->search('resiway\ActionLog', [
+                        ['user_id',     '=',  $user_id], 
+                        ['action_id',   '=',  $action_id], 
+                        ['object_class','=',  $object_class], 
+                        ['created',     '>=', date("Y-m-d")]
+                   ]);
+            if($res > 0 && count($res) > RESILIB_DOCUMENT_DAILY_MAX) {
+                throw new Exception("action_max_reached", QN_ERROR_NOT_ALLOWED);
+            }        
+        }
+    ]
+);
  
-}
-catch(Exception $e) {
-    $result = $e->getCode();
-    $error_message_ids = array($e->getMessage());
-}
 
-// send json result
-header('Content-type: application/json; charset=UTF-8');
-echo json_encode([
-        'result'            => $result, 
-        'error_message_ids' => $error_message_ids
-    ], 
-    JSON_PRETTY_PRINT);
+$context->httpResponse()->body(['result' => $result])->send();

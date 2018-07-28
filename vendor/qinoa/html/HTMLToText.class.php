@@ -30,7 +30,14 @@ use qinoa\html\HTMLPurifier_Config as HTMLPurifier_Config;
 
 class HTMLToText {
 
-   public static function convert($value, $linebreaks=true) {
+    /**
+     * Converts an HTML string to non-formatted text
+     *
+     * @param $value        string  HTML string
+     * @param $linebreaks   bool    indicates if line breaks are to be preserved
+     * @return string
+     */
+    public static function convert($value, $linebreaks=true) {
         // convert unbreakable spaces to whitespaces
         $value = str_replace(" ", ' ', $value);
         $lineseparator = ($linebreaks)?"\n":' ';

@@ -46,6 +46,16 @@
     "/pdf/article/:id/:title?":"?get=resiway_pdf&class=article",
     "/html/question/:id/:title?":"?get=resiway_html&class=question",
     "/html/document/:id/:title?":"?get=resiway_html&class=document",
-    "/html/article/:id/:title?":"?get=resiway_html&class=article",
-    "/oauth2callback":"?show=resiway_oauth"
+    "/html/article/:id/:title?":"?get=resiway_html&class=article",    
+    "/oauth2callback":"?show=resiway_oauth",
+    "/test/:foo?": {
+        "GET": {
+            "description": "Retrieve test data",
+            "operation": "?get=resiway_tests&test=1"
+        },
+        "POST": {
+            "description": "ADD test data",
+            "operation": "?get=resiway_tests"
+        }        
+    }
 }

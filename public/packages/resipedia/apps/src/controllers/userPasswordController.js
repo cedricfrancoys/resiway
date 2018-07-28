@@ -29,7 +29,7 @@ angular.module('resipedia')
 
         // @init        
         if(typeof ctrl.code != 'undefined') {
-            var decoded = String(ctrl.code).base64_decode();
+            var decoded = String(ctrl.code).replace(/-/g, '_').replace(/\+/g, '/').base64_decode();
             if(decoded.indexOf(';') > 0) {
                 var params = decoded.split(';');
                 $http.get('index.php?do=resiway_user_signin&login='+params[0]+'&password='+params[1])

@@ -64,9 +64,14 @@ class Object {
 		if(method_exists($this, 'getDefaults')) {
 			$defaults = $this->getDefaults();
 			// get default values, set fields for default language, and mark fields as modified
-			foreach($defaults as $field => $default_value) {
-                if(isset($this->schema[$field]) && is_callable($default_value)) {
-                    $this->values[$field] = call_user_func($default_value);
+			foreach($defaults as $field => $default) {
+                if(isset($this->schema[$field])) {
+                    if(is_callable($default)) {
+                        $this->values[$field] = call_user_func($default);
+                    }
+                    else {
+                        $this->values[$field] = $default;
+                    }
                 }
             }
     	}
@@ -85,6 +90,14 @@ class Object {
 		);
 		return $special_columns;
 	}
+    
+    public final function setField($field, $value) {
+        $this->values[$field] = $value;
+    }
+    
+    public final function setColumn($column, array $description) {
+        $this->schema[$column] = $description;
+    }
 
 	/**
 	 * Gets object schema
@@ -104,6 +117,20 @@ class Object {
 		return $this->fields;
 	}	
 
+    /**
+     * Provide the final field targeted by a field (handle aliases)
+     * This method should be used for type comparisons and when checking field structure validity
+     *
+     */
+    public final function field($field) {
+        $type = $this->schema[$field]['type'];
+        while($type == 'alias') {
+            $field = $this->schema[$field]['alias'];
+            $type = $this->schema[$field]['type'];
+        }
+        return $this->schema[$field];
+    }
+    
     /**
     * returns values of static instance (default values)
     *
@@ -134,8 +161,9 @@ class Object {
 
     // qinoa integration : if available
     public static function __callStatic($name, $arguments) {            
-        if(is_callable('qinoa\orm\Collection::getInstance')) {
-            $collection = new \qinoa\orm\Collection(ObjectManager::getInstance(), get_called_class());
+        if(is_callable('qinoa\orm\Collections::getInstance')) {
+            $factory = \qinoa\orm\Collections::getInstance();
+            $collection = $factory->create(get_called_class());
             // check that the method actually exists
             if(is_callable([$collection, $name])) {
                 return call_user_func_array([$collection, $name], $arguments);

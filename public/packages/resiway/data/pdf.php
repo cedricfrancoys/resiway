@@ -29,6 +29,12 @@ $params = QNLib::announce(
                                             'type'          => 'boolean', 
                                             'default'       => false
                                             ),
+// todo : deprecate - not used, this controller retrieved the actual title of the resource                                            
+                        'title'	        => array(
+                                            'description'   => 'Title of the object',
+                                            'type'          => 'string', 
+                                            'default'       => ''
+                                            ),
                         'view'	        => array(
                                             'description'   => 'Flag to force online display',
                                             'type'          => 'boolean', 

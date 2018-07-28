@@ -25,12 +25,13 @@
 * Allows to manage users and groups access on classes.
 *
 */
+use config\QNLib;
 
 // the dispatcher (index.php) is in charge of setting the context and should include the easyObject library
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../qn.api.php');
 
-load_class('utils/HtmlWrapper');
+QNlib::load_class('html/HtmlWrapper');
 
 
 $html = new HtmlWrapper();
@@ -38,8 +39,8 @@ $html->addCSSFile('packages/core/html/css/easyobject/base.css');
 $html->addCSSFile('packages/core/html/css/jquery.ui.grid/jquery.ui.grid.css');
 $html->addCSSFile('packages/core/html/css/jquery/base/jquery.ui.easyobject.css');
 
-$html->addJSFile('packages/core/html/js/jquery-1.7.1.min.js');
-$html->addJSFile('packages/core/html/js/jquery-ui-1.8.20.custom.min.js');
+$html->addJSFile('packages/core/html/js/jquery.min.js');
+$html->addJSFile('packages/core/html/js/jquery-ui.min.js');
 $html->addJSFile('packages/core/html/js/fckeditor/fckeditor.js');
 
 //$html->addJSFile('packages/core/html/js/easyObject.min.js');

@@ -74,23 +74,42 @@ class HttpResponse extends HttpMessage {
 
         if(is_array($body)) {
             switch($this->getHeaders()->getContentType()) {
+            case 'application/vnd.api+json':                
             case 'application/json':
-            case 'text/javascript':
                 $body = json_encode($body, JSON_PRETTY_PRINT);
+                break;
+            case 'application/javascript':            
+            case 'text/javascript':
+                // JSON-P
+// todo                
                 break;
             case 'text/xml':
             case 'application/xml':
             case 'text/xml, application/xml':
-                $xml = new SimpleXMLElement('<root/>');
-                array_walk_recursive($body, array ($xml, 'addChild'));
+                function to_xml(\SimpleXMLElement &$object, array $data) {   
+                    foreach ($data as $key => $value) {                        
+                        if (is_array($value)) {
+                            if(is_numeric($key)) {
+                                $new_object = $object->addChild('elem');
+                                $new_object->addAttribute('id', $key);
+                            }
+                            else $new_object = $object->addChild($key);
+                            to_xml($new_object, $value);
+                        } 
+                        else $object->addChild($key, $value);
+                    }   
+                }              
+                $xml = new \SimpleXMLElement('<root/>');
+                to_xml($xml, $body);
                 $body = $xml->asXML();
+                break;
             default:
                 $body = http_build_query($body);
             }
         }
         header('Content-Length: '.strlen($body));
         print($body);
-        // no output should be emitted after this point
+        // we return a pointer to current instance for consistency, but no output should be emitted after this point
         return $this;        
     }
     

@@ -5,6 +5,7 @@ require_once('../resi.api.php');
 
 use config\QNLib;
 use easyobject\orm\ObjectManager;
+use qinoa\orm\Domain;
 
 use resiway\User;
 
@@ -94,11 +95,11 @@ try {
         else $params['domain'][] = ['id','=', -1];        
     }
     else {
-        $params['domain'] = QNLib::domain_normalize($params['domain']);
-        if(!QNLib::domain_check($params['domain'])) $params['domain'] = [];
+        $params['domain'] = Domain::normalize($params['domain']);
+        if(!Domain::validate($params['domain'])) $params['domain'] = [];
         
         // adapt domain to restrict results to given channel
-        $params['domain'] = QNLib::domain_condition_add($params['domain'], ['channel_id','=', $params['channel']]);
+        $params['domain'] = Domain::conditionAdd($params['domain'], ['channel_id','=', $params['channel']]);
 
 // we shouldn't request articles by categories using the domain, but rather use a specific syntax for the query
 // quick and dirty workaround for including sub-categories: 

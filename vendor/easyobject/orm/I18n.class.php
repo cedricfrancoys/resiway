@@ -30,18 +30,18 @@ class I18n {
 	public static function getLocale($locale) {
 		$result = false;
 		// save config current state
-		$temp = config\get_config();
+		$temp = $GLOBALS['QN_CONFIG_ARRAY'];
 		// reset config
-		config\set_config(array());		
+		$GLOBALS['QN_CONFIG_ARRAY'] = [];
 		if(self::loadLocale($locale)) {
 			// retrieve parameters set in the locale.inc.php script
-			$result = config\get_config();
+			$result = $GLOBALS['QN_CONFIG_ARRAY'];
 		}
 		else {
 			$result = UNKNOWN_OBJECT;
 		}
 		// restore config to its original state
-		config\set_config($temp);
+		$GLOBALS['QN_CONFIG_ARRAY'] = $temp;
 		return $result;
 	}
 	

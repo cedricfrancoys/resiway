@@ -108,7 +108,7 @@ try {
         
         // append info to activity log
         $log = sprintf("%s @ %s, mail sent to user %011d (%s) : %s\n", date('Y-m-d'), date('H:i:s'), $user_id, $user_data['login'], $params['subject']);
-        file_put_contents(LOG_STORAGE_DIR.'/mail.log', $log, FILE_APPEND);        
+        file_put_contents(QN_LOG_STORAGE_DIR.'/mail.log', $log, FILE_APPEND);        
         
         // remove processed files   
         foreach($filenames as $filename) {                        

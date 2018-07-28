@@ -7,6 +7,7 @@ namespace core {
 			return array(
 				'class_name'		=> array('type' => 'string'),
 				'group_id'			=> array('type' => 'many2one', 'foreign_object' => 'core\Group'),
+				'user_id'			=> array('type' => 'many2one', 'foreign_object' => 'core\User'),                
 				'rights'			=> array('type' 	=> 'integer',
 					                         'onchange' => 'core\Permission::onchange_rights'),
 				// virtual fields, used in list views

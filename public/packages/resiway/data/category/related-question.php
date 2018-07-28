@@ -3,8 +3,9 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
-use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
+use config\QNLib;
+use easyobject\orm\ObjectManager;
+use qinoa\orm\Domain;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -46,14 +47,14 @@ try {
     $res = $om->read($object_class, $object_id, ['path', 'parent_path']);    
     if($res < 0 || !isset($res[$object_id])) throw new Exception("object_unknown", QN_ERROR_INVALID_PARAM);       
     
-    $domain = QNLib::domain_condition_add([], ['channel_id','=', $params['channel']]);
-    $domain = QNLib::domain_condition_add($domain, ['count_questions','>', 0]);    
+    $domain = Domain::conditionAdd([], ['channel_id','=', $params['channel']]);
+    $domain = Domain::conditionAdd($domain, ['count_questions','>', 0]);    
     
     if(strlen($res[$object_id]['parent_path']) > 0) {
-        $domain = QNLib::domain_condition_add($domain, ['path', 'like', $res[$object_id]['parent_path'].'/%']);
+        $domain = Domain::conditionAdd($domain, ['path', 'like', $res[$object_id]['parent_path'].'/%']);
     }
     else {
-        $domain = QNLib::domain_condition_add($domain, ['path', 'like', $res[$object_id]['path'].'/%']);        
+        $domain = Domain::conditionAdd($domain, ['path', 'like', $res[$object_id]['path'].'/%']);        
     }
     
     $categories_ids = $om->search('resiway\Category', $domain, 'count_questions', 'desc', 0, $params['limit']);

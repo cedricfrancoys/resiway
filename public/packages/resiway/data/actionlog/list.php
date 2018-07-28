@@ -3,8 +3,9 @@
 defined('__QN_LIB') or die(__FILE__.' cannot be executed directly.');
 require_once('../resi.api.php');
 
-use config\QNLib as QNLib;
-use easyobject\orm\ObjectManager as ObjectManager;
+use config\QNLib;
+use easyobject\orm\ObjectManager;
+use qinoa\orm\Domain;
 
 // force silent mode (debug output would corrupt json data)
 set_silent(true);
@@ -72,7 +73,7 @@ try {
     // retrieve given user data 
     $user = ResiAPI::loadUserPublic($user_id);
 
-    $params['domain'] = QNLib::domain_normalize($params['domain']);
+    $params['domain'] = Domain::normalize($params['domain']);
     foreach($params['domain'] as $clause) {
         foreach($clause as $condition) {
             if($condition[0] == 'user_id') {

@@ -1,6 +1,7 @@
 <?php
 namespace resiexchange;
 
+
 class AnswerComment extends \easyobject\orm\Object {
 
     public static function getColumns() {
@@ -12,7 +13,10 @@ class AnswerComment extends \easyobject\orm\Object {
                                         'store'             => false,
                                         'function'          => 'resiexchange\AnswerComment::getName'
                                         ),        
-        
+
+            /* override default creator field to make it explicitly point to resiway\User objects */
+            'creator'				=> array('type' => 'many2one', 'foreign_object'=> 'resiway\User'),
+                                        
             /* text of the comment */
             'content'			=> array('type' => 'text'),
             
@@ -21,6 +25,7 @@ class AnswerComment extends \easyobject\orm\Object {
             'score'             => array('type' => 'integer'),
             
             'count_flags'       => array('type' => 'integer')
+                        
         );
     }
     
@@ -33,11 +38,13 @@ class AnswerComment extends \easyobject\orm\Object {
 
     public static function getName($om, $oids, $lang) {
         $result = [];
-        $res = $om->read('resiexchange\AnswerComment', $oids, ['answer_id.question_id']);
-        $questions_ids = array_map(function($a){return $a['answer_id.question_id'];}, $res);
+        $res = $om->read(__CLASS__, $oids, ['answer_id']);
+        $answers_ids = array_map(function($a){return $a['answer_id'];}, $res);
+        $answers = $om->read('resiexchange\Answer', $answers_ids, ['question_id']);
+        $questions_ids = array_map(function($a){return $a['question_id'];}, $answers);
         $questions = $om->read('resiexchange\Question', $questions_ids, ['title']);
         foreach($res as $oid => $odata) {
-            $result[$oid] = $questions[$odata['answer_id.question_id']]['title'];
+            $result[$oid] = $questions[ $answers[$odata['answer_id']]['question_id'] ]['title'];
         }
         return $result;        
     }

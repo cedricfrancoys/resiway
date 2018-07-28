@@ -1,9 +1,10 @@
 <?php
 /**
-*    This file is part of the Qinoa project.
+*    This file is part of the Qinoa framework.
 *    https://github.com/cedricfrancoys/qinoa
 *
-*    Copyright (C) 2012  Cedric Francoys
+*    Some Rights Reserved, Cedric Francoys, 2017, Yegen
+*    Licensed under GNU GPL 3 license <http://www.gnu.org/licenses/>
 *
 *    This program is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
@@ -20,12 +21,15 @@
 */
 namespace {
 	define('__QN_LIB', true) or die('fatal error: __QN_LIB already defined or cannot be defined');
+
+    define('QN_BASE_DIR', dirname(__FILE__));
     
 	/**
 	* Add some global system-related constants (those cannot be modified by other scripts)
 	*/
     include_once('config/config.inc.php');
 
+    
 
 	/** 
 	* Add some config-utility functions to the global namespace
@@ -51,23 +55,11 @@ namespace {
         */
 	}
 
-	/**
-	* Returns the resulting debug mode (taking $SILENT_MODE under account)
-	*/
-	function debug_mode() { return ($GLOBALS['SILENT_MODE'])?0:config('DEBUG_MODE'); }	
-
-	// Set script as verbose by default (and ensure $GLOBALS['SILENT_MODE'] is set)
-	set_silent(false);
 }
 namespace config {
-    use easyobject\orm\ObjectManager;
-    use qinoa\data\DataAdapter;    
-    use qinoa\data\DataValidator;
-    use qinoa\php\Context;
-    use qinoa\error\Reporter;
+    use qinoa\services\Container;
     
-    use \ReflectionClass;
-    use \ReflectionException;
+
     
 	/**
 	* Add some config-utility functions to the 'config' namespace
@@ -77,208 +69,109 @@ namespace config {
 	* Adds a parameter to the configuration array
 	*/	
 	function define($name, $value) {
-		$GLOBALS['CONFIG_ARRAY'][$name] = $value;
+		$GLOBALS['QN_CONFIG_ARRAY'][$name] = $value;
 	}
 
 	/**
 	* Checks if a parameter has already been defined
 	*/	
 	function defined($name) {
-		return isset($GLOBALS['CONFIG_ARRAY'][$name]);
+		return isset($GLOBALS['QN_CONFIG_ARRAY'][$name]);
 	}
 
-	function get_config() {
-		return $GLOBALS['CONFIG_ARRAY'];
-	}
 
-	function set_config($config) {
-		return $GLOBALS['CONFIG_ARRAY'] = $config;
-	}
-
+    /**
+    *
+    * can be invoked in local config files to override a specific service (used by the core services)
+    * same global array is used by the service container
+    *
+    */    
+    function register($name, $class=null) {
+        if(!isset($GLOBALS['QN_SERVICES_POOL'])) {
+            $GLOBALS['QN_SERVICES_POOL'] = [];
+        }
+        if(is_array($name)) {
+            foreach($name as $service => $class) {
+                $GLOBALS['QN_SERVICES_POOL'][$service] = $class;
+            }
+        }
+        else {
+            $GLOBALS['QN_SERVICES_POOL'][$name] = $class;
+        }
+    }
 
 	/**
 	* Returns a configuraiton parameter.
 	*/
 	function config($name, $default=null) {
-		return (isset($GLOBALS['CONFIG_ARRAY'][$name]))?$GLOBALS['CONFIG_ARRAY'][$name]:$default;
+		return (isset($GLOBALS['QN_CONFIG_ARRAY'][$name]))?$GLOBALS['QN_CONFIG_ARRAY'][$name]:$default;
 	}
 	
 	/**
 	* Export parameters declared with config\define function, as constants (i.e.: accessible through global scope)
 	*/
 	function export_config() {
-		if(!isset($GLOBALS['CONFIG_ARRAY'])) $GLOBALS['CONFIG_ARRAY'] = array();
-		foreach($GLOBALS['CONFIG_ARRAY'] as $name => $value) {
+		if(!isset($GLOBALS['QN_CONFIG_ARRAY'])) $GLOBALS['QN_CONFIG_ARRAY'] = array();
+		foreach($GLOBALS['QN_CONFIG_ARRAY'] as $name => $value) {
 			\defined($name) or \define($name, $value);
-			unset($GLOBALS['CONFIG_ARRAY'][$name]);
+			unset($GLOBALS['QN_CONFIG_ARRAY'][$name]);
 		}
 	}
-	
-	/**
-	*	FC library defines a set of functions whose purpose is to ease php scripting for :
-	*	- classes inclusion (especially for cascading inclusions)
-	*		load_class($class_path)
-	*	- extracting HTTP data (GET / POST/ COOKIE)
-	*		extract_params($url)
-	*	- script description and the parameters it should receive
-	*
-	*	Classes folder (either Zend or user-defined framework, or both) needs to be placed in a directory named 'library' located in the same folder as the current fc.lib.php file
-	*	User-defined classes naming convention : ClassName.class.php
-	*
-	*	Expected tree structure :
-	*		library
-	*		library/classes
-	*		library/files
-	*		library/Zend
-	*
-	*	This file should be included only once (for example in the index.php file)
-	*		ex. : include_once('fc.lib.php');
-	*
-	*	Any file requiring functions defined in this library must check its presence :
-	*		ex. : defined('__FC_LIB') or die(__FILE__.' requires fc.lib.php');
-	*/
+
 	class QNlib {
-
-		/*
-		* private methods
-		*/
-
-		/**
-		* Gets the name of a class given the full path of the file containing its definition.
-		*
-		* @static
-		* @param	string	$class_path
-		* @return	string
-		*/
-		private static function get_class_name($class_path) {
-			$parts = explode('/', $class_path);
-			return end($parts);
-		}
-
-		/**
-		* Gets the relative path of a file containing a class, given its full path.
-		*
-		* @static
-		* @param	string	$class_path
-		* @return	string
-		*/
-		private static function get_class_path($class_path) {
-			$sub_path = substr($class_path, 0, strrpos($class_path, '/'));
-			if(strlen($sub_path) > 0) {
-				$sub_path .= '/';
-			}
-			// return 'classes/'.$sub_path.self::get_class_name($class_path);
-			return $sub_path.self::get_class_name($class_path);            
-		}
-
-		/**
-		* Checks if the path contains the specified file , given its relative path.
-		*
-		* @static
-		* @param	string	$filename
-		* @return	bool
-		*/
-		private static function path_contains($filename) {
-			$include_path = get_include_path();
-			if(strpos($include_path, PATH_SEPARATOR)) {
-				if(($temp = explode(PATH_SEPARATOR, $include_path))) {
-					for($n = 0; $n < count($temp); ++$n) {
-						if(file_exists($temp[$n].'/'.$filename)) return true;
-					}
-				}
-			}
-			return false;
-		}
-
-        
-        private static function inject_dependency($dependency) {
-            $instance = null;
-            $unresolved_dependencies = [];
-            try {
-                $dependencyClass = new ReflectionClass($dependency);
-                $constructor = $dependencyClass->getConstructor();
-                $parameters = $constructor->getParameters();    
-                if(count($parameters)) {
-                    // check dependencies availability
-                    $dependencies_instances = [];
-                    foreach($parameters as $parameter) {
-                        $constructor_dependancy = $parameter->getClass()->getName();
-                        // todo : no cyclic dependency check is done            
-                        $res = self::inject_dependency($constructor_dependancy);            
-                        if(count($res[1])) {
-                            $unresolved_dependencies = array_merge($unresolved_dependencies, $res[1]);
-                            continue;
-                        }
-                        if($res[0] instanceof $constructor_dependancy) {
-                            $dependencies_instances[] = $res[0];
-                        }
-                    }
-                    if(!count($unresolved_dependencies)) {
-                        $instance = call_user_func_array($dependency.'::getInstance', $dependencies_instances);
-                    }
-                }
-                else {
-                    if(!is_callable($dependency.'::getInstance')) {
-                        $unresolved_dependencies[] = $dependency;
-                    }
-                    else {
-                        // check for required constants availability
-                        if(is_callable($dependency.'::constants')) {
-// todo                            
-                        }
-                        $instance = $dependency::getInstance();
-                    }
-                }
-            }
-            catch(ReflectionException $e) {
-                $unresolved_dependencies[] = $dependency;
-            }
-            return [$instance, $unresolved_dependencies];
-        }        
-		/*
-		* public methods
-		*/
-
-		/**
-		* Gets the location of the given script, by default the current file (fc.lib.php)
-		*
-		* @static
-		* @return	string
-		*/
-		public static function get_script_path($script=__FILE__) {
-			$file_path = str_replace('\\', '/', $script);
-			if(($pos = strrpos($file_path, '/')) !== false) {
-				$file_path = substr($file_path, 0, $pos);
-			}
-			return $file_path;
-		}
         
 		/**
 		* Adds the library folder to the include path (library folder should contain the Zend framework if required)
 		*
 		* @static
 		*/
-		public static function init() {
-            $library_folder = self::get_script_path().'/vendor';
-			if(is_dir($library_folder))	set_include_path($library_folder.PATH_SEPARATOR.get_include_path());            
+		public static function init() {      
             // register own class loader
             spl_autoload_register(__NAMESPACE__.'\QNlib::load_class');
-            // make sure dependencies are available
-            $dependencies = ['qinoa\error\Reporter', 'qinoa\php\Context', 'qinoa\data\DataValidator', 'qinoa\data\DataAdapter'];
-            foreach($dependencies as $dependency) {
-                $res = self::inject_dependency($dependency);
-                if(count($res[1])) {
-                    throw new \Exception('mandatory dependency missing or cannot be instanciated', QN_REPORT_FATAL);
-                    exit();
-                }
-            }            
-            // now we can autoload the ORM manager
-            $om = &ObjectManager::getInstance();
-            // register ORM classes autoloader
-            spl_autoload_register([$om, 'getStatic']);
             
-            // init error reporting
-            $reporter = Reporter::getInstance();
+            // check service container availability
+            if(!is_callable('qinoa\services\Container::getInstance')) {
+                throw new \Exception('Qinoa init : mandatory Container service is missing or cannot be instanciated', QN_REPORT_FATAL);
+            }
+            // instanciate service container
+            $container = Container::getInstance();
+            
+            // register names for common services and assign default classes
+            $container->register([
+                'report'    => 'qinoa\error\Reporter',
+                'auth'      => 'qinoa\auth\AuthenticationManager', 
+                'access'    => 'qinoa\access\AccessController', 
+                'context'   => 'qinoa\php\Context', 
+                'validate'  => 'qinoa\data\DataValidator', 
+                'adapt'     => 'qinoa\data\DataAdapter', 
+                'orm'       => 'qinoa\orm\ObjectManager',
+                'route'     => 'qinoa\route\Router'
+            ]);
+            
+            // make sure mandatory dependencies are available (reporter requires context)
+            try {
+                $container->get(['report', 'context']);
+            }
+            catch(\Exception $e) {
+                // fallback to a manual HTTP 500 
+                header("HTTP/1.1 503 Service Unavailable");
+                header('Content-type: application/json; charset=UTF-8');
+                echo json_encode([
+                    'errors' => ['UNKNOWN_SERVICE' => $e->getMessage()]
+                 ], 
+                 JSON_PRETTY_PRINT);
+                // and raise an exception (will be output in PHP error log)                
+                throw new \Exception("Qinoa init: a mandatory dependency is missing or cannot be instanciated", QN_REPORT_FATAL);
+            }
+            // register ORM classes autoloader, if any
+            try {
+                $om = $container->get('orm');
+                // init collections provider
+                $collect = $container->get('qinoa\orm\Collections');
+                spl_autoload_register([$om, 'getStatic']);                            
+            }
+            catch(\Exception $e) {}
+            
 		}
 
 		/**
@@ -301,160 +194,115 @@ namespace config {
 			return $url;
 		}
 
+
 		/**
-		* Checks if all parameters have been received in the HTTP request. If not, the script is terminated.
-		*
-		* @deprecated : use announce method instead
-		*
-		* @static
-		*/
-		public static function check_params($mandatory_params) {
-			if(count(array_intersect($mandatory_params, array_keys($_REQUEST))) != count($mandatory_params)) {
-				// alternate output: send json data telling which params are expected
-				echo json_encode(array('expected_params' => $mandatory_params), JSON_FORCE_OBJECT);
-				// terminate script
-				die();
-			}
-		}
-		
-		/**
-		* Gets the value of a list of parameters received in the HTTP request. If a parameter is not defined, its default value is returned.
-		*
-		* @deprecated : use announce method instead
-		*
-		* @static
-		* @param	array	$params
-		* @param	array	$default_values
-		* @return	array
-		*/
-		public static function get_params($params) {
+         * Retrieve, adapt and validate expected parameters from the HTTP request and provide requested dependencies.
+         * Also ensures that required parameters have been transmitted and sets default values for missing optional params.
+         *
+		 * Accepted types for parameters types are PHP basic types: int, bool, float, string, array
+		 * Note: un-announced parameters in HTTP request are ignored (dropped)
+         *
+		 * @static
+		 * @param	array	$announcement	Array holding the description of the script and its parameters. 
+		 * @return	array	parameters and their final values
+         * @throws Exception raises an exception if: a dependency failed to load, OR a mandatory param is missing OR a param has invalid value
+		 */
+		public static function announce(array $announcement) {		
+            // 0) init vars
 			$result = array();
-			foreach($params as $param => $default) {
-				if(isset($_REQUEST[$param]) && !empty($_REQUEST[$param])) $result[$param] = $_REQUEST[$param];
-				else $result[$param] = $default;
-			}
-			return $result;
-		}
-
-		/**
-		* This method describes the current script and its parameters. It also ensures that required parameters have been transmitted.
-		* And, if necessary, sets default values for missing optional params.
-		*
-		* Accepted types for parameters types are PHP basic types: int, bool, float, string, array
-		* Note: invalid parameters in current HTTP request are not taken under consideration
-        *
-		* @static
-		* @param	array	$announcement	array holding the description of the script and its parameters
-		* @return	array	parameters and their final values
-		*/
-		public static function announce($announcement) {		
-			$result = array();
-
-            // retrieve providers instances
-            $context = Context::getInstance();
-            $reporter = Reporter::getInstance();
-            $dataValidator = DataValidator::getInstance();
-            $dataAdapter = DataAdapter::getInstance();    
-                        
-            $request = $context->httpRequest()->body();
-            if(!is_array($request)) $request = array(); 
-
-			// 0) check presence of all mandatory parameters
-			// build mandatory fields array
 			$mandatory_params = array();
+            // retrieve service container
+            $container = Container::getInstance();
+            // retrieve required services    
+            list($context, $reporter, $dataValidator, $dataAdapter) = $container->get(['context', 'report', 'validate', 'adapt']);
+            // fetch body and method from HTTP request 
+            $request = $context->httpRequest();
+            $body = (array) $request->body();
+            $method = $request->method();
+            if(isset($announcement['response'])) {
+                $response = $context->httpResponse();
+                if(isset($announcement['response']['content-type'])) {
+                    $response->headers()->setContentType($announcement['response']['content-type']);
+                }
+                if(isset($announcement['response']['charset'])) {
+                    $response->headers()->setCharset($announcement['response']['charset']);
+                }
+                if(isset($announcement['response']['accept-origin'])) {
+                    $response->header('Access-Control-Allow-Origin', $announcement['response']['accept-origin']);
+                    $response->header('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS,HEAD,TRACE');
+                    $response->header('Access-Control-Allow-Headers', '*');
+                    $response->header('Access-Control-Expose-Headers', '*');
+                    $response->header('Allow', '*');
+                }                
+            }
+            // normalize $announcement array
 			if(!isset($announcement['params'])) $announcement['params'] = array();
             
-            // 1) fetch values from command line, in case script was invoked by CLI
-            if( $options = getopt("", array_map(function ($a) { return $a.'::'; }, array_keys($announcement['params']))) ) {
-                foreach($options as $param => $value) {
-                    $request[$param] = $value;
-                }
-            }
+            // 1) check if all required parameters have been received
             
-            // chek if all required parameters have been received
+            // build mandatory fields array
 			foreach($announcement['params'] as $param => $config) {
 				if(isset($config['required']) && $config['required']) $mandatory_params[] = $param;
             }
 			// if at least one mandatory param is missing
-            $missing_params = array_values(array_diff($mandatory_params, array_keys($request)));
-			// if(	count(array_intersect($mandatory_params, array_keys($request))) != count($mandatory_params) 
-            if( count($missing_params) || isset($request['announce']) ) {
-                $errors = [];
+            $missing_params = array_values(array_diff($mandatory_params, array_keys($body)));
+			// if(	count(array_intersect($mandatory_params, array_keys($body))) != count($mandatory_params) 
+            if( count($missing_params) || isset($body['announce']) || $method == 'OPTIONS') {
                 if(count($missing_params)) {
-                    $errors = ['MISSING_PARAM' => $missing_params];
+                    // no feedback about services
+                    if(isset($announcement['providers'])) unset($announcement['providers']);
                 }
-				// send HTTP response
-                $context->httpResponse()
-                        // set response code to BAD REQUEST                
-                        ->status(400)
-                        // output json data telling what is expected                                    
-                        ->body([
-                            'announcement'  => $announcement, 
-                            'errors'        => $errors
-                        ])
-                        ->send();
-				// terminate script
-				exit();
+                // add announcement to response body
+                $context->httpResponse()->body(['announcement' => $announcement]);
+                if(isset($body['announce']) || $method == 'OPTIONS') {
+                    $context->httpResponse()
+                    ->status(200)
+                    ->header('Content-Type', 'application/json')
+                    ->send();
+                    throw new \Exception('', 0);
+                }
+                // raise an exception with error details
+                throw new \Exception(implode(',', $missing_params), QN_ERROR_MISSING_PARAM);
 			}
 		
-			// 2) find any missing parameters            
+			// 2) find any missing parameters
+            
 			$allowed_params = array_keys($announcement['params']);
-            $invalid_params = array_diff(array_keys($request), $allowed_params);
+            $invalid_params = array_diff(array_keys($body), $allowed_params);
             foreach($invalid_params as $invalid_param) {
                 $reporter->warning("dropped unexpected parameter '{$invalid_param}'");
-                unset($request[$invalid_param]);
+                unset($body[$invalid_param]);
             }
-			$missing_params = array_diff($allowed_params, array_intersect($allowed_params, array_keys($request)));
+			$missing_params = array_diff($allowed_params, array_intersect($allowed_params, array_keys($body)));
 
-			// 3) build result array and set default values for optional missing parameters        
+			// 3) build result array and set default values for optional missing parameters
+            
 			foreach($announcement['params'] as $param => $config) {
-                // note : at some point condition had a clause " || empty($request[$param]) ", remember not to alter received data
+                // note : at some point condition had a clause " || empty($body[$param]) ", remember not to alter received data
 				if(in_array($param, $missing_params) && isset($config['default'])) {
-                        $request[$param] = $config['default'];
+                    $body[$param] = $config['default'];
 				}
-                if(isset($request[$param])) {
+                if(array_key_exists($param, $body)) {
                     // prevent type confusion while converting data from text
                     // all inputs are handled as text, conversion is made based on expected type
-                    $result[$param] = $dataAdapter->adapt($request[$param], $config['type']);
+                    $result[$param] = $dataAdapter->adapt($body[$param], $config['type']);
                 }
 			}
 
-            // 4) validate result array values types and handle optional attributes, if any
+            // 4) validate values types and handle optional attributes
+            
             $invalid_params = [];
             foreach($result as $param => $value) {
                 $config = $announcement['params'][$param];
                 // build constraints array
                 $constraints = [];
                 // adapt type to match PHP internals
-                switch($config['type']) {
-                case 'bool':
-                case 'boolean':
-                    $constraints[] = ['kind' => 'type', 'rule' => 'boolean'];
-                    break;
-                case 'float':
-                case 'double':
-                    $constraints[] = ['kind' => 'type', 'rule' => 'double'];                
-                    break;
-                case 'int':
-                case 'integer':
-                    $constraints[] = ['kind' => 'type', 'rule' => 'integer'];
-                    break;
-                default:
-                    $constraints[] = ['kind' => 'type', 'rule' => $config['type']];
-                    break;
-                }
-                // append specific constraints
-                if(isset($config['min'])) {
-                    $constraints[] = ['kind' => 'min', 'rule' => $config['min']];
-                }
-                if(isset($config['max'])) {
-                    $constraints[] = ['kind' => 'max', 'rule' => $config['max']];
-                }
-                if(isset($config['in'])) {
-                    $constraints[] = ['kind' => 'in', 'rule' => $config['in']];
-                }
-                if(isset($config['not in'])) {
-                    $constraints[] = ['kind' => 'not in', 'rule' => $config['not in']];
+                $constraints[] = ['kind' => 'type', 'rule' => $config['type']];
+                // append explicit constraints
+                foreach(array('min', 'max', 'in', 'not in') as $constraint) {
+                    if(isset($config[$constraint])) {
+                        $constraints[] = ['kind' => $constraint, 'rule' => $config[$constraint]];
+                    }
                 }
                 // validate parameter's value
                 if(!$dataValidator->validate($value, $constraints)) {
@@ -466,186 +314,213 @@ namespace config {
                 }
             }
             if(count($invalid_params)) {
-				// send HTTP response
-                $context->httpResponse()
-                        // set response code to BAD REQUEST                
-                        ->status(400)
-                        // output json data telling what is expected                                    
-                        ->body([
-                            'announcement'  => $announcement, 
-                            'errors'        => ['INVALID_PARAM' => $invalid_params]
-                        ])
-                        ->send();
-				// terminate script
-				exit();                
+                // no feedback about services
+                if(isset($announcement['providers'])) unset($announcement['providers']);
+                // add announcement to response body
+                $context->httpResponse()->body(['announcement' => $announcement]);                
+                // raise an exception with error details
+                throw new \Exception(implode(',', $invalid_params), QN_ERROR_INVALID_PARAM);
             }            
             
             // 5) check for requested providers
+            
             if(isset($announcement['providers']) && count($announcement['providers'])) {
                 $providers = [];
                 // inject dependencies
-                $unknown_providers = [];
-                foreach($announcement['providers'] as $provider) {
-                    $res = self::inject_dependency($provider);
-                    $unknown_providers = array_merge($unknown_providers, $res[1]);
-                    if($res[0]) {
-                        $providers[$provider] = $res[0];
+                foreach($announcement['providers'] as $key => $name) {
+                    // handle custom name maping
+                    if(!is_numeric($key)) {
+                        $container->register($key, $name);
+                        $name = $key;
                     }
-                }
-                
-                if(count($unknown_providers)) {
-                    // send HTTP response
-                    $context->httpResponse()
-                            // set response code to BAD REQUEST                
-                            ->status(400)
-                            // output json data telling what is expected                                    
-                            ->body([
-                                'announcement'  => $announcement, 
-                                'errors'        => ['UNKNOWN_PROVIDER' => $unknown_providers]
-                            ])
-                            ->send();                    
-                    // terminate script
-                    exit();                    
+                    $providers[$name] = $container->get($name);
                 }
                 // set result as an array holding params and providers
                 $result = [$result, $providers];                
             }
 			return $result;
 		}
-		
-		/**
-		* Extracts paramters from an URL : returns an associative array with the params and their values
-		*
-		* @static
-		* @param	string	$url
-		* @return	array
-		*/
-		public static function extract_params($url) {
-            $val = parse_url($url, PHP_URL_QUERY);
-            parse_str($val, $result);
-            return $result;
-            /*
-			preg_match_all('/([^?&=#]+)=([^&#]*)/', $url, $matches);
-			return array_combine(
-						array_map(function($arg){return htmlspecialchars(urldecode($arg));}, $matches[1]),
-						array_map(function($arg){return htmlspecialchars(urldecode($arg));}, $matches[2])
-					);
-            */
-		}
 
+        private static function resolveRoute(string $uri) {
+        }
+           
+        /**
+         * Execute a given operation.
+         *
+         * This method stacks the context, sets URI and body according to arguments, and calls the targeted script.
+         . In case the operation is not defined, an QN_ERROR_UNKNOWN_OBJECT error is raised (HTTP 404)
+         *
+         * @param $type
+         * @param $operation
+         * @param $body
+         * @param $root
+         *         
+         * @example run('get', 'public:resiway_tests', [test => 1])
+         */
+		public static function run($type, $operation, $body=[], $root=false) {
+            trigger_error("DEBUG_ORM::calling run method for $type:$operation", QN_REPORT_DEBUG);
+            $result = '';
+            $resolved = [
+                'type'      => $type,       // 'do', 'get' or 'show'
+                'operation' => null,        // {package}_{script_path}
+                'visibility'=> 'public',    // 'public' or 'private'
+                'package'   => null,        // {package}   
+                'script'    => null         // {path/to/script.php}
+            ];
+            // define valid operations specifications
+            $operations = array(
+                'do'	=> array('kind' => 'ACTION_HANDLER','dir' => 'actions'),    // do something server-side
+                'get'	=> array('kind' => 'DATA_PROVIDER',	'dir' => 'data'),       // return some data 
+                'show'	=> array('kind' => 'APPLICATION',	'dir' => 'apps')        // output rendering information (UI)
+            );               
+            $container = Container::getInstance();
+            
+            if(!$root) {
+                $context_orig = $container->get('context');
+                // stack original container register
+                $register = $container->register();
+                // stack original context (request and response sub-objects are cloned as well)
+                $context = clone $context_orig;
+                $container->set('context', $context);
+            }
+            else {
+                $context = $container->get('context');
+            }
+            
+            $getOperationOutput = function($script) use($context) {
+                ob_start();	                
+                try {
+                    include($script); 
+                }
+                catch(\Exception $e) {
+                    // an exception with code 0 is an explicit process halt with no errror
+                    if($e->getCode() != 0) {
+                        // retrieve current HTTP response
+                        $response = $context->httpResponse();
+                        // build response with error details
+                        $response
+                        // set status and body according to raised exception
+                        ->status(qn_error_http($e->getCode()))
+                        ->header('Content-Type', 'application/json')
+                        ->body( array_merge(
+                                    (array) $response->body(), 
+                                    [ 'errors' => [ qn_error_name($e->getCode()) => $e->getMessage() ] ]
+                                )
+                        )
+                        // send HTTP response
+                        ->send();
+                    }
+                }
+                return ob_get_clean();
+            };
+
+            $request = $context->httpRequest();
+            $request->body($body);
+        
+            $operation = explode(':', $operation);
+            if(count($operation) > 1) {
+                $visibility = array_shift($operation);
+                if($visibility == 'private') $resolved['visibility'] = $visibility;
+            }
+            $resolved['operation'] = $operation[0];
+            $parts = explode('_', $resolved['operation']);
+            if(count($parts) > 0) {
+                // use first part as package name
+                $resolved['package'] = array_shift($parts);
+                // use reamining parts to build script path
+                if(count($parts) > 0) {
+                    $resolved['script'] = implode('/', $parts).'.php';     
+                }
+            }
+            
+
+            // if package has a custom configuration file, load it
+            if(!is_null($resolved['package']) && is_file('packages/'.$resolved['package'].'/config.inc.php')) {	
+                include('packages/'.$resolved['package'].'/config.inc.php');
+            }
+            // if no request is specified, if possible set DEFAULT_PACKAGE/DEFAULT_APP as requested script
+            if(is_null($resolved['type'])) {
+                if(is_null($resolved['package'])) {
+                    // send 404 HTTP response
+                    throw new Exception("no default package", QN_ERROR_UNKNOWN_OBJECT);
+                }
+                if(defined('DEFAULT_APP')) {
+                    $resolved['type'] = 'show';
+                    $resolved['script'] = config('DEFAULT_APP').'.php';
+                    // maintain current URI consistency
+                    $request->uri()->set('show', $resolved['package'].'_'.config('DEFAULT_APP'));
+                }
+                else {
+                    throw new \Exception("No default app for package {$resolved['package']}", QN_ERROR_UNKNOWN_OBJECT);        
+                }
+            }
+
+            // include resolved script, if any
+            if(isset($operations[$resolved['type']])) {
+                $operation_conf = $operations[$resolved['type']];
+                // normalize: remove operation parameter from request body, if any
+                if($request->get($resolved['type']) == $resolved['operation']) {
+                    $request->del($resolved['type']);
+                }
+                // store current operation into context
+                $context->set('operation', $resolved['operation']);
+                // if no app is specified, use the default app (if any)
+                if(empty($resolved['script']) && defined('DEFAULT_APP')) $resolved['script'] = config('DEFAULT_APP').'.php';
+                $filename = 'packages/'.$resolved['package'].'/'.$operation_conf['dir'].'/'.$resolved['script'];
+                // set current dir according to visibility (i.e. 'public' or 'private')
+                chdir(QN_BASE_DIR.'/'.$resolved['visibility']);
+                if(!is_file($filename)) {
+                    throw new \Exception("Unknown {$operation_conf['kind']} {$resolved['visibility']}:{$resolved['operation']}", QN_ERROR_UNKNOWN_OBJECT);        
+                }
+                // export as constants all parameters declared with config\define() to make them accessible through global scope
+                export_config();
+             
+                if(!$root) {
+                    // include and execute requested script
+                    $result = $getOperationOutput($filename);
+                }
+                else {
+                    include($filename); 
+                }
+            }
+            
+            // restore context
+            if(!$root) {
+                // restore original context
+                $container->set('context', $context_orig);
+                // restore container register
+                $container->register($register);
+            }
+
+            return $result;
+        }
+
+        
 		/**
 		* Loads a class file from its class name (compatible with Zend classes)
 		*
 		* @static
 		* @example	load_class('db/DBConnection');
-		* @param	string	$class_path
 		* @param	string	$class_name	in case the actual name of the class differs from the class file name (which may be the case when using namespaces)
 		* @return	bool
 		*/
-		public static function load_class($class_path, $class_name='') {
+		public static function load_class($class_name) {
 			$result = false;
-			if(strpos($class_path, 'Zend_') === 0) {
-				// Zend framework 1
-				 require_once 'Zend/Loader.php';
-				 $result = \Zend_Loader::loadClass($class_path);
-				// Zend framework 2
-				/*
-				require_once 'Zend/Loader/StandardAutoloader.php';
-				$loader = new \Zend\Loader\StandardAutoloader(array('autoregister_zf' => true));
-				$result = $loader->autoload($class_path);
-				*/
-			}
-			else {
-				if($class_name == '') $class_name = self::get_class_name($class_path);
-				if(class_exists($class_name, false) || isset($GLOBALS['QNlib_loading_classes'][$class_name])) $result = true;
-				else {
-					$GLOBALS['QNlib_loading_classes'][$class_name] = true;
-					$file_path = self::get_class_path(str_replace('\\', '/', $class_path));
-                    // use Qinoa class extention
-					if(self::path_contains($file_path.'.class.php')) $result = include_once $file_path.'.class.php';
-                    // Fallback to simple php extension
-                    else if(self::path_contains($file_path.'.php')) $result = include_once $file_path.'.php';
-					unset($GLOBALS['QNlib_loading_classes']);
-				}
-			}
-			return $result;
-		}
-        
-        /*
-        * domain checks and operations
-        * a domain should always be composed of a serie of clauses against which a OR test is made
-        * a clause should always be composed of a serie of conditions agaisnt which a AND test is made
-        * a condition should always be composed of a property operand, an operator, and a value
-        */
-        
-        public static function domain_condition_check($condition) {
-            if(!is_array($condition)) return false;
-            if(count($condition) != 3) return false;
-            if(!is_string($condition[0])) return false;
-            // if(!cehck_operator($condition[1])) return false;
-            return true;
-        }
-
-        public static function domain_clause_check($clause) {
-            if(!is_array($clause)) return false;
-            foreach($clause as $condition) {
-                if(!self::domain_condition_check($condition)) return false;
-            }
-            return true;
-        }
-
-        public static function domain_check($domain) {
-// too: when creating a domain, operand should be checked based on value/type compatibility            
-            if(!is_array($domain)) return false;
-            foreach($domain as $clause) {
-                if(!self::domain_clause_check($clause)) return false;
-            }
-            return true;
-        }
-
-        public static function domain_normalize($domain) {
-            if(!is_array($domain)) return [];
-            if(!empty($domain)) {
-                if(!is_array($domain[0])) {
-                    // single condition
-                    $domain = [[$domain]];
-                }
-                else {
-                    if(empty($domain[0])) return [];
-                    if(!is_array($domain[0][0])) {
-                        // single clause
-                        $domain = [$domain];
-                    }
-                }
-            }
-            return $domain;
-        }
-        
-        public static function domain_clause_condition_add($clause, $condition) {
-            if(!self::domain_condition_check($condition)) return $clause;
-            $clause[] = $condition;
-            return $clause;
-        }
-        
-        public static function domain_condition_add($domain, $condition) {
-            if(!self::domain_condition_check($condition)) return $dest;
             
-            if(empty($domain)) {
-                $domain[] = self::domain_clause_condition_add([], $condition);
+            if(class_exists($class_name, false) || isset($GLOBALS['QNlib_loading_classes'][$class_name])) {
+                $result = true;
             }
             else {
-                for($i = 0, $j = count($domain); $i < $j; ++$i) {
-                    $domain[$i] = self::domain_clause_condition_add($domain[$i], $condition);
-                }
+                $GLOBALS['QNlib_loading_classes'][$class_name] = true;
+                $file_path = QN_BASE_DIR.'/vendor/'.str_replace('\\', '/', $class_name);
+                // use Qinoa class extention
+                if(file_exists($file_path.'.class.php')) $result = include_once $file_path.'.class.php';
+                // Fallback to simple php extension
+                else if(file_exists($file_path.'.php')) $result = include_once $file_path.'.php';
+                unset($GLOBALS['QNlib_loading_classes'][$class_name]);
             }
-            return $domain;
-        }
-
-        public static function domain_clause_add($domain, $clause) {
-            if(!self::domain_clause_check($clause)) return $domain;
-            $domain[] = $clause;
-            return $domain;
-        }        
+			return $result;
+		}       
 
 	}
 
@@ -656,15 +531,6 @@ namespace config {
 		return QNlib::get_url($server_port, $query_string);
 	}
 	
-	function get_script_path($script=__FILE__) {
-		return QNlib::get_script_path($script);	
-	}
-	
 	//Initialize the QNlib class for further 'load_class' calls
 	QNlib::init();
-}
-namespace {
-    function load_class($class_path, $class_name='') {
-        return config\QNlib::load_class($class_path, $class_name);
-    }
 }

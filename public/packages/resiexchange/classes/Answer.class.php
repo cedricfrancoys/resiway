@@ -1,8 +1,8 @@
 <?php
 namespace resiexchange;
 
-use easyobject\orm\DataAdapter as DataAdapter;
-
+use qinoa\html\HTMLToText;
+use qinoa\text\TextTransformer;
 
 class Answer extends \easyobject\orm\Object {
 
@@ -63,7 +63,9 @@ class Answer extends \easyobject\orm\Object {
                                         'type'		    => 'one2many', 
                                         'foreign_object'=> 'resiexchange\AnswerComment', 
                                         'foreign_field'	=> 'answer_id'
-                                        )            
+                                        ),
+
+            'comments'			    => array('type' => 'alias', 'alias' => 'comments_ids')
             
         );
     }
@@ -77,22 +79,7 @@ class Answer extends \easyobject\orm\Object {
              'count_flags'      => function() { return 0; }
         );
     }
-    
-    public static function excerpt($html, $max_chars) {
-        $res = '';        
-        // convert html to txt
-        $string = DataAdapter::adapt('ui', 'orm', 'text', $html);
-        $len = 0;
-        for($i = 0, $parts = explode(' ', $string), $j = count($parts); $i < $j; ++$i) {
-            $piece = $parts[$i].' ';
-            $p_len = strlen($piece);
-            if($len + $p_len > $max_chars) break;
-            $len += $p_len;
-            $res .= $piece;
-        } if($len == 0) $res = substr($string, 0, $max_chars);
-        return $res;
-    }
-    
+        
     public static function onchangeContent($om, $oids, $lang) {
         // force re-compute content_excerpt
         $om->write(__CLASS__, $oids, ['content_excerpt' => null, 'indexed' => false], $lang);
@@ -107,7 +94,7 @@ class Answer extends \easyobject\orm\Object {
         $result = [];
         $res = $om->read(__CLASS__, $oids, ['content']);
         foreach($res as $oid => $odata) {
-            $result[$oid] = self::excerpt($odata['content'], RESIEXCHANGE_ANSWER_CONTENT_EXCERPT_LENGTH_MAX);
+            $result[$oid] = TextTransformer::excerpt(HTMLToText::convert($odata['content'], false), RESIEXCHANGE_ANSWER_CONTENT_EXCERPT_LENGTH_MAX);
         }
         return $result;        
     }

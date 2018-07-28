@@ -9,11 +9,13 @@ namespace core {
 				'complete_url'			=> array('type' => 'string'),
 			);
 		}
+        
+        public static function getUnique() {
+            return array(
+                ['human_readable_url']
+            );
+        }
+        
 	}
     
-    public static function getUnique() {
-        return array(
-            ['human_readable_url']
-        );
-    }
 }

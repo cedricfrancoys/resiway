@@ -35,7 +35,7 @@ require_once('../qn.api.php');
 
 
 
-load_class('utils/HtmlWrapper');
+QNlib::load_class('utils/HtmlWrapper');
 
 // we instanciate eventListener to catch all errors (we need to do it here since we might not use the obect Manager)
 new eventListener();
