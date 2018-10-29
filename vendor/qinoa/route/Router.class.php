@@ -61,6 +61,7 @@ class Router  extends Service {
         // provider is a path to one or more JSON file
         else {
             $first = true;
+            // loop amongst one or more files (matching wildcard if any)
             foreach(glob($provider) as $json_file) {
                 // load content from first file
                 if($first) {
@@ -227,11 +228,14 @@ class Router  extends Service {
         };
         
         // process all providers until we get a match
-        for($i = 0, $n = count($this->providers); $i < $n; ++$i) {
+        $i = 0; 
+        // we don't know the length of $this->providers beforehand (pushes can be made in $this->add())
+        while($i < count($this->providers)) { 
             $routes = $this->loadProvider($this->providers[$i]);
             if($match = $lookup($routes)) {
                 return $match;
             }
+            ++$i;
         }
         return null;
     }    

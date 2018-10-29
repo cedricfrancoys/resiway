@@ -35,11 +35,6 @@ list($context, $orm) = [$providers['context'], $providers['orm']];
 $package = $orm->getObjectPackageName($params['entity']);
 $class = $orm->getObjectName($params['entity']);
 
-// 'edit' and 'create' are handled the same way
-if($params['context'] == 'create') {
-    $params['context'] = 'edit';
-}
-
 $file = QN_BASE_DIR."/public/packages/{$package}/views/{$class}.{$params['context']}.json";
 
 if(!file_exists($file)) {

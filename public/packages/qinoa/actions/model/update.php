@@ -35,14 +35,20 @@ list($params, $providers) = QNLib::announce([
             'default'       => DEFAULT_LANG
         ]
     ],
-    'providers'     => ['context', 'orm'] 
+    'providers'     => ['context', 'orm', 'adapt'] 
 ]);
 
-print_r($params);
+list($context, $orm, $adapter) = [$providers['context'], $providers['orm'], $providers['adapt']];
 
-list($context, $orm) = [$providers['context'], $providers['orm']];
 
-$result = $params['entity']::id($params['id'])->update($params['fields'], $params['lang'])->first();
+$fields = [];
+// adapt received values for parameter 'fields' (are still text formated)
+$schema = $orm->getModel($params['entity'])->getSchema();
+foreach($params['fields'] as $field => $value) {
+    $fields[$field] = $adapter->adapt($value, $schema[$field]['type'], 'php', 'txt');
+}
+// retrieve entity and update it    
+$result = $params['entity']::id($params['id'])->update($fields, $params['lang'])->first();
 
 $context->httpResponse()
         ->body($result)

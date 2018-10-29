@@ -17,16 +17,16 @@ set_silent(true);
 /*
  @actions   this is a data provider: no change is made to the stored data
  @rights    everyone has read access on these data
- @returns   list of articles matching given criteria
+ @returns   list of objects matching given criteria
 */
 
 // announce script and fetch parameters values
 $params = QNLib::announce(	
 	array(	
-    'description'	=>	"Returns a list of article objects matching the received criteria",
+    'description'	=>	"Returns a list of objects matching the received criteria",
     'params' 		=>	array(                                         
                         'q'		    => array(
-                                            'description'   => 'Token to search among the articles',
+                                            'description'   => 'Token to search among the objects (articles, documents, questions/answers)',
                                             'type'          => 'string',
                                             'default'       => ''
                                             ),
@@ -57,10 +57,10 @@ $params = QNLib::announce(
                                             'type'          => 'integer',
                                             'default'       => -1
                                             ),
-                        'api'	    => array(
-                                            'description'   => 'Flag for API requests',
-                                            'type'          => 'boolean',
-                                            'default'       => false
+                        'api_key'	=> array(
+                                            'description'   => 'Key for API requests',
+                                            'type'          => 'string',
+                                            'default'       => ''
                                             )                                            
                         )
 	)

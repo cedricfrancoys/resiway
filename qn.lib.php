@@ -125,7 +125,12 @@ namespace config {
 		*
 		* @static
 		*/
-		public static function init() {      
+		public static function init() {
+            // allow inclusion and autoloading of external classes
+            if(file_exists(QN_BASE_DIR.'/vendor/autoload.php')) {            
+                require_once(QN_BASE_DIR.'/vendor/autoload.php');
+            }
+            
             // register own class loader
             spl_autoload_register(__NAMESPACE__.'\QNlib::load_class');
             
@@ -348,7 +353,7 @@ namespace config {
          * Execute a given operation.
          *
          * This method stacks the context, sets URI and body according to arguments, and calls the targeted script.
-         . In case the operation is not defined, an QN_ERROR_UNKNOWN_OBJECT error is raised (HTTP 404)
+         . In case the operation is not defined, a QN_ERROR_UNKNOWN_OBJECT error is raised (HTTP 404)
          *
          * @param $type
          * @param $operation
@@ -517,6 +522,9 @@ namespace config {
                 if(file_exists($file_path.'.class.php')) $result = include_once $file_path.'.class.php';
                 // Fallback to simple php extension
                 else if(file_exists($file_path.'.php')) $result = include_once $file_path.'.php';
+                else {
+                    // give up
+                }
                 unset($GLOBALS['QNlib_loading_classes'][$class_name]);
             }
 			return $result;
