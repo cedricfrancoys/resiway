@@ -174,7 +174,7 @@ class Reporter extends Service {
         // retrieve info from where the error was actually raised  ($backtrace[0] being related to current getTrace() call)
         $n = 1+$increment;
         // get last item from backtrace
-        $trace = $backtrace[$n];
+        $trace = array_values(array_slice($backtrace, -1))[0];
 
         if(isset($trace['function']) && isset($trace['class']) && in_array($trace['function'], ['errorHandler', 'debug'])) {
             unset($trace['function']);
