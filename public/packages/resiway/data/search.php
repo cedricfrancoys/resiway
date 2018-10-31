@@ -60,7 +60,7 @@ $params = QNLib::announce(
                         'api_key'	=> array(
                                             'description'   => 'Key for API requests',
                                             'type'          => 'string',
-                                            'default'       => ''
+                                            'required'      => true
                                             )                                            
                         )
 	)
