@@ -43,6 +43,14 @@ class AccessController extends Service {
         // all operations are granted to admin users
         if($user_data['role'] == 'a' || $user_data['role'] == 'm') return true; 
 
+        // since we're here, current action has been granted to authenticated user
+        switch($object_class) {
+            // all users can update common objects
+            case 'resiway\Category': 
+            case 'resiway\Author':             
+            return true;
+        }
+        
         // retrieve objects data 
         $res = $om->read($object_class, $object_ids, ['id', 'creator']);
         if($res < 0) return false;
