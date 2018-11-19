@@ -425,7 +425,7 @@ class Collection implements \Iterator {
             // retrieve targeted fields names
             $fields = array_keys($values);
             // 3) check that current user has enough privilege to perform WRITE operation
-            if(!$this->ac->isAllowed(R_WRITE, $this->class, $ids, $fields, $ids)) {
+            if(!$this->ac->isAllowed(R_WRITE, $this->class, $fields, $ids)) {
                 throw new \Exception('WRITE,'.$this->class.',['.implode(',', $fields).']', QN_ERROR_NOT_ALLOWED);
             }
             // set current user as modifier

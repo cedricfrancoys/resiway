@@ -28,7 +28,8 @@ $params = QNLib::announce(
                         'q'		    => array(
                                             'description'   => 'Token to search among the objects (articles, documents, questions/answers)',
                                             'type'          => 'string',
-                                            'default'       => ''
+                                            'min'           => 3,
+                                            'required'      => true
                                             ),
                         'order'		=> array(
                                             'description'   => 'Column to use for sorting results (ignored if user does not set it).',
@@ -117,6 +118,7 @@ try {
             
             foreach($parts as $part) {
                 $matches = [];
+                // handle category syntax (names within square brackets, e.g.: [nature])
                 if(preg_match("/([+-]?)\[(.*)\]/U", $part, $matches)) {
                     if(strlen($matches[1]) < 1 || $matches[1] == '+') {
                         $categories[] = $matches[2];
@@ -128,7 +130,7 @@ try {
             }
             
             if(count($categories)) {
-                // full-text search on category title : we need to extend to all subcategories 
+                // full-text search on category title: we need to extend to all subcategories 
                 $domain = [];
                 foreach($categories as $category) {
                     $domain[] = ['path', 'like', '%'.TextTransformer::slugify($category).'%'];
@@ -162,8 +164,6 @@ try {
             }
             
             $params['q'] = implode(' ', $keywords);
-//            print_r($params['q']);
-//            print_r($batches);
 
             // 2) look for matching indexes, if any
             $indexes_ids = Index::searchByQuery($om, $params['q']);

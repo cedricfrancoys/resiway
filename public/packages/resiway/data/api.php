@@ -21,7 +21,7 @@ set_silent(true);
 // announce script and fetch parameters values
 $params = QNLib::announce(	
 	array(	
-    'description'	=>	"Returns a list of objects matching the received criteria",
+    'description'	=>	"JSON-API interface for querying objects matching given criteria",
     'params' 		=>	array(
                         'class'	    => array(
                                             'description'   => 'Pseudo class of the object to retrieve (article, document, question, answer, category, user).',

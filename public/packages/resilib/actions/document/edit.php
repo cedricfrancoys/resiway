@@ -81,7 +81,10 @@ list($params, $providers) = QNLib::announce([
         'content-type'  => 'application/json',
         'charset'       => 'utf-8'
     ],
-    'providers'     => ['context', 'api' => 'resiway\Api'] 
+    'providers'     => ['context', 
+                        // overload access service with resiway's
+                        'access' => 'resiway\access\AccessController', 
+                        'api' => 'resiway\Api'] 
 ]);
 
 list($context, $api) = [$providers['context'], $providers['api']];
