@@ -86,7 +86,7 @@ try {
         ]);
         break;
     case 'lescommuns':
-        $oauthRequest = new HttpRequest('https://login.lescommuns.org:8443/auth/realms/master/protocol/openid-connect/userinfo');
+        $oauthRequest = new HttpRequest('https://login.lescommuns.org/auth/realms/master/protocol/openid-connect/userinfo');
         $response = $oauthRequest
                     ->header('Authorization', 'Bearer '.$network_token)
                     ->setBody([

@@ -444,8 +444,8 @@ var resiway = angular.module('resipedia', [
             'lescommuns': {
                 oauth: {
                     version: '2',
-                    auth: 'https://login.lescommuns.org:8443/auth/realms/master/protocol/openid-connect/auth',
-                    grant: 'https://login.lescommuns.org:8443/auth/realms/master/protocol/openid-connect/token'
+                    auth: 'https://login.lescommuns.org/auth/realms/master/protocol/openid-connect/auth',
+                    grant: 'https://login.lescommuns.org/auth/realms/master/protocol/openid-connect/token'
                 },
                 scope: {
                     basic: 'openid email'
