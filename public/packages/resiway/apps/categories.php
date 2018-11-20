@@ -358,7 +358,7 @@ function ($scope, $http, $uibModal, $httpParamSerializerJQLike) {
           'fa-chevron-down': !collapsed
         }"></span>
     </a>
-    {{node.title}} ({{node.count_documents}} documents, {{node.count_questions}} questions)
+    {{node.title}} ({{node.count_documents}} documents, {{node.count_questions}} questions)&nbsp(<a target="_blank" href="https://www.resiway.org/categorie/{{node.id}}/{{node.title_url}}">lien direct</a>)
     <a class="pull-right btn btn-danger btn-xs" data-nodrag ng-click="ctrl.remove(this)">
         <span class="fa fa-remove"></span>
     </a>

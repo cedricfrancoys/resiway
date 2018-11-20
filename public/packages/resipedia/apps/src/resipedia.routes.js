@@ -170,11 +170,11 @@ angular.module('resipedia')
         '/category/:id/:title?': {
                     templateUrl : templatePath+'category.html',
                     controller  : ['$location', '$route', '$rootScope', function($location, $route, $rootScope) {
-                        var criteria = angular.extend({}, $rootScope.search.default, {q: '['+$route.current.params.title+']'});                        
-                        angular.copy(criteria, $rootScope.search.criteria);
-                        
-// todo : we shoud define a dedicated view (template) for category                            
+                        // todo : we shoud define a dedicated view (template) for category                            
                         // temp solution
+
+                        var criteria = angular.extend({}, $rootScope.search.default, {q: '['+$route.current.params.title+']'});                        
+                        angular.copy(criteria, $rootScope.search.criteria);                        
                         $location.path('/search');             
                     }]      
         },

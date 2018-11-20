@@ -326,7 +326,7 @@ class Category extends \easyobject\orm\Object {
         $result = [];
         $res = $om->read(__CLASS__, $oids, ['title']);
         foreach($res as $oid => $odata) {
-            // note: final format will be: #/question/{id}/{title}
+            // note: final format will be: #/category/{id}/{title}
             $result[$oid] = TextTransformer::slugify($odata['title'], 200);
         }
         return $result;        

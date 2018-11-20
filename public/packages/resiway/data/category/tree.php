@@ -27,11 +27,12 @@ list($result, $error_message_ids) = [true, []];
 
 function getTree($om, $oids) {
     $result = [];
-    $res = $om->read('resiway\Category', $oids, ['id', 'title', 'description', 'parent_id', 'count_documents', 'count_questions', 'children_ids']);
+    $res = $om->read('resiway\Category', $oids, ['id', 'title', 'title_url', 'description', 'parent_id', 'count_documents', 'count_questions', 'children_ids']);
     foreach($res as $oid => $odata) {
         $values =  [
                     'id'                => $oid, 
                     'title'             => $odata['title'], 
+                    'title_url'         => $odata['title_url'], 
                     'description'       => $odata['description'], 
                     'parent_id'         => $odata['parent_id'],
                     'count_documents'   => $odata['count_documents'],
