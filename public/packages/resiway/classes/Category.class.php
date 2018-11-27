@@ -1,6 +1,7 @@
 <?php
 namespace resiway;
-use qinoa\text\TextTransformer as TextTransformer;
+
+use qinoa\text\TextTransformer;
 
 
 class Category extends \easyobject\orm\Object {
