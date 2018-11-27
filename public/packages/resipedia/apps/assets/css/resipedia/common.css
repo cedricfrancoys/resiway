@@ -338,11 +338,11 @@ input[type="text"] {
 /* licensing */
 .cc-license {
     line-height: 17px;
-    height: 17px;
+    /* height: 17px; */
     font-size: 13px;
     font-family: Arial,"Helvetica Neue",Helvetica,sans-serif;
     white-space: nowrap;
-    overflow: hidden;
+    /*overflow: hidden;*/
     text-overflow: ellipsis;
 }
 
