@@ -1322,6 +1322,100 @@ angular.module('resipedia')
 ]);
 angular.module('resipedia')
 
+.controller('categoryController', [
+    'category', 
+    '$scope',
+    '$rootScope',
+    '$route',
+    '$http',
+    '$httpParamSerializerJQLike',
+    '$window',
+    function(category, $scope, $rootScope, $route, $http, $httpParamSerializerJQLike, $window) {
+        console.log('category controller');
+
+        
+        $scope.getClassFromType = function(type) {
+            switch(type) {
+            case 'question': return {'fa-comment-o':true};
+            case 'article':  return {'fa-file-text-o':true};
+            case 'document': return {'fa-book':true};
+            }
+            return {};
+        };
+        
+        // @init
+        var ctrl = this;
+
+                        
+        // @model
+        $scope.category = angular.merge({
+                            id: 0,
+                            title: '',
+                            description: '',
+                            parent_id: 0,
+                            parent: { id: category.parent_id, title: category['parent_id.title'], path: category['parent_id.path']}
+                          }, 
+                          category);
+
+        angular.merge(ctrl, {
+            search: {
+                items: [],
+                criteria: angular.extend({}, $rootScope.search.default, {q: '['+$scope.category.title+']'}),
+                total: $scope.category.count_items,
+                currentPage: 1,
+                previousPage: -1,                
+                limit: $rootScope.search.criteria.limit
+            }
+        });                
+        
+        ctrl.load = function() {
+            if(ctrl.search.currentPage != ctrl.search.previousPage) {
+                ctrl.search.previousPage = ctrl.search.currentPage;
+                // reset objects list (triggers loader display)
+                ctrl.search.items = -1;
+                ctrl.search.criteria.start = (ctrl.search.currentPage-1)*ctrl.search.limit;
+                
+                $http.get('index.php?get=resiway_search&'+$httpParamSerializerJQLike(ctrl.search.criteria))
+                .then(
+                    function successCallback(response) {
+                        var data = response.data;
+                        if(typeof data.result != 'object') {
+                            ctrl.search.items = [];
+                        }
+                        ctrl.search.items = data.result;
+                        $window.scrollTo(0, 0);
+                    },
+                    function errorCallback(response) {
+                        // something went wrong server-side
+                        return [];
+                    }
+                );
+            }
+        };
+
+        // @async loads
+
+        ctrl.load();
+        
+        /*
+        * async load and inject $scope.categories and $scope.related_categories
+        */
+        $http.get('index.php?get=resiway_category_related&category_id='+$scope.category.id)
+        .then(
+            function successCallback(response) {
+                var data = response.data;
+                if(typeof data.result == 'object') {
+                    $scope.related_categories = data.result;
+                }
+            }
+        );
+        
+
+        
+    }
+]);
+angular.module('resipedia')
+
 .controller('categoryEditController', [
     'category', 
     '$scope', 

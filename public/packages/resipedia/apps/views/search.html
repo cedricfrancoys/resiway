@@ -128,8 +128,7 @@
                         dans 
 <!-- todo : link to category details -->                        
                         <a 
-                            href
-                            ng-click="rootCtrl.searchByCategory(category)"
+                            href="/category/{{category.id}}/{{category.title_url}}"
                             class="category"                             
                             title="{{category.path}}">{{category.title}}</a>
                     </div>
@@ -151,8 +150,7 @@
                     <span class="small"><b>Catégories similaires:</b></span><br />
                     <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
                         <a 
-                            href
-                            ng-click="rootCtrl.searchByCategory(category)"
+                            href="/category/{{category.id}}/{{category.title_url}}"
                             class="category"
                             title="{{category.path}}">{{category.title}}</a>
                         <div class="category-count">x {{category.count_items}}&nbsp;</div>

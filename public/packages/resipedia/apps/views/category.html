@@ -1,0 +1,174 @@
+<div class="grid wrapper">
+    <div class="col-8-12">
+    <!-- sort dropdown -->
+        <div class="subheader">
+            <h1 id="h-questions">{{ category.title }}</h1>
+            
+            <div id="sort-dropdown">
+                <div class="btn-group dropdown" uib-dropdown="" is-open="status.isopen">
+                  <button id="single-button" type="button" class="btn btn-primary dropdown-toggle" uib-dropdown-toggle="" ng-disabled="disabled" aria-haspopup="true" aria-expanded="false">
+                    Trier <span class="caret"></span>
+                  </button>
+                <!-- Simple dropdown -->
+                  <ul class="dropdown-menu" uib-dropdown-menu aria-labelledby="simple-dropdown">
+                    <li class="dropdown-header">voir d'abord...</li>
+                    <li><a href ng-click="ctrl.load({order: 'count_views'});">les plus vues</a></li>
+                    <li><a href ng-click="ctrl.load({order: 'created'}); ">les plus récentes</a></li>
+                    <li><a href ng-click="ctrl.load({order:'score'});">les plus populaires</a></li>
+                  </ul>
+                </div>
+
+            </div>
+            <!--
+            <div id="tabs" ng-controller="QuestionsListTabsCtrl">
+                  <uib-tabset active="active">
+                    <uib-tab index="0" select="updateSelection()">
+                        <uib-tab-heading><i class="fa fa-plus-circle"></i> Les plus récentes</uib-tab-heading>
+                    </uib-tab>
+                    <uib-tab index="1" select="updateSelection()" heading="Les plus vues">
+                        <uib-tab-heading><i class="fa fa-eye"></i> Les plus vues</uib-tab-heading>
+                    </uib-tab>
+                    <uib-tab index="2" select="updateSelection()" heading="Les plus répondues">
+                        <uib-tab-heading><i class="fa fa-comment-o"></i> Les plus répondues</uib-tab-heading>
+                    </uib-tab>
+                  </uib-tabset>
+
+            </div>
+            -->
+        </div>
+        <div class="loader" ng-show="ctrl.search.items == -1"><i class="fa fa-spin fa-spinner" aria-hidden="true"></i></div>
+
+        <div ng-repeat="item in ctrl.search.items" class="question narrow col-1-1">
+            <div class="counters" >
+                <div class="votes" title="{{item.score}} {{'QUESTIONS_VOTES' | translate}}">
+                    <div class="mini-counts">                
+                        <i class="fa fa-check-circle text-success" aria-hidden="true"></i> {{item.score | humanizeCount}}
+                    </div> 
+                </div>
+                <div class="views" title="{{item.count_views}} {{'QUESTIONS_VIEWS' | translate}}">
+                    <div class="mini-counts">
+                        <i class="fa fa-eye text-success" aria-hidden="true"></i> {{item.count_views | humanizeCount}}
+                    </div>
+                </div>
+            </div>
+            <div class="summary">
+                <h3>
+                    <a class="question-hyperlink" href="{{rootCtrl.makeLink(item.class, item.id, item.title_url)}}">
+                        <i class="fa" aria-hidden="true" ng-class="getClassFromType(item.type)"></i>&nbsp;&nbsp;{{item.title}}
+                    </a>
+                </h3>
+                <div class="excerpt">{{item.description}}</div>
+                
+                <div class="categories col-8-12 nopad">
+                    <a  ng-repeat="category in item.categories" 
+                        ng-click="rootCtrl.searchByCategory(category)" 
+                        class="category" 
+                        popover-trigger="'mouseenter'"
+                        uib-popover-html="category.description"
+                        popover-append-to-body="true"
+                        popover-placement="bottom-left"
+                        popover-title="{{category.path}}">
+                        {{category.title}}</a> 
+                </div>
+                <div class="started col-4-12 nopad">
+                    <div class="signature owner">
+                        <div class="user-info">
+                            <div class="user-action-time">
+                                <span>{{item.created | amDateFormat:'YYYY-MM-DD HH:mm:ss' | amCalendar}}</span>
+                            </div>
+                            <div class="user-avatar">
+                                <a href="/users/{{item.creator.id}}" title="{{item.creator.display_name}}"><img ng-src="{{rootCtrl.avatarURL(item.creator.avatar_url, 32)}}" width="32" height="32"></a>
+                            </div>
+                            <div class="user-details">
+                                <a href="/user/{{item.creator.id}}/{{item.creator.name_url}}">{{item.creator.display_name}}</a>
+                                <div>
+                                    <span class="reputation-score" title="score de reputation" dir="ltr">{{item.creator.reputation | humanizeCount}}</span>
+                                    <span class="badges" ng-show="item.creator.count_badges_1 > 0">
+                                        <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{item.creator.count_badges_1}}</span>
+                                    </span>
+                                    <span class="badges" ng-show="item.creator.count_badges_2 > 0">
+                                        <span class="badge2"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{item.creator.count_badges_2}}</span>
+                                    </span>
+                                    <span class="badges" ng-show="item.creator.count_badges_3 > 0">
+                                        <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
+                                        <span class="badgecount">{{item.creator.count_badges_3}}</span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>                         
+                </div>
+            </div>
+        </div>
+
+        <ul uib-pagination 
+            class="pagination-sm" 
+            total-items="ctrl.search.total" 
+            ng-model="ctrl.search.currentPage"
+            ng-change="ctrl.load()"
+            items-per-page="25"
+            max-size="5" 
+            direction-links="false"
+            boundary-links="true"
+            first-text="«" 
+            last-text="»"
+            rotate="true"
+            force-ellipses="true"></ul>
+            
+    </div>
+    <div class="col-4-12">
+        <div class="panel panel-default">
+            <div class="container" style="min-height: 500px;">
+                <div class="container">
+                    <span class="item-number">{{ctrl.search.total | humanizeCount:true}}</span>
+                    <span class="item-label">{{'SEARCH_STATS_ITEMS' | translate}}</span>
+                    <div ng-show="category" class="categories container fade-in-out" style="display: inline-block; padding: 0;">
+                        dans&nbsp;
+                        <a 
+                            href="/category/{{category.id}}/{{category.title_url}}"
+                            class="category"                             
+                            title="{{category.path}}">{{category.title}}</a>
+                    </div>
+                    <div>et ses sous-cat&eacute;gories</div>
+                </div>
+                
+                <div ng-show="active_questions.length > 0" class="container fade-in-out">                    
+                    <span class="small"><b>Sujets actifs:</b></span><br />
+                    <div class="featured-questions" ng-repeat="question in active_questions">
+                        <table>
+                            <tr>
+                                <td><span class="mini-counts btn btn-success btn-xs">{{question.score | humanizeCount}}</span></td>
+                                <td><a href="/question/{{question.id}}/{{question.title_url}}" title="{{question.title}}">{{question.title}}</a></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                
+                <div ng-show="related_categories.length > 0" class="container fade-in-out">                    
+                    <span class="small"><b>Catégories similaires:</b></span><br />
+                    <div class="related_categories categories" ng-repeat="category in related_categories" style="display: inline-block;">
+                        <a 
+                            href="/category/{{category.id}}/{{category.title_url}}"
+                            class="category"                            
+                            title="{{category.path}}">{{category.title}}</a>
+                        <div class="category-count">x {{category.count_questions}}&nbsp;</div>
+                    </div>
+                </div>
+
+                <div ng-show="featured_categories.length > 0" class="container fade-in-out">                    
+                    <span class="small"><b>Categories populaires:</b></span><br />
+                    <div class="featured-categories categories" ng-repeat="category in featured_categories" style="display: inline-block;">
+                        <a 
+                            href="/category/{{category.id}}/{{category.title_url}}"
+                            class="category"                            
+                            title="{{category.path}}">{{category.title}}</a>
+                        <div class="category-count">x {{category.count_questions}}&nbsp;</div>
+                    </div>                
+                </div>                
+
+            </div>
+        </div>
+    </div>
+</div>    

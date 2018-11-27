@@ -169,6 +169,13 @@ angular.module('resipedia')
         },
         '/category/:id/:title?': {
                     templateUrl : templatePath+'category.html',
+                    controller  : 'categoryController as ctrl',
+                    resolve     : {
+                        category: ['routeCategoryProvider', function (provider) {
+                            return provider.load();
+                        }]
+                    }                    
+                    /*
                     controller  : ['$location', '$route', '$rootScope', function($location, $route, $rootScope) {
                         // todo : we shoud define a dedicated view (template) for category                            
                         // temp solution
@@ -176,7 +183,8 @@ angular.module('resipedia')
                         var criteria = angular.extend({}, $rootScope.search.default, {q: '['+$route.current.params.title+']'});                        
                         angular.copy(criteria, $rootScope.search.criteria);                        
                         $location.path('/search');             
-                    }]      
+                    }]
+                    */                    
         },
         
         
