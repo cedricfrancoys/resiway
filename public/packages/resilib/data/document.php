@@ -22,10 +22,10 @@ list($params, $providers) = QNLib::announce([
         'content-type'  => 'application/json',
         'charset'       => 'utf-8'
     ],
-    'providers'     => ['context', 'api' => 'resiway\Api'] 
+    'providers'     => ['context', 'orm', 'api' => 'resiway\Api'] 
 ]);
 
-list($context, $api) = [$providers['context'], $providers['api']];
+list($context, $orm, $api) = [$providers['context'], $providers['orm'], $providers['api']];
 
 
 /*
@@ -56,5 +56,8 @@ $document = Document::id($params['id'])
             ])
             ->adapt('txt')
             ->first();
+
+// increment views counter by one
+$orm->write('resilib\Document', $params['id'], ['count_views' => $document['count_views'] + 1]);
 
 $context->httpResponse()->body(['result' => $document])->send();
