@@ -24,10 +24,10 @@ list($params, $providers) = QNLib::announce([
         'content-type'  => 'application/json',
         'charset'       => 'utf-8'
     ],
-    'providers'     => ['context', 'api' => 'resiway\Api'] 
+    'providers'     => ['context', 'orm', 'api' => 'resiway\Api'] 
 ]);
 
-list($context, $api) = [$providers['context'], $providers['api']];
+list($context, $orm, $api) = [$providers['context'], $providers['orm'], $providers['api']];
 
 /* 
     Overload schemas of targeted classes with a virtual field:
@@ -79,5 +79,8 @@ $question = Question::id($params['id'])
             ])
             ->adapt('txt')
             ->first();
+
+// increment views counter by one
+$orm->write('resiexchange\Question', $params['id'], ['count_views' => $question['count_views'] + 1]);
 
 $context->httpResponse()->body(['result' => $question])->send();
