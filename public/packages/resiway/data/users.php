@@ -27,7 +27,7 @@ if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 $total = count($ids);
 
 $users = User::search(['verified', '=', '1'])
-            ->read(User::userPublicFields())
+            ->read(User::getPublicFields())
             ->adapt('txt');
 
             
