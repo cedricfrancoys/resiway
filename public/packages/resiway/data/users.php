@@ -28,7 +28,7 @@ $total = count($ids);
 
 $users = User::search(['verified', '=', '1'])
             ->read(User::getPublicFields())
-            ->adapt('txt');
+            ->adapt('txt')->get();
 
             
 $context->httpResponse()->header('X-Total-Count', $total)->body(['result' => $users, 'total' => $total])->send();
