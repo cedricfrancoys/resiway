@@ -6396,6 +6396,9 @@ angular.module('resipedia')
                             tags_ids: [{}]
                           }, 
                           question);
+        // fix to support model update (from .tags to .categories)
+        $scope.question.tags = {};
+        angular.merge($scope.question.tags, question.categories);
                           
 
         /**
