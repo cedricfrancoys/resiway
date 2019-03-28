@@ -7499,7 +7499,7 @@ angular.module('resipedia')
                 if(config.total > 0) {
                     config.loading = true;
                 }
-                $http.post('index.php?get=resiway_user_list&order=reputation', {
+                $http.post('index.php?get=resiway_users', {
                     domain: config.domain,
                     start: (config.currentPage-1)*config.limit,
                     limit: config.limit,
