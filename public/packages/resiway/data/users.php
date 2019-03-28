@@ -59,5 +59,5 @@ $users = User::search(
             
 $context->httpResponse()
         ->header('X-Total-Count', $params['total'])
-        ->body(['result' => $users, 'total' => $total])
+        ->body(['result' => $users, 'total' => $params['total']])
         ->send();
