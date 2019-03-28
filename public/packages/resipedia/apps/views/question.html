@@ -126,7 +126,7 @@
                                 <div class="user-details">
                                     <a href="/user/{{question.editor.id}}/{{question.editor.name_url}}">{{question.editor.display_name}}</a>
                                     <div>
-                                        <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}">{{question.editor.reputation}}</span>
+                                        <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}">{{question.editor.reputation | humanizeCount}}</span>
                                         <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_BRONZE'|translate}}" ng-show="question.editor.count_badges_1 > 0">
                                             <span class="badge1"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                             <span class="badgecount">{{ question.editor.count_badges_1 }}</span>
@@ -487,7 +487,7 @@
                                     <div class="user-details">
                                         <a href="/user/{{answer.creator.id}}/{{answer.creator.name_url}}">{{answer.creator.display_name}}</a>
                                         <div>
-                                            <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}" dir="ltr">{{answer.creator.reputation}}</span>
+                                            <span class="reputation-score" title="{{'QUESTION_USER_DETAILS_REPUTATION'|translate}}" dir="ltr">{{answer.creator.reputation | humanizeCount}}</span>
                                             <span class="badges" title="{{'QUESTION_USER_DETAILS_BADGES_GOLD'|translate}}" ng-show="answer.creator.count_badges_3 > 0">
                                                 <span class="badge3"><i class="fa fa-circle" aria-hidden="true"></i></span>
                                                 <span class="badgecount">{{ answer.creator.count_badges_3 }}</span>
