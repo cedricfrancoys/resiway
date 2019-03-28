@@ -26,9 +26,10 @@ $ids = $orm->search('resiway\User');
 if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
 $total = count($ids);
 
-$users = User::search(['verified', '=', '1'])
+$users = User::search(['verified', '=', '1'], ['sort' => ['about' => 'desc', 'reputation' => 'desc'], 'limit' => 25])
             ->read(User::getPublicFields())
-            ->adapt('txt')->get();
+            ->adapt('txt')
+            ->get();
 
             
 $context->httpResponse()->header('X-Total-Count', $total)->body(['result' => $users, 'total' => $total])->send();
