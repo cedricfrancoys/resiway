@@ -67,13 +67,13 @@ try {
     
     // total is not knwon yet
     if($params['total'] < 0) {        
-        $ids = $om->search('resiway\User', $params['domain'], $params['order'], $params['sort']);
+        $ids = $om->search('resiway\User', $params['domain'], [$params['order'] => $params['sort']]);
         if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
         $total = count($ids);
 		$users_ids = array_slice($ids, $params['start'], $params['limit']);
     }
     else {
-        $users_ids = $om->search('resiway\User', $params['domain'], $params['order'], $params['sort'], $params['start'], $params['limit']);
+        $users_ids = $om->search('resiway\User', $params['domain'], [$params['order'] => $params['sort']], $params['start'], $params['limit']);
         if($users_ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
     }
     
