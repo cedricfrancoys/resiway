@@ -10,7 +10,23 @@ use resiway\User;
 list($params, $providers) = QNLib::announce([
     'description'   => 'Returns the list of participants',
     'params'        => [
-
+        'start'		=> [
+            'description'   => 'The row from which results have to start.',
+            'type'          => 'integer',
+            'default'       => 0
+        ],
+        'limit'		=> [
+            'description'   => 'The maximum number of results.',
+            'type'          => 'integer',
+            'min'           => 5,
+            'max'           => 100,
+            'default'       => 25
+        ],
+        'total'		=> [
+            'description'   => 'Total of record (if known).',
+            'type'          => 'integer',
+            'default'       => -1
+        ]
     ],
     'response'      => [
         'content-type'  => 'application/json',
@@ -22,14 +38,26 @@ list($params, $providers) = QNLib::announce([
 list($context, $orm, $api) = [$providers['context'], $providers['orm'], $providers['api']];
 
 
-$ids = $orm->search('resiway\User');
-if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
-$total = count($ids);
+if($params['total'] < 0) {
+    $ids = $orm->search('resiway\User');
+    if($ids < 0) throw new Exception("request_failed", QN_ERROR_UNKNOWN);
+    $params['total'] = count($ids);
+}
 
-$users = User::search(['verified', '=', '1'], ['sort' => ['about' => 'desc', 'reputation' => 'desc'], 'limit' => 25])
+$users = User::search(
+                ['verified', '=', '1'], 
+                [
+                    'sort' => ['about' => 'desc', 'reputation' => 'desc'], 
+                    'start' => $params['start'],
+                    'limit' => $params['limit']
+                ]
+            )
             ->read(User::getPublicFields())
             ->adapt('txt')
             ->get();
 
             
-$context->httpResponse()->header('X-Total-Count', $total)->body(['result' => $users, 'total' => $total])->send();
+$context->httpResponse()
+        ->header('X-Total-Count', $params['total'])
+        ->body(['result' => $users, 'total' => $total])
+        ->send();
