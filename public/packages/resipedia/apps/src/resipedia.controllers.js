@@ -5352,7 +5352,7 @@ angular.module('resipedia')
             currentPage: 1,
             previousPage: -1,
             limit: 30,
-            domain: ['verified','=',true],
+            domain: [],
             loading: false
         };
         
@@ -5363,7 +5363,7 @@ angular.module('resipedia')
                 if(config.total > 0) {
                     config.loading = true;
                 }
-                $http.post('index.php?get=resiway_user_list&order=about&sort=desc', {
+                $http.post('index.php?get=resiway_user_list&order=reputation', {
                     domain: config.domain,
                     start: (config.currentPage-1)*config.limit,
                     limit: config.limit,
