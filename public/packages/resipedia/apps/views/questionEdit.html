@@ -22,7 +22,7 @@
                         <!-- alternate display (but sorting before grouping): oi-options="item.path group by item.parent_path for item in categories" -->
                             <oi-select
                                         oi-options="item.path for item in loadMatches($query)"
-                                        ng-model="question.categories"
+                                        ng-model="question.tags"
                                         multiple
                                         multiple-limit="8"
                                         oi-select-options="{
